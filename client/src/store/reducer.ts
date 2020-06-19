@@ -4,10 +4,12 @@ export const initialState: State = {
   sessions: [
     {
       sessionId: "session 1",
+      classifierGrade: 1.0,
       grade: 1.0,
     },
     {
       sessionId: "session 2",
+      classifierGrade: 0.5,
       grade: 0.5,
     },
   ],

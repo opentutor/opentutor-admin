@@ -3,6 +3,7 @@ describe("sessions screen", () => {
     cy.visit("/");
     const tableHead = cy.get("table thead tr");
     tableHead.get("th").eq(0).contains("Session Id");
-    tableHead.get("th").eq(1).contains("Grade");
+    tableHead.get("th").eq(1).contains("Classifier Grade");
+    tableHead.get("th").eq(2).contains("Grade");
   });
 });

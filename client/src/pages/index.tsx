@@ -27,6 +27,13 @@ const theme = createMuiTheme({
 const columns: ColumnDef[] = [
   { id: "sessionId", label: "Session Id", minWidth: 170 },
   {
+    id: "classifierGrade",
+    label: "Classifier Grade",
+    minWidth: 170,
+    align: "right",
+    format: (value: number): string => value.toLocaleString("en-US"),
+  },
+  {
     id: "grade",
     label: "Grade",
     minWidth: 170,
