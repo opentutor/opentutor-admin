@@ -1,9 +1,8 @@
 module.exports = {
   pathPrefix: `/grading`,
   siteMetadata: {
-    title: `MentorPanel`,
+    title: `Open Tutor Grading`,
     description: ``,
-    author: `@gatsbyjs`,
   },
   plugins: [
     {
