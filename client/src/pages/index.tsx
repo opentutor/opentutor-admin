@@ -15,6 +15,7 @@ import TableRow from "@material-ui/core/TableRow";
 import { useSelector } from "react-redux";
 import { Session, State } from "store/types";
 import "styles/layout.css";
+import { Checkbox } from "@material-ui/core";
 
 const theme = createMuiTheme({
   palette: {
@@ -79,6 +80,7 @@ export const SessionsTable: React.FC = () => {
 
   return (
     <Paper className={classes.root}>
+      <Checkbox id="show-graded-checkbox"></Checkbox>
       <TableContainer className={classes.container}>
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
