@@ -3,7 +3,7 @@ import { Session } from "types";
 
 const GRAPHQL_ENDPOINT = process.env.GRAPHQL_ENDPOINT || "grader/graphql/";
 
-interface GQLResponse<T extends any> {
+interface GQLResponse<T> {
   errors: { message: string }[];
   data: T;
 }

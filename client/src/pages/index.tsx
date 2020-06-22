@@ -12,6 +12,7 @@ import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TablePagination from "@material-ui/core/TablePagination";
 import TableRow from "@material-ui/core/TableRow";
+import { Link, Route, BrowserRouter as Router, Switch } from "react-router-dom";
 import { Session } from "types";
 import "styles/layout.css";
 import { Checkbox } from "@material-ui/core";
@@ -63,7 +64,6 @@ const useStyles = makeStyles({
 
 export const SessionsTable: React.FC = () => {
   const classes = useStyles();
-  // const sessions = useSelector<State, Session[]>((state) => state.sessions);
   const [sessions, setSessions] = React.useState<Session[]>([]);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
@@ -71,9 +71,9 @@ export const SessionsTable: React.FC = () => {
   React.useEffect(() => {
     fetchSessions()
       .then((sessions) => {
-        console.log(`fetchSessions got`, sessions)
-        if(Array.isArray(sessions)) {
-          setSessions(sessions)
+        console.log(`fetchSessions got`, sessions);
+        if (Array.isArray(sessions)) {
+          setSessions(sessions);
         }
       })
       .catch((err) => console.error(err));
@@ -111,7 +111,7 @@ export const SessionsTable: React.FC = () => {
           <TableBody>
             {sessions
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((row) => {
+              .map((row, i) => {
                 return (
                   <TableRow
                     hover
@@ -119,17 +119,19 @@ export const SessionsTable: React.FC = () => {
                     tabIndex={-1}
                     key={row.sessionId}
                   >
-                    {columns.map((column: ColumnDef) => {
-                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                      const value = (row as any)[column.id];
-                      return (
-                        <TableCell key={column.id} align={column.align}>
-                          {column.format && typeof value === "number"
-                            ? column.format(Number.parseFloat(`${value}`))
-                            : value}
-                        </TableCell>
-                      );
-                    })}
+                    <TableCell
+                      key={`session-${i}`}
+                      id={`session-${i}`}
+                      align="left"
+                    >
+                      <Link to="/session">{row.sessionId}</Link>
+                    </TableCell>
+                    <TableCell key={`classifier-grade-${i}`} align="right">
+                      {row.classifierGrade}
+                    </TableCell>
+                    <TableCell key={`grade-${i}`} align="right">
+                      {row.grade}
+                    </TableCell>
                   </TableRow>
                 );
               })}
@@ -152,7 +154,16 @@ export const SessionsTable: React.FC = () => {
 const IndexPage: React.FC = () => {
   return (
     <MuiThemeProvider theme={theme}>
-      <SessionsTable />
+      <Router>
+        <Switch>
+          <Route exact path="/">
+            <SessionsTable />
+          </Route>
+          <Route path="/session">
+            <div id="session-display-name">session 1</div>
+          </Route>
+        </Switch>
+      </Router>
     </MuiThemeProvider>
   );
 };

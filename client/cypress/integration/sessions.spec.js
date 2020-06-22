@@ -24,16 +24,6 @@ describe("sessions screen", () => {
       headers: {
         "Content-Type": "application/json",
       },
-      // onRequest: (xhr) => {
-      //   // do something with the
-      //   // raw XHR object when the
-      //   // request initially goes out
-      // },
-      // onResponse: (xhr) => {
-      //   // do something with the
-      //   // raw XHR object when the
-      //   // response comes back
-      // }
     });
   });
 
@@ -79,5 +69,11 @@ describe("sessions screen", () => {
     cy.visit("/");
     const option = cy.get("#show-graded-checkbox");
     option.should("not.have.attr", "checked");
+  });
+
+  it("opens grading for a session on tap link", () => {
+    cy.visit("/");
+    const link = cy.get("#session-0 a").click();
+    cy.get("#session-display-name").should("contain", "session 1");
   });
 });
