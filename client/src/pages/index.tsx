@@ -12,10 +12,10 @@ import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TablePagination from "@material-ui/core/TablePagination";
 import TableRow from "@material-ui/core/TableRow";
-import { useSelector } from "react-redux";
-import { Session, State } from "store/types";
+import { Session } from "types";
 import "styles/layout.css";
 import { Checkbox } from "@material-ui/core";
+import { fetchSessions } from "api";
 
 const theme = createMuiTheme({
   palette: {
@@ -63,9 +63,21 @@ const useStyles = makeStyles({
 
 export const SessionsTable: React.FC = () => {
   const classes = useStyles();
-  const sessions = useSelector<State, Session[]>((state) => state.sessions);
+  // const sessions = useSelector<State, Session[]>((state) => state.sessions);
+  const [sessions, setSessions] = React.useState<Session[]>([]);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
+
+  React.useEffect(() => {
+    fetchSessions()
+      .then((sessions) => {
+        console.log(`fetchSessions got`, sessions)
+        if(Array.isArray(sessions)) {
+          setSessions(sessions)
+        }
+      })
+      .catch((err) => console.error(err));
+  }, []);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleChangePage = (event: any, newPage: number): void => {

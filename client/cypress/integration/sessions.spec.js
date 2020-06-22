@@ -1,4 +1,42 @@
 describe("sessions screen", () => {
+  beforeEach(() => {
+    cy.server();
+    cy.route({
+      method: "POST",
+      url: "/grader/graphql/",
+      status: 200,
+      response: {
+        data: [
+          {
+            sessionId: "session 1",
+            classifierGrade: 1.0,
+            grade: 1.0,
+          },
+          {
+            sessionId: "session 2",
+            classifierGrade: 0.5,
+            grade: 0.5,
+          },
+        ],
+        errors: null,
+      },
+      delay: 10,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      // onRequest: (xhr) => {
+      //   // do something with the
+      //   // raw XHR object when the
+      //   // request initially goes out
+      // },
+      // onResponse: (xhr) => {
+      //   // do something with the
+      //   // raw XHR object when the
+      //   // response comes back
+      // }
+    });
+  });
+
   it("displays a table with headers Session Id, Grade", () => {
     cy.visit("/");
     const tableHead = cy.get("table thead tr");
