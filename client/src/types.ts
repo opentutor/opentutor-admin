@@ -6,7 +6,3 @@ export interface Session {
   classifierGrade: number;
   grade: number;
 }
-
-export interface State {
-  sessions: Session[];
-}
