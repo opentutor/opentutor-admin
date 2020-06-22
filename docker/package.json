@@ -1,5 +1,5 @@
 {
-  "name": "mentor-client-node",
+  "name": "opentutor-grading-client-node",
   "version": "1.0.19",
   "private": true,
   "scripts": {
