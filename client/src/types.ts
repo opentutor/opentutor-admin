@@ -6,3 +6,7 @@ export interface Session {
   classifierGrade: number;
   grade: number;
 }
+
+export interface SessionLog {
+  username: string;
+}

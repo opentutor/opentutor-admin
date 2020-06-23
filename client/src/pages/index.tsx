@@ -18,6 +18,8 @@ import "styles/layout.css";
 import { Checkbox } from "@material-ui/core";
 import { fetchSessions } from "api";
 
+import SessionPage from './session';
+
 const theme = createMuiTheme({
   palette: {
     primary: {
@@ -160,7 +162,7 @@ const IndexPage: React.FC = () => {
             <SessionsTable />
           </Route>
           <Route path="/session">
-            <div id="session-display-name">session 1</div>
+            <SessionPage />
           </Route>
         </Switch>
       </Router>
