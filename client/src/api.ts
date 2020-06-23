@@ -28,16 +28,17 @@ export async function fetchSessions(): Promise<Session[]> {
   return result.data.data;
 }
 
-export async function fetchSessionLog(): Promise<SessionLog> {
-  const result = await axios.post<GQLResponse<SessionLog>>(
+export async function fetchSessionLog(): Promise<SessionLog[]> {
+  const result = await axios.post<GQLResponse<SessionLog[]>>(
     GRADER_GRAPHQL_ENDPOINT,
     {
       query: `
-            query SessionLog {
+            sessionLog {
                 {
-                  username
+                  sessionLog {
+                    username
+                  }
                 }
-                
               }
             `,
     }

@@ -4,22 +4,23 @@ import { fetchSessionLog } from "api";
 
 
 const SessionPage: React.FC = () => {
-    const [sessionLog, setSessionLog] = React.useState<SessionLog>();
-    //const [username, setUsername] = React.useState("");
+  const [sessionLog, setSessionLog] = React.useState<SessionLog[]>([]);
 
     React.useEffect(() => {
-        fetchSessionLog()
-          .then((sessionLog) => {
-            console.log(`fetchSessionLog got`, sessionLog);
-              setSessionLog(sessionLog);
-          })
-          .catch((err) => console.error(err));
-      }, []);
+      fetchSessionLog()
+        .then((sessionLog) => {
+          console.log(`fetchSessionLog got`, sessionLog);
+          if (Array.isArray(sessionLog)) {
+            setSessionLog(sessionLog);
+          }
+        })
+        .catch((err) => console.error(err));
+    }, []);
 
     return (
         <body>
             <div id="session-display-name">session 1</div>
-            <div id="username"> {sessionLog.username} </div>
+            <div id="username" key={`sessionLog-${0}`}> {sessionLog.username} </div>
         </body>
     );
   };
