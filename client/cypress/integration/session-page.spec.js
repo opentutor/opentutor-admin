@@ -6,11 +6,11 @@ describe("sessions screen", () => {
         url: "/grader/graphql/",
         status: 200,
         response: {
-          data: 
+          data: [
             {
               username: "username1",
             }
-          ,
+          ],
           errors: null,
         },
         delay: 10,
