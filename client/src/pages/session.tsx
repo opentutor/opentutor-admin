@@ -4,16 +4,14 @@ import { fetchSessionLog } from "api";
 
 
 const SessionPage: React.FC = () => {
-    const [sessionLog, setSessionLog] = React.useState<SessionLog[]>([]);
+    const [sessionLog, setSessionLog] = React.useState<SessionLog>();
     //const [username, setUsername] = React.useState("");
 
     React.useEffect(() => {
         fetchSessionLog()
           .then((sessionLog) => {
             console.log(`fetchSessionLog got`, sessionLog);
-            if (Array.isArray(sessionLog)) {
-                setSessionLog(sessionLog);
-              }
+              setSessionLog(sessionLog);
           })
           .catch((err) => console.error(err));
       }, []);
@@ -21,7 +19,7 @@ const SessionPage: React.FC = () => {
     return (
         <body>
             <div id="session-display-name">session 1</div>
-            {/* <div id="username"> {sessionLog.username} </div> */}
+            <div id="username"> {sessionLog.username} </div>
         </body>
     );
   };
