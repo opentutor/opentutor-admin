@@ -2,7 +2,7 @@ import axios from "axios";
 import { Session, SessionLog } from "types";
 
 const GRADER_GRAPHQL_ENDPOINT =
-  process.env.GRADER_GRAPHQL_ENDPOINT || "grader/graphql/";
+  process.env.GRADER_GRAPHQL_ENDPOINT || "/grading/graphql/";
 
 interface GQLResponse<T> {
   errors: { message: string }[];
