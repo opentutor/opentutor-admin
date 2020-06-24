@@ -9,4 +9,5 @@ export interface Session {
 
 export interface SessionLog {
   username: string;
+  answers: string[];
 }
