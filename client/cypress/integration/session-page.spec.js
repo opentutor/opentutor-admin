@@ -1,3 +1,5 @@
+import {Classification, UserResponseExpectationScore} from "./src/types";
+
 describe("sessions screen", () => {
     beforeEach(() => {
       cy.server();
@@ -9,7 +11,31 @@ describe("sessions screen", () => {
           data: 
             {
               username: "username1",
-              answers: ["answer1", "answer2"],
+              question: {
+                text: 'question?',
+                expectations: [
+                  {text: "expected text 1"},
+                  {text: "expected text 2"},
+                ]
+              },
+              userResponses: [
+                {
+                  text: "answer1",
+                  userResponseExpectationScores:
+                    {
+                      classifierGrade: "Good",
+                      graderGrade: "",
+                    }
+                },
+                {
+                  text: "answer2",
+                  userResponseExpectationScores:
+                   {
+                    classifierGrade: "Bad",
+                    graderGrade: "",
+                   }
+                }
+              ]
             }
           ,
           errors: null,
@@ -26,18 +52,14 @@ describe("sessions screen", () => {
       cy.get("#username").should("contain", "username1");
     });
 
-    it.only("table with user answer for each row",  () => {
+    it.only("shows first user answer", () => {
       cy.visit("/session");
-      const tableBody = cy.get("table tbody");
-      tableBody.get("tr").should("have.length", 3);
-      cy.get("table>tbody>tr:nth-child(1)>td:nth-child(1)").should(
-        "contain",
-        "answer1"
-      );
-      cy.get("table>tbody>tr:nth-child(2)>td:nth-child(1)").should(
-        "contain",
-        "answer2"
-      );
+      cy.get("#answer-0").should("contain", "answer1");
+    });
+
+    it("shows first classifier grade", () => {
+      cy.visit("/session");
+      cy.get("#classifier-grade-0").should("contain", "Good");
     });
     
   });

@@ -1,8 +1,11 @@
 import React from "react";
+import Link from "react-router-dom"
 import {
   MuiThemeProvider,
   createMuiTheme,
   makeStyles,
+  Theme, 
+  createStyles
 } from "@material-ui/core/styles";
 import {
   Paper,
@@ -11,10 +14,22 @@ import {
   TableCell,
   TableContainer,
   TableHead,
-  TableRow} from "@material-ui/core";
+  TableRow,
+  Select, 
+  MenuItem,
+  Button,
+} from "@material-ui/core";
 import "styles/layout.css";
-import { SessionLog } from "types";
-import { fetchSessionLog } from "api";
+
+import { 
+  Classification,
+  Expectation, 
+  Question,
+  UserResponseExpectationScore,
+  UserResponse,
+  UserSession} from "types";
+
+import { fetchUserSession, setGrade } from "api";
 
 const theme = createMuiTheme({
   palette: {
@@ -25,7 +40,21 @@ const theme = createMuiTheme({
 });
 
 const columns: ColumnDef[] = [
-  { id: "expected-text", label: "expected text", minWidth: 170 },
+  { id: "sessionId", label: "Session Id", minWidth: 170 },
+  {
+    id: "classifierGrade",
+    label: "Classifier Grade",
+    minWidth: 170,
+    align: "right",
+    format: (value: number): string => value.toLocaleString("en-US"),
+  },
+  {
+    id: "grade",
+    label: "Grade",
+    minWidth: 170,
+    align: "right",
+    format: (value: number): string => value.toLocaleString("en-US"),
+  },
 ];
 
 interface ColumnDef {
@@ -46,15 +75,50 @@ const useStyles = makeStyles({
   },
 });
 
+interface GradeChange {
+  grade: Classification;
+  index: number;
+}
+
+
+
 const SessionTable: React.FC = () => {
   const classes = useStyles();
-  const [sessionLog, setSessionLog] = React.useState<SessionLog>();
+
+  const [userSession, setUserSession] = React.useState<UserSession>();
+  const [sessionId, setSessionId] = React.useState("session1");
+  const [gradeChange, setGradeChange] = React.useState("");
+  const [question, setQuestion] = React.useState("");
+  const [username, setUsername] = React.useState("");
+  const [expectations, setExpectations] = React.useState<Expectation[]>([]);
+  const [userResponses, setUserResponses] = React.useState<UserResponse[]>([]);
+
+  const handleGradeExpectationChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+    console.log(event.target.value as string);
+    // setGradeChange(event.target.value as string);
+    // setGrade(sessionId, 0, gradeChange)
+  };
 
   React.useEffect(() => {
-    fetchSessionLog()
-      .then((sessionLog) => {
-        console.log(`fetchSessionLog got`, sessionLog);
-          setSessionLog(sessionLog);
+    fetchUserSession()
+      .then((userSession) => {
+        console.log(`fetchUserSession got`, userSession);
+          if(userSession !== undefined){
+            setUserSession(userSession);
+          }
+          if(userSession.question.text !== undefined){
+            setQuestion(userSession.question.text);
+          }
+          if(userSession.username !== undefined){
+            setUsername(userSession.username);
+          }
+          if(userSession.question.expectations !== undefined){
+            setExpectations(userSession.question.expectations);
+          }
+          if(userSession.userResponses !== undefined){
+            setUserResponses(userSession.userResponses);
+          }
+
       })
       .catch((err) => console.error(err));
   }, []);
@@ -62,46 +126,89 @@ const SessionTable: React.FC = () => {
   return (
     <Paper className={classes.root}>
       <div id="session-display-name">session 1</div>
-      <div id="username"> {sessionLog ? sessionLog.username: ""}</div>
+      <div id="username"> {username}</div>
+      <div id="question"> {question} </div>      
       <TableContainer className={classes.container}>
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
             <TableRow>
-              {columns.map((column) => (
+              <TableCell id="userAnswer">User Answer</TableCell>
+              {/* <TableCell id="userGrade">Grade</TableCell>
+              <TableCell id="classifierGrade">Classifier Grade</TableCell> */}
+              {expectations
+                .map((column, i) => (
                 <TableCell
-                  key={column.id}
-                  align={column.align}
-                  style={{ minWidth: column.minWidth }}
+                  key={`expectation-${i}`}
+                  id={`expectation-${i}`}
+                  //align="right"
+                  style={{minWidth:170}}
                 >
-                  {column.label}
+                  {column.text}
                 </TableCell>
               ))}
             </TableRow>
           </TableHead>
           <TableBody>
-            {sessionLog?.answers
+            {userResponses
+              // .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((row, i) => {
                 return (
                   <TableRow
                     hover
                     role="checkbox"
                     tabIndex={-1}
-                    key={row.toString()}
+                    key={row.text}
                   >
                     <TableCell
-                      key={`answer-${i}`}
-                      id={`answer-${i}`}
-                      align="left"
-                    >
-                      {sessionLog.answers[i]}
+                      key={`answer-${i}`} id={`answer-${i}`} align="left">
+                      {row.text}
                     </TableCell>
 
+                    {expectations
+                      .map((column, j) => (
+                      <TableCell key={`grade-${j}`} id={`grade-${j}`}align ="right">
+                        <TableCell key={`classifier-grade-${i}`} id={`classifier-grade-${i}`} align="right">
+                          Classifier Grade: {row.userResponseExpectationScores[0]}
+                        </TableCell>
+                        <TableCell
+                          key={`expectation-grade-${j}`}
+                          id={`expectation-grade-${j}`}
+                          align="right"
+                        >
+                          Grade: 
+                          <Select
+                            labelId= {`set-grade-${j}`}
+                            id= {`select-grade-${j}`}
+                            //value={gradeChange}
+                            onChange={handleGradeExpectationChange}
+                          >
+                            <MenuItem value="">
+                              <em>Empty</em>
+                            </MenuItem>
+                            <MenuItem value= {"Good"}>Good</MenuItem>
+                            <MenuItem value= {"Bad"}>Bad</MenuItem>
+                          </Select>
+                        </TableCell>
+                      </TableCell>
+                    ))}
                   </TableRow>
                 );
               })}
           </TableBody>
         </Table>
       </TableContainer>
+
+      {/* <TablePagination
+        rowsPerPageOptions={[10, 25, 100]}
+        component="div"
+        count={sessions.length}
+        rowsPerPage={rowsPerPage}
+        page={page}
+        onChangePage={handleChangePage}
+        onChangeRowsPerPage={handleChangeRowsPerPage}
+      /> */}
+
+      {/* <Link to="/"> <Button> Done</Button> </Link> */}
     </Paper>
   );
 };
@@ -109,7 +216,7 @@ const SessionTable: React.FC = () => {
 const SessionPage: React.FC = () => {
     return (
       <MuiThemeProvider theme={theme}>
-        <SessionTable />
+        <SessionTable/>
       </MuiThemeProvider>
     );
   };

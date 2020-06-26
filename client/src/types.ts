@@ -7,7 +7,32 @@ export interface Session {
   grade: number;
 }
 
-export interface SessionLog {
+export enum Classification {
+  GOOD= "Good",
+  BAD= "Bad"
+}
+
+export interface Expectation {
+  text: string;
+}
+
+export interface Question {
+  text: string;
+  expectations: Expectation[];
+}
+
+export interface UserResponseExpectationScore {
+  classifierGrade: Classification;
+  graderGrade?: Classification;
+}
+
+export interface UserResponse {
+  text: string;
+  userResponseExpectationScores: UserResponseExpectationScore[]; 
+}
+
+export interface UserSession {
   username: string;
-  answers: string[];
+  question: Question;
+  userResponses: UserResponse[];
 }
