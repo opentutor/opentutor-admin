@@ -18,6 +18,7 @@ import {
   Select, 
   MenuItem,
   Button,
+  Typography
 } from "@material-ui/core";
 import "styles/layout.css";
 
@@ -29,7 +30,7 @@ import {
   UserResponse,
   UserSession} from "types";
 
-import { fetchUserSession, setGrade } from "api";
+import { fetchUserSession, inputGrade } from "api";
 
 const theme = createMuiTheme({
   palette: {
@@ -38,33 +39,6 @@ const theme = createMuiTheme({
     },
   },
 });
-
-const columns: ColumnDef[] = [
-  { id: "sessionId", label: "Session Id", minWidth: 170 },
-  {
-    id: "classifierGrade",
-    label: "Classifier Grade",
-    minWidth: 170,
-    align: "right",
-    format: (value: number): string => value.toLocaleString("en-US"),
-  },
-  {
-    id: "grade",
-    label: "Grade",
-    minWidth: 170,
-    align: "right",
-    format: (value: number): string => value.toLocaleString("en-US"),
-  },
-];
-
-interface ColumnDef {
-  id: string;
-  name?: string;
-  label: string;
-  minWidth: number;
-  align?: "right" | "left";
-  format?: (v: number) => string;
-}
 
 const useStyles = makeStyles({
   root: {
@@ -75,34 +49,35 @@ const useStyles = makeStyles({
   },
 });
 
-interface GradeChange {
-  grade: Classification;
-  index: number;
-}
-
-
-
 const SessionTable: React.FC = () => {
   const classes = useStyles();
 
   const [userSession, setUserSession] = React.useState<UserSession>();
   const [sessionId, setSessionId] = React.useState("session1");
-  const [gradeChange, setGradeChange] = React.useState("");
   const [question, setQuestion] = React.useState("");
   const [username, setUsername] = React.useState("");
   const [expectations, setExpectations] = React.useState<Expectation[]>([]);
   const [userResponses, setUserResponses] = React.useState<UserResponse[]>([]);
 
-  const handleGradeExpectationChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-    console.log(event.target.value as string);
-    // setGradeChange(event.target.value as string);
-    // setGrade(sessionId, 0, gradeChange)
+  const [grade, setGrade] = React.useState("");
+  const [index, setIndex] = React.useState(0);
+
+  const handleGradeExpectationChange = (event: React.ChangeEvent<{ value: unknown, name?: unknown}>) => {
+    console.log("Grade change", event.target.value as string);
+    setIndex(event.target.name as number);
+    setGrade(event.target.value as string);
+
   };
 
   React.useEffect(() => {
     fetchUserSession()
       .then((userSession) => {
         console.log(`fetchUserSession got`, userSession);
+          try{
+            setUserSession(userSession);
+          }catch(error){
+            console.log("error:", error)
+          }
           if(userSession !== undefined){
             setUserSession(userSession);
           }
@@ -118,10 +93,18 @@ const SessionTable: React.FC = () => {
           if(userSession.userResponses !== undefined){
             setUserResponses(userSession.userResponses);
           }
-
       })
       .catch((err) => console.error(err));
   }, []);
+
+  React.useEffect(() => {
+    inputGrade(sessionId, index, grade)
+      .then((userSession) => {
+        console.log(`update got`, userSession);
+        setUserSession(userSession);
+      })
+      .catch((err) => console.error(err));
+  }, [grade]);
 
   return (
     <Paper className={classes.root}>
@@ -133,8 +116,6 @@ const SessionTable: React.FC = () => {
           <TableHead>
             <TableRow>
               <TableCell id="userAnswer">User Answer</TableCell>
-              {/* <TableCell id="userGrade">Grade</TableCell>
-              <TableCell id="classifierGrade">Classifier Grade</TableCell> */}
               {expectations
                 .map((column, i) => (
                 <TableCell
@@ -167,10 +148,10 @@ const SessionTable: React.FC = () => {
                     {expectations
                       .map((column, j) => (
                       <TableCell key={`grade-${j}`} id={`grade-${j}`}align ="right">
-                        <TableCell key={`classifier-grade-${i}`} id={`classifier-grade-${i}`} align="right">
-                          Classifier Grade: {row.userResponseExpectationScores[0]}
-                        </TableCell>
-                        <TableCell
+                        <Typography key={`classifier-grade-${i}`} id={`classifier-grade-${i}`} align="right">
+                          Classifier Grade: {row.userResponseExpectationScores[j] ? row.userResponseExpectationScores[j].classifierGrade:""}
+                        </Typography>
+                        <Typography
                           key={`expectation-grade-${j}`}
                           id={`expectation-grade-${j}`}
                           align="right"
@@ -179,7 +160,8 @@ const SessionTable: React.FC = () => {
                           <Select
                             labelId= {`set-grade-${j}`}
                             id= {`select-grade-${j}`}
-                            //value={gradeChange}
+                            value={row.userResponseExpectationScores[j].graderGrade}
+                            name={`${i}`}
                             onChange={handleGradeExpectationChange}
                           >
                             <MenuItem value="">
@@ -188,7 +170,7 @@ const SessionTable: React.FC = () => {
                             <MenuItem value= {"Good"}>Good</MenuItem>
                             <MenuItem value= {"Bad"}>Bad</MenuItem>
                           </Select>
-                        </TableCell>
+                        </Typography>
                       </TableCell>
                     ))}
                   </TableRow>
@@ -207,8 +189,6 @@ const SessionTable: React.FC = () => {
         onChangePage={handleChangePage}
         onChangeRowsPerPage={handleChangeRowsPerPage}
       /> */}
-
-      {/* <Link to="/"> <Button> Done</Button> </Link> */}
     </Paper>
   );
 };

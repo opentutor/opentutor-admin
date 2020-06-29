@@ -22,8 +22,8 @@ export interface Question {
 }
 
 export interface UserResponseExpectationScore {
-  classifierGrade: Classification;
-  graderGrade?: Classification;
+  classifierGrade: string;
+  graderGrade?: string;
 }
 
 export interface UserResponse {

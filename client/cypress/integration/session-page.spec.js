@@ -15,25 +15,37 @@ describe("sessions screen", () => {
                 text: 'question?',
                 expectations: [
                   {text: "expected text 1"},
-                  {text: "expected text 2"},
+                  {text: "expected text 2"}
                 ]
               },
               userResponses: [
                 {
                   text: "answer1",
                   userResponseExpectationScores:
-                    {
-                      classifierGrade: "Good",
-                      graderGrade: "",
-                    }
+                    [
+                      {
+                        classifierGrade: "Good",
+                        graderGrade: "",
+                      },
+                      {
+                        classifierGrade: "Bad",
+                        graderGrade: "",
+                      },
+                    ]
                 },
                 {
                   text: "answer2",
                   userResponseExpectationScores:
-                   {
-                    classifierGrade: "Bad",
-                    graderGrade: "",
-                   }
+                    [
+                     {
+                      classifierGrade: "Bad",
+                      graderGrade: "",
+                     },
+                     {
+                      classifierGrade: "Good",
+                      graderGrade: "",
+                     }
+                    ]
                 }
               ]
             }
