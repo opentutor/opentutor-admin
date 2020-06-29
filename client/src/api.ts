@@ -39,7 +39,7 @@ export async function fetchUserSession(): Promise<UserSession> {
     GRADER_GRAPHQL_ENDPOINT,
     {
       query: `
-        query userSession {
+        query userSessions {
             username
             question {
               text
@@ -63,21 +63,35 @@ export async function fetchUserSession(): Promise<UserSession> {
   return result.data.data;
 }
 
-export async function setGrade(sessionId: String, userAnswerIndex: number, grade: String ): Promise<any> {
-  const result = await axios.post<GQLResponse<any>>(
+export async function inputGrade(sessionId: String, userAnswerIndex: number, graderGrade: String ): Promise<UserSession> {
+  const result = await axios.post<GQLResponse<UserSession>>(
     GRADER_GRAPHQL_ENDPOINT,
     {
       query: `
-        mutation setGrade($sessionId: String!, $userAnswerIndex: number!, $grade: Classification!) {
-          setGrade(sessionID: $sessionId, userAnswerIndex:$userAnswerIndex, grade:$grade){
-            grade
+        mutation ($sessionId: String!, $userAnswerIndex: number!, $graderGrade: String!) {
+          inputGrade(sessionID: $sessionId, userAnswerIndex:$userAnswerIndex, graderGrade:$graderGrade){
+            username
+            question {
+              text
+              expectations {
+                text
+              }
+            }
+            
+            userResponses {
+              text
+              userResponseExpectationScores {
+                classifierGrade
+                graderGrade
+              }
+            }
           }
         }
         `,
       variables: {
         "sessionId": sessionId,
         "userAnswerIndex": userAnswerIndex,
-        "grade": grade
+        "graderGrade": graderGrade
       }
     }
   );
