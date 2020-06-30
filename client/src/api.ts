@@ -63,13 +63,13 @@ export async function fetchUserSession(): Promise<UserSession> {
   return result.data.data;
 }
 
-export async function inputGrade(sessionId: String, userAnswerIndex: number, graderGrade: String ): Promise<UserSession> {
+export async function setGrade(sessionId: String, userAnswerIndex: number, expectationAnswerIndex: number, graderGrade: String ): Promise<UserSession> {
   const result = await axios.post<GQLResponse<UserSession>>(
     GRADER_GRAPHQL_ENDPOINT,
     {
       query: `
-        mutation ($sessionId: String!, $userAnswerIndex: number!, $graderGrade: String!) {
-          inputGrade(sessionID: $sessionId, userAnswerIndex:$userAnswerIndex, graderGrade:$graderGrade){
+        mutation ($sessionId: String!, $userAnswerIndex: number!, $expectationAnswerIndex: number!, $graderGrade: String!) {
+          setGrade(sessionID: $sessionId, userAnswerIndex:$userAnswerIndex, expectationAnswerIndex:$number, graderGrade:$graderGrade){
             username
             question {
               text
@@ -91,6 +91,7 @@ export async function inputGrade(sessionId: String, userAnswerIndex: number, gra
       variables: {
         "sessionId": sessionId,
         "userAnswerIndex": userAnswerIndex,
+        "expectationAnswerIndex": expectationAnswerIndex,
         "graderGrade": graderGrade
       }
     }
