@@ -1,3 +1,4 @@
+import { withPrefix } from "gatsby";
 import React from "react";
 import {
   MuiThemeProvider,
@@ -159,8 +160,8 @@ const IndexPage: React.FC = () => {
   return (
     <MuiThemeProvider theme={theme}>
       <Router>
-        <SessionsTable path="/" />
-        <SessionPage path="/session" />
+        <SessionsTable path={withPrefix("/")} />
+        <SessionPage path={withPrefix("/session")} />
       </Router>
     </MuiThemeProvider>
   );

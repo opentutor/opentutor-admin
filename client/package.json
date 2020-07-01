@@ -66,7 +66,7 @@
     "develop": "npx gatsby develop",
     "format": "prettier --write '**/*.{js,jsx,json,ts,tsx}'",
     "start": "npm run develop",
-    "serve": "gatsby serve",
+    "serve": "gatsby serve --prefix-paths",
     "cy:open": "npx cypress open",
     "cy:run": "npx cypress run",
     "cy:verify": "npx cypress verify",
