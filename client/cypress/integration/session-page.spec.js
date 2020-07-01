@@ -25,11 +25,11 @@ describe("sessions screen", () => {
                     [
                       {
                         classifierGrade: "Good",
-                        graderGrade: "",
+                        graderGrade: "Good",
                       },
                       {
                         classifierGrade: "Bad",
-                        graderGrade: "",
+                        graderGrade: "Bad",
                       },
                     ]
                 },
@@ -39,11 +39,11 @@ describe("sessions screen", () => {
                     [
                      {
                       classifierGrade: "Bad",
-                      graderGrade: "",
+                      graderGrade: "Good",
                      },
                      {
                       classifierGrade: "Good",
-                      graderGrade: "",
+                      graderGrade: "Good",
                      }
                     ]
                 }
@@ -74,7 +74,7 @@ describe("sessions screen", () => {
       cy.get("#classifier-grade-0-0").should("contain", "Good");
     });
 
-    it.only("selects grade for first expectation", () => {
+    it("selects grade for first expectation", () => {
       cy.visit("/session");
       cy.get("#select-grade-0-0").should("have.value", "");
       cy.route({
@@ -134,7 +134,13 @@ describe("sessions screen", () => {
       cy.get("#select-grade-0-0").click().get("#good-grade-0-0").click().contains("Good");
 
     });
-   
+
+    it.only("score only when all expectation user answers are graded", () => {
+      cy.visit("/session");
+      cy.get("#score").contains("?");
+      //cy.get("#score").contains("0.75");
+    });
+
 });
 
   

@@ -1,11 +1,6 @@
 import axios from "axios";
-import { Session,
-  Classification,
-  Expectation, 
-  Question,
-  UserResponseExpectationScore,
-  UserResponse,
-  UserSession} from "types";
+import { FetchSessions,
+  UserSession } from "types";
 
 const GRADER_GRAPHQL_ENDPOINT =
   process.env.GRADER_GRAPHQL_ENDPOINT || "/grading/graphql/";
@@ -15,61 +10,71 @@ interface GQLResponse<T> {
   data: T;
 }
 
-export async function fetchSessions(): Promise<Session[]> {
-  const result = await axios.post<GQLResponse<Session[]>>(
+export async function fetchSessions(): Promise<FetchSessions> {
+  const result = await axios.post<GQLResponse<FetchSessions>>(
     GRADER_GRAPHQL_ENDPOINT,
     {
       query: `
-            query Sessions {
-                {
-                sessions {
-                    sessionId
-                    classifierGrade
-                    grade
+          {
+            sessions {
+              edges {
+                cursor node {
+                  sessionId
+                  classifierGrade
+                  grade
                 }
-                }
+              }
+              pageInfo {
+                hasNextPage
+              }
+            }
+          }
             `,
     }
   );
   return result.data.data;
 }
 
-export async function fetchUserSession(): Promise<UserSession> {
+export async function fetchUserSession(sessionId: string): Promise<UserSession> {
   const result = await axios.post<GQLResponse<UserSession>>(
     GRADER_GRAPHQL_ENDPOINT,
     {
       query: `
-        query userSessions {
+        {
+          userSession(sessionId: session 1) {
             username
+            score
             question {
               text
               expectations {
                 text
               }
             }
-            
             userResponses {
               text
-              userResponseExpectationScores {
+              expectationScores {
                 classifierGrade
                 graderGrade
               }
             }
-            
           }
+        }
         `,
+      variable: {
+        "sessionId": sessionId
+      }
     }
   );
   return result.data.data;
 }
 
-export async function setGrade(sessionId: String, userAnswerIndex: number, expectationAnswerIndex: number, graderGrade: String ): Promise<UserSession> {
+export async function setUserSessionGrade(sessionId: string, userAnswerIndex: number, userExpectationIndex: number, grade: string ): Promise<UserSession> {
   const result = await axios.post<GQLResponse<UserSession>>(
     GRADER_GRAPHQL_ENDPOINT,
     {
       query: `
-        mutation ($sessionId: String!, $userAnswerIndex: number!, $expectationAnswerIndex: number!, $graderGrade: String!) {
-          setGrade(sessionID: $sessionId, userAnswerIndex:$userAnswerIndex, expectationAnswerIndex:$number, graderGrade:$graderGrade){
+        mutation ($sessionId: String!, $userAnswerIndex: number!, $userExpectationIndex: number!, $grade: String!) {
+          setGrade(sessionID: $sessionId, userAnswerIndex:$userAnswerIndex, expectationAnswerIndex:$number, grade:$grade){
             username
             question {
               text
@@ -91,8 +96,8 @@ export async function setGrade(sessionId: String, userAnswerIndex: number, expec
       variables: {
         "sessionId": sessionId,
         "userAnswerIndex": userAnswerIndex,
-        "expectationAnswerIndex": expectationAnswerIndex,
-        "graderGrade": graderGrade
+        "userExpectationIndex": userExpectationIndex,
+        "grade": grade
       }
     }
   );

@@ -1,6 +1,24 @@
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type ActionType = any;
 
+export interface Edge {
+  cursor: string;
+  node: Session;
+}
+
+export interface PageInfo {
+  hasNextPage: boolean;
+}
+
+export interface SessionsData {
+  edges: Edge[];
+  pageInfo: PageInfo;
+}
+
+export interface FetchSessions {
+  sessions: SessionsData;
+}
+
 export interface Session {
   sessionId: string;
   classifierGrade: number;
@@ -34,5 +52,6 @@ export interface UserResponse {
 export interface UserSession {
   username: string;
   question: Question;
+  score: number;
   userResponses: UserResponse[];
 }
