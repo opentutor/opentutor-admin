@@ -65,7 +65,7 @@ const useStyles = makeStyles({
   },
 });
 
-export const SessionsTable = ({ path }) => {
+export const SessionsTable = ({ path }: { path: string }) => {
   const classes = useStyles();
   const [fetch, setFetch] = React.useState<FetchSessions>();
   const [sessions, setSessions] = React.useState<Edge[]>([]);

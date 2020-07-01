@@ -292,7 +292,7 @@ const SessionTable = () => {
   );
 };
 
-const SessionPage = ({ path }) => {
+const SessionPage = ({ path }: { path: string }) => {
   return (
     <MuiThemeProvider theme={theme}>
       <SessionTable />
