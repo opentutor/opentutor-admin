@@ -13,7 +13,7 @@ import TableHead from "@material-ui/core/TableHead";
 import TablePagination from "@material-ui/core/TablePagination";
 import TableRow from "@material-ui/core/TableRow";
 import { Link, Route, BrowserRouter as Router, Switch } from "react-router-dom";
-import { Session } from "types";
+import { Edge, FetchSessions } from "types";
 import "styles/layout.css";
 import { Checkbox } from "@material-ui/core";
 import { fetchSessions } from "api";
@@ -66,17 +66,20 @@ const useStyles = makeStyles({
 
 export const SessionsTable: React.FC = () => {
   const classes = useStyles();
-  const [sessions, setSessions] = React.useState<Session[]>([]);
+  const [fetch, setFetch] = React.useState<FetchSessions>();
+  const [sessions, setSessions] = React.useState<Edge[]>([]);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
   React.useEffect(() => {
     fetchSessions()
-      .then((sessions) => {
-        console.log(`fetchSessions got`, sessions);
-        if (Array.isArray(sessions)) {
-          setSessions(sessions);
+      .then((fetch) => {
+        console.log(`fetchSessions got`, fetch);
+        setFetch(fetch);
+        if (Array.isArray(fetch.sessions.edges)) {
+          setSessions(fetch.sessions.edges);
         }
+
       })
       .catch((err) => console.error(err));
   }, []);
@@ -119,20 +122,20 @@ export const SessionsTable: React.FC = () => {
                     hover
                     role="checkbox"
                     tabIndex={-1}
-                    key={row.sessionId}
+                    key={row.node.sessionId}
                   >
                     <TableCell
                       key={`session-${i}`}
                       id={`session-${i}`}
                       align="left"
                     >
-                      <Link to="/session">{row.sessionId}</Link>
+                      <Link to="/session">{row.node.sessionId}</Link>
                     </TableCell>
                     <TableCell key={`classifier-grade-${i}`} align="right">
-                      {row.classifierGrade}
+                      {row.node.classifierGrade}
                     </TableCell>
                     <TableCell key={`grade-${i}`} align="right">
-                      {row.grade}
+                      {row.node.grade}
                     </TableCell>
                   </TableRow>
                 );

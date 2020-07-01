@@ -1,11 +1,8 @@
 import React from "react";
-import {Link} from "react-router-dom";
 import {
   MuiThemeProvider,
   createMuiTheme,
-  makeStyles,
-  Theme, 
-  createStyles
+  makeStyles
 } from "@material-ui/core/styles";
 import {
   Paper,
@@ -17,20 +14,16 @@ import {
   TableRow,
   Select, 
   MenuItem,
-  Button,
   Typography
 } from "@material-ui/core";
 import "styles/layout.css";
 
-import { 
-  Classification,
-  Expectation, 
-  Question,
-  UserResponseExpectationScore,
+import {  
+  Expectation,
   UserResponse,
   UserSession} from "types";
 
-import { fetchUserSession, setGrade } from "api";
+import { fetchUserSession, setUserSessionGrade } from "api";
 
 const theme = createMuiTheme({
   palette: {
@@ -69,24 +62,22 @@ const SessionTable: React.FC = () => {
   const [userIndex, setUserIndex] = React.useState(0);
   const [expectationIndex, setExpectationIndex] = React.useState(0);
 
+  const [gradedAll, setGradedAll] = React.useState(false);
+  const [score, setScore]= React.useState(0);
+  const [sessionScore, setSessionScore] =React.useState("");
 
   const handleGradeExpectationChange = (event: React.ChangeEvent<{ value: unknown, name?: unknown}>) => {
-    var indeces = event.target.name as string;
-    var indexSplit = indeces.split(" ");
+    const indeces = event.target.name as string;
+    const indexSplit = indeces.split(" ");
     setUserIndex(Number(indexSplit[0]));
     setExpectationIndex(Number(indexSplit[1]));
     setInputGrade(event.target.value as string);
   };
 
   React.useEffect(() => {
-    fetchUserSession()
+    fetchUserSession(sessionId)
       .then((userSession) => {
         console.log(`fetchUserSession got`, userSession);
-          try{
-            setUserSession(userSession);
-          }catch(error){
-            console.log("error:", error)
-          }
           if(userSession !== undefined){
             setUserSession(userSession);
           }
@@ -102,21 +93,35 @@ const SessionTable: React.FC = () => {
           if(userSession.userResponses !== undefined){
             setUserResponses(userSession.userResponses);
           }
+          if(userSession.score !== undefined){
+            setScore(userSession.score);
+          }
+          
+          let tmp = false;
+          for(let i=0; i < userResponses.length; i ++){
+            for(let j=0; j<expectations.length; j++){
+              if(userResponses[i].userResponseExpectationScores[j].graderGrade !== ""){
+                tmp = true;
+              }else{
+                tmp=false;
+                break;
+              }
+            }
+            if(tmp){
+              break;
+            }
+          }
+          setGradedAll(tmp);
       })
       .catch((err) => console.error(err));
-  }, []);
+  }, [sessionId]);
 
   React.useEffect(() => {
-    setGrade(sessionId, userIndex, expectationIndex, inputGrade)
+    setUserSessionGrade(sessionId, userIndex, expectationIndex, inputGrade)
       .then(() => {
-        fetchUserSession()
+        fetchUserSession(sessionId)
       .then((userSession) => {
-        console.log(`fetchUserSession got`, userSession);
-          try{
-            setUserSession(userSession);
-          }catch(error){
-            console.log("error:", error)
-          }
+        console.log(`updated expectation grade got`, userSession);
           if(userSession !== undefined){
             setUserSession(userSession);
           }
@@ -132,6 +137,24 @@ const SessionTable: React.FC = () => {
           if(userSession.userResponses !== undefined){
             setUserResponses(userSession.userResponses);
           }
+          if(userSession.score !== undefined){
+            setScore(userSession.score);
+          }
+          let tmp = false;
+          for(let i=0; i < userResponses.length; i ++){
+            for(let j=0; j<expectations.length; j++){
+              if(userResponses[i].userResponseExpectationScores[j].graderGrade !== ""){
+                tmp = true;
+              }else{
+                tmp=false;
+                break;
+              }
+            }
+            if(tmp){
+              break;
+            }
+          }
+          setGradedAll(tmp);
       })
       .catch((err) => console.error(err));
       })
@@ -139,11 +162,29 @@ const SessionTable: React.FC = () => {
     
   }, [inputGrade]);
 
+  React.useEffect(() => {
+    console.log("First Render");
+    let sum = 0;
+    const total  = userResponses.length * expectations.length;
+    if(gradedAll){
+      for(let i=0; i < userResponses.length; i ++){
+        for(let j=0; j<expectations.length; j++){
+          if(userResponses[i].userResponseExpectationScores[j].graderGrade === "Good"){
+            sum = sum + 1;
+          }
+        } 
+      }
+      sum = sum / total;
+      setSessionScore(sum.toString());
+    }
+  }, [gradedAll]);
+
   return (
     <Paper className={classes.root}>
       <div id="session-display-name">session 1</div>
       <div id="username"> {username}</div>
-      <div id="question"> {question} </div>      
+      <div id="question"> {question} </div>
+      <div id="score"> Score: {gradedAll ? sessionScore: "?"} </div>           
       <TableContainer className={classes.container}>
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
