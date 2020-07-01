@@ -148,34 +148,34 @@ workflows:
           filters: *only-untagged
           requires:
             - approve-build-and-push
-  # test-build-deploy-release:
-  #   jobs:
-  #     - client-format:
-  #         filters: *only-tagged-releases
-  #     # - client-audit:
-  #     #     filters: *only-tagged-releases
-  #     - client-lint:
-  #         filters: *only-tagged-releases
-  #     # - client-types:
-  #     #     filters: *only-tagged-releases
-  #     - client-test:
-  #         filters: *only-tagged-releases
-  #     - cypress/run:
-  #         start: npm start
-  #         wait-on: 'http://localhost:8000'
-  #         filters: *only-tagged-releases
-  #         working_directory: client
-  #         cache-key: 'npm-packages-{{ arch }}-{{ checksum "client/package-lock.json" }}'
-  #     - build-and-push:
-  #         is-release-tag: true
-  #         filters: *only-tagged-releases
-  #         requires:
-  #           - client-format
-  #           - client-audit
-  #           - client-lint
-  #           - client-types
-  #           - cypress/run
-  #           - client-test
+  test-build-deploy-release:
+    jobs:
+      - client-format:
+          filters: *only-tagged-releases
+      - client-audit:
+          filters: *only-tagged-releases
+      - client-lint:
+          filters: *only-tagged-releases
+      - client-types:
+          filters: *only-tagged-releases
+      # - client-test:
+      #     filters: *only-tagged-releases
+      - cypress/run:
+          start: npm start
+          wait-on: 'http://localhost:8000'
+          filters: *only-tagged-releases
+          working_directory: client
+          cache-key: 'npm-packages-{{ arch }}-{{ checksum "client/package-lock.json" }}'
+      - build-and-push:
+          is-release-tag: true
+          filters: *only-tagged-releases
+          requires:
+            - client-format
+            - client-audit
+            - client-lint
+            - client-types
+            - cypress/run
+            # - client-test
 
 
   

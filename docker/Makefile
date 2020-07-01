@@ -12,7 +12,6 @@ BUILD=$(DIR)/build
 clean:
 	rm -rf build
 
-
 build/client:
 	mkdir -p build
 	rsync -rv --exclude=node_modules $(CLIENT) build
