@@ -23,7 +23,7 @@ jobs:
     executor: node
     steps:
       - checkout
-      - run: 
+      - run:
           name: Install client
           command: cd client && npm ci
       - run:
@@ -35,40 +35,37 @@ jobs:
       - checkout
       - run:
           name: Audit js
-          command: cd client && npm run test:audit
+          command: cd client && npm audit --production --level=moderate
   client-lint:
     executor: node
     steps:
       - checkout
-      - run: 
+      - run:
           name: Install client
           command: cd client && npm ci
       - run:
           name: Client test lint
-          command:
-            cd client && npm run test:lint
+          command: cd client && npm run test:lint
   client-types:
     executor: node
     steps:
       - checkout
-      - run: 
+      - run:
           name: Install client
           command: cd client && npm ci
       - run:
           name: Client test types
-          command:
-            cd client && npm run test:types
+          command: cd client && npm run test:types
   client-test:
     executor: node
     steps:
       - checkout
-      - run: 
+      - run:
           name: Install client
           command: cd client && npm ci
       - run:
           name: Client test
-          command:
-            cd client && npm run test
+          command: cd client && npm run test
   build-and-push:
     parameters:
       is-release-tag:
@@ -79,14 +76,14 @@ jobs:
       - unless:
           condition: <<parameters.is-release-tag>>
           steps:
-            - run: 
+            - run:
                 name: "set image tag to commit sha"
                 command: |
                   echo 'export IMAGE_TAG="$CIRCLE_SHA1"' >> $BASH_ENV
       - when:
           condition: <<parameters.is-release-tag>>
           steps:
-            - run: 
+            - run:
                 name: "override image tag to release tag"
                 command: |
                   echo 'export IMAGE_TAG="$CIRCLE_TAG"' >> $BASH_ENV
@@ -101,7 +98,7 @@ jobs:
           command: |
             sudo apt-get update \
             && sudo apt-get install -y rsync \
-            && cd node \
+            && cd docker \
             && make clean build
       - docker/build:
           path: node
@@ -129,7 +126,7 @@ workflows:
       #     filters: *only-untagged
       - cypress/run:
           start: npm start
-          wait-on: 'http://localhost:8000'
+          wait-on: "http://localhost:8000"
           filters: *only-untagged
           working_directory: client
           cache-key: 'npm-packages-{{ arch }}-{{ checksum "client/package-lock.json" }}'
@@ -162,7 +159,7 @@ workflows:
       #     filters: *only-tagged-releases
       - cypress/run:
           start: npm start
-          wait-on: 'http://localhost:8000'
+          wait-on: "http://localhost:8000"
           filters: *only-tagged-releases
           working_directory: client
           cache-key: 'npm-packages-{{ arch }}-{{ checksum "client/package-lock.json" }}'
@@ -176,6 +173,3 @@ workflows:
             - client-types
             - cypress/run
             # - client-test
-
-
-  
