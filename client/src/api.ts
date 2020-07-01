@@ -1,6 +1,7 @@
 import axios from "axios";
 import { FetchSessions,
-  UserSession } from "types";
+  FetchUserSession, 
+  UserSession} from "types";
 
 const GRADER_GRAPHQL_ENDPOINT =
   process.env.GRADER_GRAPHQL_ENDPOINT || "/grading/graphql/";
@@ -36,14 +37,13 @@ export async function fetchSessions(): Promise<FetchSessions> {
 }
 
 export async function fetchUserSession(sessionId: string): Promise<UserSession> {
-  const result = await axios.post<GQLResponse<UserSession>>(
+  const result = await axios.post<GQLResponse<FetchUserSession>>(
     GRADER_GRAPHQL_ENDPOINT,
     {
       query: `
-        {
-          userSession(sessionId: session 1) {
+        query($sessionId: String!){
+          userSession(sessionId: $sessionId) {
             username
-            score
             question {
               text
               expectations {
@@ -60,47 +60,47 @@ export async function fetchUserSession(sessionId: string): Promise<UserSession> 
           }
         }
         `,
-      variable: {
-        "sessionId": sessionId
+      variables: {
+        sessionId: sessionId
       }
     }
   );
-  return result.data.data;
+  return result.data.data.userSession;
 }
 
-export async function setUserSessionGrade(sessionId: string, userAnswerIndex: number, userExpectationIndex: number, grade: string ): Promise<UserSession> {
-  const result = await axios.post<GQLResponse<UserSession>>(
+export async function setUserSessionGrade(sessionId: string, userAnswerIndex: number, userExpectationIndex: number, grade: string): Promise<UserSession> {
+  const result = await axios.post<GQLResponse<FetchUserSession>>(
     GRADER_GRAPHQL_ENDPOINT,
     {
       query: `
-        mutation ($sessionId: String!, $userAnswerIndex: number!, $userExpectationIndex: number!, $grade: String!) {
-          setGrade(sessionID: $sessionId, userAnswerIndex:$userAnswerIndex, expectationAnswerIndex:$number, grade:$grade){
-            username
-            question {
-              text
-              expectations {
+          mutation ($sessionId: String!, $userAnswerIndex: Number!, $userExpectationIndex: Number!, $grade: String!) {
+            setGrade(sessionId: $sessionId, userAnswerIndex:$userAnswerIndex, userExpectationIndex:$userExpectationIndex grade:$grade){
+              username
+              question {
                 text
+                expectations {
+                  text
+                }
               }
-            }
-            
-            userResponses {
-              text
-              userResponseExpectationScores {
-                classifierGrade
-                graderGrade
+          
+              userResponses {
+                text
+                expectationScores {
+                  classifierGrade
+                  graderGrade
+                }
               }
             }
           }
-        }
         `,
       variables: {
-        "sessionId": sessionId,
-        "userAnswerIndex": userAnswerIndex,
-        "userExpectationIndex": userExpectationIndex,
-        "grade": grade
+        sessionId: sessionId,
+        userAnswerIndex: userAnswerIndex,
+        userExpectationIndex: userExpectationIndex,
+        grade: grade
       }
     }
   );
-  return result.data.data;
+  return result.data.data.userSession;
 }
 
