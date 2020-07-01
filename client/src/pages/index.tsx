@@ -12,13 +12,13 @@ import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TablePagination from "@material-ui/core/TablePagination";
 import TableRow from "@material-ui/core/TableRow";
-import { Link, Route, BrowserRouter as Router, Switch } from "react-router-dom";
+import { Router, Link } from "@reach/router";
 import { Edge, FetchSessions } from "types";
 import "styles/layout.css";
 import { Checkbox } from "@material-ui/core";
 import { fetchSessions } from "api";
 
-import SessionPage from './session';
+import SessionPage from "./session";
 
 const theme = createMuiTheme({
   palette: {
@@ -64,7 +64,7 @@ const useStyles = makeStyles({
   },
 });
 
-export const SessionsTable: React.FC = () => {
+export const SessionsTable = ({ path }) => {
   const classes = useStyles();
   const [fetch, setFetch] = React.useState<FetchSessions>();
   const [sessions, setSessions] = React.useState<Edge[]>([]);
@@ -79,7 +79,6 @@ export const SessionsTable: React.FC = () => {
         if (Array.isArray(fetch.sessions.edges)) {
           setSessions(fetch.sessions.edges);
         }
-
       })
       .catch((err) => console.error(err));
   }, []);
@@ -160,14 +159,8 @@ const IndexPage: React.FC = () => {
   return (
     <MuiThemeProvider theme={theme}>
       <Router>
-        <Switch>
-          <Route exact path="/">
-            <SessionsTable />
-          </Route>
-          <Route path="/session">
-            <SessionPage />
-          </Route>
-        </Switch>
+        <SessionsTable path="/" />
+        <SessionPage path="/session" />
       </Router>
     </MuiThemeProvider>
   );

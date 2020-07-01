@@ -3,7 +3,7 @@ describe("sessions screen", () => {
     cy.server();
     cy.route({
       method: "POST",
-      url: "**/grading/graphql/",
+      url: "**/grading-api/graphql/",
       status: 200,
       response: {
         data: [

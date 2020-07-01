@@ -31,10 +31,7 @@ docker-run:
 			-it \
 			--rm \
 			--name $(DOCKER_CONTAINER) \
-			-e CMI5_ENDPOINT="https://dev.mentorpal.org/lrs/xapi" \
-			-e CMI5_FETCH="https://dev.mentorpal.org/lrs/auth/guesttoken" \
-			-e MENTOR_API_URL="https://dev.mentorpal.org/mentor-api" \
-			-e MENTOR_VIDEO_URL="https://video.mentorpal.org/videos" \
+			-e GRADER_GRAPHQL_ENDPOINT="https://dev-opentutor.pal3.org/grading-api/graphql" \
 			-p 3000:3000 \
 		$(DOCKER_IMAGE) 
 

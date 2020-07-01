@@ -1,9 +1,8 @@
 import axios from "axios";
-import { FetchSessions,
-  UserSession } from "types";
+import { FetchSessions, UserSession } from "types";
 
 const GRADER_GRAPHQL_ENDPOINT =
-  process.env.GRADER_GRAPHQL_ENDPOINT || "/grading/graphql/";
+  process.env.GRADER_GRAPHQL_ENDPOINT || "/grading-api/graphql/";
 
 interface GQLResponse<T> {
   errors: { message: string }[];
@@ -35,7 +34,9 @@ export async function fetchSessions(): Promise<FetchSessions> {
   return result.data.data;
 }
 
-export async function fetchUserSession(sessionId: string): Promise<UserSession> {
+export async function fetchUserSession(
+  sessionId: string
+): Promise<UserSession> {
   const result = await axios.post<GQLResponse<UserSession>>(
     GRADER_GRAPHQL_ENDPOINT,
     {
@@ -61,14 +62,19 @@ export async function fetchUserSession(sessionId: string): Promise<UserSession> 
         }
         `,
       variable: {
-        "sessionId": sessionId
-      }
+        sessionId: sessionId,
+      },
     }
   );
   return result.data.data;
 }
 
-export async function setUserSessionGrade(sessionId: string, userAnswerIndex: number, userExpectationIndex: number, grade: string ): Promise<UserSession> {
+export async function setUserSessionGrade(
+  sessionId: string,
+  userAnswerIndex: number,
+  userExpectationIndex: number,
+  grade: string
+): Promise<UserSession> {
   const result = await axios.post<GQLResponse<UserSession>>(
     GRADER_GRAPHQL_ENDPOINT,
     {
@@ -94,13 +100,12 @@ export async function setUserSessionGrade(sessionId: string, userAnswerIndex: nu
         }
         `,
       variables: {
-        "sessionId": sessionId,
-        "userAnswerIndex": userAnswerIndex,
-        "userExpectationIndex": userExpectationIndex,
-        "grade": grade
-      }
+        sessionId: sessionId,
+        userAnswerIndex: userAnswerIndex,
+        userExpectationIndex: userExpectationIndex,
+        grade: grade,
+      },
     }
   );
   return result.data.data;
 }
-

@@ -12,8 +12,8 @@ RUN apt-get update && \
 WORKDIR /
 COPY . .
 RUN cd /build/client && \
-    yarn install --frozen-lockfile && \
-    yarn run build
+    npm install && \
+    npm run build
 FROM node:12.16.1-slim
 ENV TINI_VERSION=v0.16.1
 ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
