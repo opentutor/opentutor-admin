@@ -39,11 +39,11 @@ const useStyles = makeStyles({
   },
 });
 
-const SessionTable: React.FC = () => {
+const SessionTable = () => {
   const classes = useStyles();
 
   const [userSession, setUserSession] = React.useState<UserSession>();
-  const [sessionId, setSessionId] = React.useState("session 1");
+  const [sessionId, setSessionId] = React.useState("6facee42-855d-47c0-a115-961c32e22cd3 ");
 
   const [inputGrade, setInputGrade] = React.useState("");
   const [userIndex, setUserIndex] = React.useState(0);
@@ -69,7 +69,6 @@ const SessionTable: React.FC = () => {
         if (userSession !== undefined) {
           setUserSession(userSession);
         }
-
         let tmp = false;
         for (let i = 0; i < userSession.userResponses.length; i++) {
           for (let j = 0; j < userSession.userResponses.length; j++) {
@@ -191,18 +190,17 @@ const SessionTable: React.FC = () => {
                         align="right"
                       >
                         <Typography
-                          component={"span"}
                           key={`classifier-grade-${i}-${j}`}
                           id={`classifier-grade-${i}-${j}`}
+                          align="right"
                         >
-                          Classifier Grade:
-                          {row.expectationScores[j].classifierGrade
+                          Classifier Grade:{" "}
+                          {row.expectationScores[j]
                             ? row.expectationScores[j].classifierGrade
                             : ""}
                         </Typography>
 
                         <Typography
-                          component={"span"}
                           key={`expectation-grade-${i}-${j}`}
                           id={`expectation-grade-${i}-${j}`}
                           align="right"
@@ -211,7 +209,7 @@ const SessionTable: React.FC = () => {
                           <Select
                             labelId={`set-grade-${i}-${j}`}
                             id={`select-grade-${i}-${j}`}
-                            value={row.expectationScores[j]}
+                            value={row.expectationScores[j].graderGrade}
                             name={`${i} ${j}`}
                             onChange={handleGradeExpectationChange}
                           >
@@ -241,7 +239,7 @@ const SessionTable: React.FC = () => {
   );
 };
 
-const SessionPage: React.FC = () => {
+const SessionPage = ({ path }: { path: string }) => {
   return (
     <MuiThemeProvider theme={theme}>
       <SessionTable />

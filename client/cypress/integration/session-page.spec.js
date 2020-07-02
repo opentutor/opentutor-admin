@@ -3,7 +3,7 @@ describe("sessions screen", () => {
     cy.server();
     cy.route({
       method: "POST",
-      url: "**/grading-api",
+      url: "**/grading-api/graphql/",
       status: 200,
       response: {
         data: {
@@ -65,7 +65,7 @@ describe("sessions screen", () => {
 
   it("shows first classifier grade", () => {
     cy.visit("/session");
-    cy.get("#classifier-grade-1-0").should("contain", "Bad");
+    cy.get("#classifier-grade-0-0").should("contain", "Good");
   });
 
   it("selects grade for first expectation", () => {
@@ -73,7 +73,7 @@ describe("sessions screen", () => {
     cy.get("#select-grade-0-0").should("have.value", "");
     cy.route({
       method: "POST",
-      url: "**/grading/graphql/",
+      url: "**/grading-api/graphql/",
       status: 200,
       response: {
         data: {
@@ -126,5 +126,11 @@ describe("sessions screen", () => {
       .get("#good-grade-0-0")
       .click()
       .contains("Good");
+  });
+
+  it("score only when all expectation user answers are graded", () => {
+    cy.visit("/session");
+    cy.get("#score").contains("?");
+    //cy.get("#score").contains("0.75");
   });
 });
