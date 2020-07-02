@@ -39,19 +39,26 @@ export interface Question {
   expectations: Expectation[];
 }
 
-export interface UserResponseExpectationScore {
+export interface ExpectationScore {
   classifierGrade: string;
   graderGrade?: string;
 }
 
 export interface UserResponse {
   text: string;
-  userResponseExpectationScores: UserResponseExpectationScore[];
+  expectationScores: ExpectationScore[]; 
 }
 
 export interface UserSession {
   username: string;
   question: Question;
-  score: number;
   userResponses: UserResponse[];
+}
+
+export interface FetchUserSession {
+  userSession: UserSession;
+}
+
+export interface SetGrade {
+  setGrade: UserSession;
 }

@@ -1,5 +1,6 @@
 import axios from "axios";
-import { FetchSessions, UserSession } from "types";
+
+import { FetchSessions, Edge, FetchUserSession, UserSession, SetGrade } from "types";
 
 const GRADER_GRAPHQL_ENDPOINT =
   process.env.GRADER_GRAPHQL_ENDPOINT || "/grading-api/graphql/";
@@ -9,7 +10,7 @@ interface GQLResponse<T> {
   data: T;
 }
 
-export async function fetchSessions(): Promise<FetchSessions> {
+export async function fetchSessions(): Promise<Edge[]> {
   const result = await axios.post<GQLResponse<FetchSessions>>(
     GRADER_GRAPHQL_ENDPOINT,
     {
@@ -31,20 +32,20 @@ export async function fetchSessions(): Promise<FetchSessions> {
             `,
     }
   );
-  return result.data.data;
+  return result.data.data.sessions.edges;
 }
+
 
 export async function fetchUserSession(
   sessionId: string
 ): Promise<UserSession> {
-  const result = await axios.post<GQLResponse<UserSession>>(
+  const result = await axios.post<GQLResponse<FetchUserSession>>(
     GRADER_GRAPHQL_ENDPOINT,
     {
       query: `
-        {
-          userSession(sessionId: session 1) {
+        query($sessionId: String!){
+          userSession(sessionId: $sessionId) {
             username
-            score
             question {
               text
               expectations {
@@ -61,43 +62,45 @@ export async function fetchUserSession(
           }
         }
         `,
+
       variable: {
         sessionId: sessionId,
       },
     }
   );
-  return result.data.data;
+  return result.data.data.userSession;
 }
 
-export async function setUserSessionGrade(
+
+export async function setGrade(
   sessionId: string,
   userAnswerIndex: number,
   userExpectationIndex: number,
   grade: string
 ): Promise<UserSession> {
-  const result = await axios.post<GQLResponse<UserSession>>(
+  const result = await axios.post<GQLResponse<SetGrade>>(
     GRADER_GRAPHQL_ENDPOINT,
     {
       query: `
-        mutation ($sessionId: String!, $userAnswerIndex: number!, $userExpectationIndex: number!, $grade: String!) {
-          setGrade(sessionID: $sessionId, userAnswerIndex:$userAnswerIndex, expectationAnswerIndex:$number, grade:$grade){
-            username
-            question {
-              text
-              expectations {
+          mutation ($sessionId: String!, $userAnswerIndex: Int!, $userExpectationIndex: Int!, $grade: String!) {
+            setGrade(sessionId: $sessionId, userAnswerIndex:$userAnswerIndex, userExpectationIndex:$userExpectationIndex grade:$grade){
+              username
+              question {
                 text
+                expectations {
+                  text
+                }
               }
-            }
-            
-            userResponses {
-              text
-              userResponseExpectationScores {
-                classifierGrade
-                graderGrade
+          
+              userResponses {
+                text
+                expectationScores {
+                  classifierGrade
+                  graderGrade
+                }
               }
             }
           }
-        }
         `,
       variables: {
         sessionId: sessionId,
@@ -107,5 +110,5 @@ export async function setUserSessionGrade(
       },
     }
   );
-  return result.data.data;
+  return result.data.data.setGrade;
 }

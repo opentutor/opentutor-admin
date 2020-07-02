@@ -18,9 +18,10 @@ import {
 } from "@material-ui/core";
 import "styles/layout.css";
 
-import { Expectation, UserResponse, UserSession } from "types";
 
-import { fetchUserSession, setUserSessionGrade } from "api";
+import { UserSession } from "types";
+
+import { fetchUserSession, setGrade } from "api";
 
 const theme = createMuiTheme({
   palette: {
@@ -39,33 +40,23 @@ const useStyles = makeStyles({
   },
 });
 
-export interface GradeInput {
-  sessionId: string;
-  index: number;
-  graderGrade: number;
-}
-
 const SessionTable = () => {
   const classes = useStyles();
+  
 
   const [userSession, setUserSession] = React.useState<UserSession>();
-  const [sessionId, setSessionId] = React.useState("session1");
-  const [question, setQuestion] = React.useState("");
-  const [username, setUsername] = React.useState("");
-  const [expectations, setExpectations] = React.useState<Expectation[]>([]);
-  const [userResponses, setUserResponses] = React.useState<UserResponse[]>([]);
+  const [sessionId, setSessionId] = React.useState("session 1");
 
   const [inputGrade, setInputGrade] = React.useState("");
   const [userIndex, setUserIndex] = React.useState(0);
   const [expectationIndex, setExpectationIndex] = React.useState(0);
-
+  
   const [gradedAll, setGradedAll] = React.useState(false);
-  const [score, setScore] = React.useState(0);
   const [sessionScore, setSessionScore] = React.useState("");
 
   const handleGradeExpectationChange = (
     event: React.ChangeEvent<{ value: unknown; name?: unknown }>
-  ) => {
+  ):void => {
     const indeces = event.target.name as string;
     const indexSplit = indeces.split(" ");
     setUserIndex(Number(indexSplit[0]));
@@ -76,31 +67,16 @@ const SessionTable = () => {
   React.useEffect(() => {
     fetchUserSession(sessionId)
       .then((userSession) => {
-        console.log(`fetchUserSession got`, userSession);
+        console.log("fetchUserSession got", userSession);
         if (userSession !== undefined) {
           setUserSession(userSession);
         }
-        if (userSession.question.text !== undefined) {
-          setQuestion(userSession.question.text);
-        }
-        if (userSession.username !== undefined) {
-          setUsername(userSession.username);
-        }
-        if (userSession.question.expectations !== undefined) {
-          setExpectations(userSession.question.expectations);
-        }
-        if (userSession.userResponses !== undefined) {
-          setUserResponses(userSession.userResponses);
-        }
-        if (userSession.score !== undefined) {
-          setScore(userSession.score);
-        }
 
         let tmp = false;
-        for (let i = 0; i < userResponses.length; i++) {
-          for (let j = 0; j < expectations.length; j++) {
+        for (let i = 0; i < userSession.userResponses.length; i++) {
+          for (let j = 0; j < userSession.userResponses.length; j++) {
             if (
-              userResponses[i].userResponseExpectationScores[j].graderGrade !==
+              userSession.userResponses[i].expectationScores[j].graderGrade !==
               ""
             ) {
               tmp = true;
@@ -119,62 +95,49 @@ const SessionTable = () => {
   }, [sessionId]);
 
   React.useEffect(() => {
-    setUserSessionGrade(sessionId, userIndex, expectationIndex, inputGrade)
-      .then(() => {
-        fetchUserSession(sessionId)
-          .then((userSession) => {
-            console.log(`updated expectation grade got`, userSession);
-            if (userSession !== undefined) {
-              setUserSession(userSession);
+    setGrade(sessionId, userIndex, expectationIndex, inputGrade)
+      .then((userSession) => {
+        console.log("updated grade", userSession);
+        if (userSession !== undefined) {
+          setUserSession(userSession);
+        }
+
+        let tmp = false;
+        for (let i = 0; i < userSession.userResponses.length; i++) {
+          for (let j = 0; j < userSession.userResponses.length; j++) {
+            if (
+              userSession.userResponses[i].expectationScores[j].graderGrade !==
+              ""
+            ) {
+              tmp = true;
+            } else {
+              tmp = false;
+              break;
             }
-            if (userSession.question.text !== undefined) {
-              setQuestion(userSession.question.text);
-            }
-            if (userSession.username !== undefined) {
-              setUsername(userSession.username);
-            }
-            if (userSession.question.expectations !== undefined) {
-              setExpectations(userSession.question.expectations);
-            }
-            if (userSession.userResponses !== undefined) {
-              setUserResponses(userSession.userResponses);
-            }
-            if (userSession.score !== undefined) {
-              setScore(userSession.score);
-            }
-            let tmp = false;
-            for (let i = 0; i < userResponses.length; i++) {
-              for (let j = 0; j < expectations.length; j++) {
-                if (
-                  userResponses[i].userResponseExpectationScores[j]
-                    .graderGrade !== ""
-                ) {
-                  tmp = true;
-                } else {
-                  tmp = false;
-                  break;
-                }
-              }
-              if (tmp) {
-                break;
-              }
-            }
-            setGradedAll(tmp);
-          })
-          .catch((err) => console.error(err));
+          }
+          if (tmp) {
+            break;
+          }
+        }
+        setGradedAll(tmp);
       })
       .catch((err) => console.error(err));
   }, [inputGrade]);
 
   React.useEffect(() => {
-    console.log("First Render");
     let sum = 0;
-    const total = userResponses.length * expectations.length;
+    let responseSize = 0;
+    let expectationSize = 0;
+    if(userSession !== undefined){
+      responseSize = userSession.userResponses.length;
+      expectationSize = userSession.question.expectations.length;
+    }
+    const total = responseSize * expectationSize;
     if (gradedAll) {
-      for (let i = 0; i < userResponses.length; i++) {
-        for (let j = 0; j < expectations.length; j++) {
+      for (let i = 0; i < responseSize; i++) {
+        for (let j = 0; j < expectationSize; j++) {
           if (
-            userResponses[i].userResponseExpectationScores[j].graderGrade ===
+            userSession?.userResponses[i].expectationScores[j].graderGrade ===
             "Good"
           ) {
             sum = sum + 1;
@@ -189,15 +152,17 @@ const SessionTable = () => {
   return (
     <Paper className={classes.root}>
       <div id="session-display-name">session 1</div>
-      <div id="username"> {username}</div>
-      <div id="question"> {question} </div>
+      <div id="session-display-name">{sessionId ? sessionId : ""}</div>
+      <div id="username"> {userSession ? userSession.username : ""}</div>
+      <div id="question"> {userSession ? userSession.question.text : ""} </div>
       <div id="score"> Score: {gradedAll ? sessionScore : "?"} </div>
       <TableContainer className={classes.container}>
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
             <TableRow>
               <TableCell id="userAnswer">User Answer</TableCell>
-              {expectations.map((column, i) => (
+              {userSession?.question?.expectations
+                .map((column, i) => (
                 <TableCell
                   key={`expectation-${i}`}
                   id={`expectation-${i}`}
@@ -210,7 +175,7 @@ const SessionTable = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {userResponses
+            {userSession?.userResponses
               // .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((row, i) => {
                 return (
@@ -223,13 +188,14 @@ const SessionTable = () => {
                       {row.text}
                     </TableCell>
 
-                    {expectations.map((column, j) => (
+                    {userSession?.question?.expectations.map((column, j) => (
                       <TableCell
                         key={`grade-${i}-${j}`}
                         id={`grade-${i}-${j}`}
                         align="right"
                       >
                         <Typography
+                          component={'span'}
                           key={`classifier-grade-${i}-${j}`}
                           id={`classifier-grade-${i}-${j}`}
                           align="right"
@@ -241,6 +207,7 @@ const SessionTable = () => {
                             : ""}
                         </Typography>
                         <Typography
+                          component={'span'}
                           key={`expectation-grade-${i}-${j}`}
                           id={`expectation-grade-${i}-${j}`}
                           align="right"
