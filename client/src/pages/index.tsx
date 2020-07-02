@@ -13,12 +13,12 @@ import TableHead from "@material-ui/core/TableHead";
 import TablePagination from "@material-ui/core/TablePagination";
 import TableRow from "@material-ui/core/TableRow";
 import { Link, Route, BrowserRouter as Router, Switch } from "react-router-dom";
-import { Edge, FetchSessions } from "types";
+import { Edge } from "types";
 import "styles/layout.css";
 import { Checkbox } from "@material-ui/core";
 import { fetchSessions } from "api";
 
-import SessionPage from './session';
+import SessionPage from "./session";
 
 const theme = createMuiTheme({
   palette: {
@@ -66,20 +66,17 @@ const useStyles = makeStyles({
 
 export const SessionsTable: React.FC = () => {
   const classes = useStyles();
-  const [fetch, setFetch] = React.useState<FetchSessions>();
   const [sessions, setSessions] = React.useState<Edge[]>([]);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
   React.useEffect(() => {
     fetchSessions()
-      .then((fetch) => {
-        console.log(`fetchSessions got`, fetch);
-        setFetch(fetch);
-        if (Array.isArray(fetch.sessions.edges)) {
-          setSessions(fetch.sessions.edges);
+      .then((sessions) => {
+        console.log(`fetchSessions got`, sessions);
+        if (Array.isArray(sessions)) {
+          setSessions(sessions);
         }
-
       })
       .catch((err) => console.error(err));
   }, []);
@@ -129,10 +126,12 @@ export const SessionsTable: React.FC = () => {
                       id={`session-${i}`}
                       align="left"
                     >
-                      <Link to="/session">{row.node.sessionId}</Link>
+                      <Link to="/session">
+                        {row.node.sessionId ? row.node.sessionId : ""}
+                      </Link>
                     </TableCell>
                     <TableCell key={`classifier-grade-${i}`} align="right">
-                      {row.node.classifierGrade}
+                      {row.node.classifierGrade ? row.node.classifierGrade : ""}
                     </TableCell>
                     <TableCell key={`grade-${i}`} align="right">
                       {row.node.grade}
