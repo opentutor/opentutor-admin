@@ -201,8 +201,8 @@ const SessionTable = () => {
                           align="right"
                         >
                           Classifier Grade:{" "}
-                          {row.userResponseExpectationScores[j]
-                            ? row.userResponseExpectationScores[j]
+                          {row.expectationScores[j]
+                            ? row.expectationScores[j]
                                 .classifierGrade
                             : ""}
                         </Typography>
@@ -217,7 +217,7 @@ const SessionTable = () => {
                             labelId={`set-grade-${i}-${j}`}
                             id={`select-grade-${i}-${j}`}
                             value={
-                              row.userResponseExpectationScores[j].graderGrade
+                              row.expectationScores[j].graderGrade
                             }
                             name={`${i} ${j}`}
                             onChange={handleGradeExpectationChange}
