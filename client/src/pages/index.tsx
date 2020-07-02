@@ -14,7 +14,7 @@ import TableHead from "@material-ui/core/TableHead";
 import TablePagination from "@material-ui/core/TablePagination";
 import TableRow from "@material-ui/core/TableRow";
 import { Router, Link } from "@reach/router";
-import { Edge, FetchSessions } from "types";
+import { Edge } from "types";
 import "styles/layout.css";
 import { Checkbox } from "@material-ui/core";
 import { fetchSessions } from "api";
@@ -74,11 +74,10 @@ export const SessionsTable = ({ path }: { path: string }) => {
 
   React.useEffect(() => {
     fetchSessions()
-      .then((fetch) => {
-        console.log(`fetchSessions got`, fetch);
-        setFetch(fetch);
-        if (Array.isArray(fetch.sessions.edges)) {
-          setSessions(fetch.sessions.edges);
+      .then((sessions) => {
+        console.log(`fetchSessions got`, sessions);
+        if (Array.isArray(sessions)) {
+          setSessions(sessions);
         }
       })
       .catch((err) => console.error(err));
