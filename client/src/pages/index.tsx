@@ -67,7 +67,6 @@ const useStyles = makeStyles({
 
 export const SessionsTable = ({ path }: { path: string }) => {
   const classes = useStyles();
-  const [fetch, setFetch] = React.useState<FetchSessions>();
   const [sessions, setSessions] = React.useState<Edge[]>([]);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
