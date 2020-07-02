@@ -1,14 +1,9 @@
 import axios from "axios";
-import {
-  FetchSessions,
-  Edge,
-  FetchUserSession,
-  UserSession,
-  SetGrade,
-} from "types";
+
+import { FetchSessions, Edge, FetchUserSession, UserSession, SetGrade } from "types";
 
 const GRADER_GRAPHQL_ENDPOINT =
-  process.env.GRADER_GRAPHQL_ENDPOINT || "/grading/graphql/";
+  process.env.GRADER_GRAPHQL_ENDPOINT || "/grading-api/graphql/";
 
 interface GQLResponse<T> {
   errors: { message: string }[];
@@ -66,7 +61,8 @@ export async function fetchUserSession(
           }
         }
         `,
-      variables: {
+
+      variable: {
         sessionId: sessionId,
       },
     }

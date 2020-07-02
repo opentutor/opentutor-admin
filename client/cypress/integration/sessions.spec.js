@@ -3,7 +3,11 @@ describe("sessions screen", () => {
     cy.server();
     cy.route({
       method: "POST",
+<<<<<<< HEAD
       url: "**/grading-api",
+=======
+      url: "**/grading-api/graphql/",
+>>>>>>> 944b841... Deploys to dev (#6)
       status: 200,
       response: {
         data: [
