@@ -101,7 +101,7 @@ jobs:
             && cd docker \
             && make clean build
       - docker/build:
-          path: node
+          path: docker
           image: uscictdocker/opentutor-grading-client
           tag: ${IMAGE_TAG}
       - docker/push:
