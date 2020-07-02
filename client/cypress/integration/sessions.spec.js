@@ -3,7 +3,7 @@ describe("sessions screen", () => {
     cy.server();
     cy.route({
       method: "POST",
-      url: "**/grading/graphql/",
+      url: "**/grading-api",
       status: 200,
       response: {
         data: [
@@ -27,7 +27,7 @@ describe("sessions screen", () => {
     });
   });
 
-  it.only("displays a table with headers Session Id, Grade", () => {
+  it("displays a table with headers Session Id, Grade", () => {
     cy.visit("/");
     const tableHead = cy.get("table thead tr");
     tableHead.get("th").eq(0).should("contain", "Session Id");
@@ -50,18 +50,6 @@ describe("sessions screen", () => {
     cy.get("table>tbody>tr:nth-child(1)>td:nth-child(3)").should(
       "contain",
       "1"
-    );
-    cy.get("table>tbody>tr:nth-child(2)>td:nth-child(1)").should(
-      "contain",
-      "session 2"
-    );
-    cy.get("table>tbody>tr:nth-child(2)>td:nth-child(2)").should(
-      "contain",
-      "0.5"
-    );
-    cy.get("table>tbody>tr:nth-child(2)>td:nth-child(3)").should(
-      "contain",
-      "0.5"
     );
   });
 

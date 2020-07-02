@@ -26,8 +26,8 @@ export interface Session {
 }
 
 export enum Classification {
-  GOOD= "Good",
-  BAD= "Bad"
+  GOOD = "Good",
+  BAD = "Bad",
 }
 
 export interface Expectation {
@@ -46,7 +46,7 @@ export interface ExpectationScore {
 
 export interface UserResponse {
   text: string;
-  expectationScores: ExpectationScore[]; 
+  expectationScores: ExpectationScore[];
 }
 
 export interface UserSession {
@@ -57,4 +57,8 @@ export interface UserSession {
 
 export interface FetchUserSession {
   userSession: UserSession;
+}
+
+export interface SetGrade {
+  setGrade: UserSession;
 }
