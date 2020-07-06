@@ -3,11 +3,7 @@ describe("sessions screen", () => {
     cy.server();
     cy.route({
       method: "POST",
-<<<<<<< HEAD
-      url: "**/grading-api",
-=======
       url: "**/grading-api/graphql/",
->>>>>>> 944b841... Deploys to dev (#6)
       status: 200,
       response: {
         data: [
@@ -31,7 +27,7 @@ describe("sessions screen", () => {
     });
   });
 
-  it("displays a table with headers Session Id, Grade", () => {
+  it.only("displays a table with headers Session Id, Grade", () => {
     cy.visit("/");
     const tableHead = cy.get("table thead tr");
     tableHead.get("th").eq(0).should("contain", "Session Id");
@@ -42,7 +38,7 @@ describe("sessions screen", () => {
   it("displays a list of ungraded session by default", () => {
     cy.visit("/");
     const tableBody = cy.get("table tbody");
-    tableBody.get("tr").should("have.length", 3);
+    tableBody.get("tr").should("have.length", 4);
     cy.get("table>tbody>tr:nth-child(1)>td:nth-child(1)").should(
       "contain",
       "session 1"

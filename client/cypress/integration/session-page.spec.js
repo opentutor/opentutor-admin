@@ -1,11 +1,9 @@
-import { Classification, UserResponseExpectationScore } from "./src/types";
-
-describe("sessions screen", () => {
+describe("session screen", () => {
   beforeEach(() => {
     cy.server();
     cy.route({
       method: "POST",
-      url: "**/grading-api/graphql/",
+      url: "**/grading-api/graphql",
       status: 200,
       response: {
         data: {
@@ -19,28 +17,28 @@ describe("sessions screen", () => {
           },
           userResponses: [
             {
-              text: "answer1",
+              text: "answer 1",
               userResponseExpectationScores: [
                 {
                   classifierGrade: "Good",
-                  graderGrade: "Good",
+                  graderGrade: "",
                 },
                 {
                   classifierGrade: "Bad",
-                  graderGrade: "Bad",
+                  graderGrade: "",
                 },
               ],
             },
             {
-              text: "answer2",
+              text: "answer 2",
               userResponseExpectationScores: [
                 {
                   classifierGrade: "Bad",
-                  graderGrade: "Good",
+                  graderGrade: "",
                 },
                 {
                   classifierGrade: "Good",
-                  graderGrade: "Good",
+                  graderGrade: "",
                 },
               ],
             },
@@ -62,7 +60,7 @@ describe("sessions screen", () => {
 
   it("shows first user answer", () => {
     cy.visit("/session");
-    cy.get("#answer-0").should("contain", "answer1");
+    cy.get("#answer-0").should("contain", "answer 1");
   });
 
   it("shows first classifier grade", () => {
@@ -128,11 +126,5 @@ describe("sessions screen", () => {
       .get("#good-grade-0-0")
       .click()
       .contains("Good");
-  });
-
-  it.only("score only when all expectation user answers are graded", () => {
-    cy.visit("/session");
-    cy.get("#score").contains("?");
-    //cy.get("#score").contains("0.75");
   });
 });
