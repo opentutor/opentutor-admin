@@ -45,7 +45,7 @@ const SessionTable = () => {
   
 
   const [userSession, setUserSession] = React.useState<UserSession>();
-  const [sessionId, setSessionId] = React.useState(parsed.sessionId);
+  const [sessionId, setSessionId] = React.useState(parsed.sessionId as string);
   const [userIndex, setUserIndex] = React.useState(0);
   const [expectationIndex, setExpectationIndex] = React.useState(0);
   const [gradedAll, setGradedAll] = React.useState(false);
@@ -62,24 +62,24 @@ const SessionTable = () => {
 
     const inputGrade = event.target.value as string;
     setGrade(sessionId, userIndex, expectationIndex, inputGrade)
-      .then((userSession) => {
+      .then((userSession: UserSession) => {
         console.log("updated grade", userSession);
         if (userSession !== undefined) {
           setUserSession(userSession);
         }
       })
-      .catch((err) => console.error(err));
+      .catch((err: any) => console.error(err));
   };
 
   React.useEffect(() => {
     fetchUserSession(sessionId)
-      .then((userSession) => {
+      .then((userSession: UserSession) => {
         console.log("fetchUserSession got", userSession);
         if (userSession !== undefined) {
           setUserSession(userSession);
         }
       })
-      .catch((err) => console.error(err));
+      .catch((err: any) => console.error(err));
     return;
   }, []);
 
