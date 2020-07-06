@@ -21,21 +21,21 @@ export async function fetchSessions(): Promise<Edge[]> {
     GRADER_GRAPHQL_ENDPOINT,
     {
       query: `
-          {
-            sessions {
-              edges {
-                cursor node {
-                  sessionId
-                  classifierGrade
-                  grade
-                }
-              }
-              pageInfo {
-                hasNextPage
+        {
+          sessions {
+            edges {
+              cursor node {
+                sessionId
+                classifierGrade
+                grade
               }
             }
+            pageInfo {
+              hasNextPage
+            }
           }
-            `,
+        }
+        `,
     }
   );
   return result.data.data.sessions.edges;
@@ -67,7 +67,6 @@ export async function fetchUserSession(
           }
         }
         `,
-
       variables: {
         sessionId: sessionId,
       },
@@ -86,25 +85,24 @@ export async function setGrade(
     GRADER_GRAPHQL_ENDPOINT,
     {
       query: `
-          mutation ($sessionId: String!, $userAnswerIndex: Int!, $userExpectationIndex: Int!, $grade: String!) {
-            setGrade(sessionId: $sessionId, userAnswerIndex:$userAnswerIndex, userExpectationIndex:$userExpectationIndex grade:$grade){
-              username
-              question {
+        mutation ($sessionId: String!, $userAnswerIndex: Int!, $userExpectationIndex: Int!, $grade: String!) {
+          setGrade(sessionId: $sessionId, userAnswerIndex:$userAnswerIndex, userExpectationIndex:$userExpectationIndex grade:$grade){
+            username
+            question {
+              text
+              expectations {
                 text
-                expectations {
-                  text
-                }
               }
-          
-              userResponses {
-                text
-                expectationScores {
-                  classifierGrade
-                  graderGrade
-                }
+            }
+            userResponses {
+              text
+              expectationScores {
+                classifierGrade
+                graderGrade
               }
             }
           }
+        }
         `,
       variables: {
         sessionId: sessionId,
