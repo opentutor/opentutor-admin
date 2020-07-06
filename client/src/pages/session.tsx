@@ -18,6 +18,7 @@ import {
 } from "@material-ui/core";
 
 import "styles/layout.css";
+import queryString from "query-string";
 import { UserSession } from "types";
 import { fetchUserSession, setGrade } from "api";
 
@@ -39,7 +40,6 @@ const useStyles = makeStyles({
 });
 
 const SessionTable = () => {
-  const queryString = require("query-string");
   const parsed = queryString.parse(location.search);
   const classes = useStyles();
 
