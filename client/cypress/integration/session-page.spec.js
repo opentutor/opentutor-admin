@@ -7,42 +7,44 @@ describe("session screen", () => {
       status: 200,
       response: {
         data: {
-          username: "username1",
-          question: {
-            text: "question?",
-            expectations: [
-              { text: "expected text 1" },
-              { text: "expected text 2" },
+          userSession: {
+            username: "username1",
+            question: {
+              text: "question?",
+              expectations: [
+                { text: "expected text 1" },
+                { text: "expected text 2" },
+              ],
+            },
+            userResponses: [
+              {
+                text: "answer 1",
+                expectationScores: [
+                  {
+                    classifierGrade: "Good",
+                    graderGrade: "",
+                  },
+                  {
+                    classifierGrade: "Bad",
+                    graderGrade: "",
+                  },
+                ],
+              },
+              {
+                text: "answer 2",
+                expectationScores: [
+                  {
+                    classifierGrade: "Bad",
+                    graderGrade: "",
+                  },
+                  {
+                    classifierGrade: "Good",
+                    graderGrade: "",
+                  },
+                ],
+              },
             ],
           },
-          userResponses: [
-            {
-              text: "answer 1",
-              userResponseExpectationScores: [
-                {
-                  classifierGrade: "Good",
-                  graderGrade: "",
-                },
-                {
-                  classifierGrade: "Bad",
-                  graderGrade: "",
-                },
-              ],
-            },
-            {
-              text: "answer 2",
-              userResponseExpectationScores: [
-                {
-                  classifierGrade: "Bad",
-                  graderGrade: "",
-                },
-                {
-                  classifierGrade: "Good",
-                  graderGrade: "",
-                },
-              ],
-            },
-          ],
         },
         errors: null,
       },
@@ -54,22 +56,22 @@ describe("session screen", () => {
   });
 
   it("shows session username", () => {
-    cy.visit("/session");
+    cy.visit("/session?sessionId=session1");
     cy.get("#username").should("contain", "username1");
   });
 
   it("shows first user answer", () => {
-    cy.visit("/session");
+    cy.visit("/session?sessionId=session1");
     cy.get("#answer-0").should("contain", "answer 1");
   });
 
   it("shows first classifier grade", () => {
-    cy.visit("/session");
+    cy.visit("/session?sessionId=session1");
     cy.get("#classifier-grade-0-0").should("contain", "Good");
   });
 
   it("selects grade for first expectation", () => {
-    cy.visit("/session");
+    cy.visit("/session?sessionId=session1");
     cy.get("#select-grade-0-0").should("have.value", "");
     cy.route({
       method: "POST",
@@ -77,42 +79,44 @@ describe("session screen", () => {
       status: 200,
       response: {
         data: {
-          username: "username1",
-          question: {
-            text: "question?",
-            expectations: [
-              { text: "expected text 1" },
-              { text: "expected text 2" },
+          userSession: {
+            username: "username1",
+            question: {
+              text: "question?",
+              expectations: [
+                { text: "expected text 1" },
+                { text: "expected text 2" },
+              ],
+            },
+            userResponses: [
+              {
+                text: "answer1",
+                expectationScores: [
+                  {
+                    classifierGrade: "Good",
+                    graderGrade: "Good",
+                  },
+                  {
+                    classifierGrade: "Bad",
+                    graderGrade: "",
+                  },
+                ],
+              },
+              {
+                text: "answer2",
+                expectationScores: [
+                  {
+                    classifierGrade: "Bad",
+                    graderGrade: "",
+                  },
+                  {
+                    classifierGrade: "Good",
+                    graderGrade: "",
+                  },
+                ],
+              },
             ],
           },
-          userResponses: [
-            {
-              text: "answer1",
-              userResponseExpectationScores: [
-                {
-                  classifierGrade: "Good",
-                  graderGrade: "Good",
-                },
-                {
-                  classifierGrade: "Bad",
-                  graderGrade: "",
-                },
-              ],
-            },
-            {
-              text: "answer2",
-              userResponseExpectationScores: [
-                {
-                  classifierGrade: "Bad",
-                  graderGrade: "",
-                },
-                {
-                  classifierGrade: "Good",
-                  graderGrade: "",
-                },
-              ],
-            },
-          ],
         },
         errors: null,
       },
