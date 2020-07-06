@@ -48,7 +48,7 @@ export async function fetchUserSession(
     GRADER_GRAPHQL_ENDPOINT,
     {
       query: `
-        query($sessionId: String!){
+        query ($sessionId: String!){
           userSession(sessionId: $sessionId) {
             username
             question {
@@ -68,7 +68,7 @@ export async function fetchUserSession(
         }
         `,
 
-      variable: {
+      variables: {
         sessionId: sessionId,
       },
     }
