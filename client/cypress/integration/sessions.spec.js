@@ -6,18 +6,26 @@ describe("sessions screen", () => {
       url: "**/grading-api/graphql/",
       status: 200,
       response: {
-        data: [
-          {
-            sessionId: "session 1",
-            classifierGrade: 1.0,
-            grade: 1.0,
+        data: {
+          sessions: {
+            edges: [
+              {
+                node: {
+                  sessionId: "session 1",
+                  classifierGrade: 1,
+                  grade: 1,
+                },
+              },
+              {
+                node: {
+                  sessionId: "session 2",
+                  classifierGrade: 0.5,
+                  grade: 0.5,
+                },
+              },
+            ],
           },
-          {
-            sessionId: "session 2",
-            classifierGrade: 0.5,
-            grade: 0.5,
-          },
-        ],
+        },
         errors: null,
       },
       delay: 10,
@@ -27,7 +35,7 @@ describe("sessions screen", () => {
     });
   });
 
-  it.only("displays a table with headers Session Id, Grade", () => {
+  it("displays a table with headers Session Id, Grade", () => {
     cy.visit("/");
     const tableHead = cy.get("table thead tr");
     tableHead.get("th").eq(0).should("contain", "Session Id");
@@ -38,7 +46,7 @@ describe("sessions screen", () => {
   it("displays a list of ungraded session by default", () => {
     cy.visit("/");
     const tableBody = cy.get("table tbody");
-    tableBody.get("tr").should("have.length", 4);
+    tableBody.get("tr").should("have.length", 3);
     cy.get("table>tbody>tr:nth-child(1)>td:nth-child(1)").should(
       "contain",
       "session 1"
@@ -50,6 +58,18 @@ describe("sessions screen", () => {
     cy.get("table>tbody>tr:nth-child(1)>td:nth-child(3)").should(
       "contain",
       "1"
+    );
+    cy.get("table>tbody>tr:nth-child(2)>td:nth-child(1)").should(
+      "contain",
+      "session 2"
+    );
+    cy.get("table>tbody>tr:nth-child(2)>td:nth-child(2)").should(
+      "contain",
+      "0.5"
+    );
+    cy.get("table>tbody>tr:nth-child(2)>td:nth-child(3)").should(
+      "contain",
+      "0.5"
     );
   });
 
