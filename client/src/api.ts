@@ -51,6 +51,7 @@ export async function fetchUserSession(
         query ($sessionId: String!){
           userSession(sessionId: $sessionId) {
             username
+            score
             question {
               text
               expectations {

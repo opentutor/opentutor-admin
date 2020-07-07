@@ -137,13 +137,13 @@ const SessionTable = ({ search }: { search: any }) => {
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
             <TableRow>
-              <TableCell id="userAnswer">User Answer</TableCell>
+              <TableCell id="userAnswer" align="center" style={{width: 100}}>User Answer</TableCell>
               {userSession?.question?.expectations.map((column, i) => (
                 <TableCell
                   key={`expectation-${i}`}
                   id={`expectation-${i}`}
-                  align="right"
-                  style={{ minWidth: 170 }}
+                  align="center"
+                  style={{ width: 170 }}
                 >
                   {column.text}
                 </TableCell>
@@ -159,13 +159,18 @@ const SessionTable = ({ search }: { search: any }) => {
                     <TableCell
                       key={`answer-${i}`}
                       id={`answer-${i}`}
-                      align="left"
+                      //align="left"
                     >
                       {row.text}
                     </TableCell>
 
                     {userSession?.question?.expectations.map((column, j) => (
                       <TableCell
+                        style ={{
+                          backgroundColor: row.expectationScores[j].graderGrade === "Good" ? "#90EE90" : 
+                          row.expectationScores[j].graderGrade === "Bad" ? "#F08080" : 
+                          row.expectationScores[j].graderGrade === "Neutral" ? "#D3D3D3" : "white"
+                        }}
                         key={`grade-${i}-${j}`}
                         id={`grade-${i}-${j}`}
                         align="right"
@@ -209,6 +214,9 @@ const SessionTable = ({ search }: { search: any }) => {
                             </MenuItem>
                             <MenuItem id={`bad-grade-${i}-${j}`} value={"Bad"}>
                               Bad
+                            </MenuItem>
+                            <MenuItem id={`neutral-grade-${i}-${j}`} value={"Neutral"}>
+                              Neutral
                             </MenuItem>
                           </Select>
                         </Typography>
