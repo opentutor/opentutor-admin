@@ -45,7 +45,6 @@ const SessionTable = ({ search }: { search: any }) => {
   const { sessionId } = search;
   const classes = useStyles();
   const [userSession, setUserSession] = React.useState<UserSession>();
-  const [date, setDate] = React.useState<string>("");
 
   const handleGradeExpectationChange = (
     event: React.ChangeEvent<{ value: unknown; name?: unknown }>
@@ -93,15 +92,7 @@ const SessionTable = ({ search }: { search: any }) => {
       </div>
       <div id="Date"> {date ? date : ""}</div>
       <div id="question"> {userSession ? userSession.question.text : ""} </div>
-      <div id="score">
-        {" "}
-        Score:{" "}
-        {userSession
-          ? userSession.score
-            ? Math.trunc(userSession.score * 100)
-            : "?"
-          : "?"}{" "}
-      </div>
+      <div id="score"> Score: {userSession ? userSession.score : "?"} </div>
       <TableContainer className={classes.container}>
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
@@ -145,14 +136,6 @@ const SessionTable = ({ search }: { search: any }) => {
                               ? "#F08080"
                               : row.expectationScores[j].graderGrade ===
                                 "Neutral"
-                              ? "#D3D3D3"
-                              : row.expectationScores[j].graderGrade === "" &&
-                                row.expectationScores.some(
-                                  (score) =>
-                                    score.graderGrade === "Good" ||
-                                    score.graderGrade === "Bad" ||
-                                    score.graderGrade === "Neutral"
-                                )
                               ? "#D3D3D3"
                               : "white",
                         }}

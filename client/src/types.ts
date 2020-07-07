@@ -55,7 +55,6 @@ export interface UserResponse {
 export interface UserSession {
   username: string;
   score: number;
-  createdAt: Date;
   question: Question;
   userResponses: UserResponse[];
 }
