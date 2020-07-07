@@ -19,7 +19,6 @@ import {
 
 import "styles/layout.css";
 import withLocation from "wrap-with-location";
-import queryString from "query-string";
 import { UserSession } from "types";
 import { fetchUserSession, setGrade } from "api";
 
@@ -43,11 +42,7 @@ const useStyles = makeStyles({
 const SessionTable = ({ search }: { search: any }) => {
   const { sessionId } = search;
   const classes = useStyles();
-  
-
   const [userSession, setUserSession] = React.useState<UserSession>();
-  const [gradedAll, setGradedAll] = React.useState(false);
-  const [sessionScore, setSessionScore] = React.useState("");
 
   const handleGradeExpectationChange = (
     event: React.ChangeEvent<{ value: unknown; name?: unknown }>
@@ -82,64 +77,20 @@ const SessionTable = ({ search }: { search: any }) => {
     return;
   }, []);
 
-  React.useEffect(() => {
-    let sum = 0;
-    let total = 0;
-    const responseSize = userSession ? userSession.userResponses.length : 0;
-
-    if (gradedAll) {
-      for (let i = 0; i < responseSize; i++) {
-        const expectationSize = userSession
-          ? userSession.userResponses[i].expectationScores.length
-          : 0;
-        total += expectationSize;
-        for (let j = 0; j < expectationSize; j++) {
-          if (
-            userSession?.userResponses[i].expectationScores[j].graderGrade ===
-            "Good"
-          ) {
-            sum = sum + 1;
-          }
-        }
-      }
-      sum = sum / total;
-      setSessionScore(sum.toString());
-    }
-  }, [gradedAll]);
-
-  React.useEffect(() => {
-    if (userSession === undefined) {
-      return;
-    }
-
-    const responseSize = userSession.userResponses.length;
-    for (let i = 0; i < responseSize; i++) {
-      const expectationSize =
-        userSession.userResponses[i].expectationScores.length;
-      for (let j = 0; j < expectationSize; j++) {
-        if (
-          userSession.userResponses[i].expectationScores[j].graderGrade === ""
-        ) {
-          setGradedAll(false);
-          return;
-        }
-      }
-    }
-    setGradedAll(true);
-  }, [userSession]);
-
   return (
     <Paper className={classes.root}>
       <div id="session-display-name">session 1</div>
       <div id="session-display-name">{sessionId ? sessionId : ""}</div>
       <div id="username"> {userSession ? userSession.username : ""}</div>
       <div id="question"> {userSession ? userSession.question.text : ""} </div>
-      {/* <div id="score"> Score: {gradedAll ? sessionScore : "?"} </div> */}
+      <div id="score"> Score: {userSession ? userSession.score : "?"} </div>
       <TableContainer className={classes.container}>
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
             <TableRow>
-              <TableCell id="userAnswer" align="center" style={{width: 100}}>User Answer</TableCell>
+              <TableCell id="userAnswer" align="center" style={{ width: 100 }}>
+                User Answer
+              </TableCell>
               {userSession?.question?.expectations.map((column, i) => (
                 <TableCell
                   key={`expectation-${i}`}
@@ -168,10 +119,16 @@ const SessionTable = ({ search }: { search: any }) => {
 
                     {userSession?.question?.expectations.map((column, j) => (
                       <TableCell
-                        style ={{
-                          backgroundColor: row.expectationScores[j].graderGrade === "Good" ? "#90EE90" : 
-                          row.expectationScores[j].graderGrade === "Bad" ? "#F08080" : 
-                          row.expectationScores[j].graderGrade === "Neutral" ? "#D3D3D3" : "white"
+                        style={{
+                          backgroundColor:
+                            row.expectationScores[j].graderGrade === "Good"
+                              ? "#90EE90"
+                              : row.expectationScores[j].graderGrade === "Bad"
+                              ? "#F08080"
+                              : row.expectationScores[j].graderGrade ===
+                                "Neutral"
+                              ? "#D3D3D3"
+                              : "white",
                         }}
                         key={`grade-${i}-${j}`}
                         id={`grade-${i}-${j}`}
@@ -220,7 +177,10 @@ const SessionTable = ({ search }: { search: any }) => {
                             <MenuItem id={`bad-grade-${i}-${j}`} value={"Bad"}>
                               Bad
                             </MenuItem>
-                            <MenuItem id={`neutral-grade-${i}-${j}`} value={"Neutral"}>
+                            <MenuItem
+                              id={`neutral-grade-${i}-${j}`}
+                              value={"Neutral"}
+                            >
                               Neutral
                             </MenuItem>
                           </Select>

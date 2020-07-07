@@ -83,6 +83,7 @@ export async function setGrade(
         mutation ($sessionId: String!, $userAnswerIndex: Int!, $userExpectationIndex: Int!, $grade: String!) {
           setGrade(sessionId: $sessionId, userAnswerIndex:$userAnswerIndex, userExpectationIndex:$userExpectationIndex grade:$grade){
             username
+            score
             question {
               text
               expectations {
