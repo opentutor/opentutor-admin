@@ -45,8 +45,6 @@ const SessionTable = ({ search }: { search: any }) => {
   const classes = useStyles();
 
   const [userSession, setUserSession] = React.useState<UserSession>();
-  const [userIndex, setUserIndex] = React.useState(0);
-  const [expectationIndex, setExpectationIndex] = React.useState(0);
   const [gradedAll, setGradedAll] = React.useState(false);
   const [sessionScore, setSessionScore] = React.useState("");
 
@@ -55,11 +53,13 @@ const SessionTable = ({ search }: { search: any }) => {
   ): void => {
     const indeces = event.target.name as string;
     const indexSplit = indeces.split(" ");
-    setUserIndex(Number(indexSplit[0]));
-    setExpectationIndex(Number(indexSplit[1]));
 
-    const inputGrade = event.target.value as string;
-    setGrade(sessionId, userIndex, expectationIndex, inputGrade)
+    setGrade(
+      sessionId,
+      Number(indexSplit[0]),
+      Number(indexSplit[1]),
+      event.target.value as string
+    )
       .then((userSession: UserSession) => {
         console.log("updated grade", userSession);
         if (userSession !== undefined) {

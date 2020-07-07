@@ -1,4 +1,4 @@
-import { withPrefix } from "gatsby";
+import { withPrefix, StaticQuery } from "gatsby";
 import React from "react";
 import {
   MuiThemeProvider,
@@ -13,6 +13,7 @@ import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TablePagination from "@material-ui/core/TablePagination";
 import TableRow from "@material-ui/core/TableRow";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
 import { Router, Link } from "@reach/router";
 import { Edge } from "types";
 import "styles/layout.css";
@@ -70,6 +71,7 @@ export const SessionsTable = ({ path }: { path: string }) => {
   const [sessions, setSessions] = React.useState<Edge[]>([]);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [showGraded, setShowGraded] = React.useState(false);
 
   React.useEffect(() => {
     fetchSessions()
@@ -93,9 +95,24 @@ export const SessionsTable = ({ path }: { path: string }) => {
     setPage(0);
   };
 
+  const handleShowGradedChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setShowGraded(event.target.checked);
+  };
+
   return (
     <Paper className={classes.root}>
-      <Checkbox id="show-graded-checkbox"></Checkbox>
+      <FormControlLabel
+        control={
+          <Checkbox
+            checked={showGraded}
+            onChange={handleShowGradedChange}
+            name="showGraded"
+          />
+        }
+        label="Show Graded"
+      />
       <TableContainer className={classes.container}>
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
