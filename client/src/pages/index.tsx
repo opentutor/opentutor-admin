@@ -1,4 +1,4 @@
-import { withPrefix, StaticQuery } from "gatsby";
+import { withPrefix } from "gatsby";
 import React from "react";
 import {
   MuiThemeProvider,
@@ -15,7 +15,7 @@ import TablePagination from "@material-ui/core/TablePagination";
 import TableRow from "@material-ui/core/TableRow";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import { Router, Link } from "@reach/router";
-import { Edge } from "types";
+import { Edge, Session } from "types";
 import "styles/layout.css";
 import { Checkbox } from "@material-ui/core";
 import { fetchSessions } from "api";
@@ -106,6 +106,7 @@ export const SessionsTable = ({ path }: { path: string }) => {
       <FormControlLabel
         control={
           <Checkbox
+            id="toggle"
             checked={showGraded}
             onChange={handleShowGradedChange}
             name="showGraded"
@@ -130,6 +131,7 @@ export const SessionsTable = ({ path }: { path: string }) => {
           </TableHead>
           <TableBody>
             {sessions
+              .filter((edge: Edge) => showGraded || !edge.node.grade)
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((row, i) => {
                 return (

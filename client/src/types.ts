@@ -51,6 +51,7 @@ export interface UserResponse {
 
 export interface UserSession {
   username: string;
+  score: number;
   question: Question;
   userResponses: UserResponse[];
 }
