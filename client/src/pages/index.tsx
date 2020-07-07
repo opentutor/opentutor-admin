@@ -127,7 +127,9 @@ export const SessionsTable = ({ path }: { path: string }) => {
                       id={`session-${i}`}
                       align="left"
                     >
-                      <Link to={`/session?sessionId=${row.node.sessionId}`}>
+                      <Link
+                        to={`session?sessionId=${row.node.sessionId}`}
+                      >
                         {row.node.sessionId ? row.node.sessionId : ""}
                       </Link>
                     </TableCell>
