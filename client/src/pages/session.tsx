@@ -18,6 +18,7 @@ import {
 } from "@material-ui/core";
 
 import "styles/layout.css";
+import withLocation from "wrap-with-location";
 import queryString from "query-string";
 import { UserSession } from "types";
 import { fetchUserSession, setGrade } from "api";
@@ -39,13 +40,12 @@ const useStyles = makeStyles({
   },
 });
 
-const SessionTable = () => {
-  const parsed = queryString.parse(location.search);
+const SessionTable = ({ search }: { search: any }) => {
+  const { sessionId } = search;
   const classes = useStyles();
   
 
   const [userSession, setUserSession] = React.useState<UserSession>();
-  const [sessionId, setSessionId] = React.useState(parsed.sessionId as string);
   const [userIndex, setUserIndex] = React.useState(0);
   const [expectationIndex, setExpectationIndex] = React.useState(0);
   const [gradedAll, setGradedAll] = React.useState(false);
@@ -56,7 +56,6 @@ const SessionTable = () => {
   ):void => {
     const indeces = event.target.name as string;
     const indexSplit = indeces.split(" ");
-    setSessionId(sessionId);
     setUserIndex(Number(indexSplit[0]));
     setExpectationIndex(Number(indexSplit[1]));
 
@@ -230,12 +229,12 @@ const SessionTable = () => {
   );
 };
 
-const SessionPage = ({ path }: { path: string }) => {
+const SessionPage = ({ path, search }: { path: string; search: any }) => {
   return (
     <MuiThemeProvider theme={theme}>
-      <SessionTable />
+      <SessionTable search={search} />
     </MuiThemeProvider>
   );
 };
 
-export default SessionPage;
+export default withLocation(SessionPage);

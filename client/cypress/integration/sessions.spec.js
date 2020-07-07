@@ -81,7 +81,7 @@ describe("sessions screen", () => {
 
   it("opens grading for a session on tap link", () => {
     cy.visit("/");
-    const link = cy.get("#session-0 a").click();
+    cy.get("#session-0 a").click();
     cy.get("#session-display-name").should("contain", "session 1");
   });
 });
