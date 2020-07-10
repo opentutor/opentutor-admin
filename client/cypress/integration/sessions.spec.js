@@ -35,45 +35,16 @@ describe("sessions screen", () => {
     });
   });
 
-  it("displays a table with headers Session Id, Grade", () => {
+  it("displays a table with headers Session Id, Username, Date, Classifier Grade, Grade", () => {
     cy.visit("/");
     const tableHead = cy.get("table thead tr");
     tableHead.get("th").eq(0).should("contain", "Session Id");
-    tableHead.get("th").eq(1).should("contain", "Classifier Grade");
-    tableHead.get("th").eq(2).should("contain", "Grade");
+    tableHead.get("th").eq(1).should("contain", "Username");
+    tableHead.get("th").eq(2).should("contain", "Date");
+    tableHead.get("th").eq(3).should("contain", "Classifier Grade");
+    tableHead.get("th").eq(4).should("contain", "Grade");
   });
 
-<<<<<<< HEAD
-  // it("displays a list of ungraded session by default", () => {
-  //   cy.visit("/");
-  //   const tableBody = cy.get("table tbody");
-  //   tableBody.get("tr").should("have.length", 3);
-  //   cy.get("table>tbody>tr:nth-child(1)>td:nth-child(1)").should(
-  //     "contain",
-  //     "session 1"
-  //   );
-  //   cy.get("table>tbody>tr:nth-child(1)>td:nth-child(2)").should(
-  //     "contain",
-  //     "1"
-  //   );
-  //   cy.get("table>tbody>tr:nth-child(1)>td:nth-child(3)").should(
-  //     "contain",
-  //     "1"
-  //   );
-  //   cy.get("table>tbody>tr:nth-child(2)>td:nth-child(1)").should(
-  //     "contain",
-  //     "session 2"
-  //   );
-  //   cy.get("table>tbody>tr:nth-child(2)>td:nth-child(2)").should(
-  //     "contain",
-  //     "0.5"
-  //   );
-  //   cy.get("table>tbody>tr:nth-child(2)>td:nth-child(3)").should(
-  //     "contain",
-  //     "0.5"
-  //   );
-  // });
-=======
   it("displays a list of ungraded sessions by default", () => {
     cy.visit("/");
     const tableBody = cy.get("table tbody");
@@ -82,11 +53,14 @@ describe("sessions screen", () => {
       "contain",
       "session 2"
     );
-    cy.get("table>tbody>tr:nth-child(1)>td:nth-child(2)").should(
+    cy.get("table>tbody>tr:nth-child(1)>td:nth-child(4)").should(
       "contain",
-      "0.5"
+      "50"
     );
-    cy.get("table>tbody>tr:nth-child(1)>td:nth-child(3)").should("contain", "");
+    cy.get("table>tbody>tr:nth-child(1)>td:nth-child(5)").should(
+      "contain",
+      "?"
+    );
   });
 
   it("toggles a list of graded and ungraded session", () => {
@@ -98,25 +72,27 @@ describe("sessions screen", () => {
       "contain",
       "session 1"
     );
-    cy.get("table>tbody>tr:nth-child(1)>td:nth-child(2)").should(
+    cy.get("table>tbody>tr:nth-child(1)>td:nth-child(4)").should(
       "contain",
-      "1"
+      "100"
     );
-    cy.get("table>tbody>tr:nth-child(1)>td:nth-child(3)").should(
+    cy.get("table>tbody>tr:nth-child(1)>td:nth-child(5)").should(
       "contain",
-      "1"
+      "100"
     );
     cy.get("table>tbody>tr:nth-child(2)>td:nth-child(1)").should(
       "contain",
       "session 2"
     );
-    cy.get("table>tbody>tr:nth-child(2)>td:nth-child(2)").should(
+    cy.get("table>tbody>tr:nth-child(2)>td:nth-child(4)").should(
       "contain",
-      "0.5"
+      "50"
     );
-    cy.get("table>tbody>tr:nth-child(2)>td:nth-child(3)").should("contain", "");
+    cy.get("table>tbody>tr:nth-child(2)>td:nth-child(5)").should(
+      "contain",
+      "?"
+    );
   });
->>>>>>> 1dbae63e14925a88128dd85c880caafd3b1e1def
 
   it("displays an option to view already graded sessions", () => {
     cy.visit("/");
@@ -124,17 +100,9 @@ describe("sessions screen", () => {
     option.should("not.have.attr", "checked");
   });
 
-<<<<<<< HEAD
-  // it("opens grading for a session on tap link", () => {
-  //   cy.visit("/");
-  //   cy.get("#session-0 a").click();
-  //   cy.get("#session-display-name").should("contain", "session 1");
-  // });
-=======
   it("opens grading for a session on tap link", () => {
     cy.visit("/");
     cy.get("#session-0 a").click();
     cy.get("#session-display-name").should("contain", "session 2");
   });
->>>>>>> 1dbae63e14925a88128dd85c880caafd3b1e1def
 });
