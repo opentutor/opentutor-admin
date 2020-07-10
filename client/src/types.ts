@@ -21,6 +21,9 @@ export interface FetchSessions {
 
 export interface Session {
   sessionId: string;
+  username: string;
+  createdAt: number;
+  updatedAt: number;
   classifierGrade: number;
   grade: number;
 }
@@ -52,6 +55,7 @@ export interface UserResponse {
 export interface UserSession {
   username: string;
   score: number;
+  createdAt: Date;
   question: Question;
   userResponses: UserResponse[];
 }

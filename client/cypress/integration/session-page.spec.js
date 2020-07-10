@@ -70,12 +70,12 @@ describe("session screen", () => {
     cy.get("#classifier-grade-0-0").should("contain", "Good");
   });
 
-  it("selects grade for first expectation", () => {
+  it("shows Good after select grade for first expectation, background should be green", () => {
     cy.visit("/session?sessionId=session1");
     cy.get("#select-grade-0-0").should("have.value", "");
     cy.route({
       method: "POST",
-      url: "**/grading-api/graphql/",
+      url: "**/grading-api/graphql",
       status: 200,
       response: {
         data: {
@@ -90,7 +90,7 @@ describe("session screen", () => {
             },
             userResponses: [
               {
-                text: "answer1",
+                text: "answer 1",
                 expectationScores: [
                   {
                     classifierGrade: "Good",
@@ -103,7 +103,7 @@ describe("session screen", () => {
                 ],
               },
               {
-                text: "answer2",
+                text: "answer 2",
                 expectationScores: [
                   {
                     classifierGrade: "Bad",
