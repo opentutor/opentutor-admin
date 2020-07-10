@@ -15,12 +15,13 @@ import TablePagination from "@material-ui/core/TablePagination";
 import TableRow from "@material-ui/core/TableRow";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import { Router, Link } from "@reach/router";
-import { Edge, Session } from "types";
+import { Edge } from "types";
 import "styles/layout.css";
 import { Checkbox } from "@material-ui/core";
 import { fetchSessions } from "api";
 
 import SessionPage from "./session";
+import { template } from "@babel/core";
 
 const theme = createMuiTheme({
   palette: {
@@ -31,19 +32,22 @@ const theme = createMuiTheme({
 });
 
 const columns: ColumnDef[] = [
-  { id: "sessionId", label: "Session Id", minWidth: 170 },
+  { id: "sessionId", label: "Session Id", minWidth: 170, align: "center" },
+  { id: "username", label: "Username", minWidth: 170, align: "center" },
+  { id: "date", label: "Date", minWidth: 170, align: "center" },
+  // { id: "timestamp", label: "Time Stamp", minWidth: 170 },
   {
     id: "classifierGrade",
     label: "Classifier Grade",
     minWidth: 170,
-    align: "right",
+    align: "center",
     format: (value: number): string => value.toLocaleString("en-US"),
   },
   {
     id: "grade",
     label: "Grade",
     minWidth: 170,
-    align: "right",
+    align: "center",
     format: (value: number): string => value.toLocaleString("en-US"),
   },
 ];
@@ -53,8 +57,22 @@ interface ColumnDef {
   name?: string;
   label: string;
   minWidth: number;
-  align?: "right" | "left";
+  align?: "right" | "left" | "center";
   format?: (v: number) => string;
+}
+
+interface DatedEdge {
+  cursor: string;
+  node: DatedSession;
+}
+
+interface DatedSession {
+  sessionId: string;
+  username: string;
+  createdAt: Date;
+  updatedAt: Date;
+  classifierGrade: number;
+  grade: number;
 }
 
 const useStyles = makeStyles({
@@ -69,8 +87,9 @@ const useStyles = makeStyles({
 export const SessionsTable = ({ path }: { path: string }) => {
   const classes = useStyles();
   const [sessions, setSessions] = React.useState<Edge[]>([]);
+  const [datedSessions, setDatedSessions] = React.useState<DatedEdge[]>([]);
   const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [rowsPerPage, setRowsPerPage] = React.useState(50);
   const [showGraded, setShowGraded] = React.useState(false);
 
   React.useEffect(() => {
@@ -80,6 +99,19 @@ export const SessionsTable = ({ path }: { path: string }) => {
         if (Array.isArray(sessions)) {
           setSessions(sessions);
         }
+
+        const tmp: any = sessions;
+        tmp.map((session: DatedEdge, i: number) => {
+          tmp[i].node.createdAt = new Date(session.node.createdAt);
+        });
+        console.log("After Tmp", sessions);
+
+        setDatedSessions(
+          tmp.sort(
+            (a: DatedEdge, b: DatedEdge) =>
+              +b.node.createdAt - +a.node.createdAt
+          )
+        );
       })
       .catch((err) => console.error(err));
   }, []);
@@ -97,7 +129,7 @@ export const SessionsTable = ({ path }: { path: string }) => {
 
   const handleShowGradedChange = (
     event: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  ): void => {
     setShowGraded(event.target.checked);
   };
 
@@ -129,9 +161,9 @@ export const SessionsTable = ({ path }: { path: string }) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {sessions
+            {datedSessions
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .filter((edge: Edge) => showGraded || !edge.node.grade)
+              .filter((edge: DatedEdge) => showGraded || !edge.node.grade)
               .map((row, i) => {
                 return (
                   <TableRow
@@ -149,11 +181,21 @@ export const SessionsTable = ({ path }: { path: string }) => {
                         {row.node.sessionId ? row.node.sessionId : ""}
                       </Link>
                     </TableCell>
-                    <TableCell key={`classifier-grade-${i}`} align="right">
-                      {row.node.classifierGrade ? row.node.classifierGrade : ""}
+                    <TableCell key={`username-${i}`} align="center">
+                      {row.node.username ? row.node.username : "Guest"}
                     </TableCell>
-                    <TableCell key={`grade-${i}`} align="right">
-                      {row.node.grade}
+                    <TableCell key={`date-${i}`} align="center">
+                      {row.node.createdAt
+                        ? row.node.createdAt.toLocaleString()
+                        : ""}
+                    </TableCell>
+                    <TableCell key={`classifier-grade-${i}`} align="center">
+                      {row.node.classifierGrade
+                        ? Math.trunc(row.node.classifierGrade * 100)
+                        : "?"}
+                    </TableCell>
+                    <TableCell key={`grade-${i}`} align="center">
+                      {row.node.grade ? Math.trunc(row.node.grade * 100) : "?"}
                     </TableCell>
                   </TableRow>
                 );
@@ -162,7 +204,7 @@ export const SessionsTable = ({ path }: { path: string }) => {
         </Table>
       </TableContainer>
       <TablePagination
-        rowsPerPageOptions={[10, 25, 100]}
+        rowsPerPageOptions={[50, 75, 100]}
         component="div"
         count={sessions.length}
         rowsPerPage={rowsPerPage}

@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "@reach/router";
 import {
   MuiThemeProvider,
   createMuiTheme,
@@ -15,6 +16,7 @@ import {
   Select,
   MenuItem,
   Typography,
+  Button,
 } from "@material-ui/core";
 
 import "styles/layout.css";
@@ -43,6 +45,7 @@ const SessionTable = ({ search }: { search: any }) => {
   const { sessionId } = search;
   const classes = useStyles();
   const [userSession, setUserSession] = React.useState<UserSession>();
+  const [date, setDate] = React.useState<string>("");
 
   const handleGradeExpectationChange = (
     event: React.ChangeEvent<{ value: unknown; name?: unknown }>
@@ -72,6 +75,9 @@ const SessionTable = ({ search }: { search: any }) => {
         if (userSession !== undefined) {
           setUserSession(userSession);
         }
+        const d = new Date(userSession.createdAt);
+        console.log(d);
+        setDate(d.toLocaleString());
       })
       .catch((err: any) => console.error(err));
     return;
@@ -81,9 +87,21 @@ const SessionTable = ({ search }: { search: any }) => {
     <Paper className={classes.root}>
       <div id="session-display-name">session 1</div>
       <div id="session-display-name">{sessionId ? sessionId : ""}</div>
-      <div id="username"> {userSession ? userSession.username : ""}</div>
+      <div id="username">
+        {" "}
+        {userSession && userSession.username ? userSession.username : "Guest"}
+      </div>
+      <div id="Date"> {date ? date : ""}</div>
       <div id="question"> {userSession ? userSession.question.text : ""} </div>
-      <div id="score"> Score: {userSession ? userSession.score : "?"} </div>
+      <div id="score">
+        {" "}
+        Score:{" "}
+        {userSession
+          ? userSession.score
+            ? Math.trunc(userSession.score * 100)
+            : "?"
+          : "?"}{" "}
+      </div>
       <TableContainer className={classes.container}>
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
@@ -127,6 +145,14 @@ const SessionTable = ({ search }: { search: any }) => {
                               ? "#F08080"
                               : row.expectationScores[j].graderGrade ===
                                 "Neutral"
+                              ? "#D3D3D3"
+                              : row.expectationScores[j].graderGrade === "" &&
+                                row.expectationScores.some(
+                                  (score) =>
+                                    score.graderGrade === "Good" ||
+                                    score.graderGrade === "Bad" ||
+                                    score.graderGrade === "Neutral"
+                                )
                               ? "#D3D3D3"
                               : "white",
                         }}
@@ -193,6 +219,10 @@ const SessionTable = ({ search }: { search: any }) => {
           </TableBody>
         </Table>
       </TableContainer>
+      <Link to="/" style={{ textDecoration: "none" }}>
+        {" "}
+        <Button variant="contained">Done</Button>{" "}
+      </Link>
     </Paper>
   );
 };

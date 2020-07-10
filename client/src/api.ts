@@ -20,6 +20,9 @@ export async function fetchSessions(): Promise<Edge[]> {
             edges {
               cursor node {
                 sessionId
+                username
+                createdAt
+                updatedAt
                 classifierGrade
                 grade
               }
@@ -46,6 +49,7 @@ export async function fetchUserSession(
           userSession(sessionId: $sessionId) {
             username
             score
+            createdAt
             question {
               text
               expectations {
