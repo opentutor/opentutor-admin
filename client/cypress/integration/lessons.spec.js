@@ -59,15 +59,9 @@ describe("lessons screen", () => {
     });
   });
 
-  it.only("displays a table with headers Lesson", () => {
+  it("displays a table with headers Lesson", () => {
     cy.visit("/lessons");
     const tableHead = cy.get("table thead tr");
     tableHead.get("th").eq(0).should("contain", "Lesson");
-  });
-
-  it("opens editing for a lesson on tap link", () => {
-    cy.visit("/lessons");
-    cy.get("#lesson-name-0").click();
-    cy.get("#header").should("contain", "Edit");
   });
 });
