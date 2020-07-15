@@ -33,6 +33,7 @@ import withLocation from "wrap-with-location";
 import { Lesson } from "types";
 import { fetchLesson, updateLesson } from "api";
 import LessonsPage from "./lessons";
+import { navigate } from "gatsby";
 
 const theme = createMuiTheme({
   palette: {
@@ -95,16 +96,21 @@ const LessonEdit = ({ search }: { search: any }) => {
   const [change, setChange] = React.useState(false);
 
   React.useEffect(() => {
+    let mounted = true;
     fetchLesson(lessonId)
       .then((lesson: Lesson) => {
         console.log("fetchLesson got", lesson);
-        if (lesson !== undefined) {
-          setCopyLesson(lesson);
-          setLesson(lesson);
+        if (mounted) {
+          if (lesson !== undefined) {
+            setCopyLesson(lesson);
+            setLesson(lesson);
+          }
         }
       })
       .catch((err: any) => console.error(err));
-    return;
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   function handleLessonNameChange(name: string) {
@@ -131,7 +137,7 @@ const LessonEdit = ({ search }: { search: any }) => {
     setChange(true);
     const copyLesson = { ...lesson };
     const copyExpectations = [...copyLesson.expectations] as Array<any>;
-    let newExpectation = { ...copyExpectations[index] };
+    const newExpectation = { ...copyExpectations[index] };
     newExpectation.expectation = exp;
     copyExpectations[index] = newExpectation;
     setLesson({ ...lesson, expectations: copyExpectations });
@@ -142,7 +148,7 @@ const LessonEdit = ({ search }: { search: any }) => {
     const copyLesson = { ...lesson };
     const copyExpectations = [...copyLesson.expectations] as Array<any>;
     const copyHints = [...copyExpectations[eIndex].hints] as Array<any>;
-    let newHint = { ...copyHints[hIndex] };
+    const newHint = { ...copyHints[hIndex] };
     newHint.text = hnt;
     copyHints[hIndex] = newHint;
     copyExpectations[eIndex].hints[hIndex] = newHint;
@@ -167,6 +173,7 @@ const LessonEdit = ({ search }: { search: any }) => {
         setLesson(updated);
       })
       .catch((err) => console.error(err));
+    navigate(`/lessons`);
   }
 
   function handleAddExpectation() {
@@ -194,8 +201,8 @@ const LessonEdit = ({ search }: { search: any }) => {
     setChange(true);
     console.log("Add Hint");
     const copyLesson = { ...lesson };
-    let copyExpectations = [...copyLesson.expectations] as Array<any>;
-    let copyHints = [...copyLesson.expectations[index].hints] as Array<any>;
+    const copyExpectations = [...copyLesson.expectations] as Array<any>;
+    const copyHints = [...copyLesson.expectations[index].hints] as Array<any>;
     copyHints.push({ text: "" });
     copyExpectations[index].hints = copyHints;
     setLesson({ ...lesson, expectations: copyExpectations });
@@ -205,7 +212,7 @@ const LessonEdit = ({ search }: { search: any }) => {
     setChange(true);
     console.log("Remove Hint");
     const copyLesson = { ...lesson };
-    let copyExpectations = [...copyLesson.expectations] as Array<any>;
+    const copyExpectations = [...copyLesson.expectations] as Array<any>;
     let copyHints = [...copyLesson.expectations[eIdx].hints] as Array<any>;
     copyHints = copyHints.filter((hints) => hints.text !== hint);
     copyExpectations[eIdx].hints = copyHints;
@@ -276,7 +283,7 @@ const LessonEdit = ({ search }: { search: any }) => {
                 </div>
                 {lesson?.expectations.map((expecation, i) => {
                   return (
-                    <Accordion>
+                    <Accordion key={`expectation-${i}`} id={`expectation-${i}`}>
                       <AccordionSummary
                         expandIcon={<ExpandMoreIcon />}
                         aria-controls="panel1bh-content"
@@ -286,8 +293,8 @@ const LessonEdit = ({ search }: { search: any }) => {
                           <TextField
                             margin="normal"
                             name="expectations"
-                            id={`expectation-${i}`}
-                            key={`expectation-${i}`}
+                            id={`edit-expectation-${i}`}
+                            key={`edit-expectation-${i}`}
                             label={`Expectation ${i + 1}`}
                             value={
                               expecation.expectation
@@ -341,11 +348,11 @@ const LessonEdit = ({ search }: { search: any }) => {
                               </div>
                               {expecation.hints.map((hint, j) => {
                                 return (
-                                  <div>
+                                  <div key={`hint-${j}`} id={`hint-${j}`}>
                                     <TextField
                                       margin="normal"
-                                      id={`hint-${j}`}
-                                      key={`hint-${j}`}
+                                      id={`edit-hint-${j}`}
+                                      key={`edit-hint-${j}`}
                                       label={`Hint ${j + 1}`}
                                       value={hint.text ? hint.text : ""}
                                       onChange={(e) => {
