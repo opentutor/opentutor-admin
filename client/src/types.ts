@@ -66,3 +66,48 @@ export interface FetchUserSession {
 export interface SetGrade {
   setGrade: UserSession;
 }
+
+export interface Hint {
+  text: string;
+}
+
+export interface LessonExpectation {
+  expectation: string;
+  hints: Hint[];
+}
+
+export interface Lesson {
+  id: string;
+  lessonId: string;
+  name: string;
+  intro: string;
+  question: string;
+  conclusion: string;
+  expectations: LessonExpectation[];
+  createdAt: number;
+  updatedAt: number;
+}
+
+export interface LessonEdge {
+  node: Lesson;
+}
+
+export interface LessonsData {
+  edges: LessonEdge[];
+}
+
+export interface FetchLessons {
+  lessons: LessonsData;
+}
+
+export interface FetchLesson {
+  lesson: Lesson;
+}
+
+export interface CreateLesson {
+  createLesson: Lesson;
+}
+
+export interface UpdateLesson {
+  updateLesson: Lesson;
+}

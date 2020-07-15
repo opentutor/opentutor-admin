@@ -1,6 +1,18 @@
 import axios from "axios";
 
-import { FetchSessions, Edge, FetchUserSession, UserSession, SetGrade } from "types";
+import {
+  FetchSessions,
+  Edge,
+  FetchUserSession,
+  UserSession,
+  SetGrade,
+  Lesson,
+  LessonEdge,
+  FetchLessons,
+  FetchLesson,
+  CreateLesson,
+  UpdateLesson,
+} from "types";
 
 const GRADER_GRAPHQL_ENDPOINT =
   process.env.GRADER_GRAPHQL_ENDPOINT || "/grading-api/graphql/";
@@ -113,4 +125,129 @@ export async function setGrade(
     }
   );
   return result.data.data.setGrade;
+}
+
+export async function fetchLessons(): Promise<LessonEdge[]> {
+  const result = await axios.post<GQLResponse<FetchLessons>>(
+    GRADER_GRAPHQL_ENDPOINT,
+    {
+      query: `
+      {
+        lessons {
+          edges {
+            node {
+              id
+              lessonId
+              name
+              intro
+              question
+              conclusion
+              expectations {
+                expectation
+                hints {
+                  text
+                }
+              }
+            }
+          }
+        }
+      }
+        `,
+    }
+  );
+  return result.data.data.lessons.edges;
+}
+
+export async function fetchLesson(lessonId: string): Promise<Lesson> {
+  const result = await axios.post<GQLResponse<FetchLesson>>(
+    GRADER_GRAPHQL_ENDPOINT,
+    {
+      query: `
+        query ($lessonId: String!){
+          lesson(lessonId: $lessonId) {
+            id
+            lessonId
+            intro
+            name
+            question
+            conclusion
+            expectations {
+              expectation
+              hints {
+                text
+              }
+            }
+            createdAt
+            updatedAt
+          }
+        }
+        `,
+      variables: {
+        lessonId: lessonId,
+      },
+    }
+  );
+  return result.data.data.lesson;
+}
+
+export async function createLesson(): Promise<Lesson> {
+  const result = await axios.post<GQLResponse<CreateLesson>>(
+    GRADER_GRAPHQL_ENDPOINT,
+    {
+      query: `
+        mutation {
+          createLesson {
+            lessonId
+            name
+            intro
+            question
+            conclusion
+            expectations {
+              expectation
+              hints {
+                text
+              }
+            }
+          }
+        }
+        `,
+    }
+  );
+  return result.data.data.createLesson;
+}
+
+export async function updateLesson(
+  lessonId: string,
+  lesson: string
+): Promise<Lesson> {
+  const result = await axios.post<GQLResponse<UpdateLesson>>(
+    GRADER_GRAPHQL_ENDPOINT,
+    {
+      query: `
+        mutation ($lessonId: String!, $lesson: String!) {
+          updateLesson(lessonId: $lessonId, lesson: $lesson){
+            id
+            lessonId
+            intro
+            name
+            question
+            conclusion
+            expectations {
+              expectation
+              hints {
+                text
+              }
+            }
+            createdAt
+            updatedAt
+          }
+        }
+        `,
+      variables: {
+        lessonId: lessonId,
+        lesson: lesson,
+      },
+    }
+  );
+  return result.data.data.updateLesson;
 }

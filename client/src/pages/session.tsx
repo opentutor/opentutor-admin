@@ -75,7 +75,6 @@ const SessionTable = ({ search }: { search: any }) => {
           setUserSession(userSession);
         }
         const d = new Date(userSession.createdAt);
-        console.log(d);
         setDate(d.toLocaleString());
       })
       .catch((err: any) => console.error(err));
@@ -92,7 +91,15 @@ const SessionTable = ({ search }: { search: any }) => {
       </div>
       <div id="Date"> {date ? date : ""}</div>
       <div id="question"> {userSession ? userSession.question.text : ""} </div>
-      <div id="score"> Score: {userSession ? userSession.score : "?"} </div>
+      <div id="score">
+        {" "}
+        Score:{" "}
+        {userSession
+          ? userSession.score || userSession.score !== null
+            ? Math.trunc(userSession.score * 100)
+            : "?"
+          : "?"}{" "}
+      </div>
       <TableContainer className={classes.container}>
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
@@ -202,7 +209,7 @@ const SessionTable = ({ search }: { search: any }) => {
           </TableBody>
         </Table>
       </TableContainer>
-      <Link to="/" style={{ textDecoration: "none" }}>
+      <Link to="/sessions" style={{ textDecoration: "none" }}>
         {" "}
         <Button variant="contained">Done</Button>{" "}
       </Link>
@@ -211,6 +218,7 @@ const SessionTable = ({ search }: { search: any }) => {
 };
 
 const SessionPage = ({ path, search }: { path: string; search: any }) => {
+  console.log(path);
   return (
     <MuiThemeProvider theme={theme}>
       <SessionTable search={search} />
