@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "@reach/router";
+import { Link, navigate } from "@reach/router";
 import {
   MuiThemeProvider,
   createMuiTheme,
@@ -68,17 +68,22 @@ const SessionTable = ({ search }: { search: any }) => {
   };
 
   React.useEffect(() => {
+    let mounted = true;
     fetchUserSession(sessionId)
       .then((userSession: UserSession) => {
         console.log("fetchUserSession got", userSession);
-        if (userSession !== undefined) {
-          setUserSession(userSession);
+        if (mounted) {
+          if (userSession !== undefined) {
+            setUserSession(userSession);
+          }
         }
         const d = new Date(userSession.createdAt);
         setDate(d.toLocaleString());
       })
       .catch((err: any) => console.error(err));
-    return;
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   return (

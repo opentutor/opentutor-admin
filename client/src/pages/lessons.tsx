@@ -20,7 +20,7 @@ import {
 } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
 import RemoveIcon from "@material-ui/icons/Remove";
-import { Router, Link, Redirect } from "@reach/router";
+import { Link, navigate } from "@reach/router";
 import "styles/layout.css";
 
 import { Lesson, LessonEdge } from "types";
@@ -201,10 +201,7 @@ export const LessonsTable = ({ path }: { path: string }) => {
 const LessonsPage = ({ path }: { path: string }) => {
   return (
     <MuiThemeProvider theme={theme}>
-      <Router>
-        <LessonsTable path={path} />
-        <EditPage path={`/edit`} />
-      </Router>
+      <LessonsTable path={path} />
     </MuiThemeProvider>
   );
 };

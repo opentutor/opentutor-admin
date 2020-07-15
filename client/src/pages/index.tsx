@@ -8,6 +8,7 @@ import "styles/layout.css";
 import SessionPage from "./session";
 import SessionsPage from "./sessions";
 import CreatePage from "./lessons";
+import EditPage from "./edit";
 import { template } from "@babel/core";
 
 const theme = createMuiTheme({
@@ -21,12 +22,9 @@ const theme = createMuiTheme({
 export const AdminMenu = ({ path }: { path: string }) => {
   return (
     <div>
-      <li>
-        <Link to="/sessions">Sessions</Link>
-      </li>
-      <li>
-        <Link to="/lessons">Lessons</Link>
-      </li>
+      <nav>
+        <Link to="lessons">Lessons</Link> <Link to="sessions">Sessions</Link>
+      </nav>
     </div>
   );
 };
@@ -37,7 +35,9 @@ const IndexPage: React.FC = () => {
       <Router>
         <AdminMenu path={withPrefix("/")} />
         <CreatePage path={withPrefix("/lessons")} />
+        <EditPage path={withPrefix("/lessons/edit")} />
         <SessionsPage path={withPrefix("/sessions")} />
+        <SessionPage path={withPrefix("/sessions/session")} />
       </Router>
     </MuiThemeProvider>
   );

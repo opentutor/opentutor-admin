@@ -177,7 +177,7 @@ export const SessionsTable = ({ path }: { path: string }) => {
                       id={`session-${i}`}
                       align="left"
                     >
-                      <Link to={`/session?sessionId=${row.node.sessionId}`}>
+                      <Link to={`session?sessionId=${row.node.sessionId}`}>
                         {row.node.sessionId ? row.node.sessionId : ""}
                       </Link>
                     </TableCell>
@@ -221,10 +221,7 @@ export const SessionsTable = ({ path }: { path: string }) => {
 const SessionsPage = ({ path }: { path: string }) => {
   return (
     <MuiThemeProvider theme={theme}>
-      <Router>
-        <SessionsTable path={path} />
-        <SessionPage path={`/session`} />
-      </Router>
+      <SessionsTable path={path} />
     </MuiThemeProvider>
   );
 };
