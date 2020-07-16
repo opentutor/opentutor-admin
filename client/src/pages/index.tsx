@@ -3,10 +3,10 @@ import React from "react";
 import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 import { Router, Link } from "@reach/router";
 
-import SessionPage from "./session";
-import SessionsPage from "./sessions";
-import CreatePage from "./lessons";
-import EditPage from "./edit";
+import SessionsPage from "./sessions/index";
+import SessionPage from "./sessions/session";
+import CreatePage from "./lessons/index";
+import EditPage from "./lessons/edit";
 import NavBar from "../components/nav-bar";
 
 import "styles/layout.css";
@@ -45,11 +45,11 @@ const IndexPage: React.FC = () => {
     <MuiThemeProvider theme={theme}>
       <Router>
         <AdminMenu path={withPrefix("/")}>
-          <CreatePage path="lessons">
-            <EditPage path="edit" />
+          <CreatePage path={withPrefix("lessons")}>
+            <EditPage path={withPrefix("/lessons/edit")} />
           </CreatePage>
-          <SessionsPage path="sessions">
-            <SessionPage path="session" />
+          <SessionsPage path={withPrefix("sessions")}>
+            <SessionPage path={withPrefix("sessions/session")} />
           </SessionsPage>
         </AdminMenu>
       </Router>

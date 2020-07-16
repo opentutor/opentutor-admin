@@ -23,7 +23,7 @@ import {
 import withLocation from "wrap-with-location";
 import { UserSession } from "types";
 import { fetchUserSession, setGrade } from "api";
-import NavBar from "../components/nav-bar";
+import NavBar from "../../components/nav-bar";
 
 const theme = createMuiTheme({
   palette: {

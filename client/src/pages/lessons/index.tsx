@@ -17,6 +17,7 @@ import {
 } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
 import { Link, navigate } from "@reach/router";
+import { withPrefix } from "gatsby";
 
 import { LessonEdge, LessonExpectation } from "types";
 import { fetchLessons, createLesson } from "api";
@@ -130,7 +131,9 @@ export const LessonsTable = ({ path }: { path: string }) => {
     createLesson()
       .then((newLesson) => {
         console.log(`fetchCreateLesson got`, newLesson);
-        const path = "/edit?lessonId=" + newLesson?.lessonId;
+        const path = withPrefix(
+          "/lessons/edit?lessonId=" + newLesson?.lessonId
+        );
         navigate(path);
       })
       .catch((err) => console.error(err));
@@ -184,7 +187,11 @@ export const LessonsTable = ({ path }: { path: string }) => {
                         id={`lesson-name-${i}`}
                         align="left"
                       >
-                        <Link to={`edit?lessonId=${row.node.lessonId}`}>
+                        <Link
+                          to={withPrefix(
+                            `/lessons/edit?lessonId=${row.node.lessonId}`
+                          )}
+                        >
                           {row.node.name ? row.node.name : "No Lesson Name"}
                         </Link>
                       </TableCell>

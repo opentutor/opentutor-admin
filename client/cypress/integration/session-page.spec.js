@@ -60,22 +60,22 @@ describe("session screen", () => {
   });
 
   it("shows session username", () => {
-    cy.visit("/session?sessionId=session1");
+    cy.visit("/sessions/session?sessionId=session1");
     cy.get("#username").should("contain", "username1");
   });
 
   it("shows first user answer", () => {
-    cy.visit("/session?sessionId=session1");
+    cy.visit("/sessions/session?sessionId=session1");
     cy.get("#answer-0").should("contain", "answer 1");
   });
 
   it("shows first classifier grade", () => {
-    cy.visit("/session?sessionId=session1");
+    cy.visit("/sessions/session?sessionId=session1");
     cy.get("#classifier-grade-0-0").should("contain", "Good");
   });
 
   it("shows Good after select grade for first expectation, background should be green", () => {
-    cy.visit("/session?sessionId=session1");
+    cy.visit("/sessions/session?sessionId=session1");
     cy.get("#select-grade-0-0").should("have.value", "");
     cy.route({
       method: "POST",
