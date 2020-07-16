@@ -42,7 +42,7 @@ export const NavBar = ({ title }: { title: string }) => {
           <ListItemIcon>
             <ListIcon />
           </ListItemIcon>
-          <ListItemText primary="Sessions" />
+          <ListItemText primary="Grading" />
         </ListItem>
       </List>
     );
