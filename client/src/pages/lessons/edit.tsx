@@ -18,7 +18,7 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import withLocation from "wrap-with-location";
 import { Lesson } from "types";
 import { fetchLesson, updateLesson } from "api";
-import NavBar from "../components/nav-bar";
+import NavBar from "../../components/nav-bar";
 
 const theme = createMuiTheme({
   palette: {
