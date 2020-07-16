@@ -1,4 +1,3 @@
-import { withPrefix } from "gatsby";
 import React from "react";
 import {
   MuiThemeProvider,
@@ -14,14 +13,12 @@ import TableHead from "@material-ui/core/TableHead";
 import TablePagination from "@material-ui/core/TablePagination";
 import TableRow from "@material-ui/core/TableRow";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
-import { Router, Link } from "@reach/router";
-import { Edge, Session } from "types";
-import "styles/layout.css";
+import { Link } from "@reach/router";
+import { Edge } from "types";
 import { Checkbox } from "@material-ui/core";
-import { fetchSessions } from "api";
 
-import SessionPage from "./session";
-import { template } from "@babel/core";
+import { fetchSessions } from "api";
+import NavBar from "../components/nav-bar";
 
 const theme = createMuiTheme({
   palette: {
@@ -218,10 +215,12 @@ export const SessionsTable = ({ path }: { path: string }) => {
   );
 };
 
-const SessionsPage = ({ path }: { path: string }) => {
+const SessionsPage = ({ path, children }: { path: string; children: any }) => {
   return (
     <MuiThemeProvider theme={theme}>
+      <NavBar title="Sessions" />
       <SessionsTable path={path} />
+      {children}
     </MuiThemeProvider>
   );
 };
