@@ -71,8 +71,8 @@ const LessonEdit = ({ search }: { search: any }) => {
         hints: [{ text: "" }],
       },
     ],
-    createdAt: 0,
-    updatedAt: 0,
+    createdAt: new Date(0),
+    updatedAt: new Date(0),
   };
 
   const [lesson, setLesson] = React.useState<Lesson>(inititialLesson);
@@ -98,27 +98,27 @@ const LessonEdit = ({ search }: { search: any }) => {
     };
   }, []);
 
-  function handleLessonNameChange(name: string) {
+  function handleLessonNameChange(name: string): void {
     setChange(true);
     setLesson({ ...lesson, name: name });
   }
 
-  function handleIntroChange(intro: string) {
+  function handleIntroChange(intro: string): void {
     setChange(true);
     setLesson({ ...lesson, intro: intro });
   }
 
-  function handleQuestionChange(question: string) {
+  function handleQuestionChange(question: string): void {
     setChange(true);
     setLesson({ ...lesson, question: question });
   }
 
-  function handleConclusionChange(conclusion: string) {
+  function handleConclusionChange(conclusion: string): void {
     setChange(true);
     setLesson({ ...lesson, conclusion: conclusion });
   }
 
-  function handleExpectationChange(exp: string, index: number) {
+  function handleExpectationChange(exp: string, index: number): void {
     setChange(true);
     const copyLesson = { ...lesson };
     const copyExpectations = [...copyLesson.expectations] as Array<any>;
@@ -128,7 +128,7 @@ const LessonEdit = ({ search }: { search: any }) => {
     setLesson({ ...lesson, expectations: copyExpectations });
   }
 
-  function handleHintChange(hnt: string, eIndex: number, hIndex: number) {
+  function handleHintChange(hnt: string, eIndex: number, hIndex: number): void {
     setChange(true);
     const copyLesson = { ...lesson };
     const copyExpectations = [...copyLesson.expectations] as Array<any>;
@@ -147,21 +147,25 @@ const LessonEdit = ({ search }: { search: any }) => {
 
   function handleSave() {
     const converted = encodeURI(JSON.stringify(lesson));
-    console.log("converted", converted);
+    let mounted = false;
     updateLesson(lesson.lessonId, converted)
-      .then((updated) => {
-        console.log(`fetchUpdateLesson got`, updated);
-        if (updated !== undefined) {
-          setUpdated(updated);
+      .then((lesson) => {
+        console.log(`fetchUpdateLesson got`, lesson);
+        if (mounted) {
+          if (lesson !== undefined) {
+            setCopyLesson(lesson);
+            setLesson(lesson);
+          }
         }
-        setCopyLesson(updated);
-        setLesson(updated);
       })
       .catch((err) => console.error(err));
     navigate(`/lessons`);
+    return () => {
+      mounted = false;
+    };
   }
 
-  function handleAddExpectation() {
+  function handleAddExpectation(): void {
     setChange(true);
     const copyLesson = { ...lesson };
     const copyExpectations = [...copyLesson.expectations] as Array<any>;
@@ -172,7 +176,7 @@ const LessonEdit = ({ search }: { search: any }) => {
     setLesson({ ...lesson, expectations: copyExpectations });
   }
 
-  function handleRemoveExpectation(exp: string) {
+  function handleRemoveExpectation(exp: string): void {
     setChange(true);
     const copyLesson = { ...lesson };
     let copyExpectations = [...copyLesson.expectations] as Array<any>;
@@ -182,7 +186,7 @@ const LessonEdit = ({ search }: { search: any }) => {
     setLesson({ ...lesson, expectations: copyExpectations });
   }
 
-  function handleAddHint(index: number) {
+  function handleAddHint(index: number): void {
     setChange(true);
     console.log("Add Hint");
     const copyLesson = { ...lesson };
@@ -193,7 +197,7 @@ const LessonEdit = ({ search }: { search: any }) => {
     setLesson({ ...lesson, expectations: copyExpectations });
   }
 
-  function handleRemoveHint(eIdx: number, hint: string) {
+  function handleRemoveHint(eIdx: number, hint: string): void {
     setChange(true);
     console.log("Remove Hint");
     const copyLesson = { ...lesson };
@@ -224,7 +228,7 @@ const LessonEdit = ({ search }: { search: any }) => {
           <TextField
             id="intro"
             key="intro"
-            label="Intro"
+            label="Introduction"
             value={lesson.intro ? lesson.intro : ""}
             onChange={(e) => {
               handleIntroChange(e.target.value);
@@ -384,12 +388,16 @@ const LessonEdit = ({ search }: { search: any }) => {
         </div>
       </form>
 
-      <div id="save-button">
-        {change ? <Button onClick={handleSave}>Save</Button> : null}
+      <div>
+        {change ? (
+          <Button id="save-button" onClick={handleSave}>
+            Save
+          </Button>
+        ) : null}
       </div>
-      <div id="save-button">
-        {/* {change ? <Button onClick={handleRevert}>Revert</Button> : null} */}
-      </div>
+      {/* <div>
+        {change ? <Button onClick={handleRevert}>Revert</Button> : null}
+      </div> */}
     </div>
   );
 };

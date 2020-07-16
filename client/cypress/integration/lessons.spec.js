@@ -7,48 +7,22 @@ describe("lessons screen", () => {
       status: 200,
       response: {
         data: {
-          lessons: [
-            {
-              lessonName: "lesson 1",
-              lessonId: "lesson1",
-              expectations: [
-                {
-                  expectation: "expectation 1",
+          lessons: {
+            edges: [
+              {
+                node: {
+                  lessonId: "lesson1",
+                  name: "lesson 1",
                 },
-                {
-                  expectation: "expectation 2",
+              },
+              {
+                node: {
+                  lessonId: "lesson2",
+                  name: "lesson 2",
                 },
-              ],
-              hints: [
-                {
-                  hint: "hint 1",
-                },
-                {
-                  expectation: "hint 2",
-                },
-              ],
-            },
-            {
-              lessonName: "lesson 2",
-              lessonId: "lesson2",
-              expectations: [
-                {
-                  expectation: "expectation 1",
-                },
-                {
-                  expectation: "expectation 2",
-                },
-              ],
-              hints: [
-                {
-                  hint: "hint 1",
-                },
-                {
-                  expectation: "hint 2",
-                },
-              ],
-            },
-          ],
+              },
+            ],
+          },
         },
         errors: null,
       },
@@ -63,5 +37,31 @@ describe("lessons screen", () => {
     cy.visit("/lessons");
     const tableHead = cy.get("table thead tr");
     tableHead.get("th").eq(0).should("contain", "Lesson");
+  });
+
+  it("displays 2 lesson names by row", () => {
+    cy.visit("/lessons");
+    const tableBody = cy.get("table tbody");
+    tableBody.get("tr").should("have.length", 2);
+    cy.get("table>tbody>tr:nth-child(1)>td:nth-child(1)").should(
+      "contain",
+      "lesson 1"
+    );
+    cy.get("table>tbody>tr:nth-child(2)>td:nth-child(1)").should(
+      "contain",
+      "lesson 2"
+    );
+  });
+
+  it("opens eddit for a lesson on tap link", () => {
+    cy.visit("/lessons");
+    cy.get("#lesson-name-0 a").click();
+    cy.get("#header").should("contain", "Edit");
+  });
+
+  it("clicks on create lesson and oppens to an edit page for the lesson", () => {
+    cy.visit("/lessons");
+    cy.get("#create-button").click();
+    cy.get("#header").should("contain", "Edit");
   });
 });

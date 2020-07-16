@@ -52,10 +52,15 @@ export interface UserResponse {
   expectationScores: ExpectationScore[];
 }
 
+export interface SessionLesson {
+  name: string;
+}
+
 export interface UserSession {
   username: string;
   score: number;
   question: Question;
+  lesson: SessionLesson;
   userResponses: UserResponse[];
 }
 
@@ -84,8 +89,8 @@ export interface Lesson {
   question: string;
   conclusion: string;
   expectations: LessonExpectation[];
-  createdAt: number;
-  updatedAt: number;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface LessonEdge {
