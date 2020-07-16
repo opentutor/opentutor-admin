@@ -90,12 +90,19 @@ const SessionTable = ({ search }: { search: any }) => {
 
   return (
     <Paper className={classes.root}>
-      <div id="session-display-name">{sessionId ? sessionId : ""}</div>
-      <div id="username">
+      <div id="session-display-name" key="session-display-name">
+        {userSession && userSession.lesson.name
+          ? userSession.lesson.name
+          : "No Lesson Name"}
+      </div>
+      <div id="username" key="username">
         {" "}
         {userSession && userSession.username ? userSession.username : "Guest"}
       </div>
-      <div id="Date"> {date ? date : ""}</div>
+      <div id="Date" key="Date">
+        {" "}
+        {date ? date : ""}
+      </div>
       <div id="question"> {userSession ? userSession.question.text : ""} </div>
       <div id="score">
         {" "}
@@ -130,7 +137,12 @@ const SessionTable = ({ search }: { search: any }) => {
               // .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((row, i) => {
                 return (
-                  <TableRow hover role="checkbox" tabIndex={-1} key={row.text}>
+                  <TableRow
+                    hover
+                    role="checkbox"
+                    tabIndex={-1}
+                    key={`text-${i}`}
+                  >
                     <TableCell
                       key={`answer-${i}`}
                       id={`answer-${i}`}
@@ -162,12 +174,14 @@ const SessionTable = ({ search }: { search: any }) => {
                         }}
                         key={`grade-${i}-${j}`}
                         id={`grade-${i}-${j}`}
-                        align="right"
+                        align="left"
                       >
                         <Typography
                           key={`classifier-grade-${i}-${j}`}
                           id={`classifier-grade-${i}-${j}`}
                           align="right"
+                          component={"span"}
+                          style={{ display: "inline-block" }}
                         >
                           Classifier Grade:{" "}
                           {row.expectationScores[j]
@@ -179,11 +193,14 @@ const SessionTable = ({ search }: { search: any }) => {
                           key={`expectation-grade-${i}-${j}`}
                           id={`expectation-grade-${i}-${j}`}
                           align="right"
+                          component={"span"}
+                          style={{ display: "inline-block" }}
                         >
                           Grade:
                           <Select
                             labelId={`set-grade-${i}-${j}`}
                             id={`select-grade-${i}-${j}`}
+                            key={`select-grade-${i}-${j}`}
                             value={
                               row.expectationScores[j]
                                 ? row.expectationScores[j].graderGrade
@@ -192,20 +209,30 @@ const SessionTable = ({ search }: { search: any }) => {
                             name={`${i} ${j}`}
                             onChange={handleGradeExpectationChange}
                           >
-                            <MenuItem id={`empty-grade-${i}-${j}`} value="">
+                            <MenuItem
+                              id={`empty-grade-${i}-${j}`}
+                              key={`empty-grade-${i}-${j}`}
+                              value=""
+                            >
                               <em>Empty</em>
                             </MenuItem>
                             <MenuItem
                               id={`good-grade-${i}-${j}`}
+                              key={`good-grade-${i}-${j}`}
                               value={"Good"}
                             >
                               Good
                             </MenuItem>
-                            <MenuItem id={`bad-grade-${i}-${j}`} value={"Bad"}>
+                            <MenuItem
+                              id={`bad-grade-${i}-${j}`}
+                              key={`bad-grade-${i}-${j}`}
+                              value={"Bad"}
+                            >
                               Bad
                             </MenuItem>
                             <MenuItem
                               id={`neutral-grade-${i}-${j}`}
+                              key={`neutral-grade-${i}-${j}`}
                               value={"Neutral"}
                             >
                               Neutral

@@ -29,7 +29,7 @@ const theme = createMuiTheme({
 });
 
 const columns: ColumnDef[] = [
-  { id: "sessionId", label: "Session Id", minWidth: 170, align: "center" },
+  { id: "Session", label: "Session", minWidth: 170, align: "center" },
   { id: "username", label: "Username", minWidth: 170, align: "center" },
   { id: "date", label: "Date", minWidth: 170, align: "center" },
   {
@@ -62,11 +62,16 @@ interface DatedEdge {
   node: DatedSession;
 }
 
+interface DatedLesson {
+  name: string;
+}
+
 interface DatedSession {
   sessionId: string;
   username: string;
   createdAt: Date;
   updatedAt: Date;
+  lesson: DatedLesson;
   classifierGrade: number;
   grade: number;
 }
@@ -89,25 +94,31 @@ export const SessionsTable = ({ path }: { path: string }) => {
   const [showGraded, setShowGraded] = React.useState(false);
 
   React.useEffect(() => {
+    let mounted = true;
     fetchSessions()
       .then((sessions) => {
         console.log(`fetchSessions got`, sessions);
-        if (Array.isArray(sessions)) {
-          setSessions(sessions);
-        }
+        if (mounted) {
+          if (Array.isArray(sessions)) {
+            setSessions(sessions);
+          }
 
-        const tmp: any = sessions;
-        tmp.map((session: DatedEdge, i: number) => {
-          tmp[i].node.createdAt = new Date(session.node.createdAt);
-        });
-        setDatedSessions(
-          tmp.sort(
-            (a: DatedEdge, b: DatedEdge) =>
-              +b.node.createdAt - +a.node.createdAt
-          )
-        );
+          const tmp: any = sessions;
+          tmp.map((session: DatedEdge, i: number) => {
+            tmp[i].node.createdAt = new Date(session.node.createdAt);
+          });
+          setDatedSessions(
+            tmp.sort(
+              (a: DatedEdge, b: DatedEdge) =>
+                +b.node.createdAt - +a.node.createdAt
+            )
+          );
+        }
       })
       .catch((err) => console.error(err));
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -175,7 +186,9 @@ export const SessionsTable = ({ path }: { path: string }) => {
                       align="left"
                     >
                       <Link to={`session?sessionId=${row.node.sessionId}`}>
-                        {row.node.sessionId ? row.node.sessionId : ""}
+                        {row.node.lesson.name
+                          ? row.node.lesson.name
+                          : "No Lesson Name"}
                       </Link>
                     </TableCell>
                     <TableCell key={`username-${i}`} align="center">

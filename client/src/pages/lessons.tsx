@@ -16,9 +16,9 @@ import {
   Button,
 } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
-import { Link } from "@reach/router";
+import { Link, navigate } from "@reach/router";
 
-import { Lesson, LessonEdge } from "types";
+import { LessonEdge, LessonExpectation } from "types";
 import { fetchLessons, createLesson } from "api";
 import NavBar from "components/nav-bar";
 
@@ -32,6 +32,13 @@ const theme = createMuiTheme({
 
 const columns: ColumnDef[] = [
   { id: "sessionId", label: "Lesson Name", minWidth: 170, align: "center" },
+  {
+    id: "date",
+    label: "Date",
+    minWidth: 170,
+    align: "center",
+    format: (value: number): string => value.toLocaleString("en-US"),
+  },
 ];
 
 interface ColumnDef {
@@ -72,26 +79,40 @@ export const LessonsTable = ({ path }: { path: string }) => {
             hints: [{ text: "" }],
           },
         ],
-        updatedAt: 0,
-        createdAt: 0,
+        updatedAt: new Date(0),
+        createdAt: new Date(0),
       },
     },
   ];
 
   const [lessons, setLessons] = React.useState<LessonEdge[]>(initialLessons);
-  const [newLesson, setNewLesson] = React.useState<Lesson>();
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
   React.useEffect(() => {
+    let mounted = true;
     fetchLessons()
       .then((lessons) => {
         console.log(`fetchLessons got`, lessons);
-        if (Array.isArray(lessons)) {
-          setLessons(lessons);
+        if (mounted) {
+          if (Array.isArray(lessons)) {
+            const tmp: any = lessons;
+            lessons.map((lesson: LessonEdge, i: number) => {
+              lessons[i].node.updatedAt = new Date(lesson.node.updatedAt);
+            });
+            setLessons(
+              lessons.sort(
+                (a: LessonEdge, b: LessonEdge) =>
+                  +b.node.updatedAt - +a.node.updatedAt
+              )
+            );
+          }
         }
       })
       .catch((err) => console.error(err));
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -109,13 +130,8 @@ export const LessonsTable = ({ path }: { path: string }) => {
     createLesson()
       .then((newLesson) => {
         console.log(`fetchCreateLesson got`, newLesson);
-        if (newLesson !== undefined) {
-          setNewLesson(newLesson);
-        }
-        const copyLessons = [...lessons] as Array<any>;
-        copyLessons.push({ node: newLesson });
-        console.log(copyLessons);
-        setLessons(copyLessons);
+        const path = "/edit?lessonId=" + newLesson?.lessonId;
+        navigate(path);
       })
       .catch((err) => console.error(err));
   }
@@ -123,8 +139,9 @@ export const LessonsTable = ({ path }: { path: string }) => {
   return (
     <div>
       <div id="header">Lessons</div>
-      <div id="add">
+      <div>
         <Button
+          id="create-button"
           variant="contained"
           color="default"
           className={classes.button}
@@ -170,6 +187,11 @@ export const LessonsTable = ({ path }: { path: string }) => {
                         <Link to={`edit?lessonId=${row.node.lessonId}`}>
                           {row.node.name ? row.node.name : "No Lesson Name"}
                         </Link>
+                      </TableCell>
+                      <TableCell key={`date-${i}`} align="center">
+                        {row.node.updatedAt
+                          ? row.node.updatedAt.toLocaleString()
+                          : ""}
                       </TableCell>
                     </TableRow>
                   );

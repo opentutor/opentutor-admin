@@ -11,6 +11,9 @@ describe("sessions screen", () => {
             edges: [
               {
                 node: {
+                  lesson: {
+                    name: "lesson 1",
+                  },
                   sessionId: "session 1",
                   classifierGrade: 1,
                   grade: 1,
@@ -18,6 +21,9 @@ describe("sessions screen", () => {
               },
               {
                 node: {
+                  lesson: {
+                    name: "lesson 2",
+                  },
                   sessionId: "session 2",
                   classifierGrade: 0.5,
                   grade: null,
@@ -38,7 +44,7 @@ describe("sessions screen", () => {
   it("displays a table with headers Session Id, Username, Date, Classifier Grade, Grade", () => {
     cy.visit("/sessions");
     const tableHead = cy.get("table thead tr");
-    tableHead.get("th").eq(0).should("contain", "Session Id");
+    tableHead.get("th").eq(0).should("contain", "Session");
     tableHead.get("th").eq(1).should("contain", "Username");
     tableHead.get("th").eq(2).should("contain", "Date");
     tableHead.get("th").eq(3).should("contain", "Classifier Grade");
@@ -51,7 +57,7 @@ describe("sessions screen", () => {
     tableBody.get("tr").should("have.length", 2);
     cy.get("table>tbody>tr:nth-child(1)>td:nth-child(1)").should(
       "contain",
-      "session 2"
+      "lesson 2"
     );
     cy.get("table>tbody>tr:nth-child(1)>td:nth-child(4)").should(
       "contain",
@@ -70,7 +76,7 @@ describe("sessions screen", () => {
     tableBody.get("tr").should("have.length", 3);
     cy.get("table>tbody>tr:nth-child(1)>td:nth-child(1)").should(
       "contain",
-      "session 1"
+      "lesson 1"
     );
     cy.get("table>tbody>tr:nth-child(1)>td:nth-child(4)").should(
       "contain",
@@ -82,7 +88,7 @@ describe("sessions screen", () => {
     );
     cy.get("table>tbody>tr:nth-child(2)>td:nth-child(1)").should(
       "contain",
-      "session 2"
+      "lesson 2"
     );
     cy.get("table>tbody>tr:nth-child(2)>td:nth-child(4)").should(
       "contain",
@@ -103,6 +109,6 @@ describe("sessions screen", () => {
   it("opens grading for a session on tap link", () => {
     cy.visit("/sessions");
     cy.get("#session-0 a").click();
-    cy.get("#session-display-name").should("contain", "session 2");
+    cy.get("#session-display-name").should("contain", "No Lesson Name");
   });
 });

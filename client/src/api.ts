@@ -37,6 +37,9 @@ export async function fetchSessions(): Promise<Edge[]> {
                 updatedAt
                 classifierGrade
                 grade
+                lesson {
+                  name
+                }
               }
             }
             pageInfo {
@@ -74,6 +77,9 @@ export async function fetchUserSession(
                 classifierGrade
                 graderGrade
               }
+            }
+            lesson {
+              name
             }
           }
         }
@@ -113,6 +119,9 @@ export async function setGrade(
                 graderGrade
               }
             }
+            lesson {
+              name
+            }
           }
         }
         `,
@@ -148,6 +157,8 @@ export async function fetchLessons(): Promise<LessonEdge[]> {
                   text
                 }
               }
+              createdAt
+              updatedAt
             }
           }
         }
