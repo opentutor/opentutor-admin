@@ -1,15 +1,15 @@
 import { withPrefix } from "gatsby";
 import React from "react";
 import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
-
 import { Router, Link } from "@reach/router";
-import "styles/layout.css";
 
 import SessionPage from "./session";
 import SessionsPage from "./sessions";
 import CreatePage from "./lessons";
 import EditPage from "./edit";
-import { template } from "@babel/core";
+import NavBar from "../components/nav-bar";
+
+import "styles/layout.css";
 
 const theme = createMuiTheme({
   palette: {
@@ -19,12 +19,23 @@ const theme = createMuiTheme({
   },
 });
 
-export const AdminMenu = ({ path }: { path: string }) => {
+export const AdminMenu = ({
+  path,
+  children,
+}: {
+  path: string;
+  children: any;
+}) => {
   return (
     <div>
-      <nav>
-        <Link to="lessons">Lessons</Link> <Link to="sessions">Sessions</Link>
-      </nav>
+      <NavBar title="Home" />
+      <p>
+        <Link to="lessons">Lessons</Link>
+      </p>
+      <p>
+        <Link to="sessions">Sessions</Link>
+      </p>
+      {children}
     </div>
   );
 };
@@ -33,11 +44,14 @@ const IndexPage: React.FC = () => {
   return (
     <MuiThemeProvider theme={theme}>
       <Router>
-        <AdminMenu path={withPrefix("/")} />
-        <CreatePage path={withPrefix("/lessons")} />
-        <EditPage path={withPrefix("/lessons/edit")} />
-        <SessionsPage path={withPrefix("/sessions")} />
-        <SessionPage path={withPrefix("/sessions/session")} />
+        <AdminMenu path={withPrefix("/")}>
+          <CreatePage path="lessons">
+            <EditPage path="edit" />
+          </CreatePage>
+          <SessionsPage path="sessions">
+            <SessionPage path="session" />
+          </SessionsPage>
+        </AdminMenu>
       </Router>
     </MuiThemeProvider>
   );
