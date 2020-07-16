@@ -1,5 +1,5 @@
 module.exports = {
-  pathPrefix: `/grading`,
+  pathPrefix: `/admin`,
   siteMetadata: {
     title: `Open Tutor Grading`,
     description: ``,

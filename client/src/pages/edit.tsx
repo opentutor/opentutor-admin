@@ -1,22 +1,11 @@
+import { navigate } from "gatsby";
 import React from "react";
-import { Link } from "@reach/router";
 import {
   MuiThemeProvider,
   createMuiTheme,
   makeStyles,
-  Theme,
-  createStyles,
 } from "@material-ui/core/styles";
 import {
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Select,
-  MenuItem,
   Typography,
   Button,
   TextField,
@@ -24,16 +13,12 @@ import {
   AccordionDetails,
   AccordionSummary,
 } from "@material-ui/core";
-import AddIcon from "@material-ui/icons/Add";
-import RemoveIcon from "@material-ui/icons/Remove";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 
-import "styles/layout.css";
 import withLocation from "wrap-with-location";
 import { Lesson } from "types";
 import { fetchLesson, updateLesson } from "api";
-import LessonsPage from "./lessons";
-import { navigate } from "gatsby";
+import NavBar from "../components/nav-bar";
 
 const theme = createMuiTheme({
   palette: {
@@ -412,6 +397,7 @@ const LessonEdit = ({ search }: { search: any }) => {
 const EditPage = ({ path, search }: { path: string; search: any }) => {
   return (
     <MuiThemeProvider theme={theme}>
+      <NavBar title="Edit Lesson" />
       <LessonEdit search={search} />
     </MuiThemeProvider>
   );

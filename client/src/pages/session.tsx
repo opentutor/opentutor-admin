@@ -1,5 +1,6 @@
+import { withPrefix } from "gatsby";
 import React from "react";
-import { Link, navigate } from "@reach/router";
+import { Link } from "@reach/router";
 import {
   MuiThemeProvider,
   createMuiTheme,
@@ -19,10 +20,10 @@ import {
   Button,
 } from "@material-ui/core";
 
-import "styles/layout.css";
 import withLocation from "wrap-with-location";
 import { UserSession } from "types";
 import { fetchUserSession, setGrade } from "api";
+import NavBar from "../components/nav-bar";
 
 const theme = createMuiTheme({
   palette: {
@@ -219,7 +220,7 @@ const SessionTable = ({ search }: { search: any }) => {
           </TableBody>
         </Table>
       </TableContainer>
-      <Link to="/sessions" style={{ textDecoration: "none" }}>
+      <Link to={withPrefix("/sessions")} style={{ textDecoration: "none" }}>
         {" "}
         <Button variant="contained">Done</Button>{" "}
       </Link>
@@ -231,6 +232,7 @@ const SessionPage = ({ path, search }: { path: string; search: any }) => {
   console.log(path);
   return (
     <MuiThemeProvider theme={theme}>
+      <NavBar title="Grade Session" />
       <SessionTable search={search} />
     </MuiThemeProvider>
   );

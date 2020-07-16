@@ -1,4 +1,3 @@
-import { withPrefix } from "gatsby";
 import React from "react";
 import {
   MuiThemeProvider,
@@ -14,20 +13,14 @@ import {
   TableHead,
   TablePagination,
   TableRow,
-  FormControlLabel,
   Button,
-  IconButton,
 } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
-import RemoveIcon from "@material-ui/icons/Remove";
-import { Link, navigate } from "@reach/router";
-import "styles/layout.css";
+import { Link } from "@reach/router";
 
 import { Lesson, LessonEdge } from "types";
 import { fetchLessons, createLesson } from "api";
-import EditPage from "./edit";
-
-import { template } from "@babel/core";
+import NavBar from "components/nav-bar";
 
 const theme = createMuiTheme({
   palette: {
@@ -174,7 +167,7 @@ export const LessonsTable = ({ path }: { path: string }) => {
                         id={`lesson-name-${i}`}
                         align="left"
                       >
-                        <Link to={`/edit?lessonId=${row.node.lessonId}`}>
+                        <Link to={`edit?lessonId=${row.node.lessonId}`}>
                           {row.node.name ? row.node.name : "No Lesson Name"}
                         </Link>
                       </TableCell>
@@ -198,10 +191,12 @@ export const LessonsTable = ({ path }: { path: string }) => {
   );
 };
 
-const LessonsPage = ({ path }: { path: string }) => {
+const LessonsPage = ({ path, children }: { path: string; children: any }) => {
   return (
     <MuiThemeProvider theme={theme}>
+      <NavBar title="Lessons" />
       <LessonsTable path={path} />
+      {children}
     </MuiThemeProvider>
   );
 };
