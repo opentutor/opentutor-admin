@@ -33,7 +33,7 @@ export const AdminMenu = ({
         <Link to="lessons">Lessons</Link>
       </p>
       <p>
-        <Link to="sessions">Sessions</Link>
+        <Link to="sessions">Grading</Link>
       </p>
       {children}
     </div>
