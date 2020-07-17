@@ -205,7 +205,7 @@ export const SessionsTable = ({ path }: { path: string }) => {
                         : ""}
                     </TableCell>
                     <TableCell key={`classifier-grade-${i}`} align="center">
-                      {row.node.classifierGrade
+                      {row.node.classifierGrade || row.node.grade === 0
                         ? Math.trunc(row.node.classifierGrade * 100)
                         : "?"}
                     </TableCell>
