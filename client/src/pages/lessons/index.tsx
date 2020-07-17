@@ -14,7 +14,9 @@ import {
   TablePagination,
   TableRow,
   Button,
+  IconButton,
 } from "@material-ui/core";
+import LaunchIcon from "@material-ui/icons/Launch";
 import AddIcon from "@material-ui/icons/Add";
 import { Link, navigate } from "@reach/router";
 import { withPrefix } from "gatsby";
@@ -30,26 +32,6 @@ const theme = createMuiTheme({
     },
   },
 });
-
-const columns: ColumnDef[] = [
-  { id: "sessionId", label: "Lesson Name", minWidth: 170, align: "center" },
-  {
-    id: "date",
-    label: "Date",
-    minWidth: 170,
-    align: "center",
-    format: (value: number): string => value.toLocaleString("en-US"),
-  },
-];
-
-interface ColumnDef {
-  id: string;
-  name?: string;
-  label: string;
-  minWidth: number;
-  align?: "right" | "left" | "center";
-  format?: (v: number) => string;
-}
 
 const useStyles = makeStyles({
   root: {
@@ -139,6 +121,12 @@ export const LessonsTable = ({ path }: { path: string }) => {
       .catch((err) => console.error(err));
   }
 
+  function handleLaunch(id: string) {
+    const path = "/tutor?lesson=" + id;
+    console.log(path);
+    navigate(path);
+  }
+
   return (
     <div>
       <div id="header">Lessons</div>
@@ -160,15 +148,9 @@ export const LessonsTable = ({ path }: { path: string }) => {
           <Table stickyHeader aria-label="sticky table">
             <TableHead>
               <TableRow>
-                {columns.map((column) => (
-                  <TableCell
-                    key={column.id}
-                    align={column.align}
-                    style={{ minWidth: column.minWidth }}
-                  >
-                    {column.label}
-                  </TableCell>
-                ))}
+                <TableCell />
+                <TableCell align="center"> Lesson </TableCell>
+                <TableCell align="center"> Date </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -182,6 +164,17 @@ export const LessonsTable = ({ path }: { path: string }) => {
                       tabIndex={-1}
                       key={`lesson-${i}`}
                     >
+                      <TableCell
+                        key={`lesson-launch-${i}`}
+                        id={`lesson-launch-${i}`}
+                        align="left"
+                      >
+                        <IconButton
+                          onClick={() => handleLaunch(row.node.lessonId)}
+                        >
+                          <LaunchIcon />
+                        </IconButton>
+                      </TableCell>
                       <TableCell
                         key={`lesson-name-${i}`}
                         id={`lesson-name-${i}`}

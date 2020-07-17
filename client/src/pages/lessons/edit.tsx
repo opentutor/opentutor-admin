@@ -18,6 +18,7 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import withLocation from "wrap-with-location";
 import { Lesson } from "types";
 import { fetchLesson, updateLesson } from "api";
+import { withPrefix } from "gatsby";
 import NavBar from "../../components/nav-bar";
 
 const theme = createMuiTheme({
@@ -159,7 +160,7 @@ const LessonEdit = ({ search }: { search: any }) => {
         }
       })
       .catch((err) => console.error(err));
-    navigate(`/lessons`);
+    navigate(withPrefix(`/lessons`));
     return () => {
       mounted = false;
     };

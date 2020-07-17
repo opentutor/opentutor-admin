@@ -1,6 +1,6 @@
 import { withPrefix } from "gatsby";
 import React from "react";
-import { Link } from "@reach/router";
+import { Link, navigate } from "@reach/router";
 import {
   MuiThemeProvider,
   createMuiTheme,
@@ -18,8 +18,8 @@ import {
   MenuItem,
   Typography,
   Button,
+  IconButton,
 } from "@material-ui/core";
-
 import withLocation from "wrap-with-location";
 import { UserSession } from "types";
 import { fetchUserSession, setGrade } from "api";
@@ -67,6 +67,10 @@ const SessionTable = ({ search }: { search: any }) => {
       })
       .catch((err: any) => console.error(err));
   };
+
+  function handleDone(): void {
+    navigate(withPrefix(`/sessions`));
+  }
 
   React.useEffect(() => {
     let mounted = true;
@@ -142,6 +146,14 @@ const SessionTable = ({ search }: { search: any }) => {
                     tabIndex={-1}
                     key={`text-${i}`}
                   >
+                    {/* <TableCell
+                      key={`launch-${i}`}
+                      id={`launch-${i}`}
+                    >
+                      <IconButton>
+                        <LaunchIcon />
+                      </IconButton>
+                    </TableCell> */}
                     <TableCell
                       key={`answer-${i}`}
                       id={`answer-${i}`}
@@ -173,7 +185,6 @@ const SessionTable = ({ search }: { search: any }) => {
                           id={`classifier-grade-${i}-${j}`}
                           align="right"
                           component={"span"}
-                          style={{ display: "inline-block" }}
                         >
                           Classifier Grade:{" "}
                           {row.expectationScores[j]
@@ -181,14 +192,13 @@ const SessionTable = ({ search }: { search: any }) => {
                                 .classifierGrade
                             : ""}
                         </Typography>
-
+                        <br />
                         <Typography
                           component={'span'}
                           key={`expectation-grade-${i}-${j}`}
                           id={`expectation-grade-${i}-${j}`}
                           align="right"
                           component={"span"}
-                          style={{ display: "inline-block" }}
                         >
                           Grade:
                           <Select
@@ -241,10 +251,9 @@ const SessionTable = ({ search }: { search: any }) => {
           </TableBody>
         </Table>
       </TableContainer>
-      <Link to={withPrefix("/sessions")} style={{ textDecoration: "none" }}>
-        {" "}
-        <Button variant="contained">Done</Button>{" "}
-      </Link>
+      <Button variant="contained" onClick={handleDone}>
+        Done
+      </Button>
     </Paper>
   );
 };
