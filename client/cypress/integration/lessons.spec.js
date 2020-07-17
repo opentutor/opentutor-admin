@@ -33,21 +33,22 @@ describe("lessons screen", () => {
     });
   });
 
-  it("displays a table with headers Lesson", () => {
+  it("displays a table with header Lesson and Date", () => {
     cy.visit("/lessons");
     const tableHead = cy.get("table thead tr");
-    tableHead.get("th").eq(0).should("contain", "Lesson");
+    tableHead.get("th").eq(1).should("contain", "Lesson");
+    tableHead.get("th").eq(2).should("contain", "Date");
   });
 
   it("displays 2 lesson names by row", () => {
     cy.visit("/lessons");
     const tableBody = cy.get("table tbody");
     tableBody.get("tr").should("have.length", 2);
-    cy.get("table>tbody>tr:nth-child(1)>td:nth-child(1)").should(
+    cy.get("table>tbody>tr:nth-child(1)>td:nth-child(2)").should(
       "contain",
       "lesson 1"
     );
-    cy.get("table>tbody>tr:nth-child(2)>td:nth-child(1)").should(
+    cy.get("table>tbody>tr:nth-child(2)>td:nth-child(2)").should(
       "contain",
       "lesson 2"
     );
