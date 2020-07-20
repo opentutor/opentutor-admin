@@ -12,11 +12,24 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
+  Box,
+  Collapse,
+  IconButton,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
 } from "@material-ui/core";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-
+import AddIcon from "@material-ui/icons/Add";
+import RemoveIcon from "@material-ui/icons/Remove";
+import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
+import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
 import withLocation from "wrap-with-location";
-import { Lesson } from "types";
+import { Lesson, LessonExpectation } from "types";
 import { fetchLesson, updateLesson } from "api";
 import { withPrefix } from "gatsby";
 import NavBar from "../../components/nav-bar";
@@ -38,6 +51,9 @@ const useStyles = makeStyles({
       marginRight: theme.spacing(1),
       width: "100ch",
     },
+    "& > *": {
+      borderBottom: "unset",
+    },
   },
   button: {
     margin: theme.spacing(1),
@@ -55,6 +71,11 @@ const useStyles = makeStyles({
     maxHeight: 440,
   },
 });
+
+type ExpectationProp = {
+  row: LessonExpectation;
+  index: number;
+};
 
 const LessonEdit = ({ search }: { search: any }) => {
   const { lessonId } = search;
@@ -80,6 +101,7 @@ const LessonEdit = ({ search }: { search: any }) => {
   const [updated, setUpdated] = React.useState<Lesson>(inititialLesson);
   const [copyLesson, setCopyLesson] = React.useState<Lesson>(inititialLesson);
   const [change, setChange] = React.useState(false);
+  const [open, setOpen] = React.useState(false);
 
   React.useEffect(() => {
     let mounted = true;
@@ -249,132 +271,136 @@ const LessonEdit = ({ search }: { search: any }) => {
             variant="outlined"
           />
         </div>
-        <div className={classes.root}>
-          <Accordion>
-            <AccordionSummary
-              expandIcon={<ExpandMoreIcon />}
-              aria-controls="panel1bh-content"
-              id="panel1bh-header"
-            >
-              <Typography className={classes.heading}>Expectations</Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              <div>
-                <div id="add-expectaion">
-                  <Button
-                    variant="contained"
-                    color="default"
-                    className={classes.button}
-                    // startIcon={<RemoveIcon />}
-                    onClick={handleAddExpectation}
-                  >
-                    Add Expectation
-                  </Button>
-                </div>
-                {lesson?.expectations.map((expecation, i) => {
-                  return (
-                    <Accordion key={`expectation-${i}`} id={`expectation-${i}`}>
-                      <AccordionSummary
-                        expandIcon={<ExpandMoreIcon />}
-                        aria-controls="panel1bh-content"
-                        id="panel1bh-header"
+        <TableContainer component={Paper}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell />
+                <TableCell>Expectation</TableCell>
+                <TableCell />
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              <IconButton
+                aria-label="add hint"
+                size="small"
+                onClick={handleAddExpectation}
+              >
+                <AddIcon />
+              </IconButton>
+              {lesson?.expectations.map((row, i) => {
+                return (
+                  <React.Fragment>
+                    <TableRow className={classes.root}>
+                      <TableCell>
+                        <IconButton
+                          aria-label="remove expectaion"
+                          size="small"
+                          onClick={() => {
+                            handleRemoveExpectation(row.expectation);
+                          }}
+                        >
+                          <RemoveIcon />
+                        </IconButton>
+                      </TableCell>
+                      <TableCell>
+                        <TextField
+                          margin="normal"
+                          name="expectations"
+                          id={`edit-expectation-${i}`}
+                          key={`edit-expectation-${i}`}
+                          label={`Expectation ${i + 1}`}
+                          value={row.expectation ? row.expectation : ""}
+                          onChange={(e) => {
+                            handleExpectationChange(e.target.value, i);
+                          }}
+                          variant="outlined"
+                          fullWidth
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <IconButton
+                          aria-label="expand expectation"
+                          size="small"
+                          onClick={() => setOpen(!open)}
+                        >
+                          {open ? (
+                            <KeyboardArrowUpIcon />
+                          ) : (
+                            <KeyboardArrowDownIcon />
+                          )}
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell
+                        style={{ paddingBottom: 0, paddingTop: 0 }}
+                        colSpan={6}
                       >
-                        <div>
-                          <TextField
-                            margin="normal"
-                            name="expectations"
-                            id={`edit-expectation-${i}`}
-                            key={`edit-expectation-${i}`}
-                            label={`Expectation ${i + 1}`}
-                            value={
-                              expecation.expectation
-                                ? expecation.expectation
-                                : ""
-                            }
-                            onChange={(e) => {
-                              handleExpectationChange(e.target.value, i);
-                            }}
-                            variant="outlined"
-                            fullWidth
-                          />
-                          <Button
-                            variant="contained"
-                            color="default"
-                            className={classes.button}
-                            // startIcon={<RemoveIcon />}
-                            onClick={(e) => {
-                              handleRemoveExpectation(expecation.expectation);
-                            }}
-                          >
-                            Remove Expectation
-                          </Button>
-                        </div>
-                      </AccordionSummary>
-                      <AccordionDetails>
-                        <Accordion>
-                          <AccordionSummary
-                            expandIcon={<ExpandMoreIcon />}
-                            aria-controls="panel2bh-content"
-                            id="panel2bh-header"
-                          >
-                            <Typography className={classes.heading}>
-                              Hints
-                            </Typography>
-                          </AccordionSummary>
-                          <AccordionDetails>
-                            <div>
-                              <div id="add-hint">
-                                <Button
-                                  variant="contained"
-                                  color="default"
-                                  className={classes.button}
-                                  // startIcon={<AddIcon />}
-                                  onClick={(e) => {
-                                    handleAddHint(i);
-                                  }}
-                                >
-                                  Add Hint
-                                </Button>
-                              </div>
-                              {expecation.hints.map((hint, j) => {
-                                return (
-                                  <div key={`hint-${j}`} id={`hint-${j}`}>
-                                    <TextField
-                                      margin="normal"
-                                      id={`edit-hint-${j}`}
-                                      key={`edit-hint-${j}`}
-                                      label={`Hint ${j + 1}`}
-                                      value={hint.text ? hint.text : ""}
-                                      onChange={(e) => {
-                                        handleHintChange(e.target.value, i, j);
-                                      }}
-                                      variant="outlined"
-                                    />
-                                    <Button
-                                      variant="contained"
-                                      color="default"
-                                      className={classes.button}
-                                      // startIcon={<AddIcon />}
-                                      onClick={(e) => {
-                                        handleRemoveHint(i, hint.text);
-                                      }}
-                                    >
-                                      Remove Hint
-                                    </Button>
-                                  </div>
-                                );
-                              })}
-                            </div>
-                          </AccordionDetails>
-                        </Accordion>
-                      </AccordionDetails>
-                    </Accordion>
-                  );
-                })}
-              </div>
-            </AccordionDetails>
-          </Accordion>
-        </div>
+                        <Collapse in={open} timeout="auto" unmountOnExit>
+                          <Box margin={1}>
+                            <IconButton
+                              aria-label="add hint"
+                              size="small"
+                              onClick={() => {
+                                handleAddHint(i);
+                              }}
+                            >
+                              <AddIcon />
+                            </IconButton>
+                            <Table size="small" aria-label="purchases">
+                              <TableHead>
+                                <TableRow>
+                                  <TableCell />
+                                  <TableCell>Hint</TableCell>
+                                  <TableCell />
+                                </TableRow>
+                              </TableHead>
+                              <TableBody>
+                                {row.hints.map((hint, j) => (
+                                  <TableRow key={`hint-${i}-${j}`}>
+                                    <TableCell>
+                                      <IconButton
+                                        aria-label="remove expectaion"
+                                        size="small"
+                                        onClick={() => {
+                                          handleRemoveHint(i, hint.text);
+                                        }}
+                                      >
+                                        <RemoveIcon />
+                                      </IconButton>
+                                    </TableCell>
+                                    <TableCell>
+                                      <TextField
+                                        margin="normal"
+                                        id={`edit-hint-${i}-${j}`}
+                                        key={`edit-hint-${i}-${j}`}
+                                        label={`Hint ${j + 1}`}
+                                        value={hint.text ? hint.text : ""}
+                                        onChange={(e) => {
+                                          handleHintChange(
+                                            e.target.value,
+                                            i,
+                                            j
+                                          );
+                                        }}
+                                        variant="outlined"
+                                      />
+                                    </TableCell>
+                                  </TableRow>
+                                ))}
+                              </TableBody>
+                            </Table>
+                          </Box>
+                        </Collapse>
+                      </TableCell>
+                    </TableRow>
+                  </React.Fragment>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </TableContainer>
         <div>
           <TextField
             id="conclusion"
