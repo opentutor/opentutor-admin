@@ -290,7 +290,7 @@ const LessonEdit = ({ search }: { search: any }) => {
               </IconButton>
               {lesson?.expectations.map((row, i) => {
                 return (
-                  <React.Fragment>
+                  <React.Fragment key={`expectation-${i}`}>
                     <TableRow className={classes.root}>
                       <TableCell>
                         <IconButton
