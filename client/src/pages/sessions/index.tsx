@@ -19,7 +19,8 @@ import { Edge } from "types";
 import { Checkbox } from "@material-ui/core";
 
 import { fetchSessions } from "api";
-import NavBar from "../../components/nav-bar";
+import NavBar from "components/nav-bar";
+import "styles/layout.css";
 
 const theme = createMuiTheme({
   palette: {

@@ -1,3 +1,4 @@
+import { withPrefix } from "gatsby";
 import React from "react";
 import {
   MuiThemeProvider,
@@ -19,11 +20,11 @@ import {
 import LaunchIcon from "@material-ui/icons/Launch";
 import AddIcon from "@material-ui/icons/Add";
 import { Link, navigate } from "@reach/router";
-import { withPrefix } from "gatsby";
 
-import { LessonEdge, LessonExpectation } from "types";
+import { LessonEdge } from "types";
 import { fetchLessons, createLesson } from "api";
 import NavBar from "components/nav-bar";
+import "styles/layout.css";
 
 const theme = createMuiTheme({
   palette: {
@@ -45,7 +46,7 @@ const useStyles = makeStyles({
   },
 });
 
-export const LessonsTable = ({ path }: { path: string }) => {
+export const LessonsTable = (props: { location: any }) => {
   const classes = useStyles();
   const initialLessons = [
     {
@@ -122,9 +123,9 @@ export const LessonsTable = ({ path }: { path: string }) => {
   }
 
   function handleLaunch(id: string) {
-    const path = "/tutor?lesson=" + id;
-    console.log(path);
-    navigate(path);
+    const host = process.env.TUTOR_ENDPOINT || props.location.origin;
+    const path = `${host}/tutor?lesson=${id}`;
+    window.location.href = path;
   }
 
   return (
@@ -213,12 +214,12 @@ export const LessonsTable = ({ path }: { path: string }) => {
   );
 };
 
-const LessonsPage = ({ path, children }: { path: string; children: any }) => {
+const LessonsPage = (props: { location: any; path: string; children: any }) => {
   return (
     <MuiThemeProvider theme={theme}>
       <NavBar title="Lessons" />
-      <LessonsTable path={path} />
-      {children}
+      <LessonsTable location={props.location} />
+      {props.children}
     </MuiThemeProvider>
   );
 };
