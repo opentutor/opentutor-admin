@@ -32,7 +32,8 @@ import withLocation from "wrap-with-location";
 import { Lesson, LessonExpectation } from "types";
 import { fetchLesson, updateLesson } from "api";
 import { withPrefix } from "gatsby";
-import NavBar from "../../components/nav-bar";
+import NavBar from "components/nav-bar";
+import "styles/layout.css";
 
 const theme = createMuiTheme({
   palette: {

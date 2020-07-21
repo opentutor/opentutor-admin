@@ -14,7 +14,7 @@ import {
   UpdateLesson,
 } from "types";
 
-const GRADER_GRAPHQL_ENDPOINT =
+export const GRADER_GRAPHQL_ENDPOINT =
   process.env.GRADER_GRAPHQL_ENDPOINT || "/grading-api/graphql/";
 
 interface GQLResponse<T> {

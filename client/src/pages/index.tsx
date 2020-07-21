@@ -40,12 +40,12 @@ export const AdminMenu = ({
   );
 };
 
-const IndexPage: React.FC = () => {
+const IndexPage: React.FC = (props: any) => {
   return (
     <MuiThemeProvider theme={theme}>
       <Router>
         <AdminMenu path={withPrefix("/")}>
-          <CreatePage path={withPrefix("lessons")}>
+          <CreatePage path={withPrefix("lessons")} location={props.location}>
             <EditPage path={withPrefix("/lessons/edit")} />
           </CreatePage>
           <SessionsPage path={withPrefix("sessions")}>
