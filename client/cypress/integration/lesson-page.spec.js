@@ -10,6 +10,7 @@ describe("edit screen", () => {
           lesson: {
             lessonId: "lesson",
             name: "lesson",
+            conclusion: ["conclusion"],
             expectations: [
               {
                 expectation: "expectation 1",
