@@ -1,4 +1,5 @@
 import { navigate } from "gatsby";
+import { v4 as uuid } from "uuid";
 import React from "react";
 import {
   MuiThemeProvider,
@@ -75,7 +76,9 @@ type ExpectationProp = {
 };
 
 const LessonEdit = ({ search }: { search: any }) => {
-  const { lessonId } = search;
+  let { lessonId } = search;
+  const { originalId } = lessonId;
+  //console.log(lessonId);
   const classes = useStyles();
   const inititialLesson = {
     id: "",
@@ -83,7 +86,7 @@ const LessonEdit = ({ search }: { search: any }) => {
     name: "",
     intro: "",
     question: "",
-    conclusion: "",
+    conclusion: [""],
     expectations: [
       {
         expectation: "",
@@ -98,24 +101,30 @@ const LessonEdit = ({ search }: { search: any }) => {
   const [updated, setUpdated] = React.useState<Lesson>(inititialLesson);
   const [copyLesson, setCopyLesson] = React.useState<Lesson>(inititialLesson);
   const [change, setChange] = React.useState(false);
-  const [open, setOpen] = React.useState(false);
+  const [create, setCreate] = React.useState(false);
+  const [expectationOpen, setExpectationOpen] = React.useState(false);
 
   React.useEffect(() => {
-    let mounted = true;
-    fetchLesson(lessonId)
-      .then((lesson: Lesson) => {
-        console.log("fetchLesson got", lesson);
-        if (mounted) {
-          if (lesson !== undefined) {
-            setCopyLesson(lesson);
-            setLesson(lesson);
+    if (lessonId !== "new") {
+      let mounted = true;
+      fetchLesson(lessonId)
+        .then((lesson: Lesson) => {
+          console.log("fetchLesson got", lesson);
+          if (mounted) {
+            if (lesson !== undefined) {
+              setLesson(lesson);
+            }
           }
-        }
-      })
-      .catch((err: any) => console.error(err));
-    return () => {
-      mounted = false;
-    };
+        })
+        .catch((err: any) => console.error(err));
+      return () => {
+        mounted = false;
+      };
+    } else {
+      lessonId = uuid();
+      console.log(lessonId);
+      setLesson({ ...lesson, lessonId: lessonId });
+    }
   }, []);
 
   function handleLessonNameChange(name: string): void {
@@ -138,9 +147,12 @@ const LessonEdit = ({ search }: { search: any }) => {
     setLesson({ ...lesson, question: question });
   }
 
-  function handleConclusionChange(conclusion: string): void {
+  function handleConclusionChange(con: string, index: number): void {
     setChange(true);
-    setLesson({ ...lesson, conclusion: conclusion });
+    const copyLesson = { ...lesson };
+    const copyConclusion = [...copyLesson.conclusion] as Array<any>;
+    copyConclusion[index] = con;
+    setLesson({ ...lesson, conclusion: copyConclusion });
   }
 
   function handleExpectationChange(exp: string, index: number): void {
@@ -172,8 +184,14 @@ const LessonEdit = ({ search }: { search: any }) => {
 
   function handleSave() {
     const converted = encodeURI(JSON.stringify(lesson));
+    let id = "";
     let mounted = false;
-    updateLesson(lesson.lessonId, converted)
+    if (originalId !== "new") {
+      id = lesson.lessonId;
+    } else {
+      id = originalId;
+    }
+    updateLesson(id, converted)
       .then((lesson) => {
         console.log(`fetchUpdateLesson got`, lesson);
         if (mounted) {
@@ -213,6 +231,22 @@ const LessonEdit = ({ search }: { search: any }) => {
       (expectations) => expectations.expectation !== exp
     );
     setLesson({ ...lesson, expectations: copyExpectations });
+  }
+
+  function handleAddConclusion(): void {
+    setChange(true);
+    const copyLesson = { ...lesson };
+    const copyConclusion = [...copyLesson.conclusion] as Array<any>;
+    copyConclusion.push("");
+    setLesson({ ...lesson, conclusion: copyConclusion });
+  }
+
+  function handleRemoveConclusion(exp: string): void {
+    setChange(true);
+    const copyLesson = { ...lesson };
+    let copyConclusion = [...copyLesson.conclusion] as Array<any>;
+    copyConclusion = copyConclusion.filter((conclusion) => conclusion !== exp);
+    setLesson({ ...lesson, conclusion: copyConclusion });
   }
 
   function handleAddHint(index: number): void {
@@ -339,9 +373,9 @@ const LessonEdit = ({ search }: { search: any }) => {
                         <IconButton
                           aria-label="expand expectation"
                           size="small"
-                          onClick={() => setOpen(!open)}
+                          onClick={() => setExpectationOpen(!expectationOpen)}
                         >
-                          {open ? (
+                          {expectationOpen ? (
                             <KeyboardArrowUpIcon />
                           ) : (
                             <KeyboardArrowDownIcon />
@@ -354,9 +388,13 @@ const LessonEdit = ({ search }: { search: any }) => {
                         style={{ paddingBottom: 0, paddingTop: 0 }}
                         colSpan={6}
                       >
-                        <Collapse in={open} timeout="auto" unmountOnExit>
+                        <Collapse
+                          in={expectationOpen}
+                          timeout="auto"
+                          unmountOnExit
+                        >
                           <Box margin={1}>
-                            <Table size="small" aria-label="purchases">
+                            <Table size="small" aria-label="hint">
                               <TableHead>
                                 <TableRow>
                                   <TableCell>Hint</TableCell>
@@ -420,7 +458,7 @@ const LessonEdit = ({ search }: { search: any }) => {
             </TableBody>
           </Table>
         </TableContainer>
-        <div>
+        {/* <div>
           <TextField
             id="conclusion"
             key="conclusion"
@@ -431,7 +469,57 @@ const LessonEdit = ({ search }: { search: any }) => {
             }}
             variant="outlined"
           />
-        </div>
+        </div> */}
+        <TableContainer>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>{`Conclusion`}</TableCell>
+                <TableCell />
+                <TableCell>
+                  {" "}
+                  <IconButton
+                    aria-label="add conclusion"
+                    size="small"
+                    onClick={handleAddConclusion}
+                  >
+                    <AddIcon />
+                  </IconButton>
+                </TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {lesson.conclusion.map((row, i) => (
+                <TableRow key={`conclusion-${i}`}>
+                  <TableCell>
+                    <TextField
+                      margin="normal"
+                      id={`edit-conslusion-${i}`}
+                      key={`edit-conclusion-${i}=`}
+                      label={`conclusion ${i + 1}`}
+                      value={row ? row : ""}
+                      onChange={(e) => {
+                        handleConclusionChange(e.target.value, i);
+                      }}
+                      variant="outlined"
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <IconButton
+                      aria-label="remove conclusion"
+                      size="small"
+                      onClick={() => {
+                        handleRemoveConclusion(row);
+                      }}
+                    >
+                      <RemoveIcon />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
       </form>
 
       <div>
