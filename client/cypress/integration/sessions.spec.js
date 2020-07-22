@@ -57,7 +57,7 @@ describe("sessions screen", () => {
     tableBody.get("tr").should("have.length", 2);
     cy.get("table>tbody>tr:nth-child(1)>td:nth-child(1)").should(
       "contain",
-      "lesson 2"
+      "session 2"
     );
     cy.get("table>tbody>tr:nth-child(1)>td:nth-child(4)").should(
       "contain",
@@ -76,7 +76,7 @@ describe("sessions screen", () => {
     tableBody.get("tr").should("have.length", 3);
     cy.get("table>tbody>tr:nth-child(1)>td:nth-child(1)").should(
       "contain",
-      "lesson 1"
+      "session 1"
     );
     cy.get("table>tbody>tr:nth-child(1)>td:nth-child(4)").should(
       "contain",
@@ -88,7 +88,7 @@ describe("sessions screen", () => {
     );
     cy.get("table>tbody>tr:nth-child(2)>td:nth-child(1)").should(
       "contain",
-      "lesson 2"
+      "session 2"
     );
     cy.get("table>tbody>tr:nth-child(2)>td:nth-child(4)").should(
       "contain",

@@ -8,6 +8,7 @@ export interface Edge {
 
 export interface PageInfo {
   hasNextPage: boolean;
+  endCursor: string;
 }
 
 export interface SessionsData {
@@ -19,6 +20,10 @@ export interface FetchSessions {
   sessions: SessionsData;
 }
 
+export interface SessionLesson {
+  name: string;
+}
+
 export interface Session {
   sessionId: string;
   username: string;
@@ -26,6 +31,7 @@ export interface Session {
   updatedAt: number;
   classifierGrade: number;
   grade: number;
+  lesson: SessionLesson;
 }
 
 export enum Classification {

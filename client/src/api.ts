@@ -12,6 +12,7 @@ import {
   FetchLesson,
   CreateLesson,
   UpdateLesson,
+  SessionsData,
 } from "types";
 
 export const GRADER_GRAPHQL_ENDPOINT =
@@ -22,13 +23,13 @@ interface GQLResponse<T> {
   data: T;
 }
 
-export async function fetchSessions(): Promise<Edge[]> {
+export async function fetchSessions(): Promise<SessionsData> {
   const result = await axios.post<GQLResponse<FetchSessions>>(
     GRADER_GRAPHQL_ENDPOINT,
     {
       query: `
-        {
-          sessions {
+      query{
+          sessions{
             edges {
               cursor node {
                 sessionId
@@ -43,6 +44,7 @@ export async function fetchSessions(): Promise<Edge[]> {
               }
             }
             pageInfo {
+              endCursor
               hasNextPage
             }
           }
@@ -50,7 +52,7 @@ export async function fetchSessions(): Promise<Edge[]> {
         `,
     }
   );
-  return result.data.data.sessions.edges;
+  return result.data.data.sessions;
 }
 
 export async function fetchUserSession(
