@@ -95,7 +95,7 @@ export interface Lesson {
   name: string;
   intro: string;
   question: string;
-  conclusion: string;
+  conclusion: string[];
   expectations: LessonExpectation[];
   createdAt: Date;
   updatedAt: Date;

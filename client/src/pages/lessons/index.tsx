@@ -56,7 +56,7 @@ export const LessonsTable = (props: { location: any }) => {
         name: "",
         intro: "",
         question: "",
-        conclusion: "",
+        conclusion: [""],
         expectations: [
           {
             expectation: "",
@@ -111,15 +111,7 @@ export const LessonsTable = (props: { location: any }) => {
   };
 
   function handleCreate() {
-    createLesson()
-      .then((newLesson) => {
-        console.log(`fetchCreateLesson got`, newLesson);
-        const path = withPrefix(
-          "/lessons/edit?lessonId=" + newLesson?.lessonId
-        );
-        navigate(path);
-      })
-      .catch((err) => console.error(err));
+    navigate(withPrefix("/lessons/edit?lessonId=new"));
   }
 
   function handleLaunch(id: string) {

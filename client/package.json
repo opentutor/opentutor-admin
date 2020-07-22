@@ -20,19 +20,21 @@
     "react-redux": "^7.2.0",
     "redux": "^4.0.5",
     "redux-logger": "^3.0.6",
-    "redux-thunk": "^2.3.0"
+    "redux-thunk": "^2.3.0",
+    "uuid": "^7.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.10.4",
     "@hot-loader/react-dom": "^16.13.0",
     "@types/jest": "^26.0.3",
+    "@types/uuid": "^8.0.0",
     "@typescript-eslint/eslint-plugin": "^2.34.0",
     "@typescript-eslint/parser": "^2.34.0",
     "acorn": "^6.4.1",
     "babel-eslint": "10.x",
     "babel-jest": "^26.1.0",
     "babel-preset-gatsby": "^0.4.12",
-    "cypress": "^4.9.0",
+    "cypress": "^4.11.0",
     "eslint": "^6.8.0",
     "eslint-config-airbnb": "^18.2.0",
     "eslint-config-prettier": "^6.11.0",
