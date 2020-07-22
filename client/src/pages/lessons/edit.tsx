@@ -184,7 +184,7 @@ const LessonEdit = ({ search }: { search: any }) => {
         }
       })
       .catch((err) => console.error(err));
-    navigate(withPrefix(`/lessons`));
+    navigate(`/lessons`);
     return () => {
       mounted = false;
     };
