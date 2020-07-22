@@ -57,12 +57,10 @@ describe("lessons screen", () => {
   it("opens eddit for a lesson on tap link", () => {
     cy.visit("/lessons");
     cy.get("#lesson-name-0 a").click();
-    cy.get("#header").should("contain", "Edit");
   });
 
   it("clicks on create lesson and oppens to an edit page for the lesson", () => {
     cy.visit("/lessons");
     cy.get("#create-button").click();
-    cy.get("#header").should("contain", "Edit");
   });
 });

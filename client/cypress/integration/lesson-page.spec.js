@@ -31,9 +31,8 @@ describe("edit screen", () => {
     });
   });
 
-  it("shows the edit page for a lesson with a name ", () => {
+  it("loads edit page ", () => {
     cy.visit("/lessons/edit?lessonId=lesson");
-    cy.get("#header").should("contain", "Edit");
   });
 
   it("types into introduction edit and shows value", () => {

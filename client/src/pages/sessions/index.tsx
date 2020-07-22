@@ -4,19 +4,27 @@ import {
   createMuiTheme,
   makeStyles,
 } from "@material-ui/core/styles";
-import Paper from "@material-ui/core/Paper";
-import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
-import TableContainer from "@material-ui/core/TableContainer";
-import TableHead from "@material-ui/core/TableHead";
-import TablePagination from "@material-ui/core/TablePagination";
-import TableRow from "@material-ui/core/TableRow";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
+import {
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TablePagination,
+  TableRow,
+  FormControlLabel,
+  Button,
+  IconButton,
+  AppBar,
+  Toolbar,
+} from "@material-ui/core";
 import { withPrefix } from "gatsby";
 import { Link } from "@reach/router";
-import { Edge } from "types";
+import { FetchSessions, Edge, SessionsData } from "types";
 import { Checkbox } from "@material-ui/core";
+import KeyboardArrowLeftIcon from "@material-ui/icons/KeyboardArrowLeft";
+import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
 
 import { fetchSessions } from "api";
 import NavBar from "components/nav-bar";
@@ -83,14 +91,43 @@ const useStyles = makeStyles({
     width: "100%",
   },
   container: {
-    maxHeight: 440,
+    maxHeight: 550,
+  },
+  appBar: {
+    height: "10%",
+    top: "auto",
+    bottom: 0,
   },
 });
 
 export const SessionsTable = ({ path }: { path: string }) => {
+  const initialSessions = {
+    edges: [
+      {
+        cursor: "",
+        node: {
+          classifierGrade: 0,
+          createdAt: 0,
+          grade: 0,
+          lesson: {
+            name: "",
+          },
+          sessionId: "",
+          updatedAt: 0,
+          username: "",
+        },
+      },
+    ],
+    pageInfo: {
+      hasNextPage: false,
+      endCursor: "",
+    },
+  };
   const classes = useStyles();
-  const [sessions, setSessions] = React.useState<Edge[]>([]);
+  const [sessions, setSessions] = React.useState<SessionsData>(initialSessions);
   const [datedSessions, setDatedSessions] = React.useState<DatedEdge[]>([]);
+  const [startCursor, setStartCursor] = React.useState<string[]>([]);
+  const [endCursor, setEndCursor] = React.useState("");
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(50);
   const [showGraded, setShowGraded] = React.useState(false);
@@ -101,20 +138,28 @@ export const SessionsTable = ({ path }: { path: string }) => {
       .then((sessions) => {
         console.log(`fetchSessions got`, sessions);
         if (mounted) {
-          if (Array.isArray(sessions)) {
+          if (sessions !== undefined) {
+            const tmp: any = sessions.edges;
+            tmp.map((session: any) => {
+              session.node.createdAt = new Date(session.node.createdAt);
+            });
             setSessions(sessions);
+            // sessions.edges.map((session: any, i: number) => {
+            //   session[i].node.createdAt = new Date(session.node.createdAt);
+            // });
           }
 
-          const tmp: any = sessions;
-          tmp.map((session: DatedEdge, i: number) => {
-            tmp[i].node.createdAt = new Date(session.node.createdAt);
-          });
-          setDatedSessions(
-            tmp.sort(
-              (a: DatedEdge, b: DatedEdge) =>
-                +b.node.createdAt - +a.node.createdAt
-            )
-          );
+          // const tmp: any = sessions.edges;
+          // sessions.edges.map((session: any, i: number) => {
+          //   tmp[i].node.createdAt = new Date(session.node.createdAt);
+          // });
+          // setSessions()
+          // setDatedSessions(
+          //   tmp.sort(
+          //     (a: DatedEdge, b: DatedEdge) =>
+          //       +b.node.createdAt - +a.node.createdAt
+          //   )
+          // );
         }
       })
       .catch((err) => console.error(err));
@@ -134,6 +179,28 @@ export const SessionsTable = ({ path }: { path: string }) => {
     setPage(0);
   };
 
+  function handleLeftPageChange(): void {
+    if (startCursor[page] !== startCursor[0]) {
+      setPage(page - 1);
+      fetchSessions()
+        .then((sessions) => {
+          console.log(`fetchSessions got`, sessions);
+          if (sessions !== undefined) {
+            setEndCursor(sessions.pageInfo.endCursor);
+            const tmp: any = sessions.edges;
+            tmp.map((session: any) => {
+              session.node.createdAt = new Date(session.node.createdAt);
+            });
+            console.log("back", startCursor);
+            console.log("back start", sessions.edges[0].cursor);
+            console.log("back end", sessions.pageInfo);
+            setSessions(sessions);
+          }
+        })
+        .catch((err) => console.error(err));
+    }
+  }
+
   const handleShowGradedChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ): void => {
@@ -141,96 +208,107 @@ export const SessionsTable = ({ path }: { path: string }) => {
   };
 
   return (
-    <Paper className={classes.root}>
-      <FormControlLabel
-        control={
-          <Checkbox
-            id="toggle"
-            checked={showGraded}
-            onChange={handleShowGradedChange}
-            name="showGraded"
-          />
-        }
-        label="Show Graded"
-      />
-      <TableContainer className={classes.container}>
-        <Table stickyHeader aria-label="sticky table">
-          <TableHead>
-            <TableRow>
-              {columns.map((column) => (
-                <TableCell
-                  key={column.id}
-                  align={column.align}
-                  style={{ minWidth: column.minWidth }}
-                >
-                  {column.label}
-                </TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {datedSessions
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .filter(
-                (edge: DatedEdge) => showGraded || edge.node.grade === null
-              )
-              .map((row, i) => {
-                return (
-                  <TableRow
-                    hover
-                    role="checkbox"
-                    tabIndex={-1}
-                    key={row.node.sessionId}
+    <React.Fragment>
+      <Paper className={classes.root}>
+        <FormControlLabel
+          control={
+            <Checkbox
+              id="toggle"
+              checked={showGraded}
+              onChange={handleShowGradedChange}
+              name="showGraded"
+            />
+          }
+          label="Show Graded"
+        />
+        <TableContainer className={classes.container}>
+          <Table stickyHeader aria-label="sticky table">
+            <TableHead>
+              <TableRow>
+                {columns.map((column) => (
+                  <TableCell
+                    key={column.id}
+                    align={column.align}
+                    style={{ minWidth: column.minWidth }}
                   >
-                    <TableCell
-                      key={`session-${i}`}
-                      id={`session-${i}`}
-                      align="left"
+                    {column.label}
+                  </TableCell>
+                ))}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {sessions?.edges
+                //.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .filter((edge: Edge) => showGraded || edge.node.grade === null)
+                .map((row, i) => {
+                  return (
+                    <TableRow
+                      hover
+                      role="checkbox"
+                      tabIndex={-1}
+                      key={row.node.sessionId}
                     >
-                      <Link
-                        to={withPrefix(
-                          `/sessions/session?sessionId=${row.node.sessionId}`
-                        )}
+                      <TableCell
+                        key={`session-${i}`}
+                        id={`session-${i}`}
+                        align="left"
                       >
-                        {row.node.lesson.name
-                          ? row.node.lesson.name
-                          : "No Lesson Name"}
-                      </Link>
-                    </TableCell>
-                    <TableCell key={`username-${i}`} align="center">
-                      {row.node.username ? row.node.username : "Guest"}
-                    </TableCell>
-                    <TableCell key={`date-${i}`} align="center">
-                      {row.node.createdAt
-                        ? row.node.createdAt.toLocaleString()
-                        : ""}
-                    </TableCell>
-                    <TableCell key={`classifier-grade-${i}`} align="center">
-                      {row.node.classifierGrade || row.node.grade === 0
-                        ? Math.trunc(row.node.classifierGrade * 100)
-                        : "?"}
-                    </TableCell>
-                    <TableCell key={`grade-${i}`} align="center">
-                      {row.node.grade || row.node.grade === 0
-                        ? Math.trunc(row.node.grade * 100)
-                        : "?"}
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <TablePagination
-        rowsPerPageOptions={[50, 75, 100]}
-        component="div"
-        count={sessions.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onChangePage={handleChangePage}
-        onChangeRowsPerPage={handleChangeRowsPerPage}
-      />
-    </Paper>
+                        <Link
+                          to={withPrefix(
+                            `/sessions/session?sessionId=${row.node.sessionId}`
+                          )}
+                        >
+                          {/* {row.node.lesson.name
+                            ? row.node.lesson.name
+                            : "No Lesson Name"} */}
+                          {row.node.sessionId ? row.node.sessionId : ""}
+                        </Link>
+                      </TableCell>
+                      <TableCell key={`username-${i}`} align="center">
+                        {row.node.username ? row.node.username : "Guest"}
+                      </TableCell>
+                      <TableCell key={`date-${i}`} align="center">
+                        {row.node.createdAt
+                          ? row.node.createdAt.toLocaleString()
+                          : ""}
+                      </TableCell>
+                      <TableCell key={`classifier-grade-${i}`} align="center">
+                        {row.node
+                          ? Math.trunc(row.node.classifierGrade * 100)
+                          : "?"}
+                      </TableCell>
+                      <TableCell key={`grade-${i}`} align="center">
+                        {row.node.grade || row.node.grade === 0
+                          ? Math.trunc(row.node.grade * 100)
+                          : "?"}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+            </TableBody>
+          </Table>
+        </TableContainer>
+        <TablePagination
+          rowsPerPageOptions={[50, 75, 100]}
+          component="div"
+          count={sessions ? sessions.edges.length : 0}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onChangePage={handleChangePage}
+          onChangeRowsPerPage={handleChangeRowsPerPage}
+        />
+      </Paper>
+      {/* <AppBar position="sticky" color="default" className={classes.appBar}>
+        <Toolbar>
+          <IconButton onClick={handleLeftPageChange}>
+            <KeyboardArrowLeftIcon />
+          </IconButton>
+          <IconButton onClick={handleRightPageChange}>
+            <KeyboardArrowRightIcon />
+          </IconButton>
+        </Toolbar>
+      </AppBar> */}
+    </React.Fragment>
   );
 };
 

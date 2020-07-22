@@ -6,12 +6,8 @@ import {
   makeStyles,
 } from "@material-ui/core/styles";
 import {
-  Typography,
   Button,
   TextField,
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
   Box,
   Collapse,
   IconButton,
@@ -22,8 +18,8 @@ import {
   TableHead,
   TableRow,
   Paper,
+  Container,
 } from "@material-ui/core";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import AddIcon from "@material-ui/icons/Add";
 import RemoveIcon from "@material-ui/icons/Remove";
 import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
@@ -57,7 +53,7 @@ const useStyles = makeStyles({
     },
   },
   button: {
-    margin: theme.spacing(1),
+    margin: theme.spacing(2),
   },
   heading: {
     fontSize: theme.typography.pxToRem(15),
@@ -127,6 +123,11 @@ const LessonEdit = ({ search }: { search: any }) => {
     setLesson({ ...lesson, name: name });
   }
 
+  function handleLessonIdChange(lessonId: string): void {
+    setChange(true);
+    setLesson({ ...lesson, lessonId: lessonId });
+  }
+
   function handleIntroChange(intro: string): void {
     setChange(true);
     setLesson({ ...lesson, intro: intro });
@@ -189,6 +190,10 @@ const LessonEdit = ({ search }: { search: any }) => {
     };
   }
 
+  function handleCancel() {
+    navigate(withPrefix(`lessons`));
+  }
+
   function handleAddExpectation(): void {
     setChange(true);
     const copyLesson = { ...lesson };
@@ -233,10 +238,9 @@ const LessonEdit = ({ search }: { search: any }) => {
   }
 
   return (
-    <div>
-      <div id="header">Edit</div>
+    <div style={{ paddingTop: "20px" }}>
       <form className={classes.root} noValidate autoComplete="off">
-        <div>
+        <Container>
           <TextField
             id="lesson-name"
             key="lesson-name"
@@ -247,7 +251,17 @@ const LessonEdit = ({ search }: { search: any }) => {
             }}
             variant="outlined"
           />
-        </div>
+          <TextField
+            id="lesson-id"
+            key="lesson-id"
+            label="Lesson ID"
+            value={lesson.lessonId ? lesson.lessonId : ""}
+            onChange={(e) => {
+              handleLessonIdChange(e.target.value);
+            }}
+            variant="outlined"
+          />
+        </Container>
         <div>
           <TextField
             id="intro"
@@ -276,34 +290,25 @@ const LessonEdit = ({ search }: { search: any }) => {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell />
                 <TableCell>Expectation</TableCell>
                 <TableCell />
+                <TableCell>
+                  {" "}
+                  <IconButton
+                    aria-label="add hint"
+                    size="small"
+                    onClick={handleAddExpectation}
+                  >
+                    <AddIcon />
+                  </IconButton>
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              <IconButton
-                aria-label="add hint"
-                size="small"
-                onClick={handleAddExpectation}
-              >
-                <AddIcon />
-              </IconButton>
               {lesson?.expectations.map((row, i) => {
                 return (
                   <React.Fragment key={`expectation-${i}`}>
                     <TableRow className={classes.root}>
-                      <TableCell>
-                        <IconButton
-                          aria-label="remove expectaion"
-                          size="small"
-                          onClick={() => {
-                            handleRemoveExpectation(row.expectation);
-                          }}
-                        >
-                          <RemoveIcon />
-                        </IconButton>
-                      </TableCell>
                       <TableCell>
                         <TextField
                           margin="normal"
@@ -318,6 +323,17 @@ const LessonEdit = ({ search }: { search: any }) => {
                           variant="outlined"
                           fullWidth
                         />
+                      </TableCell>
+                      <TableCell>
+                        <IconButton
+                          aria-label="remove expectaion"
+                          size="small"
+                          onClick={() => {
+                            handleRemoveExpectation(row.expectation);
+                          }}
+                        >
+                          <RemoveIcon />
+                        </IconButton>
                       </TableCell>
                       <TableCell>
                         <IconButton
@@ -340,37 +356,28 @@ const LessonEdit = ({ search }: { search: any }) => {
                       >
                         <Collapse in={open} timeout="auto" unmountOnExit>
                           <Box margin={1}>
-                            <IconButton
-                              aria-label="add hint"
-                              size="small"
-                              onClick={() => {
-                                handleAddHint(i);
-                              }}
-                            >
-                              <AddIcon />
-                            </IconButton>
                             <Table size="small" aria-label="purchases">
                               <TableHead>
                                 <TableRow>
-                                  <TableCell />
                                   <TableCell>Hint</TableCell>
                                   <TableCell />
+                                  <TableCell>
+                                    {" "}
+                                    <IconButton
+                                      aria-label="add hint"
+                                      size="small"
+                                      onClick={() => {
+                                        handleAddHint(i);
+                                      }}
+                                    >
+                                      <AddIcon />
+                                    </IconButton>
+                                  </TableCell>
                                 </TableRow>
                               </TableHead>
                               <TableBody>
                                 {row.hints.map((hint, j) => (
                                   <TableRow key={`hint-${i}-${j}`}>
-                                    <TableCell>
-                                      <IconButton
-                                        aria-label="remove expectaion"
-                                        size="small"
-                                        onClick={() => {
-                                          handleRemoveHint(i, hint.text);
-                                        }}
-                                      >
-                                        <RemoveIcon />
-                                      </IconButton>
-                                    </TableCell>
                                     <TableCell>
                                       <TextField
                                         margin="normal"
@@ -387,6 +394,17 @@ const LessonEdit = ({ search }: { search: any }) => {
                                         }}
                                         variant="outlined"
                                       />
+                                    </TableCell>
+                                    <TableCell>
+                                      <IconButton
+                                        aria-label="remove expectaion"
+                                        size="small"
+                                        onClick={() => {
+                                          handleRemoveHint(i, hint.text);
+                                        }}
+                                      >
+                                        <RemoveIcon />
+                                      </IconButton>
                                     </TableCell>
                                   </TableRow>
                                 ))}
@@ -418,14 +436,30 @@ const LessonEdit = ({ search }: { search: any }) => {
 
       <div>
         {change ? (
-          <Button id="save-button" onClick={handleSave}>
+          <Button
+            id="save-button"
+            className={classes.button}
+            variant="contained"
+            color="primary"
+            size="large"
+            style={{ background: "#1B6A9C" }}
+            onClick={handleSave}
+          >
             Save
           </Button>
         ) : null}
+        <Button
+          id="cancel-button"
+          className={classes.button}
+          variant="contained"
+          color="primary"
+          size="large"
+          style={{ background: "#1B6A9C" }}
+          onClick={handleCancel}
+        >
+          Cancel
+        </Button>
       </div>
-      {/* <div>
-        {change ? <Button onClick={handleRevert}>Revert</Button> : null}
-      </div> */}
     </div>
   );
 };

@@ -130,7 +130,6 @@ export const LessonsTable = (props: { location: any }) => {
 
   return (
     <div>
-      <div id="header">Lessons</div>
       <div>
         <Button
           id="create-button"
