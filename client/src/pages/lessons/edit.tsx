@@ -279,6 +279,10 @@ const LessonEdit = ({ search }: { search: any }) => {
             id="lesson-name"
             key="lesson-name"
             label="Lesson Name"
+            placeholder="Lesson Name"
+            InputLabelProps={{
+              shrink: true,
+            }}
             value={lesson.name ? lesson.name : ""}
             onChange={(e) => {
               handleLessonNameChange(e.target.value);
@@ -289,6 +293,10 @@ const LessonEdit = ({ search }: { search: any }) => {
             id="lesson-id"
             key="lesson-id"
             label="Lesson ID"
+            placeholder="Unique alias to the lesson"
+            InputLabelProps={{
+              shrink: true,
+            }}
             value={lesson.lessonId ? lesson.lessonId : ""}
             onChange={(e) => {
               handleLessonIdChange(e.target.value);
@@ -301,6 +309,10 @@ const LessonEdit = ({ search }: { search: any }) => {
             id="intro"
             key="intro"
             label="Introduction"
+            placeholder="Introduction"
+            InputLabelProps={{
+              shrink: true,
+            }}
             value={lesson.intro ? lesson.intro : ""}
             onChange={(e) => {
               handleIntroChange(e.target.value);
@@ -313,6 +325,10 @@ const LessonEdit = ({ search }: { search: any }) => {
             id="question"
             key="question"
             label="Question"
+            placeholder="Question"
+            InputLabelProps={{
+              shrink: true,
+            }}
             value={lesson.question ? lesson.question : ""}
             onChange={(e) => {
               handleQuestionChange(e.target.value);
@@ -350,6 +366,10 @@ const LessonEdit = ({ search }: { search: any }) => {
                           id={`edit-expectation-${i}`}
                           key={`edit-expectation-${i}`}
                           label={`Expectation ${i + 1}`}
+                          placeholder="Add ideal answer for an expectation"
+                          InputLabelProps={{
+                            shrink: true,
+                          }}
                           value={row.expectation ? row.expectation : ""}
                           onChange={(e) => {
                             handleExpectationChange(e.target.value, i);
@@ -424,6 +444,10 @@ const LessonEdit = ({ search }: { search: any }) => {
                                         id={`edit-hint-${i}-${j}`}
                                         key={`edit-hint-${i}-${j}`}
                                         label={`Hint ${j + 1}`}
+                                        placeholder="Add a hint to the expectation"
+                                        InputLabelProps={{
+                                          shrink: true,
+                                        }}
                                         value={hint.text ? hint.text : ""}
                                         onChange={(e) => {
                                           handleHintChange(
@@ -462,18 +486,6 @@ const LessonEdit = ({ search }: { search: any }) => {
             </TableBody>
           </Table>
         </TableContainer>
-        {/* <div>
-          <TextField
-            id="conclusion"
-            key="conclusion"
-            label="Conclusion"
-            value={lesson.conclusion ? lesson.conclusion : ""}
-            onChange={(e) => {
-              handleConclusionChange(e.target.value);
-            }}
-            variant="outlined"
-          />
-        </div> */}
         <TableContainer>
           <Table>
             <TableHead>
@@ -501,6 +513,10 @@ const LessonEdit = ({ search }: { search: any }) => {
                       id={`edit-conslusion-${i}`}
                       key={`edit-conclusion-${i}=`}
                       label={`Conclusion ${i + 1}`}
+                      placeholder="Add a closing to the lesson"
+                      InputLabelProps={{
+                        shrink: true,
+                      }}
                       value={row ? row : ""}
                       onChange={(e) => {
                         handleConclusionChange(e.target.value, i);
