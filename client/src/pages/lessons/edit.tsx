@@ -77,7 +77,7 @@ type ExpectationProp = {
 
 const LessonEdit = ({ search }: { search: any }) => {
   let { lessonId } = search;
-  const { originalId } = lessonId;
+  const originalId  = lessonId;
   //console.log(lessonId);
   const classes = useStyles();
   const inititialLesson = {
