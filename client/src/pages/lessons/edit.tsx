@@ -102,7 +102,7 @@ const LessonEdit = ({ search }: { search: any }) => {
   const [copyLesson, setCopyLesson] = React.useState<Lesson>(inititialLesson);
   const [change, setChange] = React.useState(false);
   const [create, setCreate] = React.useState(false);
-  const [expectationOpen, setExpectationOpen] = React.useState(false);
+  const [expectationOpen, setExpectationOpen] = React.useState(true);
 
   React.useEffect(() => {
     if (lessonId !== "new") {
@@ -209,7 +209,7 @@ const LessonEdit = ({ search }: { search: any }) => {
   }
 
   function handleCancel() {
-    navigate(withPrefix(`lessons`));
+    navigate(`/lessons`);
   }
 
   function handleAddExpectation(): void {
@@ -223,14 +223,9 @@ const LessonEdit = ({ search }: { search: any }) => {
     setLesson({ ...lesson, expectations: copyExpectations });
   }
 
-  function handleRemoveExpectation(exp: string): void {
-    setChange(true);
-    const copyLesson = { ...lesson };
-    let copyExpectations = [...copyLesson.expectations] as Array<any>;
-    copyExpectations = copyExpectations.filter(
-      (expectations) => expectations.expectation !== exp
-    );
-    setLesson({ ...lesson, expectations: copyExpectations });
+  function handleRemoveExpectation(index: number): void {
+    lesson.expectations.splice(index, 1);
+    setLesson({ ...lesson, expectations: [...lesson.expectations] });
   }
 
   function handleAddConclusion(): void {
@@ -241,12 +236,17 @@ const LessonEdit = ({ search }: { search: any }) => {
     setLesson({ ...lesson, conclusion: copyConclusion });
   }
 
-  function handleRemoveConclusion(exp: string): void {
-    setChange(true);
-    const copyLesson = { ...lesson };
-    let copyConclusion = [...copyLesson.conclusion] as Array<any>;
-    copyConclusion = copyConclusion.filter((conclusion) => conclusion !== exp);
-    setLesson({ ...lesson, conclusion: copyConclusion });
+  // function handleRemoveConclusion(exp: string): void {
+  //   setChange(true);
+  //   const copyLesson = { ...lesson };
+  //   let copyConclusion = [...copyLesson.conclusion] as Array<any>;
+  //   copyConclusion = copyConclusion.filter((conclusion) => conclusion !== exp);
+  //   setLesson({ ...lesson, conclusion: copyConclusion });
+  // }
+
+  function handleRemoveConclusion(index: number): void {
+    lesson.conclusion.splice(index, 1);
+    setLesson({ ...lesson, conclusion: [...lesson.conclusion] });
   }
 
   function handleAddHint(index: number): void {
@@ -359,15 +359,17 @@ const LessonEdit = ({ search }: { search: any }) => {
                         />
                       </TableCell>
                       <TableCell>
-                        <IconButton
-                          aria-label="remove expectaion"
-                          size="small"
-                          onClick={() => {
-                            handleRemoveExpectation(row.expectation);
-                          }}
-                        >
-                          <RemoveIcon />
-                        </IconButton>
+                        {i > 0 ? (
+                          <IconButton
+                            aria-label="remove expectaion"
+                            size="small"
+                            onClick={() => {
+                              handleRemoveExpectation(i);
+                            }}
+                          >
+                            <RemoveIcon />
+                          </IconButton>
+                        ) : null}
                       </TableCell>
                       <TableCell>
                         <IconButton
@@ -434,15 +436,17 @@ const LessonEdit = ({ search }: { search: any }) => {
                                       />
                                     </TableCell>
                                     <TableCell>
-                                      <IconButton
-                                        aria-label="remove expectaion"
-                                        size="small"
-                                        onClick={() => {
-                                          handleRemoveHint(i, hint.text);
-                                        }}
-                                      >
-                                        <RemoveIcon />
-                                      </IconButton>
+                                      {j > 0 ? (
+                                        <IconButton
+                                          aria-label="remove hint"
+                                          size="small"
+                                          onClick={() => {
+                                            handleRemoveHint(i, hint.text);
+                                          }}
+                                        >
+                                          <RemoveIcon />
+                                        </IconButton>
+                                      ) : null}
                                     </TableCell>
                                   </TableRow>
                                 ))}
@@ -496,7 +500,7 @@ const LessonEdit = ({ search }: { search: any }) => {
                       margin="normal"
                       id={`edit-conslusion-${i}`}
                       key={`edit-conclusion-${i}=`}
-                      label={`conclusion ${i + 1}`}
+                      label={`Conclusion ${i + 1}`}
                       value={row ? row : ""}
                       onChange={(e) => {
                         handleConclusionChange(e.target.value, i);
@@ -505,15 +509,17 @@ const LessonEdit = ({ search }: { search: any }) => {
                     />
                   </TableCell>
                   <TableCell>
-                    <IconButton
-                      aria-label="remove conclusion"
-                      size="small"
-                      onClick={() => {
-                        handleRemoveConclusion(row);
-                      }}
-                    >
-                      <RemoveIcon />
-                    </IconButton>
+                    {i > 0 ? (
+                      <IconButton
+                        aria-label="remove conclusion"
+                        size="small"
+                        onClick={() => {
+                          handleRemoveConclusion(i);
+                        }}
+                      >
+                        <RemoveIcon />
+                      </IconButton>
+                    ) : null}
                   </TableCell>
                 </TableRow>
               ))}
