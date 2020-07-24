@@ -18,6 +18,7 @@ import {
   IconButton,
   AppBar,
   Toolbar,
+  TableSortLabel,
 } from "@material-ui/core";
 import { withPrefix } from "gatsby";
 import { Link } from "@reach/router";
@@ -39,9 +40,9 @@ const theme = createMuiTheme({
 });
 
 const columns: ColumnDef[] = [
-  { id: "Session", label: "Session", minWidth: 170, align: "center" },
+  { id: "sessionId", label: "Session", minWidth: 170, align: "center" },
   { id: "username", label: "Username", minWidth: 170, align: "center" },
-  { id: "date", label: "Date", minWidth: 170, align: "center" },
+  { id: "createdAt", label: "Date", minWidth: 170, align: "center" },
   {
     id: "classifierGrade",
     label: "Classifier Grade",
@@ -65,25 +66,6 @@ interface ColumnDef {
   minWidth: number;
   align?: "right" | "left" | "center";
   format?: (v: number) => string;
-}
-
-interface DatedEdge {
-  cursor: string;
-  node: DatedSession;
-}
-
-interface DatedLesson {
-  name: string;
-}
-
-interface DatedSession {
-  sessionId: string;
-  username: string;
-  createdAt: Date;
-  updatedAt: Date;
-  lesson: DatedLesson;
-  classifierGrade: number;
-  grade: number;
 }
 
 const useStyles = makeStyles({
@@ -125,15 +107,16 @@ export const SessionsTable = ({ path }: { path: string }) => {
   };
   const classes = useStyles();
   const [sessions, setSessions] = React.useState<SessionsData>(initialSessions);
-  const [datedSessions, setDatedSessions] = React.useState<DatedEdge[]>([]);
   const [showGraded, setShowGraded] = React.useState(false);
   const [prevPages, setPrevPages] = React.useState<string[]>([""]);
   const [page, setPage] = React.useState(0);
+  const [sortBy, setSortBy] = React.useState("createdAt");
+  const [sortDesc, setSortDesc] = React.useState(false);
   const rowsPerPage = 50;
 
   React.useEffect(() => {
     let mounted = true;
-    fetchSessions(rowsPerPage, prevPages[page])
+    fetchSessions(rowsPerPage, prevPages[page], sortBy, sortDesc)
       .then((sessions) => {
         console.log(`fetchSessions got`, sessions);
         if (mounted) {
@@ -144,17 +127,6 @@ export const SessionsTable = ({ path }: { path: string }) => {
             });
             setSessions(sessions);
           }
-          // const tmp: any = sessions.edges;
-          // sessions.edges.map((session: any, i: number) => {
-          //   tmp[i].node.createdAt = new Date(session.node.createdAt);
-          // });
-          // setSessions()
-          // setDatedSessions(
-          //   tmp.sort(
-          //     (a: DatedEdge, b: DatedEdge) =>
-          //       +b.node.createdAt - +a.node.createdAt
-          //   )
-          // );
         }
       })
       .catch((err) => console.error(err));
@@ -164,43 +136,26 @@ export const SessionsTable = ({ path }: { path: string }) => {
   }, []);
 
   React.useEffect(() => {
-    console.log(page);
     console.log(prevPages);
-    fetchSessions(rowsPerPage, prevPages[page])
+    console.log(prevPages[prevPages.length - 1]);
+    fetchSessions(
+      rowsPerPage,
+      prevPages[prevPages.length - 1],
+      sortBy,
+      sortDesc
+    )
       .then((sessions) => {
-        console.log(`fetchSessions got`, sessions);
+        console.log(`page switch fetchSessions got`, sessions);
         if (sessions !== undefined) {
           const tmp: any = sessions.edges;
           tmp.map((session: any) => {
             session.node.createdAt = new Date(session.node.createdAt);
           });
           setSessions(sessions);
-          // const tmp: any = sessions.edges;
-          // sessions.edges.map((session: any, i: number) => {
-          //   tmp[i].node.createdAt = new Date(session.node.createdAt);
-          // });
-          // setSessions()
-          // setDatedSessions(
-          //   tmp.sort(
-          //     (a: DatedEdge, b: DatedEdge) =>
-          //       +b.node.createdAt - +a.node.createdAt
-          //   )
-          // );
         }
       })
       .catch((err) => console.error(err));
-  }, [page, prevPages]);
-
-  // // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  // const handleChangePage = (event: any, newPage: number): void => {
-  //   setPage(newPage);
-  // };
-
-  // // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  // const handleChangeRowsPerPage = (event: any): void => {
-  //   setRowsPerPage(+event.target.value);
-  //   setPage(0);
-  // };
+  }, [prevPages]);
 
   const handleShowGradedChange = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -239,7 +194,6 @@ export const SessionsTable = ({ path }: { path: string }) => {
             </TableHead>
             <TableBody>
               {sessions?.edges
-                //.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .filter((edge: Edge) => showGraded || edge.node.grade === null)
                 .map((row, i) => {
                   return (
@@ -259,10 +213,10 @@ export const SessionsTable = ({ path }: { path: string }) => {
                             `/sessions/session?sessionId=${row.node.sessionId}`
                           )}
                         >
-                          {/* {row.node.lesson.name
+                          {row.node.lesson.name
                             ? row.node.lesson.name
-                            : "No Lesson Name"} */}
-                          {row.node.sessionId ? row.node.sessionId : ""}
+                            : "No Lesson Name"}
+                          {/* {row.node.sessionId ? "(" + row.node.sessionId + ")": ""} */}
                         </Link>
                       </TableCell>
                       <TableCell key={`username-${i}`} align="center">
@@ -289,42 +243,28 @@ export const SessionsTable = ({ path }: { path: string }) => {
             </TableBody>
           </Table>
         </TableContainer>
-        {/* <TablePagination
-          rowsPerPageOptions={[50, 75, 100]}
-          component="div"
-          count={sessions ? sessions.edges.length : 0}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onChangePage={handleChangePage}
-          onChangeRowsPerPage={handleChangeRowsPerPage}
-        /> */}
       </Paper>
       <AppBar position="sticky" color="default" className={classes.appBar}>
         <Toolbar>
           <IconButton
+            disabled={prevPages.length === 1 ? true : false}
             onClick={() => {
-              if (page > 0) {
-                setPage(page - 1);
-              }
+              setPrevPages(
+                prevPages.filter(
+                  (elem) => elem !== prevPages[prevPages.length - 1]
+                )
+              );
             }}
           >
             <KeyboardArrowLeftIcon />
           </IconButton>
           <IconButton
+            disabled={!sessions.pageInfo.hasNextPage}
             onClick={() => {
-              if (sessions.pageInfo.hasNextPage) {
-                if (
-                  !prevPages.some(
-                    (elem) => elem === sessions.pageInfo.endCursor
-                  )
-                ) {
-                  setPrevPages((prevPages) => [
-                    ...prevPages,
-                    sessions.pageInfo.endCursor,
-                  ]);
-                }
-                setPage(page + 1);
-              }
+              setPrevPages((prevPages) => [
+                ...prevPages,
+                sessions.pageInfo.endCursor,
+              ]);
             }}
           >
             <KeyboardArrowRightIcon />
