@@ -111,7 +111,7 @@ export const SessionsTable = ({ path }: { path: string }) => {
   const [prevPages, setPrevPages] = React.useState<string[]>([""]);
   const [page, setPage] = React.useState(0);
   const [sortBy, setSortBy] = React.useState("createdAt");
-  const [sortDesc, setSortDesc] = React.useState(false);
+  const [sortDesc, setSortDesc] = React.useState(true);
   const rowsPerPage = 50;
 
   React.useEffect(() => {

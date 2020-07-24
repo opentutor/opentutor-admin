@@ -84,14 +84,14 @@ const LessonEdit = ({ search }: { search: any }) => {
   const inititialLesson = {
     id: "",
     lessonId: "",
-    name: "",
-    intro: "",
-    question: "",
-    conclusion: [""],
+    name: "Lesson Name",
+    intro: "Introduction",
+    question: "Question",
+    conclusion: ["Add a clossing to the lesson"],
     expectations: [
       {
-        expectation: "",
-        hints: [{ text: "" }],
+        expectation: "Add ideal answer for an expectation",
+        hints: [{ text: "Add a hint to help for the expectaion" }],
       },
     ],
     createdAt: new Date(0),
@@ -218,8 +218,8 @@ const LessonEdit = ({ search }: { search: any }) => {
     const copyLesson = { ...lesson };
     const copyExpectations = [...copyLesson.expectations] as Array<any>;
     copyExpectations.push({
-      expectation: "",
-      hints: [{ text: "" }],
+      expectation: "Add ideal answer for an expectation",
+      hints: [{ text: "Add a hint to help answer the expectation" }],
     });
     setLesson({ ...lesson, expectations: copyExpectations });
   }
@@ -248,7 +248,7 @@ const LessonEdit = ({ search }: { search: any }) => {
     const copyLesson = { ...lesson };
     const copyExpectations = [...copyLesson.expectations] as Array<any>;
     const copyHints = [...copyLesson.expectations[index].hints] as Array<any>;
-    copyHints.push({ text: "" });
+    copyHints.push({ text: "Add a hint to help answer the expectation" });
     copyExpectations[index].hints = copyHints;
     setLesson({ ...lesson, expectations: copyExpectations });
   }
