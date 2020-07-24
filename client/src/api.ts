@@ -25,14 +25,16 @@ interface GQLResponse<T> {
 
 export async function fetchSessions(
   limit: number,
-  cursor: string
+  cursor: string,
+  sortBy: string,
+  sortDescending: boolean
 ): Promise<SessionsData> {
   const result = await axios.post<GQLResponse<FetchSessions>>(
     GRADER_GRAPHQL_ENDPOINT,
     {
       query: `
-      query($limit: Int!, $cursor: String!){
-          sessions(limit:$limit, cursor:$cursor){
+      query($limit: Int!, $cursor: String!, $sortBy:String!, $sortDescending:Boolean!){
+          sessions(limit:$limit, cursor:$cursor, sortBy:$sortBy, sortDescending:$sortDescending){
             edges {
               cursor node {
                 sessionId
@@ -56,6 +58,8 @@ export async function fetchSessions(
       variables: {
         limit: limit,
         cursor: cursor,
+        sortBy: sortBy,
+        sortDescending: sortDescending,
       },
     }
   );

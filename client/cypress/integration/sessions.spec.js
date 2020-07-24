@@ -10,6 +10,7 @@ describe("sessions screen", () => {
           sessions: {
             edges: [
               {
+                cursor: "cursor 1",
                 node: {
                   lesson: {
                     name: "lesson 1",
@@ -20,6 +21,7 @@ describe("sessions screen", () => {
                 },
               },
               {
+                cursor: "cursor 2",
                 node: {
                   lesson: {
                     name: "lesson 2",
@@ -30,6 +32,10 @@ describe("sessions screen", () => {
                 },
               },
             ],
+            pageInfo: {
+              hasNextPage: false,
+              endCursor: "cursor 2 ",
+            },
           },
         },
         errors: null,
@@ -57,7 +63,7 @@ describe("sessions screen", () => {
     tableBody.get("tr").should("have.length", 2);
     cy.get("table>tbody>tr:nth-child(1)>td:nth-child(1)").should(
       "contain",
-      "session 2"
+      "lesson 2"
     );
     cy.get("table>tbody>tr:nth-child(1)>td:nth-child(4)").should(
       "contain",
@@ -76,7 +82,7 @@ describe("sessions screen", () => {
     tableBody.get("tr").should("have.length", 3);
     cy.get("table>tbody>tr:nth-child(1)>td:nth-child(1)").should(
       "contain",
-      "session 1"
+      "lesson 1"
     );
     cy.get("table>tbody>tr:nth-child(1)>td:nth-child(4)").should(
       "contain",
@@ -88,7 +94,7 @@ describe("sessions screen", () => {
     );
     cy.get("table>tbody>tr:nth-child(2)>td:nth-child(1)").should(
       "contain",
-      "session 2"
+      "lesson 2"
     );
     cy.get("table>tbody>tr:nth-child(2)>td:nth-child(4)").should(
       "contain",
