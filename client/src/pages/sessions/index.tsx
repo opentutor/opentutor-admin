@@ -136,8 +136,6 @@ export const SessionsTable = ({ path }: { path: string }) => {
   }, []);
 
   React.useEffect(() => {
-    console.log(prevPages);
-    console.log(prevPages[prevPages.length - 1]);
     fetchSessions(
       rowsPerPage,
       prevPages[prevPages.length - 1],
@@ -156,6 +154,26 @@ export const SessionsTable = ({ path }: { path: string }) => {
       })
       .catch((err) => console.error(err));
   }, [prevPages]);
+
+  React.useEffect(() => {
+    fetchSessions(
+      rowsPerPage,
+      prevPages[prevPages.length - 1],
+      sortBy,
+      sortDesc
+    )
+      .then((sessions) => {
+        console.log(`page switch fetchSessions got`, sessions);
+        if (sessions !== undefined) {
+          const tmp: any = sessions.edges;
+          tmp.map((session: any) => {
+            session.node.createdAt = new Date(session.node.createdAt);
+          });
+          setSessions(sessions);
+        }
+      })
+      .catch((err) => console.error(err));
+  }, [sortBy, sortDesc]);
 
   const handleShowGradedChange = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -187,7 +205,22 @@ export const SessionsTable = ({ path }: { path: string }) => {
                     align={column.align}
                     style={{ minWidth: column.minWidth }}
                   >
-                    {column.label}
+                    <TableSortLabel
+                      active={sortBy === column.id}
+                      direction={
+                        sortBy === column.id
+                          ? sortDesc
+                            ? "asc"
+                            : "desc"
+                          : "asc"
+                      }
+                      onClick={() => {
+                        setSortBy(column.id);
+                        setSortDesc(!sortDesc);
+                      }}
+                    >
+                      {column.label}
+                    </TableSortLabel>
                   </TableCell>
                 ))}
               </TableRow>
