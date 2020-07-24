@@ -31,6 +31,7 @@ import { fetchLesson, updateLesson } from "api";
 import { withPrefix } from "gatsby";
 import NavBar from "components/nav-bar";
 import "styles/layout.css";
+import LessonsPage from ".";
 
 const theme = createMuiTheme({
   palette: {
@@ -236,14 +237,6 @@ const LessonEdit = ({ search }: { search: any }) => {
     setLesson({ ...lesson, conclusion: copyConclusion });
   }
 
-  // function handleRemoveConclusion(exp: string): void {
-  //   setChange(true);
-  //   const copyLesson = { ...lesson };
-  //   let copyConclusion = [...copyLesson.conclusion] as Array<any>;
-  //   copyConclusion = copyConclusion.filter((conclusion) => conclusion !== exp);
-  //   setLesson({ ...lesson, conclusion: copyConclusion });
-  // }
-
   function handleRemoveConclusion(index: number): void {
     lesson.conclusion.splice(index, 1);
     setLesson({ ...lesson, conclusion: [...lesson.conclusion] });
@@ -379,7 +372,7 @@ const LessonEdit = ({ search }: { search: any }) => {
                         />
                       </TableCell>
                       <TableCell>
-                        {i > 0 ? (
+                        {lesson.expectations.length > 1 ? (
                           <IconButton
                             aria-label="remove expectaion"
                             size="small"
@@ -460,7 +453,7 @@ const LessonEdit = ({ search }: { search: any }) => {
                                       />
                                     </TableCell>
                                     <TableCell>
-                                      {j > 0 ? (
+                                      {row.hints.length > 1 ? (
                                         <IconButton
                                           aria-label="remove hint"
                                           size="small"
@@ -525,7 +518,7 @@ const LessonEdit = ({ search }: { search: any }) => {
                     />
                   </TableCell>
                   <TableCell>
-                    {i > 0 ? (
+                    {lesson.conclusion.length > 1 ? (
                       <IconButton
                         aria-label="remove conclusion"
                         size="small"
