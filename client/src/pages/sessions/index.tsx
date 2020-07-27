@@ -246,7 +246,7 @@ export const SessionsTable = ({ path }: { path: string }) => {
                             `/sessions/session?sessionId=${row.node.sessionId}`
                           )}
                         >
-                          {row.node.lesson.name
+                          {row.node.lesson && row.node.lesson.name
                             ? row.node.lesson.name
                             : "No Lesson Name"}
                           {/* {row.node.sessionId ? "(" + row.node.sessionId + ")": ""} */}

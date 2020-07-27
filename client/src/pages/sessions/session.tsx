@@ -95,7 +95,7 @@ const SessionTable = ({ search }: { search: any }) => {
   return (
     <Paper className={classes.root}>
       <div id="session-display-name" key="session-display-name">
-        {userSession && userSession.lesson.name
+        {userSession && userSession.lesson && userSession.lesson.name
           ? userSession.lesson.name
           : "No Lesson Name"}
       </div>
