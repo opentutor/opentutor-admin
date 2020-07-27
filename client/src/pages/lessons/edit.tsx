@@ -244,7 +244,6 @@ const LessonEdit = ({ search }: { search: any }) => {
 
   function handleAddHint(index: number): void {
     setChange(true);
-    console.log("Add Hint");
     const copyLesson = { ...lesson };
     const copyExpectations = [...copyLesson.expectations] as Array<any>;
     const copyHints = [...copyLesson.expectations[index].hints] as Array<any>;
@@ -253,14 +252,15 @@ const LessonEdit = ({ search }: { search: any }) => {
     setLesson({ ...lesson, expectations: copyExpectations });
   }
 
-  function handleRemoveHint(eIdx: number, hint: string): void {
+  function handleRemoveHint(expectationIndex: number, hintIndex: number): void {
     setChange(true);
-    console.log("Remove Hint");
     const copyLesson = { ...lesson };
     const copyExpectations = [...copyLesson.expectations] as Array<any>;
-    let copyHints = [...copyLesson.expectations[eIdx].hints] as Array<any>;
-    copyHints = copyHints.filter((hints) => hints.text !== hint);
-    copyExpectations[eIdx].hints = copyHints;
+    const copyHints = [
+      ...copyLesson.expectations[expectationIndex].hints,
+    ] as Array<any>;
+    copyHints.splice(hintIndex, 1);
+    copyExpectations[expectationIndex].hints = copyHints;
     setLesson({ ...lesson, expectations: copyExpectations });
   }
 
@@ -335,16 +335,7 @@ const LessonEdit = ({ search }: { search: any }) => {
               <TableRow>
                 <TableCell>Expectation</TableCell>
                 <TableCell />
-                <TableCell>
-                  {" "}
-                  <IconButton
-                    aria-label="add hint"
-                    size="small"
-                    onClick={handleAddExpectation}
-                  >
-                    <AddIcon />
-                  </IconButton>
-                </TableCell>
+                <TableCell />
               </TableRow>
             </TableHead>
             <TableBody>
@@ -437,7 +428,7 @@ const LessonEdit = ({ search }: { search: any }) => {
                                         id={`edit-hint-${i}-${j}`}
                                         key={`edit-hint-${i}-${j}`}
                                         label={`Hint ${j + 1}`}
-                                        placeholder="Add a hint to the expectation"
+                                        placeholder="Add a hint to help answer the expectation"
                                         InputLabelProps={{
                                           shrink: true,
                                         }}
@@ -458,7 +449,7 @@ const LessonEdit = ({ search }: { search: any }) => {
                                           aria-label="remove hint"
                                           size="small"
                                           onClick={() => {
-                                            handleRemoveHint(i, hint.text);
+                                            handleRemoveHint(i, j);
                                           }}
                                         >
                                           <RemoveIcon />
@@ -478,6 +469,16 @@ const LessonEdit = ({ search }: { search: any }) => {
               })}
             </TableBody>
           </Table>
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<AddIcon />}
+            className={classes.button}
+            style={{ background: "#1B6A9C" }}
+            onClick={handleAddExpectation}
+          >
+            Add Expectation
+          </Button>
         </TableContainer>
         <TableContainer>
           <Table>
