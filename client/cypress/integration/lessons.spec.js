@@ -10,18 +10,26 @@ describe("lessons screen", () => {
           lessons: {
             edges: [
               {
+                cursor: "cursor 1",
                 node: {
                   lessonId: "lesson1",
                   name: "lesson 1",
+                  updatedAt: "0",
                 },
               },
               {
+                cursor: "cursor 2",
                 node: {
                   lessonId: "lesson2",
                   name: "lesson 2",
+                  updatedAt: "1",
                 },
               },
             ],
+            pageInfo: {
+              hasNextPage: false,
+              endCursor: "cursor 2 ",
+            },
           },
         },
         errors: null,

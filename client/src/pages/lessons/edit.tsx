@@ -94,8 +94,8 @@ const LessonEdit = ({ search }: { search: any }) => {
         hints: [{ text: "Add a hint to help for the expectaion" }],
       },
     ],
-    createdAt: new Date(0),
-    updatedAt: new Date(0),
+    createdAt: 0,
+    updatedAt: 0,
   };
 
   const [lesson, setLesson] = React.useState<Lesson>(inititialLesson);

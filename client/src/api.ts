@@ -13,6 +13,7 @@ import {
   CreateLesson,
   UpdateLesson,
   SessionsData,
+  LessonsData,
 } from "types";
 
 export const GRADER_GRAPHQL_ENDPOINT =
@@ -149,14 +150,20 @@ export async function setGrade(
   return result.data.data.setGrade;
 }
 
-export async function fetchLessons(): Promise<LessonEdge[]> {
+export async function fetchLessons(
+  limit: number,
+  cursor: string,
+  sortBy: string,
+  sortDescending: boolean
+): Promise<LessonsData> {
   const result = await axios.post<GQLResponse<FetchLessons>>(
     GRADER_GRAPHQL_ENDPOINT,
     {
       query: `
-      {
-        lessons {
+      query($limit: Int!, $cursor: String!, $sortBy:String!, $sortDescending:Boolean!){
+        lessons(limit:$limit, cursor:$cursor, sortBy:$sortBy, sortDescending:$sortDescending) {
           edges {
+            cursor
             node {
               id
               lessonId
@@ -174,12 +181,22 @@ export async function fetchLessons(): Promise<LessonEdge[]> {
               updatedAt
             }
           }
+          pageInfo {
+            endCursor
+            hasNextPage
+          }
         }
       }
         `,
+      variables: {
+        limit: limit,
+        cursor: cursor,
+        sortBy: sortBy,
+        sortDescending: sortDescending,
+      },
     }
   );
-  return result.data.data.lessons.edges;
+  return result.data.data.lessons;
 }
 
 export async function fetchLesson(lessonId: string): Promise<Lesson> {
