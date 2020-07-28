@@ -13,15 +13,20 @@ import {
   TableContainer,
   TableHead,
   TablePagination,
+  TableSortLabel,
   TableRow,
   Button,
   IconButton,
+  Toolbar,
+  AppBar,
 } from "@material-ui/core";
 import LaunchIcon from "@material-ui/icons/Launch";
 import AddIcon from "@material-ui/icons/Add";
+import KeyboardArrowLeftIcon from "@material-ui/icons/KeyboardArrowLeft";
+import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
 import { Link, navigate } from "@reach/router";
 
-import { LessonEdge } from "types";
+import { LessonEdge, LessonsData } from "types";
 import { fetchLessons, createLesson } from "api";
 import NavBar from "components/nav-bar";
 import "styles/layout.css";
@@ -34,6 +39,20 @@ const theme = createMuiTheme({
   },
 });
 
+const columns: ColumnDef[] = [
+  { id: "name", label: "Lesson", minWidth: 170, align: "center" },
+  { id: "updatedAt", label: "Date", minWidth: 170, align: "center" },
+];
+
+interface ColumnDef {
+  id: string;
+  name?: string;
+  label: string;
+  minWidth: number;
+  align?: "right" | "left" | "center";
+  format?: (v: number) => string;
+}
+
 const useStyles = makeStyles({
   root: {
     width: "100%",
@@ -44,52 +63,62 @@ const useStyles = makeStyles({
   button: {
     margin: theme.spacing(1),
   },
+  appBar: {
+    height: "10%",
+    top: "auto",
+    bottom: 0,
+  },
 });
 
 export const LessonsTable = (props: { location: any }) => {
   const classes = useStyles();
-  const initialLessons = [
-    {
-      node: {
-        id: "",
-        lessonId: "",
-        name: "",
-        intro: "",
-        question: "",
-        conclusion: [""],
-        expectations: [
-          {
-            expectation: "",
-            hints: [{ text: "" }],
-          },
-        ],
-        updatedAt: new Date(0),
-        createdAt: new Date(0),
+  const initialLessons = {
+    edges: [
+      {
+        cursor: "",
+        node: {
+          id: "",
+          lessonId: "",
+          name: "",
+          intro: "",
+          question: "",
+          conclusion: [""],
+          expectations: [
+            {
+              expectation: "",
+              hints: [{ text: "" }],
+            },
+          ],
+          updatedAt: 0,
+          createdAt: 0,
+        },
       },
+    ],
+    pageInfo: {
+      hasNextPage: false,
+      endCursor: "",
     },
-  ];
+  };
 
-  const [lessons, setLessons] = React.useState<LessonEdge[]>(initialLessons);
+  const [lessons, setLessons] = React.useState<LessonsData>(initialLessons);
+  const [prevPages, setPrevPages] = React.useState<string[]>([""]);
   const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [sortBy, setSortBy] = React.useState("updatedAt");
+  const [sortDesc, setSortDesc] = React.useState(true);
+  const rowsPerPage = 10;
 
   React.useEffect(() => {
     let mounted = true;
-    fetchLessons()
+    fetchLessons(rowsPerPage, prevPages[page], sortBy, sortDesc)
       .then((lessons) => {
         console.log(`fetchLessons got`, lessons);
         if (mounted) {
-          if (Array.isArray(lessons)) {
-            const tmp: any = lessons;
-            lessons.map((lesson: LessonEdge, i: number) => {
-              lessons[i].node.updatedAt = new Date(lesson.node.updatedAt);
+          if (lessons !== undefined) {
+            const tmp: any = lessons.edges;
+            tmp.map((lesson: any) => {
+              lesson.node.updatedAt = new Date(lesson.node.updatedAt);
             });
-            setLessons(
-              lessons.sort(
-                (a: LessonEdge, b: LessonEdge) =>
-                  +b.node.updatedAt - +a.node.updatedAt
-              )
-            );
+            setLessons(lessons);
           }
         }
       })
@@ -99,16 +128,35 @@ export const LessonsTable = (props: { location: any }) => {
     };
   }, []);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleChangePage = (event: any, newPage: number): void => {
-    setPage(newPage);
-  };
+  React.useEffect(() => {
+    fetchLessons(rowsPerPage, prevPages[prevPages.length - 1], sortBy, sortDesc)
+      .then((lessons) => {
+        console.log(`page switch fetchLessons got`, lessons);
+        if (lessons !== undefined) {
+          const tmp: any = lessons.edges;
+          tmp.map((lesson: any) => {
+            lesson.node.updatedAt = new Date(lesson.node.updatedAt);
+          });
+          setLessons(lessons);
+        }
+      })
+      .catch((err) => console.error(err));
+  }, [prevPages]);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleChangeRowsPerPage = (event: any): void => {
-    setRowsPerPage(+event.target.value);
-    setPage(0);
-  };
+  React.useEffect(() => {
+    fetchLessons(rowsPerPage, prevPages[prevPages.length - 1], sortBy, sortDesc)
+      .then((lessons) => {
+        console.log(`page switch fetchLessons got`, lessons);
+        if (lessons !== undefined) {
+          const tmp: any = lessons.edges;
+          tmp.map((lesson: any) => {
+            lesson.node.updatedAt = new Date(lesson.node.updatedAt);
+          });
+          setLessons(lessons);
+        }
+      })
+      .catch((err) => console.error(err));
+  }, [sortBy, sortDesc]);
 
   function handleCreate() {
     navigate(withPrefix("/lessons/edit?lessonId=new"));
@@ -141,57 +189,77 @@ export const LessonsTable = (props: { location: any }) => {
             <TableHead>
               <TableRow>
                 <TableCell />
-                <TableCell align="center"> Lesson </TableCell>
-                <TableCell align="center"> Date </TableCell>
+                {columns.map((column) => (
+                  <TableCell
+                    key={column.id}
+                    align={column.align}
+                    style={{ minWidth: column.minWidth }}
+                  >
+                    <TableSortLabel
+                      active={sortBy === column.id}
+                      direction={
+                        sortBy === column.id
+                          ? sortDesc
+                            ? "asc"
+                            : "desc"
+                          : "asc"
+                      }
+                      onClick={() => {
+                        setSortBy(column.id);
+                        setSortDesc(!sortDesc);
+                      }}
+                    >
+                      {column.label}
+                    </TableSortLabel>
+                  </TableCell>
+                ))}
               </TableRow>
             </TableHead>
             <TableBody>
-              {lessons
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((row, i) => {
-                  return (
-                    <TableRow
-                      hover
-                      role="checkbox"
-                      tabIndex={-1}
-                      key={`lesson-${i}`}
+              {lessons.edges.map((row, i) => {
+                return (
+                  <TableRow
+                    hover
+                    role="checkbox"
+                    tabIndex={-1}
+                    key={`lesson-${i}`}
+                  >
+                    <TableCell
+                      key={`lesson-launch-${i}`}
+                      id={`lesson-launch-${i}`}
+                      align="left"
                     >
-                      <TableCell
-                        key={`lesson-launch-${i}`}
-                        id={`lesson-launch-${i}`}
-                        align="left"
+                      <IconButton
+                        onClick={() => handleLaunch(row.node.lessonId)}
                       >
-                        <IconButton
-                          onClick={() => handleLaunch(row.node.lessonId)}
-                        >
-                          <LaunchIcon />
-                        </IconButton>
-                      </TableCell>
-                      <TableCell
-                        key={`lesson-name-${i}`}
-                        id={`lesson-name-${i}`}
-                        align="left"
+                        <LaunchIcon />
+                      </IconButton>
+                    </TableCell>
+                    <TableCell
+                      key={`lesson-name-${i}`}
+                      id={`lesson-name-${i}`}
+                      align="left"
+                    >
+                      <Link
+                        to={withPrefix(
+                          `/lessons/edit?lessonId=${row.node.lessonId}`
+                        )}
                       >
-                        <Link
-                          to={withPrefix(
-                            `/lessons/edit?lessonId=${row.node.lessonId}`
-                          )}
-                        >
-                          {row.node.name ? row.node.name : "No Lesson Name"}
-                        </Link>
-                      </TableCell>
-                      <TableCell key={`date-${i}`} align="center">
-                        {row.node.updatedAt
-                          ? row.node.updatedAt.toLocaleString()
-                          : ""}
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
+                        {row.node.name ? row.node.name : "No Lesson Name"}
+                      </Link>
+                    </TableCell>
+                    <TableCell key={`date-${i}`} align="center">
+                      {row.node.updatedAt
+                        ? row.node.updatedAt.toLocaleString()
+                        : ""}
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
         </TableContainer>
-        <TablePagination
+        {/* <TablePagination
           rowsPerPageOptions={[10, 25, 100]}
           component="div"
           count={lessons.length}
@@ -199,8 +267,35 @@ export const LessonsTable = (props: { location: any }) => {
           page={page}
           onChangePage={handleChangePage}
           onChangeRowsPerPage={handleChangeRowsPerPage}
-        />
+        /> */}
       </Paper>
+      <AppBar position="sticky" color="default" className={classes.appBar}>
+        <Toolbar>
+          <IconButton
+            disabled={prevPages.length === 1 ? true : false}
+            onClick={() => {
+              setPrevPages(
+                prevPages.filter(
+                  (elem) => elem !== prevPages[prevPages.length - 1]
+                )
+              );
+            }}
+          >
+            <KeyboardArrowLeftIcon />
+          </IconButton>
+          <IconButton
+            disabled={!lessons.pageInfo.hasNextPage}
+            onClick={() => {
+              setPrevPages((prevPages) => [
+                ...prevPages,
+                lessons.pageInfo.endCursor,
+              ]);
+            }}
+          >
+            <KeyboardArrowRightIcon />
+          </IconButton>
+        </Toolbar>
+      </AppBar>
     </div>
   );
 };

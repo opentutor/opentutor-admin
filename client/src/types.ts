@@ -97,8 +97,8 @@ export interface Lesson {
   question: string;
   conclusion: string[];
   expectations: LessonExpectation[];
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: number;
+  updatedAt: number;
 }
 
 export interface LessonEdge {
@@ -107,6 +107,7 @@ export interface LessonEdge {
 
 export interface LessonsData {
   edges: LessonEdge[];
+  pageInfo: PageInfo;
 }
 
 export interface FetchLessons {
