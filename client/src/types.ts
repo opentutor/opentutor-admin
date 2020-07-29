@@ -17,7 +17,7 @@ export interface SessionsData {
 }
 
 export interface FetchSessions {
-  sessions: SessionsData;
+  userSessions: SessionsData;
 }
 
 export interface SessionLesson {
@@ -30,7 +30,7 @@ export interface Session {
   createdAt: number;
   updatedAt: number;
   classifierGrade: number;
-  grade: number;
+  graderGrade: number;
   lesson: SessionLesson;
 }
 
@@ -64,7 +64,9 @@ export interface SessionLesson {
 
 export interface UserSession {
   username: string;
-  score: number;
+  graderGrade: number;
+  createdAt: number;
+  updatedAt: number;
   question: Question;
   lesson: SessionLesson;
   userResponses: UserResponse[];

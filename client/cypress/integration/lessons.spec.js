@@ -51,7 +51,7 @@ describe("lessons screen", () => {
   it("displays 2 lesson names by row", () => {
     cy.visit("/lessons");
     const tableBody = cy.get("table tbody");
-    tableBody.get("tr").should("have.length", 2);
+    tableBody.get("tr").should("have.length", 3);
     cy.get("table>tbody>tr:nth-child(1)>td:nth-child(2)").should(
       "contain",
       "lesson 1"

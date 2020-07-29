@@ -112,8 +112,8 @@ const SessionTable = ({ search }: { search: any }) => {
         {" "}
         Score:{" "}
         {userSession
-          ? userSession.score || userSession.score !== null
-            ? Math.trunc(userSession.score * 100)
+          ? userSession.graderGrade || userSession.graderGrade !== null
+            ? Math.trunc(userSession.graderGrade * 100)
             : "?"
           : "?"}{" "}
       </div>
@@ -260,7 +260,6 @@ const SessionTable = ({ search }: { search: any }) => {
 };
 
 const SessionPage = ({ path, search }: { path: string; search: any }) => {
-  console.log(path);
   return (
     <MuiThemeProvider theme={theme}>
       <NavBar title="Grade Session" />
