@@ -19,7 +19,7 @@ import {
   TableHead,
   TableRow,
   Paper,
-  Container,
+  Grid,
 } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
 import RemoveIcon from "@material-ui/icons/Remove";
@@ -267,7 +267,12 @@ const LessonEdit = ({ search }: { search: any }) => {
   return (
     <div style={{ paddingTop: "20px" }}>
       <form className={classes.root} noValidate autoComplete="off">
-        <Container>
+        <Grid
+          container
+          direction="column"
+          justify="flex-start"
+          alignItems="flex-start"
+        >
           <TextField
             id="lesson-name"
             key="lesson-name"
@@ -295,40 +300,43 @@ const LessonEdit = ({ search }: { search: any }) => {
               handleLessonIdChange(e.target.value);
             }}
             variant="outlined"
+            size="small"
           />
-        </Container>
-        <div>
-          <TextField
-            id="intro"
-            key="intro"
-            label="Introduction"
-            placeholder="Introduction"
-            InputLabelProps={{
-              shrink: true,
-            }}
-            value={lesson.intro ? lesson.intro : ""}
-            onChange={(e) => {
-              handleIntroChange(e.target.value);
-            }}
-            variant="outlined"
-          />
-        </div>
-        <div>
-          <TextField
-            id="question"
-            key="question"
-            label="Question"
-            placeholder="Question"
-            InputLabelProps={{
-              shrink: true,
-            }}
-            value={lesson.question ? lesson.question : ""}
-            onChange={(e) => {
-              handleQuestionChange(e.target.value);
-            }}
-            variant="outlined"
-          />
-        </div>
+        </Grid>
+        <Grid container justify="flex-start" style={{ paddingTop: "40px" }}>
+          <div>
+            <TextField
+              id="intro"
+              key="intro"
+              label="Introduction"
+              placeholder="Introduction"
+              InputLabelProps={{
+                shrink: true,
+              }}
+              value={lesson.intro ? lesson.intro : ""}
+              onChange={(e) => {
+                handleIntroChange(e.target.value);
+              }}
+              variant="outlined"
+            />
+          </div>
+          <div>
+            <TextField
+              id="question"
+              key="question"
+              label="Question"
+              placeholder="Question"
+              InputLabelProps={{
+                shrink: true,
+              }}
+              value={lesson.question ? lesson.question : ""}
+              onChange={(e) => {
+                handleQuestionChange(e.target.value);
+              }}
+              variant="outlined"
+            />
+          </div>
+        </Grid>
         <TableContainer component={Paper}>
           <Table>
             <TableHead>
