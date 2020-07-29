@@ -259,15 +259,6 @@ export const LessonsTable = (props: { location: any }) => {
             </TableBody>
           </Table>
         </TableContainer>
-        {/* <TablePagination
-          rowsPerPageOptions={[10, 25, 100]}
-          component="div"
-          count={lessons.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onChangePage={handleChangePage}
-          onChangeRowsPerPage={handleChangeRowsPerPage}
-        /> */}
       </Paper>
       <AppBar position="sticky" color="default" className={classes.appBar}>
         <Toolbar>

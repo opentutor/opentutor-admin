@@ -13,6 +13,7 @@ describe("session screen", () => {
               name: "lesson 1",
             },
             username: "username1",
+            graderGrade: null,
             question: {
               text: "question?",
               expectations: [
@@ -85,6 +86,7 @@ describe("session screen", () => {
         data: {
           userSession: {
             username: "username1",
+            graderGrade: null,
             question: {
               text: "question?",
               expectations: [

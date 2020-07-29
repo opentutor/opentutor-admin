@@ -35,15 +35,16 @@ export async function fetchSessions(
     {
       query: `
       query($limit: Int!, $cursor: String!, $sortBy:String!, $sortDescending:Boolean!){
-          sessions(limit:$limit, cursor:$cursor, sortBy:$sortBy, sortDescending:$sortDescending){
+          userSessions(limit:$limit, cursor:$cursor, sortBy:$sortBy, sortDescending:$sortDescending){
             edges {
-              cursor node {
+              cursor 
+              node {
                 sessionId
                 username
                 createdAt
                 updatedAt
                 classifierGrade
-                grade
+                graderGrade
                 lesson {
                   name
                 }
@@ -64,7 +65,7 @@ export async function fetchSessions(
       },
     }
   );
-  return result.data.data.sessions;
+  return result.data.data.userSessions;
 }
 
 export async function fetchUserSession(
@@ -77,7 +78,7 @@ export async function fetchUserSession(
         query ($sessionId: String!){
           userSession(sessionId: $sessionId) {
             username
-            score
+            graderGrade
             createdAt
             question {
               text
@@ -119,7 +120,7 @@ export async function setGrade(
         mutation ($sessionId: String!, $userAnswerIndex: Int!, $userExpectationIndex: Int!, $grade: String!) {
           setGrade(sessionId: $sessionId, userAnswerIndex:$userAnswerIndex, userExpectationIndex:$userExpectationIndex grade:$grade){
             username
-            score
+            graderGrade
             question {
               text
               expectations {

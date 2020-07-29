@@ -90,7 +90,7 @@ export const SessionsTable = ({ path }: { path: string }) => {
         node: {
           classifierGrade: 0,
           createdAt: 0,
-          grade: 0,
+          graderGrade: 0,
           lesson: {
             name: "",
           },
@@ -163,7 +163,7 @@ export const SessionsTable = ({ path }: { path: string }) => {
       sortDesc
     )
       .then((sessions) => {
-        console.log(`page switch fetchSessions got`, sessions);
+        console.log(`sort fetchSessions got`, sessions);
         if (sessions !== undefined) {
           const tmp: any = sessions.edges;
           tmp.map((session: any) => {
@@ -227,7 +227,9 @@ export const SessionsTable = ({ path }: { path: string }) => {
             </TableHead>
             <TableBody>
               {sessions?.edges
-                .filter((edge: Edge) => showGraded || edge.node.grade === null)
+                .filter(
+                  (edge: Edge) => showGraded || edge.node.graderGrade === null
+                )
                 .map((row, i) => {
                   return (
                     <TableRow
@@ -266,8 +268,8 @@ export const SessionsTable = ({ path }: { path: string }) => {
                           : "?"}
                       </TableCell>
                       <TableCell key={`grade-${i}`} align="center">
-                        {row.node.grade || row.node.grade === 0
-                          ? Math.trunc(row.node.grade * 100)
+                        {row.node.graderGrade || row.node.graderGrade === 0
+                          ? Math.trunc(row.node.graderGrade * 100)
                           : "?"}
                       </TableCell>
                     </TableRow>

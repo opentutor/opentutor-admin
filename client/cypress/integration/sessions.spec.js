@@ -7,7 +7,7 @@ describe("sessions screen", () => {
       status: 200,
       response: {
         data: {
-          sessions: {
+          userSessions: {
             edges: [
               {
                 cursor: "cursor 1",
@@ -17,7 +17,7 @@ describe("sessions screen", () => {
                   },
                   sessionId: "session 1",
                   classifierGrade: 1,
-                  grade: 1,
+                  graderGrade: 1,
                 },
               },
               {
@@ -28,7 +28,7 @@ describe("sessions screen", () => {
                   },
                   sessionId: "session 2",
                   classifierGrade: 0.5,
-                  grade: null,
+                  graderGrade: null,
                 },
               },
             ],
