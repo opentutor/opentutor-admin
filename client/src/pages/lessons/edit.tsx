@@ -82,7 +82,6 @@ const LessonEdit = ({ search }: { search: any }) => {
   //console.log(lessonId);
   const classes = useStyles();
   const inititialLesson = {
-    id: "",
     lessonId: "",
     name: "Lesson Name",
     intro: "Introduction",
@@ -94,13 +93,9 @@ const LessonEdit = ({ search }: { search: any }) => {
         hints: [{ text: "Add a hint to help for the expectaion" }],
       },
     ],
-    createdAt: 0,
-    updatedAt: 0,
   };
 
-  const [lesson, setLesson] = React.useState<Lesson>(inititialLesson);
-  const [updated, setUpdated] = React.useState<Lesson>(inititialLesson);
-  const [copyLesson, setCopyLesson] = React.useState<Lesson>(inititialLesson);
+  const [lesson, setLesson] = React.useState(inititialLesson);
   const [change, setChange] = React.useState(false);
   const [create, setCreate] = React.useState(false);
   const [expectationOpen, setExpectationOpen] = React.useState(true);
@@ -178,26 +173,22 @@ const LessonEdit = ({ search }: { search: any }) => {
     setLesson({ ...lesson, expectations: copyExpectations });
   }
 
-  function handleRevert() {
-    setChange(false);
-    setLesson(copyLesson);
-  }
-
   function handleSave() {
     const converted = encodeURI(JSON.stringify(lesson));
     let id = "";
-    let mounted = false;
-    if (originalId !== "new") {
+    let mounted = true;
+    if (originalId == "new") {
       id = lesson.lessonId;
     } else {
       id = originalId;
     }
+    console.log("lessonId", lesson.lessonId);
+    console.log("update", converted);
     updateLesson(id, converted)
       .then((lesson) => {
         console.log(`fetchUpdateLesson got`, lesson);
         if (mounted) {
           if (lesson !== undefined) {
-            setCopyLesson(lesson);
             setLesson(lesson);
           }
         }
