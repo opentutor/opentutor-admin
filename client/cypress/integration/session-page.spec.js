@@ -131,10 +131,5 @@ describe("session screen", () => {
         "Content-Type": "application/json",
       },
     });
-    cy.get("#select-grade-0-0")
-      .click()
-      .get("#good-grade-0-0")
-      .click()
-      .contains("Good");
   });
 });
