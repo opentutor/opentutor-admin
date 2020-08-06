@@ -1,4 +1,7 @@
 describe("visual testing grading screen", () => {
+  beforeEach(() => {
+    cy.viewport(1280, 720);
+  });
 
   it("shows Good after select grade for first expectation, background should be green", () => {
     cy.server();
@@ -84,7 +87,7 @@ describe("visual testing grading screen", () => {
     cy.visit("/sessions/session?sessionId=session1");
 
     cy.wait("@getSession");
-    cy.matchImageSnapshot({width: 1280, height: 720});
+    cy.matchImageSnapshot();
   });
 
   it("displays grading list with default don't show grade", () => {
@@ -136,7 +139,7 @@ describe("visual testing grading screen", () => {
     cy.visit("/sessions");
 
     cy.wait("@sessionsList");
-    cy.matchImageSnapshot({width: 1280, height: 720});
+    cy.matchImageSnapshot();
   });
 
   it("displays grading list with show grade", () => {
@@ -187,7 +190,8 @@ describe("visual testing grading screen", () => {
     }).as("sessionsList");
     cy.visit("/sessions");
     cy.get("#toggle").check();
+    //option.should("not.have.attr", "checked");
     cy.wait("@sessionsList");
-    cy.matchImageSnapshot({width: 1280, height: 720});
+    cy.matchImageSnapshot();
   });
 });
