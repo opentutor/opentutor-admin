@@ -39,6 +39,7 @@ describe("visual testing lesson", () => {
     cy.visit("/lessons/edit?lessonId=lesson");
 
     cy.wait("@getLesson");
+    cy.viewport(1280, 720);
     cy.matchImageSnapshot();
   });
 
@@ -78,6 +79,7 @@ describe("visual testing lesson", () => {
     cy.visit("/lessons/edit?lessonId=lesson");
     cy.wait("@getLesson");
     cy.get("#intro").type("Hello World");
+    cy.viewport(1280, 720);
     cy.matchImageSnapshot();
   });
 
@@ -123,6 +125,7 @@ describe("visual testing lesson", () => {
     }).as("lessonsList");
     cy.visit("/lessons");
     cy.wait("@lessonsList");
+    cy.viewport(1280, 720);
     cy.matchImageSnapshot();
   });
 });
