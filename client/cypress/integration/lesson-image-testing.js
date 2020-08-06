@@ -1,6 +1,6 @@
 describe("visual testing lesson", () => {
   beforeEach(() => {
-    cy.viewport(1280, 720)
+    cy.viewport(2560, 2024)
   });
 
   it("loads existing lesson edit page", () => {

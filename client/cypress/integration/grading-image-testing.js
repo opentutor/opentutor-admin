@@ -1,6 +1,6 @@
 describe("visual testing grading screen", () => {
   beforeEach(() => {
-    cy.viewport(1280, 720);
+    cy.viewport(2560, 2024);
   });
 
   it("shows Good after select grade for first expectation, background should be green", () => {
