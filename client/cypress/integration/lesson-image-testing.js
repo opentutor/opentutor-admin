@@ -1,7 +1,4 @@
 describe("visual testing lesson", () => {
-  beforeEach(() => {
-    cy.viewport(1280, 720);
-  });
 
   it("loads existing lesson edit page", () => {
     cy.server();
@@ -79,8 +76,7 @@ describe("visual testing lesson", () => {
     cy.visit("/lessons/edit?lessonId=lesson");
     cy.wait("@getLesson");
     cy.get("#intro").type("Hello World");
-    cy.viewport(1280, 720);
-    cy.matchImageSnapshot();
+    cy.matchImageSnapshot({width: 1280, height: 720});
   });
 
   it("loads list of lessons", () => {
@@ -125,7 +121,6 @@ describe("visual testing lesson", () => {
     }).as("lessonsList");
     cy.visit("/lessons");
     cy.wait("@lessonsList");
-    cy.viewport(1280, 720);
-    cy.matchImageSnapshot();
+    cy.matchImageSnapshot({width: 1280, height: 720});
   });
 });
