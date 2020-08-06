@@ -87,6 +87,7 @@ describe("visual testing grading screen", () => {
     cy.visit("/sessions/session?sessionId=session1");
 
     cy.wait("@getSession");
+    cy.viewport(1280, 720);
     cy.matchImageSnapshot();
   });
 
@@ -139,6 +140,7 @@ describe("visual testing grading screen", () => {
     cy.visit("/sessions");
 
     cy.wait("@sessionsList");
+    cy.viewport(1280, 720);
     cy.matchImageSnapshot();
   });
 
@@ -192,6 +194,7 @@ describe("visual testing grading screen", () => {
     cy.get("#toggle").check();
     //option.should("not.have.attr", "checked");
     cy.wait("@sessionsList");
+    cy.viewport(1280, 720);
     cy.matchImageSnapshot();
   });
 });
