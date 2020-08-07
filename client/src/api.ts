@@ -2,12 +2,10 @@ import axios from "axios";
 
 import {
   FetchSessions,
-  Edge,
   FetchUserSession,
   UserSession,
   SetGrade,
   Lesson,
-  LessonEdge,
   FetchLessons,
   FetchLesson,
   CreateLesson,

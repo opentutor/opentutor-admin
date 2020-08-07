@@ -97,11 +97,12 @@ export interface Lesson {
   question: string;
   conclusion: string[];
   expectations: LessonExpectation[];
-  createdAt: number;
-  updatedAt: number;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface LessonEdge {
+  cursor: string;
   node: Lesson;
 }
 

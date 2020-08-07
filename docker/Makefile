@@ -1,6 +1,6 @@
 SHELL:=/bin/bash
-DOCKER_IMAGE?=opentutor-grading-client
-DOCKER_CONTAINER=opentutor-grading-client
+DOCKER_IMAGE?=opentutor-admin
+DOCKER_CONTAINER=opentutor-admin
 DIR=$(shell pwd)
 PROJECT_ROOT?=$(shell git rev-parse --show-toplevel 2> /dev/null)
 PROJECT_NAME=$(shell v='$(PROJECT_ROOT)'; echo "$${v\#\#*/}")
@@ -79,7 +79,7 @@ test-all:
 	$(MAKE) test-audit
 	$(MAKE) test-format
 	$(MAKE) test-lint
-	$(MAKE) test-types
+	# $(MAKE) test-types
 	$(MAKE) test
 
 .PHONY: test-audit
@@ -94,6 +94,6 @@ test-format:
 test-lint:
 	npm run test:lint
 
-.PHONY: test-types
-test-types: node_modules/typescript
-	npm run test:types
+# .PHONY: test-types
+# test-types: node_modules/typescript
+# 	npm run test:types
