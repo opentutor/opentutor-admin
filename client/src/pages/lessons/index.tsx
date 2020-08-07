@@ -12,7 +12,6 @@ import {
   TableCell,
   TableContainer,
   TableHead,
-  TablePagination,
   TableSortLabel,
   TableRow,
   Button,
@@ -26,8 +25,8 @@ import KeyboardArrowLeftIcon from "@material-ui/icons/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
 import { Link, navigate } from "@reach/router";
 
-import { LessonEdge, LessonsData } from "types";
-import { fetchLessons, createLesson } from "api";
+import { LessonsData, Lesson } from "types";
+import { fetchLessons } from "api";
 import NavBar from "components/nav-bar";
 import "styles/layout.css";
 
@@ -72,7 +71,7 @@ const useStyles = makeStyles({
 
 export const LessonsTable = (props: { location: any }) => {
   const classes = useStyles();
-  const initialLessons = {
+  const initialLessons: LessonsData = {
     edges: [
       {
         cursor: "",
@@ -89,8 +88,8 @@ export const LessonsTable = (props: { location: any }) => {
               hints: [{ text: "" }],
             },
           ],
-          updatedAt: 0,
-          createdAt: 0,
+          updatedAt: "",
+          createdAt: "",
         },
       },
     ],
@@ -109,54 +108,23 @@ export const LessonsTable = (props: { location: any }) => {
 
   React.useEffect(() => {
     let mounted = true;
-    fetchLessons(rowsPerPage, prevPages[page], sortBy, sortDesc)
+    fetchLessons(rowsPerPage, prevPages[prevPages.length - 1], sortBy, sortDesc)
       .then((lessons) => {
         console.log(`fetchLessons got`, lessons);
-        if (mounted) {
-          if (lessons !== undefined) {
-            const tmp: any = lessons.edges;
-            tmp.map((lesson: any) => {
-              lesson.node.updatedAt = new Date(lesson.node.updatedAt);
-            });
-            setLessons(lessons);
-          }
+        if (mounted && lessons && Array.isArray(lessons.edges)) {
+          lessons.edges.map((lesson) => {
+            lesson.node.updatedAt = new Date(
+              lesson.node.updatedAt
+            ).toISOString();
+          });
+          setLessons(lessons);
         }
       })
       .catch((err) => console.error(err));
     return () => {
       mounted = false;
     };
-  }, []);
-
-  React.useEffect(() => {
-    fetchLessons(rowsPerPage, prevPages[prevPages.length - 1], sortBy, sortDesc)
-      .then((lessons) => {
-        console.log(`page switch fetchLessons got`, lessons);
-        if (lessons !== undefined) {
-          const tmp: any = lessons.edges;
-          tmp.map((lesson: any) => {
-            lesson.node.updatedAt = new Date(lesson.node.updatedAt);
-          });
-          setLessons(lessons);
-        }
-      })
-      .catch((err) => console.error(err));
-  }, [prevPages]);
-
-  React.useEffect(() => {
-    fetchLessons(rowsPerPage, prevPages[prevPages.length - 1], sortBy, sortDesc)
-      .then((lessons) => {
-        console.log(`page switch fetchLessons got`, lessons);
-        if (lessons !== undefined) {
-          const tmp: any = lessons.edges;
-          tmp.map((lesson: any) => {
-            lesson.node.updatedAt = new Date(lesson.node.updatedAt);
-          });
-          setLessons(lessons);
-        }
-      })
-      .catch((err) => console.error(err));
-  }, [sortBy, sortDesc]);
+  }, [prevPages, sortBy, sortDesc]);
 
   function handleCreate() {
     navigate(withPrefix("/lessons/edit?lessonId=new"));

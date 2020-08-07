@@ -32,4 +32,4 @@ test-lint:
 PHONY: test-types
 test-types:
 	cd client && $(MAKE) test-types
-	cd docker && $(MAKE) test-types
+	# cd docker && $(MAKE) test-types
