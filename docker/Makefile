@@ -79,7 +79,7 @@ test-all:
 	$(MAKE) test-audit
 	$(MAKE) test-format
 	$(MAKE) test-lint
-	$(MAKE) test-types
+	# $(MAKE) test-types
 	$(MAKE) test
 
 .PHONY: test-audit
@@ -94,6 +94,6 @@ test-format:
 test-lint:
 	npm run test:lint
 
-.PHONY: test-types
-test-types: node_modules/typescript
-	npm run test:types
+# .PHONY: test-types
+# test-types: node_modules/typescript
+# 	npm run test:types
