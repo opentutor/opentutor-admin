@@ -1,5 +1,5 @@
 {
-  "name": "opentutor-grading-client-node",
+  "name": "opentutor-admin-node",
   "version": "1.0.19",
   "private": true,
   "scripts": {

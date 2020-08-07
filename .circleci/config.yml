@@ -89,7 +89,7 @@ jobs:
                   echo 'export IMAGE_TAG="$CIRCLE_TAG"' >> $BASH_ENV
       - run:
           name: report tag
-          command: echo "building tag uscictdocker/opentutor-grading-client:${IMAGE_TAG}..."
+          command: echo "building tag uscictdocker/opentutor-admin:${IMAGE_TAG}..."
       - setup_remote_docker
       - checkout
       - docker/check
@@ -102,11 +102,11 @@ jobs:
             && make clean build
       - docker/build:
           path: docker
-          image: uscictdocker/opentutor-grading-client
+          image: uscictdocker/opentutor-admin
           tag: ${IMAGE_TAG}
       - docker/push:
           digest-path: /tmp/digest.txt
-          image: uscictdocker/opentutor-grading-client
+          image: uscictdocker/opentutor-admin
           tag: ${IMAGE_TAG}
       - run:
           command: |

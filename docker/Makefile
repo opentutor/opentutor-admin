@@ -1,6 +1,6 @@
 SHELL:=/bin/bash
-DOCKER_IMAGE?=opentutor-grading-client
-DOCKER_CONTAINER=opentutor-grading-client
+DOCKER_IMAGE?=opentutor-admin
+DOCKER_CONTAINER=opentutor-admin
 DIR=$(shell pwd)
 PROJECT_ROOT?=$(shell git rev-parse --show-toplevel 2> /dev/null)
 PROJECT_NAME=$(shell v='$(PROJECT_ROOT)'; echo "$${v\#\#*/}")
