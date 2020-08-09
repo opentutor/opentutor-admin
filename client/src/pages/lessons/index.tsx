@@ -1,32 +1,31 @@
 import { withPrefix } from "gatsby";
 import React from "react";
 import {
-  MuiThemeProvider,
-  createMuiTheme,
-  makeStyles,
-} from "@material-ui/core/styles";
-import {
+  AppBar,
+  CircularProgress,
+  Fab,
+  IconButton,
   Paper,
   Table,
   TableBody,
   TableCell,
   TableContainer,
-  TableHead,
-  TableSortLabel,
   TableRow,
-  Button,
-  IconButton,
   Toolbar,
-  AppBar,
 } from "@material-ui/core";
+import {
+  MuiThemeProvider,
+  createMuiTheme,
+  makeStyles,
+} from "@material-ui/core/styles";
 import LaunchIcon from "@material-ui/icons/Launch";
 import AddIcon from "@material-ui/icons/Add";
 import KeyboardArrowLeftIcon from "@material-ui/icons/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
 import { Link, navigate } from "@reach/router";
-
-import { LessonsData, Lesson } from "types";
+import { LessonEdge, LessonsData } from "types";
 import { fetchLessons } from "api";
+import { ColumnDef, ColumnHeader } from "components/column-header";
 import NavBar from "components/nav-bar";
 import "styles/layout.css";
 
@@ -38,27 +37,12 @@ const theme = createMuiTheme({
   },
 });
 
-const columns: ColumnDef[] = [
-  { id: "name", label: "Lesson", minWidth: 170, align: "center" },
-  { id: "updatedAt", label: "Date", minWidth: 170, align: "center" },
-];
-
-interface ColumnDef {
-  id: string;
-  name?: string;
-  label: string;
-  minWidth: number;
-  align?: "right" | "left" | "center";
-  format?: (v: number) => string;
-}
-
 const useStyles = makeStyles({
   root: {
-    width: "100%",
+    display: "flex",
+    flexFlow: "column",
   },
-  container: {
-    maxHeight: 440,
-  },
+  container: {},
   button: {
     margin: theme.spacing(1),
   },
@@ -67,193 +51,158 @@ const useStyles = makeStyles({
     top: "auto",
     bottom: 0,
   },
+  fab: {
+    position: "absolute",
+    right: theme.spacing(1),
+    zIndex: 1,
+  },
+  progress: {
+    marginLeft: "50%",
+  },
 });
+
+const columns: ColumnDef[] = [
+  { id: "", label: "", minWidth: 0, align: "center" },
+  { id: "name", label: "Lesson", minWidth: 200, align: "center" },
+  { id: "updatedAt", label: "Date", minWidth: 170, align: "center" },
+];
+
+const LessonItem = (props: { location: any; row: LessonEdge; i: number }) => {
+  const { location, row, i } = props;
+
+  function launchLesson(id: string) {
+    const host = process.env.TUTOR_ENDPOINT || location.origin;
+    const path = `${host}/tutor?lesson=${id}`;
+    window.location.href = path;
+  }
+
+  return (
+    <TableRow hover role="checkbox" tabIndex={-1} key={`lesson-${i}`}>
+      <TableCell
+        key={`lesson-launch-${i}`}
+        id={`lesson-launch-${i}`}
+        align="left"
+      >
+        <IconButton onClick={() => launchLesson(row.node.lessonId)}>
+          <LaunchIcon />
+        </IconButton>
+      </TableCell>
+      <TableCell key={`lesson-name-${i}`} id={`lesson-name-${i}`} align="left">
+        <Link to={withPrefix(`/lessons/edit?lessonId=${row.node.lessonId}`)}>
+          {row.node.name ? row.node.name : "No Lesson Name"}
+        </Link>
+      </TableCell>
+      <TableCell key={`date-${i}`} align="center">
+        {row.node.updatedAt ? row.node.updatedAt.toLocaleString() : ""}
+      </TableCell>
+    </TableRow>
+  );
+};
+
+const TableFooter = (props: {
+  classes: any;
+  hasNext: boolean;
+  hasPrev: boolean;
+  onNext: () => void;
+  onPrev: () => void;
+}) => {
+  const { classes, hasNext, hasPrev, onNext, onPrev } = props;
+
+  function onCreate() {
+    navigate(withPrefix("/lessons/edit?lessonId=new"));
+  }
+
+  return (
+    <AppBar position="sticky" color="default" className={classes.appBar}>
+      <Toolbar>
+        <IconButton disabled={!hasPrev} onClick={onPrev}>
+          <KeyboardArrowLeftIcon />
+        </IconButton>
+        <IconButton disabled={!hasNext} onClick={onNext}>
+          <KeyboardArrowRightIcon />
+        </IconButton>
+        <Fab
+          id="create-button"
+          variant="extended"
+          color="primary"
+          className={classes.fab}
+          onClick={onCreate}
+        >
+          <AddIcon />
+          Create Lesson
+        </Fab>
+      </Toolbar>
+    </AppBar>
+  );
+};
 
 export const LessonsTable = (props: { location: any }) => {
   const classes = useStyles();
-  const initialLessons: LessonsData = {
-    edges: [
-      {
-        cursor: "",
-        node: {
-          id: "",
-          lessonId: "",
-          name: "",
-          intro: "",
-          question: "",
-          conclusion: [""],
-          expectations: [
-            {
-              expectation: "",
-              hints: [{ text: "" }],
-            },
-          ],
-          updatedAt: "",
-          createdAt: "",
-        },
-      },
-    ],
-    pageInfo: {
-      hasNextPage: false,
-      endCursor: "",
-    },
-  };
-
-  const [lessons, setLessons] = React.useState<LessonsData>(initialLessons);
+  const [lessons, setLessons] = React.useState<LessonsData>();
   const [prevPages, setPrevPages] = React.useState<string[]>([""]);
   const [page, setPage] = React.useState(0);
   const [sortBy, setSortBy] = React.useState("updatedAt");
   const [sortDesc, setSortDesc] = React.useState(true);
   const rowsPerPage = 10;
 
+  function onSort(id: string) {
+    setSortBy(id);
+    setSortDesc(!sortDesc);
+  }
+
+  function nextPage() {}
+
+  function prevPage() {}
+
   React.useEffect(() => {
-    let mounted = true;
-    fetchLessons(rowsPerPage, prevPages[prevPages.length - 1], sortBy, sortDesc)
+    fetchLessons(rowsPerPage, prevPages[page], sortBy, sortDesc)
       .then((lessons) => {
-        if (mounted && lessons && Array.isArray(lessons.edges)) {
-          lessons.edges.map((lesson) => {
-            lesson.node.updatedAt = new Date(
-              lesson.node.updatedAt
-            ).toISOString();
+        console.log(`fetchLessons got`, lessons);
+        if (lessons !== undefined) {
+          const tmp: any = lessons.edges;
+          tmp.map((lesson: any) => {
+            lesson.node.updatedAt = new Date(lesson.node.updatedAt);
           });
           setLessons(lessons);
         }
       })
       .catch((err) => console.error(err));
-    return () => {
-      mounted = false;
-    };
-  }, [prevPages, sortBy, sortDesc]);
+  }, [page, prevPages, sortBy, sortDesc]);
 
-  function handleCreate() {
-    navigate(withPrefix("/lessons/edit?lessonId=new"));
-  }
-
-  function handleLaunch(id: string) {
-    const host = process.env.TUTOR_ENDPOINT || props.location.origin;
-    const path = `${host}/tutor?lesson=${id}`;
-    window.location.href = path;
+  if (!lessons) {
+    return (
+      <div className={classes.root}>
+        <CircularProgress className={classes.progress} />
+      </div>
+    );
   }
 
   return (
     <div>
-      <div>
-        <Button
-          id="create-button"
-          variant="contained"
-          color="default"
-          className={classes.button}
-          startIcon={<AddIcon />}
-          onClick={handleCreate}
-        >
-          Create Lesson
-        </Button>
-      </div>
-
       <Paper className={classes.root}>
         <TableContainer className={classes.container}>
           <Table stickyHeader aria-label="sticky table">
-            <TableHead>
-              <TableRow>
-                <TableCell />
-                {columns.map((column) => (
-                  <TableCell
-                    key={column.id}
-                    align={column.align}
-                    style={{ minWidth: column.minWidth }}
-                  >
-                    <TableSortLabel
-                      active={sortBy === column.id}
-                      direction={
-                        sortBy === column.id
-                          ? sortDesc
-                            ? "asc"
-                            : "desc"
-                          : "asc"
-                      }
-                      onClick={() => {
-                        setSortBy(column.id);
-                        setSortDesc(!sortDesc);
-                      }}
-                    >
-                      {column.label}
-                    </TableSortLabel>
-                  </TableCell>
-                ))}
-              </TableRow>
-            </TableHead>
+            <ColumnHeader
+              columns={columns}
+              sortBy={sortBy}
+              sortDesc={sortDesc}
+              onSort={onSort}
+            />
             <TableBody>
-              {lessons.edges.map((row, i) => {
-                return (
-                  <TableRow
-                    hover
-                    role="checkbox"
-                    tabIndex={-1}
-                    key={`lesson-${i}`}
-                  >
-                    <TableCell
-                      key={`lesson-launch-${i}`}
-                      id={`lesson-launch-${i}`}
-                      align="left"
-                    >
-                      <IconButton
-                        onClick={() => handleLaunch(row.node.lessonId)}
-                      >
-                        <LaunchIcon />
-                      </IconButton>
-                    </TableCell>
-                    <TableCell
-                      key={`lesson-name-${i}`}
-                      id={`lesson-name-${i}`}
-                      align="left"
-                    >
-                      <Link
-                        to={withPrefix(
-                          `/lessons/edit?lessonId=${row.node.lessonId}`
-                        )}
-                      >
-                        {row.node.name ? row.node.name : "No Lesson Name"}
-                      </Link>
-                    </TableCell>
-                    <TableCell key={`date-${i}`} align="center">
-                      {row.node.updatedAt
-                        ? row.node.updatedAt.toLocaleString()
-                        : ""}
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
+              {lessons.edges.map((row, i) => (
+                <LessonItem location={props.location} row={row} i={i} />
+              ))}
             </TableBody>
           </Table>
         </TableContainer>
       </Paper>
-      <AppBar position="sticky" color="default" className={classes.appBar}>
-        <Toolbar>
-          <IconButton
-            disabled={prevPages.length === 1 ? true : false}
-            onClick={() => {
-              setPrevPages(
-                prevPages.filter(
-                  (elem) => elem !== prevPages[prevPages.length - 1]
-                )
-              );
-            }}
-          >
-            <KeyboardArrowLeftIcon />
-          </IconButton>
-          <IconButton
-            disabled={!lessons.pageInfo.hasNextPage}
-            onClick={() => {
-              setPrevPages((prevPages) => [
-                ...prevPages,
-                lessons.pageInfo.endCursor,
-              ]);
-            }}
-          >
-            <KeyboardArrowRightIcon />
-          </IconButton>
-        </Toolbar>
-      </AppBar>
+      <TableFooter
+        classes={classes}
+        hasPrev={prevPages.length > 1}
+        hasNext={lessons.pageInfo.hasNextPage}
+        onPrev={prevPage}
+        onNext={nextPage}
+      />
     </div>
   );
 };

@@ -5,28 +5,29 @@ import {
   makeStyles,
 } from "@material-ui/core/styles";
 import {
+  AppBar,
+  CircularProgress,
+  FormGroup,
+  FormControlLabel,
+  IconButton,
   Paper,
   Table,
+  Switch,
   TableBody,
   TableCell,
   TableContainer,
-  TableHead,
   TableRow,
-  FormControlLabel,
-  IconButton,
-  AppBar,
   Toolbar,
-  TableSortLabel,
 } from "@material-ui/core";
 import { withPrefix, navigate } from "gatsby";
 import { Link } from "@reach/router";
-import { Edge, SessionsData } from "types";
-import { Checkbox } from "@material-ui/core";
 import KeyboardArrowLeftIcon from "@material-ui/icons/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
 import EditIcon from "@material-ui/icons/Edit";
 import { fetchSessions } from "api";
+import { Edge, SessionsData } from "types";
 import NavBar from "components/nav-bar";
+import { ColumnDef, ColumnHeader } from "components/column-header";
 import "styles/layout.css";
 
 const theme = createMuiTheme({
@@ -37,8 +38,28 @@ const theme = createMuiTheme({
   },
 });
 
+const useStyles = makeStyles({
+  root: {
+    display: "flex",
+    flexFlow: "column",
+  },
+  container: {},
+  appBar: {
+    height: "10%",
+    top: "auto",
+    bottom: 0,
+  },
+  progress: {
+    marginLeft: "50%",
+  },
+  toggle: {
+    position: "absolute",
+    right: theme.spacing(1),
+  },
+});
+
 const columns: ColumnDef[] = [
-  { id: "sessionId", label: "Session", minWidth: 170, align: "center" },
+  { id: "sessionId", label: "Lesson", minWidth: 170, align: "center" },
   { id: "username", label: "Username", minWidth: 170, align: "center" },
   { id: "createdAt", label: "Date", minWidth: 170, align: "center" },
   {
@@ -57,55 +78,87 @@ const columns: ColumnDef[] = [
   },
 ];
 
-interface ColumnDef {
-  id: string;
-  name?: string;
-  label: string;
-  minWidth: number;
-  align?: "right" | "left" | "center";
-  format?: (v: number) => string;
-}
+const SessionItem = (props: { row: Edge; i: number }) => {
+  const { row, i } = props;
 
-const useStyles = makeStyles({
-  root: {
-    width: "100%",
-  },
-  container: {
-    maxHeight: 550,
-  },
-  appBar: {
-    height: "10%",
-    top: "auto",
-    bottom: 0,
-  },
-});
+  return (
+    <TableRow hover role="checkbox" tabIndex={-1} key={row.node.sessionId}>
+      <TableCell key={`session-${i}`} id={`session-${i}`} align="left">
+        <Link
+          to={withPrefix(`/sessions/session?sessionId=${row.node.sessionId}`)}
+        >
+          {row.node.lesson && row.node.lesson.name
+            ? row.node.lesson.name
+            : "No Lesson Name"}
+        </Link>
+      </TableCell>
+      <TableCell key={`username-${i}`} align="center">
+        {row.node.username ? row.node.username : "Guest"}
+      </TableCell>
+      <TableCell key={`date-${i}`} align="center">
+        {row.node.createdAt ? row.node.createdAt.toLocaleString() : ""}
+      </TableCell>
+      <TableCell key={`classifier-grade-${i}`} align="center">
+        {row.node ? Math.trunc(row.node.classifierGrade * 100) : "?"}
+      </TableCell>
+      <TableCell key={`grade-${i}`} align="center">
+        {row.node.graderGrade || row.node.graderGrade === 0
+          ? Math.trunc(row.node.graderGrade * 100)
+          : "?"}
+      </TableCell>
+    </TableRow>
+  );
+};
 
-export const SessionsTable = ({ path }: { path: string }) => {
-  const initialSessions = {
-    edges: [
-      {
-        cursor: "",
-        node: {
-          classifierGrade: 0,
-          createdAt: "",
-          graderGrade: 0,
-          lesson: {
-            name: "",
-            lessonId: "",
-          },
-          sessionId: "",
-          updatedAt: "",
-          username: "",
-        },
-      },
-    ],
-    pageInfo: {
-      hasNextPage: false,
-      endCursor: "",
-    },
-  };
+const TableFooter = (props: {
+  classes: any;
+  hasNext: boolean;
+  hasPrev: boolean;
+  showGraded: boolean;
+  onNext: () => void;
+  onPrev: () => void;
+  onToggleGraded: () => void;
+}) => {
+  const {
+    classes,
+    hasNext,
+    hasPrev,
+    showGraded,
+    onNext,
+    onPrev,
+    onToggleGraded,
+  } = props;
+
+  return (
+    <AppBar position="sticky" color="default" className={classes.appBar}>
+      <Toolbar>
+        <IconButton disabled={!hasPrev} onClick={onPrev}>
+          <KeyboardArrowLeftIcon />
+        </IconButton>
+        <IconButton disabled={!hasNext} onClick={onNext}>
+          <KeyboardArrowRightIcon />
+        </IconButton>
+        <FormGroup className={classes.toggle}>
+          <FormControlLabel
+            id="toggle"
+            control={
+              <Switch
+                checked={showGraded}
+                onChange={onToggleGraded}
+                aria-label="switch"
+              />
+            }
+            label={"Show Graded"}
+          />
+        </FormGroup>
+      </Toolbar>
+    </AppBar>
+  );
+};
+
+export const SessionsTable = (props: { path: string }) => {
   const classes = useStyles();
-  const [sessions, setSessions] = React.useState<SessionsData>(initialSessions);
+  const [sessions, setSessions] = React.useState<SessionsData>();
   const [showGraded, setShowGraded] = React.useState(false);
   const [prevPages, setPrevPages] = React.useState<string[]>([""]);
   const [page, setPage] = React.useState(0);
@@ -113,184 +166,88 @@ export const SessionsTable = ({ path }: { path: string }) => {
   const [sortDesc, setSortDesc] = React.useState(true);
   const rowsPerPage = 50;
 
+  function onSort(id: string) {
+    setSortBy(id);
+    setSortDesc(!sortDesc);
+  }
+
+  function nextPage() {}
+
+  function prevPage() {}
+
+  const handleShowGradedChange = (): void => {
+    setShowGraded(!showGraded);
+  };
+
   React.useEffect(() => {
-    let mounted = true;
-    fetchSessions(
-      rowsPerPage,
-      prevPages[prevPages.length - 1],
-      sortBy,
-      sortDesc
-    )
+    fetchSessions(rowsPerPage, prevPages[page], sortBy, sortDesc)
       .then((sessions) => {
         console.log(`fetchSessions got`, sessions);
-        if (mounted && sessions && Array.isArray(sessions.edges)) {
-          sessions.edges.map((session) => {
-            session.node.createdAt = new Date(
-              session.node.createdAt
-            ).toISOString();
+        if (sessions !== undefined) {
+          const tmp: any = sessions.edges;
+          tmp.map((session: any) => {
+            session.node.createdAt = new Date(session.node.createdAt);
           });
           setSessions(sessions);
         }
       })
       .catch((err) => console.error(err));
-    return () => {
-      mounted = false;
-    };
-  }, [prevPages, sortBy, sortDesc]);
+  }, [page, prevPages, sortBy, sortDesc]);
 
-  const handleShowGradedChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ): void => {
-    setShowGraded(event.target.checked);
-  };
+  if (!sessions) {
+    return (
+      <div className={classes.root}>
+        <CircularProgress className={classes.progress} />
+      </div>
+    );
+  }
 
   function handleEdit(lessonId: string): void {
     navigate(withPrefix("/lessons/edit?lessonId=" + lessonId));
   }
 
   return (
-    <React.Fragment>
+    <div>
       <Paper className={classes.root}>
-        <FormControlLabel
-          control={
-            <Checkbox
-              id="toggle"
-              checked={showGraded}
-              onChange={handleShowGradedChange}
-              name="showGraded"
-            />
-          }
-          label="Show Graded"
-        />
         <TableContainer className={classes.container}>
           <Table stickyHeader aria-label="sticky table">
-            <TableHead>
-              <TableRow>
-                {columns.map((column) => (
-                  <TableCell
-                    key={column.id}
-                    align={column.align}
-                    style={{ minWidth: column.minWidth }}
-                  >
-                    <TableSortLabel
-                      active={sortBy === column.id}
-                      direction={
-                        sortBy === column.id
-                          ? sortDesc
-                            ? "asc"
-                            : "desc"
-                          : "asc"
-                      }
-                      onClick={() => {
-                        setSortBy(column.id);
-                        setSortDesc(!sortDesc);
-                      }}
-                    >
-                      {column.label}
-                    </TableSortLabel>
-                  </TableCell>
-                ))}
-                <TableCell>Edit</TableCell>
-              </TableRow>
-            </TableHead>
+            <ColumnHeader
+              columns={columns}
+              sortBy={sortBy}
+              sortDesc={sortDesc}
+              onSort={onSort}
+            />
             <TableBody>
-              {sessions?.edges
-                .filter((edge: Edge) => showGraded || !edge.node.graderGrade)
-                .map((row, i) => {
-                  return (
-                    <TableRow
-                      hover
-                      role="checkbox"
-                      tabIndex={-1}
-                      key={row.node.sessionId}
-                    >
-                      <TableCell
-                        key={`session-${i}`}
-                        id={`session-${i}`}
-                        align="left"
-                      >
-                        <Link
-                          to={withPrefix(
-                            `/sessions/session?sessionId=${row.node.sessionId}`
-                          )}
-                        >
-                          {row.node.lesson && row.node.lesson.name
-                            ? row.node.lesson.name
-                            : "No Lesson Name"}
-                          {/* {row.node.sessionId ? "(" + row.node.sessionId + ")": ""} */}
-                        </Link>
-                      </TableCell>
-                      <TableCell key={`username-${i}`} align="center">
-                        {row.node.username ? row.node.username : "Guest"}
-                      </TableCell>
-                      <TableCell key={`date-${i}`} align="center">
-                        {row.node.createdAt
-                          ? row.node.createdAt.toLocaleString()
-                          : ""}
-                      </TableCell>
-                      <TableCell key={`classifier-grade-${i}`} align="center">
-                        {row.node
-                          ? Math.trunc(row.node.classifierGrade * 100)
-                          : "?"}
-                      </TableCell>
-                      <TableCell key={`grade-${i}`} align="center">
-                        {row.node.graderGrade || row.node.graderGrade === 0
-                          ? Math.trunc(row.node.graderGrade * 100)
-                          : "?"}
-                      </TableCell>
-                      <TableCell>
-                        <IconButton
-                          onClick={() => {
-                            handleEdit(row.node.lesson.lessonId);
-                          }}
-                        >
-                          <EditIcon />
-                        </IconButton>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
+              {sessions.edges
+                .filter(
+                  (edge: Edge) => showGraded || edge.node.graderGrade === null
+                )
+                .map((row, i) => (
+                  <SessionItem row={row} i={i} />
+                ))}
             </TableBody>
           </Table>
         </TableContainer>
       </Paper>
-      <AppBar position="sticky" color="default" className={classes.appBar}>
-        <Toolbar>
-          <IconButton
-            disabled={prevPages.length === 1 ? true : false}
-            onClick={() => {
-              setPrevPages(
-                prevPages.filter(
-                  (elem) => elem !== prevPages[prevPages.length - 1]
-                )
-              );
-            }}
-          >
-            <KeyboardArrowLeftIcon />
-          </IconButton>
-          <IconButton
-            disabled={!sessions.pageInfo.hasNextPage}
-            onClick={() => {
-              setPrevPages((prevPages) => [
-                ...prevPages,
-                sessions.pageInfo.endCursor,
-              ]);
-            }}
-          >
-            <KeyboardArrowRightIcon />
-          </IconButton>
-        </Toolbar>
-      </AppBar>
-    </React.Fragment>
+      <TableFooter
+        classes={classes}
+        hasNext={sessions.pageInfo.hasNextPage}
+        hasPrev={prevPages.length > 1}
+        showGraded={showGraded}
+        onNext={nextPage}
+        onPrev={prevPage}
+        onToggleGraded={handleShowGradedChange}
+      />
+    </div>
   );
 };
 
-const SessionsPage = ({ path, children }: { path: string; children: any }) => {
+const SessionsPage = (props: { path: string; children: any }) => {
   return (
     <MuiThemeProvider theme={theme}>
       <NavBar title="Sessions" />
-      <SessionsTable path={path} />
-      {children}
+      <SessionsTable path={props.path} />
+      {props.children}
     </MuiThemeProvider>
   );
 };
