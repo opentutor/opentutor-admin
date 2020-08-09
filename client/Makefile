@@ -18,22 +18,22 @@ format: node_modules/prettier
 	npm run format
 
 node_modules/cypress:
-	npm install --frozen-lockfile
+	npm install 
 
 node_modules/eslint:
-	npm install --frozen-lockfile
+	npm install 
 
 node_modules/gatsby-cli:
-	npm install --frozen-lockfile
+	npm install 
 
 node_modules/jest:
-	npm install --frozen-lockfile
+	npm install 
 
 node_modules/prettier:
-	npm install --frozen-lockfile
+	npm install 
 
 node_modules/typescript:
-	npm install --frozen-lockfile
+	npm install 
 
 .PHONY: test
 test: node_modules/jest

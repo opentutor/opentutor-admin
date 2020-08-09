@@ -61,35 +61,23 @@ export const LoginMenu = (props: { path: string; children: any }) => {
   }
 
   function onLogin() {
-    setCookie("user", input, { path: "/" });
-  }
-
-  function onLogout() {
-    removeCookie("user", { path: "/" });
+    if (cookies.user) {
+      removeCookie("user", { path: "/" });
+    } else {
+      setCookie("user", input, { path: "/" });
+    }
   }
 
   const LoginButton = () => {
-    if (cookies.user) {
-      return (
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={onLogout}
-          className={classes.button}
-        >
-          Logout
-        </Button>
-      );
-    }
     return (
       <Button
-        disabled={!input}
         variant="contained"
         color="primary"
         onClick={onLogin}
         className={classes.button}
+        disabled={!input}
       >
-        Login
+        {cookies.user ? "Logout" : "Login"}
       </Button>
     );
   };

@@ -22,8 +22,8 @@ import {
 } from "@material-ui/core";
 import EditIcon from "@material-ui/icons/Edit";
 import withLocation from "wrap-with-location";
-import { UserSession } from "types";
-import { fetchUserSession, setGrade } from "api";
+import { Session } from "types";
+import { fetchSession, setGrade } from "api";
 import NavBar from "components/nav-bar";
 import "styles/layout.css";
 
@@ -47,7 +47,7 @@ const useStyles = makeStyles({
 const SessionTable = ({ search }: { search: any }) => {
   const { sessionId } = search;
   const classes = useStyles();
-  const [userSession, setUserSession] = React.useState<UserSession>();
+  const [userSession, setUserSession] = React.useState<Session>();
   const [date, setDate] = React.useState<string>("");
 
   const handleGradeExpectationChange = (
@@ -62,7 +62,7 @@ const SessionTable = ({ search }: { search: any }) => {
       Number(indexSplit[1]),
       event.target.value as string
     )
-      .then((userSession: UserSession) => {
+      .then((userSession: Session) => {
         console.log("updated grade", userSession);
         if (userSession !== undefined) {
           setUserSession(userSession);
@@ -81,8 +81,8 @@ const SessionTable = ({ search }: { search: any }) => {
 
   React.useEffect(() => {
     let mounted = true;
-    fetchUserSession(sessionId)
-      .then((userSession: UserSession) => {
+    fetchSession(sessionId)
+      .then((userSession: Session) => {
         console.log("fetchUserSession got", userSession);
         if (mounted && userSession) {
           setUserSession(userSession);

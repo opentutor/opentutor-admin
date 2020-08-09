@@ -2,13 +2,12 @@ import axios from "axios";
 
 import {
   FetchSessions,
-  FetchUserSession,
-  UserSession,
+  FetchSession,
+  Session,
   SetGrade,
   Lesson,
   FetchLessons,
   FetchLesson,
-  CreateLesson,
   UpdateLesson,
   SessionsData,
   LessonsData,
@@ -32,30 +31,30 @@ export async function fetchSessions(
     GRADER_GRAPHQL_ENDPOINT,
     {
       query: `
-      query($limit: Int!, $cursor: String!, $sortBy:String!, $sortDescending:Boolean!){
-          userSessions(limit:$limit, cursor:$cursor, sortBy:$sortBy, sortDescending:$sortDescending){
-            edges {
-              cursor 
-              node {
-                sessionId
-                username
-                createdAt
-                updatedAt
-                classifierGrade
-                graderGrade
-                lesson {
-                  name
-                  lessonId
-                }
+      query($limit: Int!, $cursor: String!, $sortBy:String!, $sortDescending:Boolean!) {
+        sessions(limit:$limit, cursor:$cursor, sortBy:$sortBy, sortDescending:$sortDescending){
+          edges {
+            cursor 
+            node {
+              sessionId
+              username
+              classifierGrade
+              graderGrade
+              createdAt
+              updatedAt
+              lesson {
+                name
+                createdBy
               }
             }
-            pageInfo {
-              endCursor
-              hasNextPage
-            }
+          }
+          pageInfo {
+            endCursor
+            hasNextPage
           }
         }
-        `,
+      }
+      `,
       variables: {
         limit: limit,
         cursor: cursor,
@@ -64,18 +63,16 @@ export async function fetchSessions(
       },
     }
   );
-  return result.data.data.userSessions;
+  return result.data.data.sessions;
 }
 
-export async function fetchUserSession(
-  sessionId: string
-): Promise<UserSession> {
-  const result = await axios.post<GQLResponse<FetchUserSession>>(
+export async function fetchSession(sessionId: string): Promise<Session> {
+  const result = await axios.post<GQLResponse<FetchSession>>(
     GRADER_GRAPHQL_ENDPOINT,
     {
       query: `
         query ($sessionId: String!){
-          userSession(sessionId: $sessionId) {
+          session(sessionId: $sessionId) {
             username
             graderGrade
             createdAt
@@ -94,7 +91,7 @@ export async function fetchUserSession(
             }
             lesson {
               name
-              lessonId
+              createdBy
             }
           }
         }
@@ -104,7 +101,7 @@ export async function fetchUserSession(
       },
     }
   );
-  return result.data.data.userSession;
+  return result.data.data.session;
 }
 
 export async function setGrade(
@@ -112,7 +109,7 @@ export async function setGrade(
   userAnswerIndex: number,
   userExpectationIndex: number,
   grade: string
-): Promise<UserSession> {
+): Promise<Session> {
   const result = await axios.post<GQLResponse<SetGrade>>(
     GRADER_GRAPHQL_ENDPOINT,
     {
@@ -136,6 +133,7 @@ export async function setGrade(
             }
             lesson {
               name
+              createdBy
             }
           }
         }
@@ -178,6 +176,7 @@ export async function fetchLessons(
                   text
                 }
               }
+              createdBy
               createdAt
               updatedAt
             }
@@ -219,6 +218,7 @@ export async function fetchLesson(lessonId: string): Promise<Lesson> {
                 text
               }
             }
+            createdBy
             createdAt
             updatedAt
           }
@@ -230,32 +230,6 @@ export async function fetchLesson(lessonId: string): Promise<Lesson> {
     }
   );
   return result.data.data.lesson;
-}
-
-export async function createLesson(): Promise<Lesson> {
-  const result = await axios.post<GQLResponse<CreateLesson>>(
-    GRADER_GRAPHQL_ENDPOINT,
-    {
-      query: `
-        mutation {
-          createLesson {
-            lessonId
-            name
-            intro
-            question
-            conclusion
-            expectations {
-              expectation
-              hints {
-                text
-              }
-            }
-          }
-        }
-        `,
-    }
-  );
-  return result.data.data.createLesson;
 }
 
 export async function updateLesson(
@@ -280,6 +254,7 @@ export async function updateLesson(
                 text
               }
             }
+            createdBy
             createdAt
             updatedAt
           }

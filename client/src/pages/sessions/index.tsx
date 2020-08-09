@@ -1,9 +1,6 @@
+import { withPrefix } from "gatsby";
 import React from "react";
-import {
-  MuiThemeProvider,
-  createMuiTheme,
-  makeStyles,
-} from "@material-ui/core/styles";
+import { useCookies } from "react-cookie";
 import {
   AppBar,
   CircularProgress,
@@ -19,13 +16,17 @@ import {
   TableRow,
   Toolbar,
 } from "@material-ui/core";
-import { withPrefix, navigate } from "gatsby";
+import {
+  MuiThemeProvider,
+  createMuiTheme,
+  makeStyles,
+} from "@material-ui/core/styles";
 import { Link } from "@reach/router";
 import KeyboardArrowLeftIcon from "@material-ui/icons/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
 import EditIcon from "@material-ui/icons/Edit";
 import { fetchSessions } from "api";
-import { Edge, SessionsData } from "types";
+import { Edge, Session, SessionsData } from "types";
 import NavBar from "components/nav-bar";
 import { ColumnDef, ColumnHeader } from "components/column-header";
 import "styles/layout.css";
@@ -43,7 +44,9 @@ const useStyles = makeStyles({
     display: "flex",
     flexFlow: "column",
   },
-  container: {},
+  container: {
+    flexGrow: 1,
+  },
   appBar: {
     height: "10%",
     top: "auto",
@@ -59,8 +62,8 @@ const useStyles = makeStyles({
 });
 
 const columns: ColumnDef[] = [
-  { id: "sessionId", label: "Lesson", minWidth: 170, align: "center" },
-  { id: "username", label: "Username", minWidth: 170, align: "center" },
+  { id: "lesson.name", label: "Lesson", minWidth: 170, align: "left" },
+  { id: "lesson.createdBy", label: "Created By", minWidth: 170, align: "left" },
   { id: "createdAt", label: "Date", minWidth: 170, align: "center" },
   {
     id: "classifierGrade",
@@ -78,7 +81,7 @@ const columns: ColumnDef[] = [
   },
 ];
 
-const SessionItem = (props: { row: Edge; i: number }) => {
+const SessionItem = (props: { row: Edge<Session>; i: number }) => {
   const { row, i } = props;
 
   return (
@@ -92,8 +95,8 @@ const SessionItem = (props: { row: Edge; i: number }) => {
             : "No Lesson Name"}
         </Link>
       </TableCell>
-      <TableCell key={`username-${i}`} align="center">
-        {row.node.username ? row.node.username : "Guest"}
+      <TableCell key={`creator-${i}`} align="left">
+        {row.node.lesson.createdBy ? row.node.lesson.createdBy : "Guest"}
       </TableCell>
       <TableCell key={`date-${i}`} align="center">
         {row.node.createdAt ? row.node.createdAt.toLocaleString() : ""}
@@ -115,19 +118,24 @@ const TableFooter = (props: {
   hasNext: boolean;
   hasPrev: boolean;
   showGraded: boolean;
+  showCreator: boolean;
   onNext: () => void;
   onPrev: () => void;
   onToggleGraded: () => void;
+  onToggleCreator: () => void;
 }) => {
   const {
     classes,
     hasNext,
     hasPrev,
     showGraded,
+    showCreator,
     onNext,
     onPrev,
     onToggleGraded,
+    onToggleCreator,
   } = props;
+  const [cookies] = useCookies(["user"]);
 
   return (
     <AppBar position="sticky" color="default" className={classes.appBar}>
@@ -138,6 +146,20 @@ const TableFooter = (props: {
         <IconButton disabled={!hasNext} onClick={onNext}>
           <KeyboardArrowRightIcon />
         </IconButton>
+        {!cookies.user ? undefined : (
+          <FormGroup>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={showCreator}
+                  onChange={onToggleCreator}
+                  aria-label="switch"
+                />
+              }
+              label={"Show Mine"}
+            />
+          </FormGroup>
+        )}
         <FormGroup className={classes.toggle}>
           <FormControlLabel
             id="toggle"
@@ -158,8 +180,10 @@ const TableFooter = (props: {
 
 export const SessionsTable = (props: { path: string }) => {
   const classes = useStyles();
+  const [cookies] = useCookies(["user"]);
   const [sessions, setSessions] = React.useState<SessionsData>();
   const [showGraded, setShowGraded] = React.useState(false);
+  const [showCreator, setShowCreator] = React.useState<boolean>(cookies.user);
   const [prevPages, setPrevPages] = React.useState<string[]>([""]);
   const [page, setPage] = React.useState(0);
   const [sortBy, setSortBy] = React.useState("createdAt");
@@ -177,6 +201,10 @@ export const SessionsTable = (props: { path: string }) => {
 
   const handleShowGradedChange = (): void => {
     setShowGraded(!showGraded);
+  };
+
+  const handleShowCreatorChange = (): void => {
+    setShowCreator(!showCreator);
   };
 
   React.useEffect(() => {
@@ -207,9 +235,9 @@ export const SessionsTable = (props: { path: string }) => {
   }
 
   return (
-    <div>
-      <Paper className={classes.root}>
-        <TableContainer className={classes.container}>
+    <div className={classes.root}>
+      <Paper className={classes.container}>
+        <TableContainer>
           <Table stickyHeader aria-label="sticky table">
             <ColumnHeader
               columns={columns}
@@ -220,7 +248,10 @@ export const SessionsTable = (props: { path: string }) => {
             <TableBody>
               {sessions.edges
                 .filter(
-                  (edge: Edge) => showGraded || edge.node.graderGrade === null
+                  (edge: Edge<Session>) =>
+                    (showGraded || edge.node.graderGrade === null) &&
+                    (!showCreator ||
+                      edge.node.lesson.createdBy === cookies.user)
                 )
                 .map((row, i) => (
                   <SessionItem row={row} i={i} />
@@ -234,9 +265,11 @@ export const SessionsTable = (props: { path: string }) => {
         hasNext={sessions.pageInfo.hasNextPage}
         hasPrev={prevPages.length > 1}
         showGraded={showGraded}
+        showCreator={showCreator}
         onNext={nextPage}
         onPrev={prevPage}
         onToggleGraded={handleShowGradedChange}
+        onToggleCreator={handleShowCreatorChange}
       />
     </div>
   );

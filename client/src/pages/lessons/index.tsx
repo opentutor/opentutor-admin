@@ -1,11 +1,15 @@
 import { withPrefix } from "gatsby";
 import React from "react";
+import { useCookies } from "react-cookie";
 import {
   AppBar,
   CircularProgress,
   Fab,
+  FormGroup,
+  FormControlLabel,
   IconButton,
   Paper,
+  Switch,
   Table,
   TableBody,
   TableCell,
@@ -23,8 +27,8 @@ import AddIcon from "@material-ui/icons/Add";
 import KeyboardArrowLeftIcon from "@material-ui/icons/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
 import { Link, navigate } from "@reach/router";
-import { LessonEdge, LessonsData } from "types";
 import { fetchLessons } from "api";
+import { Edge, Lesson, LessonsData } from "types";
 import { ColumnDef, ColumnHeader } from "components/column-header";
 import NavBar from "components/nav-bar";
 import "styles/layout.css";
@@ -42,7 +46,10 @@ const useStyles = makeStyles({
     display: "flex",
     flexFlow: "column",
   },
-  container: {},
+  container: {
+    flex: 1,
+    flexGrow: 1,
+  },
   button: {
     margin: theme.spacing(1),
   },
@@ -62,12 +69,13 @@ const useStyles = makeStyles({
 });
 
 const columns: ColumnDef[] = [
-  { id: "", label: "", minWidth: 0, align: "center" },
-  { id: "name", label: "Lesson", minWidth: 200, align: "center" },
+  { id: "", label: "", minWidth: 0, align: "left" },
+  { id: "name", label: "Lesson", minWidth: 200, align: "left" },
+  { id: "createdBy", label: "Created By", minWidth: 200, align: "left" },
   { id: "updatedAt", label: "Date", minWidth: 170, align: "center" },
 ];
 
-const LessonItem = (props: { location: any; row: LessonEdge; i: number }) => {
+const LessonItem = (props: { location: any; row: Edge<Lesson>; i: number }) => {
   const { location, row, i } = props;
 
   function launchLesson(id: string) {
@@ -92,6 +100,13 @@ const LessonItem = (props: { location: any; row: LessonEdge; i: number }) => {
           {row.node.name ? row.node.name : "No Lesson Name"}
         </Link>
       </TableCell>
+      <TableCell
+        key={`lesson-creator-${i}`}
+        id={`lesson-creator-${i}`}
+        align="left"
+      >
+        {row.node.createdBy}
+      </TableCell>
       <TableCell key={`date-${i}`} align="center">
         {row.node.updatedAt ? row.node.updatedAt.toLocaleString() : ""}
       </TableCell>
@@ -103,10 +118,21 @@ const TableFooter = (props: {
   classes: any;
   hasNext: boolean;
   hasPrev: boolean;
+  showCreator: boolean;
   onNext: () => void;
   onPrev: () => void;
+  onToggle: () => void;
 }) => {
-  const { classes, hasNext, hasPrev, onNext, onPrev } = props;
+  const {
+    classes,
+    hasNext,
+    hasPrev,
+    showCreator,
+    onNext,
+    onPrev,
+    onToggle,
+  } = props;
+  const [cookies] = useCookies(["user"]);
 
   function onCreate() {
     navigate(withPrefix("/lessons/edit?lessonId=new"));
@@ -121,6 +147,20 @@ const TableFooter = (props: {
         <IconButton disabled={!hasNext} onClick={onNext}>
           <KeyboardArrowRightIcon />
         </IconButton>
+        {!cookies.user ? undefined : (
+          <FormGroup>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={showCreator}
+                  onChange={onToggle}
+                  aria-label="switch"
+                />
+              }
+              label={"Show Mine"}
+            />
+          </FormGroup>
+        )}
         <Fab
           id="create-button"
           variant="extended"
@@ -138,12 +178,18 @@ const TableFooter = (props: {
 
 export const LessonsTable = (props: { location: any }) => {
   const classes = useStyles();
+  const [cookies] = useCookies(["user"]);
   const [lessons, setLessons] = React.useState<LessonsData>();
   const [prevPages, setPrevPages] = React.useState<string[]>([""]);
   const [page, setPage] = React.useState(0);
   const [sortBy, setSortBy] = React.useState("updatedAt");
   const [sortDesc, setSortDesc] = React.useState(true);
+  const [showCreator, setShowCreator] = React.useState<boolean>(cookies.user);
   const rowsPerPage = 10;
+
+  const onToggleShowCreator = (): void => {
+    setShowCreator(!showCreator);
+  };
 
   function onSort(id: string) {
     setSortBy(id);
@@ -178,9 +224,9 @@ export const LessonsTable = (props: { location: any }) => {
   }
 
   return (
-    <div>
-      <Paper className={classes.root}>
-        <TableContainer className={classes.container}>
+    <div className={classes.root}>
+      <Paper className={classes.container}>
+        <TableContainer>
           <Table stickyHeader aria-label="sticky table">
             <ColumnHeader
               columns={columns}
@@ -189,9 +235,14 @@ export const LessonsTable = (props: { location: any }) => {
               onSort={onSort}
             />
             <TableBody>
-              {lessons.edges.map((row, i) => (
-                <LessonItem location={props.location} row={row} i={i} />
-              ))}
+              {lessons.edges
+                .filter(
+                  (edge: Edge<Lesson>) =>
+                    !showCreator || edge.node.createdBy === cookies.user
+                )
+                .map((row, i) => (
+                  <LessonItem location={props.location} row={row} i={i} />
+                ))}
             </TableBody>
           </Table>
         </TableContainer>
@@ -200,8 +251,10 @@ export const LessonsTable = (props: { location: any }) => {
         classes={classes}
         hasPrev={prevPages.length > 1}
         hasNext={lessons.pageInfo.hasNextPage}
+        showCreator={showCreator}
         onPrev={prevPage}
         onNext={nextPage}
+        onToggle={onToggleShowCreator}
       />
     </div>
   );

@@ -2,6 +2,10 @@ PHONY: format
 format:
 	cd client && $(MAKE) format
 
+PHONY: docker-build
+docker-build:
+	cd docker && $(MAKE) docker-build
+
 PHONY: test
 test:
 	cd client && $(MAKE) test

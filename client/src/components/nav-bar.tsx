@@ -34,6 +34,10 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "left",
     flexGrow: 1,
   },
+  login: {
+    position: "absolute",
+    right: theme.spacing(1),
+  },
 }));
 
 const NavMenu = () => {
@@ -76,7 +80,7 @@ const LoginOption = () => {
 
   const onLogout = () => {
     removeCookie("user", { path: "/" });
-    navigate(withPrefix("/"));
+    navigate("/");
   };
 
   if (cookies.user) {
@@ -111,7 +115,7 @@ const LoginOption = () => {
   }
 
   return (
-    <Button color="inherit" component={Link} to={withPrefix("/")}>
+    <Button color="inherit" component={Link} to={"/"}>
       Login
     </Button>
   );
@@ -141,7 +145,7 @@ export const NavBar = (props: { title: string }) => {
           <Typography variant="h6" className={classes.title}>
             {props.title}
           </Typography>
-          <LoginOption />
+          <LoginOption className={classes.login} />
         </Toolbar>
       </AppBar>
       <SwipeableDrawer
