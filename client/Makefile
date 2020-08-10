@@ -5,9 +5,13 @@
 	@echo "This file should not be committed. "
 	@echo "Feel free to change to point to a local server if you're running one."
 
+.PHONY: clean-build-cypress
+clean-build-cypress:
+	rm -rf build-cypress
+
 .PHONY: clean
-clean:
-	rm -rf .cache public
+clean: clean-build-cypress
+	rm -rf .cache public build-cypress
 
 .PHONY: develop
 develop: .env.development node_modules/gatsby-cli
@@ -71,3 +75,34 @@ test-types: node_modules/typescript
 .PHONY: test-cypress
 test-cypress: node_modules/cypress
 	npm run test:cypress
+
+CYPRESS_IMAGE?=cypress/base:10
+.PHONY: cypress-shell
+cypress-shell: build-cypress
+	docker run \
+		--rm \
+		-it \
+		--entrypoint /bin/bash \
+		-v $(PWD)/build-cypress:/client \
+		--workdir /client \
+	$(CYPRESS_IMAGE)
+
+build-cypress:
+	rm -rf build-cypress
+	mkdir -p build-cypress
+	cp -R bin cypress src static *.json *.js Makefile ./build-cypress
+	chmod a+x bin/*
+	
+
+
+.PHONY: cypress-snapshots-update
+cypress-snapshots-update: build-cypress
+	docker run \
+		--rm \
+		-it \
+		--entrypoint bin/cypress_snapshots_update.sh \
+		-v $(PWD)/build-cypress:/client \
+		--workdir /client \
+	$(CYPRESS_IMAGE)
+
+
