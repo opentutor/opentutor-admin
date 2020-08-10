@@ -11,10 +11,8 @@ import {
   TableCell,
   TableContainer,
   TableHead,
-  TablePagination,
   TableRow,
   FormControlLabel,
-  Button,
   IconButton,
   AppBar,
   Toolbar,
@@ -22,7 +20,7 @@ import {
 } from "@material-ui/core";
 import { withPrefix } from "gatsby";
 import { Link } from "@reach/router";
-import { FetchSessions, Edge, SessionsData } from "types";
+import { Edge, SessionsData } from "types";
 import { Checkbox } from "@material-ui/core";
 import KeyboardArrowLeftIcon from "@material-ui/icons/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
@@ -89,13 +87,13 @@ export const SessionsTable = ({ path }: { path: string }) => {
         cursor: "",
         node: {
           classifierGrade: 0,
-          createdAt: 0,
+          createdAt: "",
           graderGrade: 0,
           lesson: {
             name: "",
           },
           sessionId: "",
-          updatedAt: 0,
+          updatedAt: "",
           username: "",
         },
       },
@@ -116,64 +114,28 @@ export const SessionsTable = ({ path }: { path: string }) => {
 
   React.useEffect(() => {
     let mounted = true;
-    fetchSessions(rowsPerPage, prevPages[page], sortBy, sortDesc)
+    fetchSessions(
+      rowsPerPage,
+      prevPages[prevPages.length - 1],
+      sortBy,
+      sortDesc
+    )
       .then((sessions) => {
         console.log(`fetchSessions got`, sessions);
-        if (mounted) {
-          if (sessions !== undefined) {
-            const tmp: any = sessions.edges;
-            tmp.map((session: any) => {
-              session.node.createdAt = new Date(session.node.createdAt);
-            });
-            setSessions(sessions);
-          }
+        if (mounted && sessions && Array.isArray(sessions.edges)) {
+          sessions.edges.map((session) => {
+            session.node.createdAt = new Date(
+              session.node.createdAt
+            ).toISOString();
+          });
+          setSessions(sessions);
         }
       })
       .catch((err) => console.error(err));
     return () => {
       mounted = false;
     };
-  }, []);
-
-  React.useEffect(() => {
-    fetchSessions(
-      rowsPerPage,
-      prevPages[prevPages.length - 1],
-      sortBy,
-      sortDesc
-    )
-      .then((sessions) => {
-        console.log(`page switch fetchSessions got`, sessions);
-        if (sessions !== undefined) {
-          const tmp: any = sessions.edges;
-          tmp.map((session: any) => {
-            session.node.createdAt = new Date(session.node.createdAt);
-          });
-          setSessions(sessions);
-        }
-      })
-      .catch((err) => console.error(err));
-  }, [prevPages]);
-
-  React.useEffect(() => {
-    fetchSessions(
-      rowsPerPage,
-      prevPages[prevPages.length - 1],
-      sortBy,
-      sortDesc
-    )
-      .then((sessions) => {
-        console.log(`sort fetchSessions got`, sessions);
-        if (sessions !== undefined) {
-          const tmp: any = sessions.edges;
-          tmp.map((session: any) => {
-            session.node.createdAt = new Date(session.node.createdAt);
-          });
-          setSessions(sessions);
-        }
-      })
-      .catch((err) => console.error(err));
-  }, [sortBy, sortDesc]);
+  }, [prevPages, sortBy, sortDesc]);
 
   const handleShowGradedChange = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -227,9 +189,7 @@ export const SessionsTable = ({ path }: { path: string }) => {
             </TableHead>
             <TableBody>
               {sessions?.edges
-                .filter(
-                  (edge: Edge) => showGraded || edge.node.graderGrade === null
-                )
+                .filter((edge: Edge) => showGraded || edge.node.graderGrade)
                 .map((row, i) => {
                   return (
                     <TableRow

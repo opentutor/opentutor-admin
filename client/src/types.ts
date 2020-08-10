@@ -27,8 +27,8 @@ export interface SessionLesson {
 export interface Session {
   sessionId: string;
   username: string;
-  createdAt: number;
-  updatedAt: number;
+  createdAt: string;
+  updatedAt: string;
   classifierGrade: number;
   graderGrade: number;
   lesson: SessionLesson;
@@ -65,7 +65,7 @@ export interface SessionLesson {
 export interface UserSession {
   username: string;
   graderGrade: number;
-  createdAt: number;
+  createdAt: string;
   updatedAt: number;
   question: Question;
   lesson: SessionLesson;

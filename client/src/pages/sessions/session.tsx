@@ -79,10 +79,8 @@ const SessionTable = ({ search }: { search: any }) => {
     fetchUserSession(sessionId)
       .then((userSession: UserSession) => {
         console.log("fetchUserSession got", userSession);
-        if (mounted) {
-          if (userSession !== undefined) {
-            setUserSession(userSession);
-          }
+        if (mounted && userSession) {
+          setUserSession(userSession);
         }
         const d = new Date(userSession.createdAt);
         setDate(d.toLocaleString());
@@ -138,17 +136,10 @@ const SessionTable = ({ search }: { search: any }) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {userSession?.userResponses
-              // .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((row, i) => {
-                return (
-                  <TableRow
-                    hover
-                    role="checkbox"
-                    tabIndex={-1}
-                    key={`text-${i}`}
-                  >
-                    {/* <TableCell
+            {userSession?.userResponses.map((row, i) => {
+              return (
+                <TableRow hover role="checkbox" tabIndex={-1} key={`text-${i}`}>
+                  {/* <TableCell
                       key={`launch-${i}`}
                       id={`launch-${i}`}
                     >
@@ -156,105 +147,104 @@ const SessionTable = ({ search }: { search: any }) => {
                         <LaunchIcon />
                       </IconButton>
                     </TableCell> */}
-                    <TableCell
-                      key={`answer-${i}`}
-                      id={`answer-${i}`}
-                      //align="left"
-                    >
-                      {row.text}
-                    </TableCell>
+                  <TableCell
+                    key={`answer-${i}`}
+                    id={`answer-${i}`}
+                    //align="left"
+                  >
+                    {row.text}
+                  </TableCell>
 
-                    {userSession?.question?.expectations.map((column, j) => (
-                      <TableCell
-                        style={{
-                          backgroundColor:
-                            row.expectationScores[j].graderGrade === "Good"
-                              ? "#90EE90"
-                              : row.expectationScores[j].graderGrade === "Bad"
-                              ? "#F08080"
-                              : row.expectationScores[j].graderGrade ===
-                                "Neutral"
-                              ? "#D3D3D3"
-                              : row.expectationScores[j].graderGrade === "" &&
-                                row.expectationScores.some(
-                                  (score) =>
-                                    score.graderGrade === "Good" ||
-                                    score.graderGrade === "Bad" ||
-                                    score.graderGrade === "Neutral"
-                                )
-                              ? "#D3D3D3"
-                              : "white",
-                        }}
-                        key={`grade-${i}-${j}`}
-                        id={`grade-${i}-${j}`}
-                        align="left"
+                  {userSession?.question?.expectations.map((column, j) => (
+                    <TableCell
+                      style={{
+                        backgroundColor:
+                          row.expectationScores[j].graderGrade === "Good"
+                            ? "#90EE90"
+                            : row.expectationScores[j].graderGrade === "Bad"
+                            ? "#F08080"
+                            : row.expectationScores[j].graderGrade === "Neutral"
+                            ? "#D3D3D3"
+                            : row.expectationScores[j].graderGrade === "" &&
+                              row.expectationScores.some(
+                                (score) =>
+                                  score.graderGrade === "Good" ||
+                                  score.graderGrade === "Bad" ||
+                                  score.graderGrade === "Neutral"
+                              )
+                            ? "#D3D3D3"
+                            : "white",
+                      }}
+                      key={`grade-${i}-${j}`}
+                      id={`grade-${i}-${j}`}
+                      align="left"
+                    >
+                      <Typography
+                        key={`classifier-grade-${i}-${j}`}
+                        id={`classifier-grade-${i}-${j}`}
+                        align="right"
+                        component={"span"}
                       >
-                        <Typography
-                          key={`classifier-grade-${i}-${j}`}
-                          id={`classifier-grade-${i}-${j}`}
-                          align="right"
-                          component={"span"}
+                        Classifier Grade:{" "}
+                        {row.expectationScores[j]
+                          ? row.expectationScores[j].classifierGrade
+                          : ""}
+                      </Typography>
+                      <br />
+                      <Typography
+                        key={`expectation-grade-${i}-${j}`}
+                        id={`expectation-grade-${i}-${j}`}
+                        align="right"
+                        component={"span"}
+                      >
+                        Grade:
+                        <Select
+                          labelId={`set-grade-${i}-${j}`}
+                          id={`select-grade-${i}-${j}`}
+                          key={`select-grade-${i}-${j}`}
+                          value={
+                            row.expectationScores[j]
+                              ? row.expectationScores[j].graderGrade
+                              : ""
+                          }
+                          name={`${i} ${j}`}
+                          onChange={handleGradeExpectationChange}
                         >
-                          Classifier Grade:{" "}
-                          {row.expectationScores[j]
-                            ? row.expectationScores[j].classifierGrade
-                            : ""}
-                        </Typography>
-                        <br />
-                        <Typography
-                          key={`expectation-grade-${i}-${j}`}
-                          id={`expectation-grade-${i}-${j}`}
-                          align="right"
-                          component={"span"}
-                        >
-                          Grade:
-                          <Select
-                            labelId={`set-grade-${i}-${j}`}
-                            id={`select-grade-${i}-${j}`}
-                            key={`select-grade-${i}-${j}`}
-                            value={
-                              row.expectationScores[j]
-                                ? row.expectationScores[j].graderGrade
-                                : ""
-                            }
-                            name={`${i} ${j}`}
-                            onChange={handleGradeExpectationChange}
+                          <MenuItem
+                            id={`empty-grade-${i}-${j}`}
+                            key={`empty-grade-${i}-${j}`}
+                            value=""
                           >
-                            <MenuItem
-                              id={`empty-grade-${i}-${j}`}
-                              key={`empty-grade-${i}-${j}`}
-                              value=""
-                            >
-                              <em>Empty</em>
-                            </MenuItem>
-                            <MenuItem
-                              id={`good-grade-${i}-${j}`}
-                              key={`good-grade-${i}-${j}`}
-                              value={"Good"}
-                            >
-                              Good
-                            </MenuItem>
-                            <MenuItem
-                              id={`bad-grade-${i}-${j}`}
-                              key={`bad-grade-${i}-${j}`}
-                              value={"Bad"}
-                            >
-                              Bad
-                            </MenuItem>
-                            <MenuItem
-                              id={`neutral-grade-${i}-${j}`}
-                              key={`neutral-grade-${i}-${j}`}
-                              value={"Neutral"}
-                            >
-                              Neutral
-                            </MenuItem>
-                          </Select>
-                        </Typography>
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                );
-              })}
+                            <em>Empty</em>
+                          </MenuItem>
+                          <MenuItem
+                            id={`good-grade-${i}-${j}`}
+                            key={`good-grade-${i}-${j}`}
+                            value={"Good"}
+                          >
+                            Good
+                          </MenuItem>
+                          <MenuItem
+                            id={`bad-grade-${i}-${j}`}
+                            key={`bad-grade-${i}-${j}`}
+                            value={"Bad"}
+                          >
+                            Bad
+                          </MenuItem>
+                          <MenuItem
+                            id={`neutral-grade-${i}-${j}`}
+                            key={`neutral-grade-${i}-${j}`}
+                            value={"Neutral"}
+                          >
+                            Neutral
+                          </MenuItem>
+                        </Select>
+                      </Typography>
+                    </TableCell>
+                  ))}
+                </TableRow>
+              );
+            })}
           </TableBody>
         </Table>
       </TableContainer>

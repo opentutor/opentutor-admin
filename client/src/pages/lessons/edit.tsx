@@ -79,7 +79,6 @@ type ExpectationProp = {
 const LessonEdit = ({ search }: { search: any }) => {
   let { lessonId } = search;
   const originalId = lessonId;
-  //console.log(lessonId);
   const classes = useStyles();
   const inititialLesson = {
     lessonId: "",
@@ -97,7 +96,6 @@ const LessonEdit = ({ search }: { search: any }) => {
 
   const [lesson, setLesson] = React.useState(inititialLesson);
   const [change, setChange] = React.useState(false);
-  const [create, setCreate] = React.useState(false);
   const [expectationOpen, setExpectationOpen] = React.useState(true);
 
   React.useEffect(() => {
@@ -105,11 +103,8 @@ const LessonEdit = ({ search }: { search: any }) => {
       let mounted = true;
       fetchLesson(lessonId)
         .then((lesson: Lesson) => {
-          console.log("fetchLesson got", lesson);
-          if (mounted) {
-            if (lesson !== undefined) {
-              setLesson(lesson);
-            }
+          if (mounted && lesson) {
+            setLesson(lesson);
           }
         })
         .catch((err: any) => console.error(err));
@@ -118,7 +113,6 @@ const LessonEdit = ({ search }: { search: any }) => {
       };
     } else {
       lessonId = uuid();
-      console.log(lessonId);
       setLesson({ ...lesson, lessonId: lessonId });
     }
   }, []);
@@ -145,32 +139,48 @@ const LessonEdit = ({ search }: { search: any }) => {
 
   function handleConclusionChange(con: string, index: number): void {
     setChange(true);
-    const copyLesson = { ...lesson };
-    const copyConclusion = [...copyLesson.conclusion] as Array<any>;
-    copyConclusion[index] = con;
-    setLesson({ ...lesson, conclusion: copyConclusion });
+    setLesson({
+      ...lesson,
+      conclusion: [
+        ...lesson.conclusion.slice(0, index),
+        con,
+        ...lesson.conclusion.slice(index + 1),
+      ],
+    });
   }
 
   function handleExpectationChange(exp: string, index: number): void {
-    setChange(true);
-    const copyLesson = { ...lesson };
-    const copyExpectations = [...copyLesson.expectations] as Array<any>;
-    const newExpectation = { ...copyExpectations[index] };
-    newExpectation.expectation = exp;
-    copyExpectations[index] = newExpectation;
-    setLesson({ ...lesson, expectations: copyExpectations });
+    setLesson({
+      ...lesson,
+      expectations: [
+        ...lesson.expectations.slice(0, index),
+        {
+          hints: lesson.expectations[index].hints,
+          expectation: exp,
+        },
+        ...lesson.expectations.slice(index + 1),
+      ],
+    });
   }
 
   function handleHintChange(hnt: string, eIndex: number, hIndex: number): void {
     setChange(true);
-    const copyLesson = { ...lesson };
-    const copyExpectations = [...copyLesson.expectations] as Array<any>;
-    const copyHints = [...copyExpectations[eIndex].hints] as Array<any>;
-    const newHint = { ...copyHints[hIndex] };
-    newHint.text = hnt;
-    copyHints[hIndex] = newHint;
-    copyExpectations[eIndex].hints[hIndex] = newHint;
-    setLesson({ ...lesson, expectations: copyExpectations });
+    console.log(hIndex);
+    setLesson({
+      ...lesson,
+      expectations: [
+        ...lesson.expectations.slice(0, eIndex),
+        {
+          hints: [
+            ...lesson.expectations[eIndex].hints.slice(0, hIndex),
+            { text: hnt },
+            ...lesson.expectations[eIndex].hints.slice(hIndex + 1),
+          ],
+          expectation: lesson.expectations[eIndex].expectation,
+        },
+        ...lesson.expectations.slice(eIndex + 1),
+      ],
+    });
   }
 
   function handleSave() {
@@ -182,15 +192,10 @@ const LessonEdit = ({ search }: { search: any }) => {
     } else {
       id = originalId;
     }
-    console.log("lessonId", lesson.lessonId);
-    console.log("update", converted);
     updateLesson(id, converted)
       .then((lesson) => {
-        console.log(`fetchUpdateLesson got`, lesson);
-        if (mounted) {
-          if (lesson !== undefined) {
-            setLesson(lesson);
-          }
+        if (mounted && lesson) {
+          setLesson(lesson);
         }
       })
       .catch((err) => console.error(err));
@@ -206,13 +211,16 @@ const LessonEdit = ({ search }: { search: any }) => {
 
   function handleAddExpectation(): void {
     setChange(true);
-    const copyLesson = { ...lesson };
-    const copyExpectations = [...copyLesson.expectations] as Array<any>;
-    copyExpectations.push({
-      expectation: "Add ideal answer for an expectation",
-      hints: [{ text: "Add a hint to help answer the expectation" }],
+    setLesson({
+      ...lesson,
+      expectations: [
+        ...lesson.expectations,
+        {
+          expectation: "Add ideal answer for an expectation",
+          hints: [{ text: "Add a hint to help answer the expectation" }],
+        },
+      ],
     });
-    setLesson({ ...lesson, expectations: copyExpectations });
   }
 
   function handleRemoveExpectation(index: number): void {
@@ -222,10 +230,10 @@ const LessonEdit = ({ search }: { search: any }) => {
 
   function handleAddConclusion(): void {
     setChange(true);
-    const copyLesson = { ...lesson };
-    const copyConclusion = [...copyLesson.conclusion] as Array<any>;
-    copyConclusion.push("");
-    setLesson({ ...lesson, conclusion: copyConclusion });
+    setLesson({
+      ...lesson,
+      conclusion: [...lesson.conclusion, "Add a closing to the lesson"],
+    });
   }
 
   function handleRemoveConclusion(index: number): void {
@@ -235,12 +243,22 @@ const LessonEdit = ({ search }: { search: any }) => {
 
   function handleAddHint(index: number): void {
     setChange(true);
-    const copyLesson = { ...lesson };
-    const copyExpectations = [...copyLesson.expectations] as Array<any>;
-    const copyHints = [...copyLesson.expectations[index].hints] as Array<any>;
-    copyHints.push({ text: "Add a hint to help answer the expectation" });
-    copyExpectations[index].hints = copyHints;
-    setLesson({ ...lesson, expectations: copyExpectations });
+    setLesson({
+      ...lesson,
+      expectations: [
+        ...lesson.expectations.slice(0, index),
+        {
+          hints: [
+            ...lesson.expectations[index].hints,
+            {
+              text: "Add a hint to help answer the expectation",
+            },
+          ],
+          expectation: lesson.expectations[index].expectation,
+        },
+        ...lesson.expectations.slice(index + 1),
+      ],
+    });
   }
 
   function handleRemoveHint(expectationIndex: number, hintIndex: number): void {

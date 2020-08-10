@@ -110,7 +110,6 @@ export const LessonsTable = (props: { location: any }) => {
     let mounted = true;
     fetchLessons(rowsPerPage, prevPages[prevPages.length - 1], sortBy, sortDesc)
       .then((lessons) => {
-        console.log(`fetchLessons got`, lessons);
         if (mounted && lessons && Array.isArray(lessons.edges)) {
           lessons.edges.map((lesson) => {
             lesson.node.updatedAt = new Date(
