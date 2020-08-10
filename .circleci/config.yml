@@ -18,6 +18,12 @@ executors:
   python:
     docker:
       - image: circleci/python:3.6.9
+commands:
+  cypress-configure:
+    steps:
+      - run:
+          name: Configure env for << parameters.eb >>
+          command: echo 'export CYPRESS_BASE_URL=http://localhost:9000/admin' >> $BASH_ENV
 jobs:
   client-format:
     executor: node
@@ -124,6 +130,7 @@ workflows:
           filters: *only-untagged
       # - client-test:
       #     filters: *only-untagged
+      - cypress-configure
       - cypress/run:
           start: npm start
           wait-on: "http://localhost:8000"
@@ -161,9 +168,11 @@ workflows:
           filters: *only-tagged-releases
       # - client-test:
       #     filters: *only-tagged-releases
+      - cypress/install:
+          build: npm run build
       - cypress/run:
-          start: npm start
-          wait-on: "http://localhost:8000"
+          start: npm run serve
+          wait-on: http://localhost:9000
           filters: *only-tagged-releases
           working_directory: client
           cache-key: 'npm-packages-{{ arch }}-{{ checksum "client/package-lock.json" }}'

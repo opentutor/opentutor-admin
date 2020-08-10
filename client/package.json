@@ -75,7 +75,7 @@
     "serve": "gatsby serve --prefix-paths",
     "cy:open": "npx cypress open",
     "cy:run": "npx cypress run",
-    "cy:snapshotsUpdate": "npx cypress run --env updateSnapshots=true",
+    "cy:snapshotsUpdate": "CYPRESS_BASE_URL=http://localhost:9000/admin npx cypress run --env updateSnapshots=true",
     "cy:verify": "npx cypress verify",
     "test": "jest",
     "test:all": "npx run test:format && npx run test:lint && npx run test:audit && npx run test:types && npx run test:cypress && npx test",
