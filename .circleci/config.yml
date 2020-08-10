@@ -130,6 +130,10 @@ workflows:
           filters: *only-untagged
           working_directory: client
           cache-key: 'npm-packages-{{ arch }}-{{ checksum "client/package-lock.json" }}'
+          store_artifacts: true
+          post-steps:
+            - store_artifacts:
+                path: client/cypress/snapshots
       - approve-build-and-push:
           filters: *only-untagged
           type: approval

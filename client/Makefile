@@ -35,6 +35,10 @@ node_modules/prettier:
 node_modules/typescript:
 	npm install --frozen-lockfile
 
+.PHONY: snaphots-update
+snaphots-update:
+	npm run cy:snapshotsUpdate
+
 .PHONY: test
 test: node_modules/jest
 	npm run test
