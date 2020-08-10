@@ -189,7 +189,7 @@ export const SessionsTable = ({ path }: { path: string }) => {
             </TableHead>
             <TableBody>
               {sessions?.edges
-                .filter((edge: Edge) => showGraded || edge.node.graderGrade)
+                .filter((edge: Edge) => showGraded || !edge.node.graderGrade)
                 .map((row, i) => {
                   return (
                     <TableRow
