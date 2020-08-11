@@ -85,7 +85,7 @@ const LessonItem = (props: { location: any; row: Edge<Lesson>; i: number }) => {
   }
 
   return (
-    <TableRow hover role="checkbox" tabIndex={-1} key={`lesson-${i}`}>
+    <TableRow hover role="checkbox" tabIndex={-1}>
       <TableCell
         key={`lesson-launch-${i}`}
         id={`lesson-launch-${i}`}
@@ -157,7 +157,7 @@ const TableFooter = (props: {
                   aria-label="switch"
                 />
               }
-              label={"Show Mine"}
+              label={"Only Mine"}
             />
           </FormGroup>
         )}
@@ -180,7 +180,7 @@ export const LessonsTable = (props: { location: any }) => {
   const classes = useStyles();
   const [cookies] = useCookies(["user"]);
   const [lessons, setLessons] = React.useState<LessonsData>();
-  const [prevPages, setPrevPages] = React.useState<string[]>([""]);
+  const [cursors, setCursors] = React.useState<string[]>([""]);
   const [page, setPage] = React.useState(0);
   const [sortBy, setSortBy] = React.useState("updatedAt");
   const [sortDesc, setSortDesc] = React.useState(true);
@@ -192,28 +192,46 @@ export const LessonsTable = (props: { location: any }) => {
   };
 
   function onSort(id: string) {
-    setSortBy(id);
-    setSortDesc(!sortDesc);
+    if (sortBy === id) {
+      setSortDesc(!sortDesc);
+    } else {
+      setSortBy(id);
+    }
   }
 
-  function nextPage() {}
+  function nextPage() {
+    setPage(page + 1);
+  }
 
-  function prevPage() {}
+  function prevPage() {
+    setPage(page - 1);
+  }
 
   React.useEffect(() => {
-    fetchLessons(rowsPerPage, prevPages[page], sortBy, sortDesc)
-      .then((lessons) => {
-        console.log(`fetchLessons got`, lessons);
-        if (lessons !== undefined) {
-          const tmp: any = lessons.edges;
+    fetchLessons(rowsPerPage, cursors[page], sortBy, sortDesc)
+      .then((l) => {
+        console.log(`fetchLessons got`, l);
+        if (l !== undefined) {
+          const tmp: any = l.edges;
           tmp.map((lesson: any) => {
             lesson.node.updatedAt = new Date(lesson.node.updatedAt);
           });
-          setLessons(lessons);
+          setLessons(l);
         }
       })
       .catch((err) => console.error(err));
-  }, [page, prevPages, sortBy, sortDesc]);
+  }, [page, sortBy, sortDesc]);
+
+  React.useEffect(() => {
+    if (!lessons) {
+      return;
+    }
+    const updateCursors = cursors;
+    if (lessons.pageInfo.hasNextPage) {
+      updateCursors[page + 1] = lessons.pageInfo.endCursor;
+    }
+    setCursors(updateCursors);
+  }, [lessons]);
 
   if (!lessons) {
     return (
@@ -241,7 +259,12 @@ export const LessonsTable = (props: { location: any }) => {
                     !showCreator || edge.node.createdBy === cookies.user
                 )
                 .map((row, i) => (
-                  <LessonItem location={props.location} row={row} i={i} />
+                  <LessonItem
+                    key={`lesson-${i}`}
+                    location={props.location}
+                    row={row}
+                    i={i}
+                  />
                 ))}
             </TableBody>
           </Table>
@@ -249,7 +272,7 @@ export const LessonsTable = (props: { location: any }) => {
       </Paper>
       <TableFooter
         classes={classes}
-        hasPrev={prevPages.length > 1}
+        hasPrev={page > 0}
         hasNext={lessons.pageInfo.hasNextPage}
         showCreator={showCreator}
         onPrev={prevPage}

@@ -85,7 +85,7 @@ const SessionItem = (props: { row: Edge<Session>; i: number }) => {
   const { row, i } = props;
 
   return (
-    <TableRow hover role="checkbox" tabIndex={-1} key={row.node.sessionId}>
+    <TableRow hover role="checkbox" tabIndex={-1}>
       <TableCell key={`session-${i}`} id={`session-${i}`} align="left">
         <Link
           to={withPrefix(`/sessions/session?sessionId=${row.node.sessionId}`)}
@@ -156,7 +156,7 @@ const TableFooter = (props: {
                   aria-label="switch"
                 />
               }
-              label={"Show Mine"}
+              label={"Only Mine"}
             />
           </FormGroup>
         )}
@@ -184,20 +184,27 @@ export const SessionsTable = (props: { path: string }) => {
   const [sessions, setSessions] = React.useState<SessionsData>();
   const [showGraded, setShowGraded] = React.useState(false);
   const [showCreator, setShowCreator] = React.useState<boolean>(cookies.user);
-  const [prevPages, setPrevPages] = React.useState<string[]>([""]);
+  const [cursors, setCursors] = React.useState<string[]>([""]);
   const [page, setPage] = React.useState(0);
   const [sortBy, setSortBy] = React.useState("createdAt");
   const [sortDesc, setSortDesc] = React.useState(true);
   const rowsPerPage = 50;
 
   function onSort(id: string) {
-    setSortBy(id);
-    setSortDesc(!sortDesc);
+    if (sortBy === id) {
+      setSortDesc(!sortDesc);
+    } else {
+      setSortBy(id);
+    }
   }
 
-  function nextPage() {}
+  function nextPage() {
+    setPage(page + 1);
+  }
 
-  function prevPage() {}
+  function prevPage() {
+    setPage(page - 1);
+  }
 
   const handleShowGradedChange = (): void => {
     setShowGraded(!showGraded);
@@ -208,7 +215,7 @@ export const SessionsTable = (props: { path: string }) => {
   };
 
   React.useEffect(() => {
-    fetchSessions(rowsPerPage, prevPages[page], sortBy, sortDesc)
+    fetchSessions(rowsPerPage, cursors[page], sortBy, sortDesc)
       .then((sessions) => {
         console.log(`fetchSessions got`, sessions);
         if (sessions !== undefined) {
@@ -220,7 +227,18 @@ export const SessionsTable = (props: { path: string }) => {
         }
       })
       .catch((err) => console.error(err));
-  }, [page, prevPages, sortBy, sortDesc]);
+  }, [page, sortBy, sortDesc]);
+
+  React.useEffect(() => {
+    if (!sessions) {
+      return;
+    }
+    const updateCursors = cursors;
+    if (sessions.pageInfo.hasNextPage) {
+      updateCursors[page + 1] = sessions.pageInfo.endCursor;
+    }
+    setCursors(updateCursors);
+  }, [sessions]);
 
   if (!sessions) {
     return (
@@ -254,7 +272,7 @@ export const SessionsTable = (props: { path: string }) => {
                       edge.node.lesson.createdBy === cookies.user)
                 )
                 .map((row, i) => (
-                  <SessionItem row={row} i={i} />
+                  <SessionItem key={row.node.sessionId} row={row} i={i} />
                 ))}
             </TableBody>
           </Table>
@@ -263,7 +281,7 @@ export const SessionsTable = (props: { path: string }) => {
       <TableFooter
         classes={classes}
         hasNext={sessions.pageInfo.hasNextPage}
-        hasPrev={prevPages.length > 1}
+        hasPrev={page > 0}
         showGraded={showGraded}
         showCreator={showCreator}
         onNext={nextPage}

@@ -65,7 +65,8 @@ const NavMenu = () => {
   );
 };
 
-const LoginOption = () => {
+const LoginOption = (props: { classes: any }) => {
+  const { classes } = props;
   const [cookies, setCookie, removeCookie] = useCookies(["user"]);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
@@ -80,12 +81,12 @@ const LoginOption = () => {
 
   const onLogout = () => {
     removeCookie("user", { path: "/" });
-    navigate("/");
+    navigate("/admin");
   };
 
   if (cookies.user) {
     return (
-      <div>
+      <div className={classes.login}>
         <Button
           onClick={handleMenu}
           startIcon={<AccountCircle />}
@@ -115,7 +116,7 @@ const LoginOption = () => {
   }
 
   return (
-    <Button color="inherit" component={Link} to={"/"}>
+    <Button className={classes.login} color="inherit" component={Link} to={"/admin"}>
       Login
     </Button>
   );
@@ -145,7 +146,7 @@ export const NavBar = (props: { title: string }) => {
           <Typography variant="h6" className={classes.title}>
             {props.title}
           </Typography>
-          <LoginOption className={classes.login} />
+          <LoginOption classes={classes} />
         </Toolbar>
       </AppBar>
       <SwipeableDrawer
