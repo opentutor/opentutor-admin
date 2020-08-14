@@ -176,9 +176,9 @@ const TableFooter = (props: {
         )}
         <FormGroup className={classes.toggle}>
           <FormControlLabel
-            id="toggle"
             control={
               <Switch
+                id="toggle"
                 checked={showGraded}
                 onChange={onToggleGraded}
                 aria-label="switch"

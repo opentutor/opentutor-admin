@@ -9,53 +9,15 @@ aliases:
     tags:
       ignore: /.*/
 orbs:
-  cypress: cypress-io/cypress@1
   docker: circleci/docker@0.5.17
 executors:
+  cypress:
+    docker:
+      - image: cypress/base:12
   node:
     docker:
       - image: circleci/node:12.16.1
-  python:
-    docker:
-      - image: circleci/python:3.6.9
 jobs:
-  client-format:
-    executor: node
-    steps:
-      - checkout
-      - run:
-          name: Install client
-          command: cd client && npm ci
-      - run:
-          name: Client test format
-          command: cd client && npm run test:format
-  client-audit:
-    executor: node
-    steps:
-      - checkout
-      - run:
-          name: Audit js
-          command: cd client && npm audit --production --level=moderate
-  client-lint:
-    executor: node
-    steps:
-      - checkout
-      - run:
-          name: Install client
-          command: cd client && npm ci
-      - run:
-          name: Client test lint
-          command: cd client && npm run test:lint
-  client-types:
-    executor: node
-    steps:
-      - checkout
-      - run:
-          name: Install client
-          command: cd client && npm ci
-      - run:
-          name: Client test types
-          command: cd client && npm run test:types
   build-and-push:
     parameters:
       is-release-tag:
@@ -101,32 +63,87 @@ jobs:
       - run:
           command: |
             echo "Digest is: $(</tmp/digest.txt)"
+  test-client-audit:
+    executor: node
+    steps:
+      - checkout
+      - run:
+          name: Audit js
+          command: cd client && yarn audit --level=moderate --groups dependencies
+  test-client-cypress:
+    executor: cypress
+    steps:
+      - checkout
+      - run:
+          name: Install client
+          command: cd client && yarn install --frozen-lockfile
+      - run:
+          name: Start gatsby
+          command: cd client && yarn run develop
+          background: true
+      - run:
+          name: Wait for gatsby
+          command: cd client && bash ./bin/gatsby_wait_for_ready.sh
+      - run:
+          name: Run cypress
+          command: |
+            cd client
+            npx cypress run --env "CYPRESS_SNAPSHOT_DIFF_DIR=cypress/snapshot/snapshot_failed_diffs"
+      - store_artifacts:
+          path: client/cypress/snapshot/snapshot_failed_diffs
+          destination: snapshot_failed_diffs
+  test-client-format:
+    executor: node
+    steps:
+      - checkout
+      - run:
+          name: Install client
+          command: cd client && yarn install --frozen-lockfile
+      - run:
+          name: Client test format
+          command: cd client && yarn run test:format
+  test-client-lint:
+    executor: node
+    steps:
+      - checkout
+      - run:
+          name: Install client
+          command: cd client && yarn install --frozen-lockfile
+      - run:
+          name: Client test lint
+          command: cd client && yarn run test:lint
+  test-client-types:
+    executor: node
+    steps:
+      - checkout
+      - run:
+          name: Install client
+          command: cd client && yarn install --frozen-lockfile
+      - run:
+          name: Client test types
+          command: cd client && yarn run test:types
 workflows:
   test-build-deploy:
     jobs:
-      - client-format:
+      - test-client-audit:
           filters: *only-untagged
-      # - client-audit:
-      #     filters: *only-untagged
-      - client-lint:
+      - test-client-cypress:
           filters: *only-untagged
-      - client-types:
+      - test-client-format:
           filters: *only-untagged
-      - cypress/run:
-          start: npm start
-          wait-on: "http://localhost:8000"
+      - test-client-lint:
           filters: *only-untagged
-          working_directory: client
-          cache-key: 'npm-packages-{{ arch }}-{{ checksum "client/package-lock.json" }}'
+      - test-client-types:
+          filters: *only-untagged
       - approve-build-and-push:
           filters: *only-untagged
           type: approval
           requires:
-            - client-format
-            # - client-audit
-            - client-lint
-            - client-types
-            - cypress/run
+            - test-client-audit
+            - test-client-cypress
+            - test-client-format
+            - test-client-lint
+            - test-client-types
       - build-and-push:
           is-release-tag: false
           filters: *only-untagged
@@ -134,26 +151,22 @@ workflows:
             - approve-build-and-push
   test-build-deploy-release:
     jobs:
-      - client-format:
+      - test-client-audit:
           filters: *only-tagged-releases
-      # - client-audit:
-      #     filters: *only-tagged-releases
-      - client-lint:
+      - test-client-cypress:
           filters: *only-tagged-releases
-      - client-types:
+      - test-client-format:
           filters: *only-tagged-releases
-      - cypress/run:
-          start: npm start
-          wait-on: "http://localhost:8000"
+      - test-client-lint:
           filters: *only-tagged-releases
-          working_directory: client
-          cache-key: 'npm-packages-{{ arch }}-{{ checksum "client/package-lock.json" }}'
+      - test-client-types:
+          filters: *only-tagged-releases
       - build-and-push:
           is-release-tag: true
           filters: *only-tagged-releases
           requires:
-            - client-format
-            # - client-audit
-            - client-lint
-            - client-types
-            - cypress/run
+            - test-client-audit
+            - test-client-cypress
+            - test-client-format
+            - test-client-lint
+            - test-client-types
