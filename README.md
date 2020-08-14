@@ -13,7 +13,7 @@ Variables
 
 In order to function properly the client generally requires these environment variables defined:
 
-- **GRADER_GRAPHQL_ENDPOINT**: The graphql endpoint for accessing grader data. Defaults to /grader/graphql
+- **GRAPHQL_ENDPOINT**: The graphql endpoint for accessing grader data. Defaults to /grader/graphql
 
 
 Development

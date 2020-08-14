@@ -1,7 +1,7 @@
 .env.development:
-	@echo "GRADER_GRAPHQL_ENDPOINT=https://dev-opentutor.pal3.org/grading-api/graphql/" >> .env.development
+	@echo "GRAPHQL_ENDPOINT=https://dev-opentutor.pal3.org/grading-api/graphql/" >> .env.development
 	@echo "Set up  a default .env.development file"
-	@echo "that configures GRADER_GRAPHQL_ENDPOINT=https://dev-opentutor.pal3.org/grading-api/graphql/."
+	@echo "that configures GRAPHQL_ENDPOINT=https://dev-opentutor.pal3.org/grading-api/graphql/."
 	@echo "This file should not be committed. "
 	@echo "Feel free to change to point to a local server if you're running one."
 

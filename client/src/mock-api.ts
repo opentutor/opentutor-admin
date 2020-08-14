@@ -2,7 +2,7 @@ import axios from "axios";
 
 import { StatusUrl, TrainStatus } from "mock-types";
 
-export const GRADER_GRAPHQL_ENDPOINT = "opentutor.org/training/train";
+export const GRAPHQL_ENDPOINT = "opentutor.org/training/train";
 
 interface GQLResponse<T> {
   errors: { message: string }[];
@@ -10,21 +10,18 @@ interface GQLResponse<T> {
 }
 
 export async function fetchStatusUrl(lessonId: string): Promise<StatusUrl> {
-  const result = await axios.post<GQLResponse<StatusUrl>>(
-    GRADER_GRAPHQL_ENDPOINT,
-    {
-      query: `
+  const result = await axios.post<GQLResponse<StatusUrl>>(GRAPHQL_ENDPOINT, {
+    query: `
       query{
           statusUrl{
             statusUrl
           }
         }
         `,
-      variables: {
-        lessonId: lessonId,
-      },
-    }
-  );
+    variables: {
+      lessonId: lessonId,
+    },
+  });
   return { statusUrl: "/training/status/{jobId}" };
 }
 
