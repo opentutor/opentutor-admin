@@ -1,21 +1,19 @@
 import axios from "axios";
-
 import {
   FetchSessions,
-  FetchUserSession,
-  UserSession,
+  FetchSession,
+  Session,
   SetGrade,
   Lesson,
   FetchLessons,
   FetchLesson,
-  CreateLesson,
   UpdateLesson,
   SessionsData,
   LessonsData,
 } from "types";
 
-export const GRADER_GRAPHQL_ENDPOINT =
-  process.env.GRADER_GRAPHQL_ENDPOINT || "/grading-api/graphql/";
+export const GRAPHQL_ENDPOINT =
+  process.env.GRAPHQL_ENDPOINT || "/grading-api/graphql";
 
 interface GQLResponse<T> {
   errors: { message: string }[];
@@ -26,56 +24,48 @@ export async function fetchSessions(
   limit: number,
   cursor: string,
   sortBy: string,
-  sortDescending: boolean
+  sortAscending: boolean
 ): Promise<SessionsData> {
   const result = await axios.post<GQLResponse<FetchSessions>>(
-    GRADER_GRAPHQL_ENDPOINT,
+    GRAPHQL_ENDPOINT,
     {
       query: `
-      query($limit: Int!, $cursor: String!, $sortBy:String!, $sortDescending:Boolean!){
-          userSessions(limit:$limit, cursor:$cursor, sortBy:$sortBy, sortDescending:$sortDescending){
+        query {
+          sessions(limit:${limit}, cursor:"${cursor}", sortBy:"${sortBy}", sortAscending:${sortAscending}){
             edges {
               cursor 
               node {
                 sessionId
                 username
-                createdAt
-                updatedAt
                 classifierGrade
                 graderGrade
+                createdAt
                 lesson {
                   name
                   lessonId
+                  createdBy
                 }
               }
             }
             pageInfo {
+              startCursor
               endCursor
+              hasPreviousPage
               hasNextPage
             }
           }
         }
-        `,
-      variables: {
-        limit: limit,
-        cursor: cursor,
-        sortBy: sortBy,
-        sortDescending: sortDescending,
-      },
+      `,
     }
   );
-  return result.data.data.userSessions;
+  return result.data.data.sessions;
 }
 
-export async function fetchUserSession(
-  sessionId: string
-): Promise<UserSession> {
-  const result = await axios.post<GQLResponse<FetchUserSession>>(
-    GRADER_GRAPHQL_ENDPOINT,
-    {
-      query: `
-        query ($sessionId: String!){
-          userSession(sessionId: $sessionId) {
+export async function fetchSession(sessionId: string): Promise<Session> {
+  const result = await axios.post<GQLResponse<FetchSession>>(GRAPHQL_ENDPOINT, {
+    query: `
+        query {
+          session(sessionId: "${sessionId}") {
             username
             graderGrade
             createdAt
@@ -95,16 +85,13 @@ export async function fetchUserSession(
             lesson {
               name
               lessonId
+              createdBy
             }
           }
         }
-        `,
-      variables: {
-        sessionId: sessionId,
-      },
-    }
-  );
-  return result.data.data.userSession;
+      `,
+  });
+  return result.data.data.session;
 }
 
 export async function setGrade(
@@ -112,13 +99,11 @@ export async function setGrade(
   userAnswerIndex: number,
   userExpectationIndex: number,
   grade: string
-): Promise<UserSession> {
-  const result = await axios.post<GQLResponse<SetGrade>>(
-    GRADER_GRAPHQL_ENDPOINT,
-    {
-      query: `
-        mutation ($sessionId: String!, $userAnswerIndex: Int!, $userExpectationIndex: Int!, $grade: String!) {
-          setGrade(sessionId: $sessionId, userAnswerIndex:$userAnswerIndex, userExpectationIndex:$userExpectationIndex grade:$grade){
+): Promise<Session> {
+  const result = await axios.post<GQLResponse<SetGrade>>(GRAPHQL_ENDPOINT, {
+    query: `
+        mutation {
+          setGrade(sessionId: "${sessionId}", userAnswerIndex:${userAnswerIndex}, userExpectationIndex:${userExpectationIndex} grade:"${grade}"){
             username
             graderGrade
             question {
@@ -136,18 +121,12 @@ export async function setGrade(
             }
             lesson {
               name
+              createdBy
             }
           }
         }
-        `,
-      variables: {
-        sessionId: sessionId,
-        userAnswerIndex: userAnswerIndex,
-        userExpectationIndex: userExpectationIndex,
-        grade: grade,
-      },
-    }
-  );
+      `,
+  });
   return result.data.data.setGrade;
 }
 
@@ -155,58 +134,50 @@ export async function fetchLessons(
   limit: number,
   cursor: string,
   sortBy: string,
-  sortDescending: boolean
+  sortAscending: boolean
 ): Promise<LessonsData> {
-  const result = await axios.post<GQLResponse<FetchLessons>>(
-    GRADER_GRAPHQL_ENDPOINT,
-    {
-      query: `
-      query($limit: Int!, $cursor: String!, $sortBy:String!, $sortDescending:Boolean!){
-        lessons(limit:$limit, cursor:$cursor, sortBy:$sortBy, sortDescending:$sortDescending) {
-          edges {
-            cursor
-            node {
-              id
-              lessonId
-              name
-              intro
-              question
-              conclusion
-              expectations {
-                expectation
-                hints {
-                  text
+  const result = await axios.post<GQLResponse<FetchLessons>>(GRAPHQL_ENDPOINT, {
+    query: `
+        query {
+          lessons(limit:${limit}, cursor:"${cursor}", sortBy:"${sortBy}", sortAscending:${sortAscending}) {
+            edges {
+              cursor
+              node {
+                id
+                lessonId
+                name
+                intro
+                question
+                conclusion
+                expectations {
+                  expectation
+                  hints {
+                    text
+                  }
                 }
+                createdBy
+                createdAt
+                updatedAt
               }
-              createdAt
-              updatedAt
+            }
+            pageInfo {
+              startCursor
+              endCursor
+              hasPreviousPage
+              hasNextPage
             }
           }
-          pageInfo {
-            endCursor
-            hasNextPage
-          }
         }
-      }
-        `,
-      variables: {
-        limit: limit,
-        cursor: cursor,
-        sortBy: sortBy,
-        sortDescending: sortDescending,
-      },
-    }
-  );
+      `,
+  });
   return result.data.data.lessons;
 }
 
 export async function fetchLesson(lessonId: string): Promise<Lesson> {
-  const result = await axios.post<GQLResponse<FetchLesson>>(
-    GRADER_GRAPHQL_ENDPOINT,
-    {
-      query: `
-        query ($lessonId: String!){
-          lesson(lessonId: $lessonId) {
+  const result = await axios.post<GQLResponse<FetchLesson>>(GRAPHQL_ENDPOINT, {
+    query: `
+        query {
+          lesson(lessonId: "${lessonId}") {
             id
             lessonId
             intro
@@ -219,55 +190,24 @@ export async function fetchLesson(lessonId: string): Promise<Lesson> {
                 text
               }
             }
+            createdBy
             createdAt
             updatedAt
           }
         }
-        `,
-      variables: {
-        lessonId: lessonId,
-      },
-    }
-  );
+      `,
+  });
   return result.data.data.lesson;
-}
-
-export async function createLesson(): Promise<Lesson> {
-  const result = await axios.post<GQLResponse<CreateLesson>>(
-    GRADER_GRAPHQL_ENDPOINT,
-    {
-      query: `
-        mutation {
-          createLesson {
-            lessonId
-            name
-            intro
-            question
-            conclusion
-            expectations {
-              expectation
-              hints {
-                text
-              }
-            }
-          }
-        }
-        `,
-    }
-  );
-  return result.data.data.createLesson;
 }
 
 export async function updateLesson(
   lessonId: string,
   lesson: string
 ): Promise<Lesson> {
-  const result = await axios.post<GQLResponse<UpdateLesson>>(
-    GRADER_GRAPHQL_ENDPOINT,
-    {
-      query: `
-        mutation ($lessonId: String!, $lesson: String!) {
-          updateLesson(lessonId: $lessonId, lesson: $lesson){
+  const result = await axios.post<GQLResponse<UpdateLesson>>(GRAPHQL_ENDPOINT, {
+    query: `
+        mutation {
+          updateLesson(lessonId: "${lessonId}", lesson: ${lesson}){
             id
             lessonId
             intro
@@ -280,16 +220,12 @@ export async function updateLesson(
                 text
               }
             }
+            createdBy
             createdAt
             updatedAt
           }
         }
-        `,
-      variables: {
-        lessonId: lessonId,
-        lesson: lesson,
-      },
-    }
-  );
+      `,
+  });
   return result.data.data.updateLesson;
 }

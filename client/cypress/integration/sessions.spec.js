@@ -7,7 +7,7 @@ describe("sessions screen", () => {
       status: 200,
       response: {
         data: {
-          userSessions: {
+          sessions: {
             edges: [
               {
                 cursor: "cursor 1",
@@ -52,8 +52,8 @@ describe("sessions screen", () => {
   it("displays a table with headers Session Id, Username, Date, Classifier Grade, Grade", () => {
     cy.visit("/sessions");
     const tableHead = cy.get("table thead tr");
-    tableHead.get("th").eq(0).should("contain", "Session");
-    tableHead.get("th").eq(1).should("contain", "Username");
+    tableHead.get("th").eq(0).should("contain", "Lesson");
+    tableHead.get("th").eq(1).should("contain", "Created By");
     tableHead.get("th").eq(2).should("contain", "Date");
     tableHead.get("th").eq(3).should("contain", "Classifier Grade");
     tableHead.get("th").eq(4).should("contain", "Grade");

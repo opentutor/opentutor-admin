@@ -1,47 +1,28 @@
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type ActionType = any;
 
-export interface Edge {
+export interface Edge<T> {
   cursor: string;
-  node: Session;
+  node: T;
 }
 
 export interface PageInfo {
+  hasPreviousPage: boolean;
   hasNextPage: boolean;
+  startCursor: string;
   endCursor: string;
-}
-
-export interface SessionsData {
-  edges: Edge[];
-  pageInfo: PageInfo;
-}
-
-export interface FetchSessions {
-  userSessions: SessionsData;
-}
-
-export interface SessionLesson {
-  name: string;
-  lessonId: string;
 }
 
 export interface Session {
   sessionId: string;
   username: string;
-  createdAt: string;
-  updatedAt: string;
-  classifierGrade: number;
   graderGrade: number;
-  lesson: SessionLesson;
-}
-
-export enum Classification {
-  GOOD = "Good",
-  BAD = "Bad",
-}
-
-export interface Expectation {
-  text: string;
+  classifierGrade: number;
+  question: Question;
+  userResponses: UserResponse[];
+  createdAt: number;
+  updatedAt: number;
+  lesson: Lesson;
 }
 
 export interface Question {
@@ -49,9 +30,8 @@ export interface Question {
   expectations: Expectation[];
 }
 
-export interface ExpectationScore {
-  classifierGrade: string;
-  graderGrade?: string;
+export interface Expectation {
+  text: string;
 }
 
 export interface UserResponse {
@@ -59,35 +39,26 @@ export interface UserResponse {
   expectationScores: ExpectationScore[];
 }
 
-export interface SessionLesson {
-  name: string;
+export interface ExpectationScore {
+  classifierGrade: string;
+  graderGrade?: string;
 }
 
-export interface UserSession {
-  username: string;
-  graderGrade: number;
-  createdAt: string;
-  updatedAt: number;
-  question: Question;
-  lesson: SessionLesson;
-  userResponses: UserResponse[];
+export interface FetchSession {
+  session: Session;
 }
 
-export interface FetchUserSession {
-  userSession: UserSession;
+export interface FetchSessions {
+  sessions: SessionsData;
+}
+
+export interface SessionsData {
+  edges: Edge<Session>[];
+  pageInfo: PageInfo;
 }
 
 export interface SetGrade {
-  setGrade: UserSession;
-}
-
-export interface Hint {
-  text: string;
-}
-
-export interface LessonExpectation {
-  expectation: string;
-  hints: Hint[];
+  setGrade: Session;
 }
 
 export interface Lesson {
@@ -98,30 +69,31 @@ export interface Lesson {
   question: string;
   conclusion: string[];
   expectations: LessonExpectation[];
-  createdAt: string;
-  updatedAt: string;
+  createdBy: string;
+  createdAt: number;
+  updatedAt: number;
 }
 
-export interface LessonEdge {
-  cursor: string;
-  node: Lesson;
+export interface LessonExpectation {
+  expectation: string;
+  hints: Hint[];
 }
 
-export interface LessonsData {
-  edges: LessonEdge[];
-  pageInfo: PageInfo;
-}
-
-export interface FetchLessons {
-  lessons: LessonsData;
+export interface Hint {
+  text: string;
 }
 
 export interface FetchLesson {
   lesson: Lesson;
 }
 
-export interface CreateLesson {
-  createLesson: Lesson;
+export interface FetchLessons {
+  lessons: LessonsData;
+}
+
+export interface LessonsData {
+  edges: Edge<Lesson>[];
+  pageInfo: PageInfo;
 }
 
 export interface UpdateLesson {
