@@ -81,7 +81,7 @@ const LoginOption = (props: { classes: any }) => {
 
   const onLogout = () => {
     removeCookie("user", { path: "/" });
-    navigate("/admin");
+    navigate("/");
   };
 
   if (cookies.user) {

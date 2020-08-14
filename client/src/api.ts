@@ -42,6 +42,7 @@ export async function fetchSessions(
                 createdAt
                 lesson {
                   name
+                  lessonId
                   createdBy
                 }
               }
@@ -85,6 +86,7 @@ export async function fetchSession(sessionId: string): Promise<Session> {
             }
             lesson {
               name
+              lessonId
               createdBy
             }
           }

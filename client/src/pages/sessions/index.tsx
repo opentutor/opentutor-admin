@@ -1,4 +1,4 @@
-import { withPrefix } from "gatsby";
+import { withPrefix, navigate } from "gatsby";
 import React from "react";
 import { useCookies } from "react-cookie";
 import {
@@ -79,10 +79,15 @@ const columns: ColumnDef[] = [
     align: "center",
     format: (value: number): string => value.toLocaleString("en-US"),
   },
+  { id: "", label: "Edit", minWidth: 0, align: "center" },
 ];
 
 const SessionItem = (props: { row: Edge<Session>; i: number }) => {
   const { row, i } = props;
+
+  function handleEdit(lessonId: string): void {
+    navigate(withPrefix("/lessons/edit?lessonId=" + lessonId));
+  }
 
   return (
     <TableRow hover role="checkbox" tabIndex={-1}>
@@ -109,6 +114,15 @@ const SessionItem = (props: { row: Edge<Session>; i: number }) => {
           ? Math.trunc(row.node.graderGrade * 100)
           : "?"}
       </TableCell>
+      <TableCell>
+        <IconButton
+          onClick={() => {
+            handleEdit(row.node.lesson.lessonId);
+          }}
+        >
+          <EditIcon />
+        </IconButton>
+      </TableCell>{" "}
     </TableRow>
   );
 };
@@ -186,12 +200,12 @@ export const SessionsTable = (props: { path: string }) => {
   const [showCreator, setShowCreator] = React.useState<boolean>(cookies.user);
   const [cursor, setCursor] = React.useState("");
   const [sortBy, setSortBy] = React.useState("createdAt");
-  const [sortDesc, setSortDesc] = React.useState(true);
+  const [sortAsc, setSortAsc] = React.useState(false);
   const rowsPerPage = 50;
 
   function onSort(id: string) {
     if (sortBy === id) {
-      setSortDesc(!sortDesc);
+      setSortAsc(!sortAsc);
     } else {
       setSortBy(id);
     }
@@ -221,7 +235,7 @@ export const SessionsTable = (props: { path: string }) => {
   };
 
   React.useEffect(() => {
-    fetchSessions(rowsPerPage, cursor, sortBy, sortDesc)
+    fetchSessions(rowsPerPage, cursor, sortBy, sortAsc)
       .then((sessions) => {
         console.log(`fetchSessions got`, sessions);
         if (sessions) {
@@ -232,7 +246,7 @@ export const SessionsTable = (props: { path: string }) => {
         }
       })
       .catch((err) => console.error(err));
-  }, [rowsPerPage, cursor, sortBy, sortDesc]);
+  }, [rowsPerPage, cursor, sortBy, sortAsc]);
 
   if (!sessions) {
     return (
@@ -240,10 +254,6 @@ export const SessionsTable = (props: { path: string }) => {
         <CircularProgress className={classes.progress} />
       </div>
     );
-  }
-
-  function handleEdit(lessonId: string): void {
-    navigate(withPrefix("/lessons/edit?lessonId=" + lessonId));
   }
 
   return (
@@ -254,7 +264,7 @@ export const SessionsTable = (props: { path: string }) => {
             <ColumnHeader
               columns={columns}
               sortBy={sortBy}
-              sortAsc={sortDesc}
+              sortAsc={sortAsc}
               onSort={onSort}
             />
             <TableBody>
