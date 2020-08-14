@@ -30,7 +30,7 @@ docker-run:
 			-it \
 			--rm \
 			--name $(DOCKER_CONTAINER) \
-			-e GRADER_GRAPHQL_ENDPOINT="https://dev-opentutor.pal3.org/grading-api/graphql" \
+			-e GRAPHQL_ENDPOINT="https://dev-opentutor.pal3.org/grading-api/graphql" \
 			-p 3000:3000 \
 		$(DOCKER_IMAGE) 
 

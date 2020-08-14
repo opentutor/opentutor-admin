@@ -22,8 +22,8 @@ import {
 } from "@material-ui/core";
 import EditIcon from "@material-ui/icons/Edit";
 import withLocation from "wrap-with-location";
-import { UserSession } from "types";
-import { fetchUserSession, setGrade } from "api";
+import { Session } from "types";
+import { fetchSession, setGrade } from "api";
 import NavBar from "components/nav-bar";
 import "styles/layout.css";
 
@@ -47,7 +47,7 @@ const useStyles = makeStyles({
 const SessionTable = ({ search }: { search: any }) => {
   const { sessionId } = search;
   const classes = useStyles();
-  const [userSession, setUserSession] = React.useState<UserSession>();
+  const [session, setSession] = React.useState<Session>();
   const [date, setDate] = React.useState<string>("");
 
   const handleGradeExpectationChange = (
@@ -62,10 +62,10 @@ const SessionTable = ({ search }: { search: any }) => {
       Number(indexSplit[1]),
       event.target.value as string
     )
-      .then((userSession: UserSession) => {
-        console.log("updated grade", userSession);
-        if (userSession !== undefined) {
-          setUserSession(userSession);
+      .then((session: Session) => {
+        console.log("updated grade", session);
+        if (session) {
+          setSession(session);
         }
       })
       .catch((err: any) => console.error(err));
@@ -81,13 +81,13 @@ const SessionTable = ({ search }: { search: any }) => {
 
   React.useEffect(() => {
     let mounted = true;
-    fetchUserSession(sessionId)
-      .then((userSession: UserSession) => {
-        console.log("fetchUserSession got", userSession);
-        if (mounted && userSession) {
-          setUserSession(userSession);
+    fetchSession(sessionId)
+      .then((session: Session) => {
+        console.log("fetchSession got", session);
+        if (mounted && session) {
+          setSession(session);
         }
-        const d = new Date(userSession.createdAt);
+        const d = new Date(session.createdAt);
         setDate(d.toLocaleString());
       })
       .catch((err: any) => console.error(err));
@@ -99,25 +99,25 @@ const SessionTable = ({ search }: { search: any }) => {
   return (
     <Paper className={classes.root}>
       <div id="session-display-name" key="session-display-name">
-        {userSession && userSession.lesson && userSession.lesson.name
-          ? userSession.lesson.name
+        {session && session.lesson && session.lesson.name
+          ? session.lesson.name
           : "No Lesson Name"}
       </div>
       <div id="username" key="username">
         {" "}
-        {userSession && userSession.username ? userSession.username : "Guest"}
+        {session && session.username ? session.username : "Guest"}
       </div>
       <div id="Date" key="Date">
         {" "}
         {date ? date : ""}
       </div>
-      <div id="question"> {userSession ? userSession.question.text : ""} </div>
+      <div id="question"> {session ? session.question.text : ""} </div>
       <div id="score">
         {" "}
         Score:{" "}
-        {userSession
-          ? userSession.graderGrade || userSession.graderGrade !== null
-            ? Math.trunc(userSession.graderGrade * 100)
+        {session
+          ? session.graderGrade || session.graderGrade !== null
+            ? Math.trunc(session.graderGrade * 100)
             : "?"
           : "?"}{" "}
       </div>
@@ -128,7 +128,7 @@ const SessionTable = ({ search }: { search: any }) => {
               <TableCell id="userAnswer" align="center" style={{ width: 100 }}>
                 User Answer
               </TableCell>
-              {userSession?.question?.expectations.map((column, i) => (
+              {session?.question?.expectations.map((column, i) => (
                 <TableCell
                   key={`expectation-${i}`}
                   id={`expectation-${i}`}
@@ -141,7 +141,7 @@ const SessionTable = ({ search }: { search: any }) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {userSession?.userResponses.map((row, i) => {
+            {session?.userResponses.map((row, i) => {
               return (
                 <TableRow hover role="checkbox" tabIndex={-1} key={`text-${i}`}>
                   {/* <TableCell
@@ -160,7 +160,7 @@ const SessionTable = ({ search }: { search: any }) => {
                     {row.text}
                   </TableCell>
 
-                  {userSession?.question?.expectations.map((column, j) => (
+                  {session?.question?.expectations.map((column, j) => (
                     <TableCell
                       style={{
                         backgroundColor:
@@ -259,8 +259,8 @@ const SessionTable = ({ search }: { search: any }) => {
         </Button>
         <IconButton
           onClick={() => {
-            if (userSession) {
-              handleEdit(userSession.lesson.lessonId);
+            if (session) {
+              handleEdit(session.lesson.lessonId);
             }
           }}
         >

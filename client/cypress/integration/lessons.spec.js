@@ -45,7 +45,8 @@ describe("lessons screen", () => {
     cy.visit("/lessons");
     const tableHead = cy.get("table thead tr");
     tableHead.get("th").eq(1).should("contain", "Lesson");
-    tableHead.get("th").eq(2).should("contain", "Date");
+    tableHead.get("th").eq(2).should("contain", "Created By");
+    tableHead.get("th").eq(3).should("contain", "Date");
   });
 
   it("displays 2 lesson names by row", () => {
@@ -62,12 +63,12 @@ describe("lessons screen", () => {
     );
   });
 
-  it("opens eddit for a lesson on tap link", () => {
+  it("opens edit for a lesson on tap link", () => {
     cy.visit("/lessons");
     cy.get("#lesson-name-0 a").click();
   });
 
-  it("clicks on create lesson and oppens to an edit page for the lesson", () => {
+  it("clicks on create lesson and opens to an edit page for the lesson", () => {
     cy.visit("/lessons");
     cy.get("#create-button").click();
   });

@@ -1,11 +1,7 @@
 import { navigate } from "gatsby";
-import { v4 as uuid } from "uuid";
 import React from "react";
-import {
-  MuiThemeProvider,
-  createMuiTheme,
-  makeStyles,
-} from "@material-ui/core/styles";
+import { useCookies } from "react-cookie";
+import { v4 as uuid } from "uuid";
 import {
   Box,
   Button,
@@ -28,17 +24,20 @@ import {
   DialogContentText,
   DialogTitle,
 } from "@material-ui/core";
+import {
+  MuiThemeProvider,
+  createMuiTheme,
+  makeStyles,
+} from "@material-ui/core/styles";
 import AddIcon from "@material-ui/icons/Add";
 import RemoveIcon from "@material-ui/icons/Remove";
 import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
-import withLocation from "wrap-with-location";
-import { Lesson, LessonExpectation } from "types";
 import { fetchLesson, updateLesson } from "api";
-import { withPrefix } from "gatsby";
 import NavBar from "components/nav-bar";
+import { Lesson } from "types";
+import withLocation from "wrap-with-location";
 import "styles/layout.css";
-import LessonsPage from ".";
 
 import { fetchStatusUrl, fetchTraining } from "mock-api";
 
@@ -80,17 +79,16 @@ const useStyles = makeStyles({
   },
 });
 
-type ExpectationProp = {
-  row: LessonExpectation;
-  index: number;
-};
-
-const LessonEdit = ({ search }: { search: any }) => {
-  let { lessonId } = search;
-  const originalId = lessonId;
+const LessonEdit = (props: { search: any }) => {
+  const { lessonId } = props.search;
   const classes = useStyles();
-  const inititialLesson = {
-    lessonId: "",
+  const [cookies] = useCookies(["user"]);
+  const [change, setChange] = React.useState(false);
+  const [expectationOpen, setExpectationOpen] = React.useState(true);
+
+  const newLesson = {
+    lessonId: uuid(),
+    createdBy: "",
     name: "Lesson Name",
     intro: "Introduction",
     question: "Question",
@@ -102,27 +100,20 @@ const LessonEdit = ({ search }: { search: any }) => {
       },
     ],
   };
-
-  const [lesson, setLesson] = React.useState(inititialLesson);
-  const [change, setChange] = React.useState(false);
-  const [expectationOpen, setExpectationOpen] = React.useState(true);
+  const [lesson, setLesson] = React.useState(newLesson);
 
   React.useEffect(() => {
     if (lessonId !== "new") {
-      let mounted = true;
       fetchLesson(lessonId)
         .then((lesson: Lesson) => {
-          if (mounted && lesson) {
+          console.log("fetchLesson got", lesson);
+          if (lesson) {
             setLesson(lesson);
           }
         })
         .catch((err: any) => console.error(err));
-      return () => {
-        mounted = false;
-      };
     } else {
-      lessonId = uuid();
-      setLesson({ ...lesson, lessonId: lessonId });
+      setLesson({ ...lesson, createdBy: cookies.user });
     }
   }, []);
 
@@ -193,24 +184,19 @@ const LessonEdit = ({ search }: { search: any }) => {
 
   function handleSave() {
     const converted = encodeURI(JSON.stringify(lesson));
-    let id = "";
-    let mounted = true;
-    if (originalId == "new") {
-      id = lesson.lessonId;
-    } else {
-      id = originalId;
+    let origId = lessonId;
+    if (lessonId === "new") {
+      origId = lesson.lessonId;
     }
-    updateLesson(id, converted)
+    updateLesson(origId, converted)
       .then((lesson) => {
-        if (mounted && lesson) {
+        console.log(`fetchUpdateLesson got`, lesson);
+        if (lesson !== undefined) {
           setLesson(lesson);
         }
       })
       .catch((err) => console.error(err));
     navigate(`/lessons`);
-    return () => {
-      mounted = false;
-    };
   }
 
   function handleCancel() {
@@ -382,6 +368,18 @@ const LessonEdit = ({ search }: { search: any }) => {
             }}
             variant="outlined"
             size="small"
+          />
+          <TextField
+            id="lesson-creator"
+            key="lesson-creator"
+            label="Created By"
+            placeholder="Guest"
+            variant="outlined"
+            InputLabelProps={{
+              shrink: true,
+            }}
+            value={lesson.createdBy}
+            disabled={true}
           />
         </Grid>
         <Grid container justify="flex-start" style={{ paddingTop: "40px" }}>
@@ -705,11 +703,11 @@ const LessonEdit = ({ search }: { search: any }) => {
   );
 };
 
-const EditPage = ({ path, search }: { path: string; search: any }) => {
+const EditPage = (props: { path: string; search: any }) => {
   return (
     <MuiThemeProvider theme={theme}>
       <NavBar title="Edit Lesson" />
-      <LessonEdit search={search} />
+      <LessonEdit search={props.search} />
     </MuiThemeProvider>
   );
 };

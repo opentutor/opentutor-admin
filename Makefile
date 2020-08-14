@@ -2,13 +2,17 @@ PHONY: format
 format:
 	cd client && $(MAKE) format
 
+PHONY: docker-build
+docker-build:
+	cd docker && $(MAKE) docker-build
+
 PHONY: test
 test:
 	cd client && $(MAKE) test
 
 PHONY: test-all
 test-all:
-	$(MAKE) test-audit
+	# $(MAKE) test-audit
 	$(MAKE) test-format
 	$(MAKE) test-lint
 	$(MAKE) test-types

@@ -7,7 +7,7 @@ describe("session screen", () => {
       status: 200,
       response: {
         data: {
-          userSession: {
+          session: {
             sessionId: "session1",
             lesson: {
               name: "lesson 1",
@@ -84,7 +84,7 @@ describe("session screen", () => {
       status: 200,
       response: {
         data: {
-          userSession: {
+          session: {
             username: "username1",
             graderGrade: null,
             question: {

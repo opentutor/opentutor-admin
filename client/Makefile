@@ -1,7 +1,7 @@
 .env.development:
-	@echo "GRADER_GRAPHQL_ENDPOINT=https://dev-opentutor.pal3.org/grading-api/graphql/" >> .env.development
+	@echo "GRAPHQL_ENDPOINT=https://dev-opentutor.pal3.org/grading-api/graphql/" >> .env.development
 	@echo "Set up  a default .env.development file"
-	@echo "that configures GRADER_GRAPHQL_ENDPOINT=https://dev-opentutor.pal3.org/grading-api/graphql/."
+	@echo "that configures GRAPHQL_ENDPOINT=https://dev-opentutor.pal3.org/grading-api/graphql/."
 	@echo "This file should not be committed. "
 	@echo "Feel free to change to point to a local server if you're running one."
 
@@ -18,22 +18,22 @@ format: node_modules/prettier
 	npm run format
 
 node_modules/cypress:
-	npm install --frozen-lockfile
+	npm install 
 
 node_modules/eslint:
-	npm install --frozen-lockfile
+	npm install 
 
 node_modules/gatsby-cli:
-	npm install --frozen-lockfile
+	npm install 
 
 node_modules/jest:
-	npm install --frozen-lockfile
+	npm install 
 
 node_modules/prettier:
-	npm install --frozen-lockfile
+	npm install 
 
 node_modules/typescript:
-	npm install --frozen-lockfile
+	npm install 
 
 .PHONY: test
 test: node_modules/jest
@@ -41,7 +41,7 @@ test: node_modules/jest
 
 PHONY: test-all
 test-all:
-	$(MAKE) test-audit
+	# $(MAKE) test-audit
 	$(MAKE) test-format
 	$(MAKE) test-lint
 	$(MAKE) test-types
