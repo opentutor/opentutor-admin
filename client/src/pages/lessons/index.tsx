@@ -217,9 +217,8 @@ export const LessonsTable = (props: { location: any }) => {
     fetchLessons(rowsPerPage, cursor, sortBy, sortAsc)
       .then((lesson: any) => {
         console.log(`fetchLessons got`, lesson);
-        if (lesson !== undefined) {
-          const tmp: any = lesson.edges;
-          tmp.map((lesson: any) => {
+        if (lesson) {
+          lesson.edges.map((lesson: any) => {
             lesson.node.updatedAt = new Date(lesson.node.updatedAt);
           });
           setLessons(lesson);

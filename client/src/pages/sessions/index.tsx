@@ -224,9 +224,8 @@ export const SessionsTable = (props: { path: string }) => {
     fetchSessions(rowsPerPage, cursor, sortBy, sortDesc)
       .then((sessions) => {
         console.log(`fetchSessions got`, sessions);
-        if (sessions !== undefined) {
-          const tmp: any = sessions.edges;
-          tmp.map((session: any) => {
+        if (sessions) {
+          sessions.edges.map((session: any) => {
             session.node.createdAt = new Date(session.node.createdAt);
           });
           setSessions(sessions);

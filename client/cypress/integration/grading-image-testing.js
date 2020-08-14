@@ -11,7 +11,7 @@ describe("visual testing grading screen", () => {
       status: 200,
       response: {
         data: {
-          userSession: {
+          session: {
             username: "username1",
             graderGrade: null,
             question: {
@@ -98,7 +98,7 @@ describe("visual testing grading screen", () => {
       status: 200,
       response: {
         data: {
-          userSessions: {
+          sessions: {
             edges: [
               {
                 cursor: "cursor 1",
@@ -152,7 +152,7 @@ describe("visual testing grading screen", () => {
       status: 200,
       response: {
         data: {
-          userSessions: {
+          sessions: {
             edges: [
               {
                 cursor: "cursor 1",

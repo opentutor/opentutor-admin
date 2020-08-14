@@ -13,7 +13,7 @@ import {
 } from "types";
 
 export const GRADER_GRAPHQL_ENDPOINT =
-  process.env.GRADER_GRAPHQL_ENDPOINT || "/grading-api/graphql/";
+  process.env.GRADER_GRAPHQL_ENDPOINT || "/grading-api/graphql";
 
 interface GQLResponse<T> {
   errors: { message: string }[];
@@ -36,6 +36,7 @@ export async function fetchSessions(
               cursor 
               node {
                 sessionId
+                username
                 classifierGrade
                 graderGrade
                 createdAt

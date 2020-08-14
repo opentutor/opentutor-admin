@@ -105,10 +105,10 @@ const LessonEdit = (props: { search: any }) => {
   React.useEffect(() => {
     if (lessonId !== "new") {
       fetchLesson(lessonId)
-        .then((l: Lesson) => {
-          console.log("fetchLesson got", l);
-          if (l !== undefined) {
-            setLesson(l);
+        .then((lesson: Lesson) => {
+          console.log("fetchLesson got", lesson);
+          if (lesson) {
+            setLesson(lesson);
           }
         })
         .catch((err: any) => console.error(err));
