@@ -7,10 +7,11 @@ import {
   makeStyles,
 } from "@material-ui/core/styles";
 import {
+  Box,
   Button,
   TextField,
-  Box,
   Collapse,
+  Container,
   IconButton,
   Table,
   TableBody,
@@ -18,8 +19,14 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  Typography,
   Paper,
   Grid,
+  CircularProgress,
+  Dialog,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
 } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
 import RemoveIcon from "@material-ui/icons/Remove";
@@ -32,6 +39,8 @@ import { withPrefix } from "gatsby";
 import NavBar from "components/nav-bar";
 import "styles/layout.css";
 import LessonsPage from ".";
+
+import { fetchStatusUrl, fetchTraining } from "mock-api";
 
 const theme = createMuiTheme({
   palette: {
@@ -165,7 +174,6 @@ const LessonEdit = ({ search }: { search: any }) => {
 
   function handleHintChange(hnt: string, eIndex: number, hIndex: number): void {
     setChange(true);
-    console.log(hIndex);
     setLesson({
       ...lesson,
       expectations: [
@@ -271,6 +279,70 @@ const LessonEdit = ({ search }: { search: any }) => {
     copyHints.splice(hintIndex, 1);
     copyExpectations[expectationIndex].hints = copyHints;
     setLesson({ ...lesson, expectations: copyExpectations });
+  }
+
+  const [delay, setDelay] = React.useState(1000);
+  const [isTraining, setIsTraining] = React.useState(false);
+  const [count, setCount] = React.useState(0);
+  const [trainPopUp, setTrainPopUp] = React.useState(false);
+  const [statusUrl, setStatusUrl] = React.useState({
+    statusUrl: "",
+  });
+  const [trainData, setTrainData] = React.useState({
+    status: "",
+    success: false,
+    info: {
+      accuracy: 0,
+    },
+  });
+
+  function useInterval(callback: any, delay: any) {
+    const savedCallback = React.useRef() as any;
+
+    React.useEffect(() => {
+      savedCallback.current = callback;
+    });
+
+    React.useEffect(() => {
+      function tick() {
+        savedCallback.current();
+      }
+
+      if (delay !== null) {
+        const id = setInterval(tick, delay);
+        return () => clearInterval(id);
+      }
+    }, [delay]);
+  }
+
+  function handleTrain(): void {
+    fetchStatusUrl(lesson.lessonId)
+      .then((statusUrl) => {
+        setStatusUrl(statusUrl);
+        setIsTraining(true);
+      })
+      .catch((err: any) => console.error(err));
+  }
+
+  useInterval(
+    () => {
+      fetchTraining(statusUrl.statusUrl, count)
+        .then((trainData) => {
+          setTrainData(trainData);
+          if (trainData.status === "COMPLETE") {
+            setTrainPopUp(true);
+            setCount(0);
+            setIsTraining(false);
+          }
+        })
+        .catch((err: any) => console.error(err));
+      setCount(count + 1);
+    },
+    count < 4 && isTraining ? delay : null
+  );
+
+  function handleTrainPopUp(): void {
+    setTrainPopUp(false);
   }
 
   return (
@@ -555,7 +627,46 @@ const LessonEdit = ({ search }: { search: any }) => {
         </TableContainer>
       </form>
 
+      <Box
+        border={5}
+        borderColor={
+          trainData.status === "COMPLETE"
+            ? trainData.info.accuracy < 0.2 || !trainData.success
+              ? "#FF0000"
+              : trainData.info.accuracy >= 0.2 && trainData.info.accuracy < 0.4
+              ? "#FFA500"
+              : trainData.info.accuracy >= 0.4 && trainData.info.accuracy < 0.6
+              ? "#FFFF00"
+              : "#008000"
+            : null
+        }
+      >
+        <Typography variant="h5">Training Data</Typography>
+        <Typography>{`Last Trained:`}</Typography>
+        {isTraining ? (
+          <CircularProgress />
+        ) : trainData.status === "COMPLETE" ? (
+          trainData.success ? (
+            <Typography>{`Accurracy: ${trainData.info.accuracy}`}</Typography>
+          ) : (
+            <Typography>{`TRAINING FAILED`}</Typography>
+          )
+        ) : null}
+      </Box>
+
       <div>
+        <Button
+          id="train-button"
+          className={classes.button}
+          variant="contained"
+          color="primary"
+          size="large"
+          style={{ background: "#1B6A9C" }}
+          disabled={isTraining}
+          onClick={handleTrain}
+        >
+          Train
+        </Button>
         {change ? (
           <Button
             id="save-button"
@@ -581,6 +692,15 @@ const LessonEdit = ({ search }: { search: any }) => {
           Cancel
         </Button>
       </div>
+      <Dialog open={trainPopUp} onClose={handleTrainPopUp}>
+        {trainData.status === "COMPLETE" ? (
+          trainData.success ? (
+            <DialogTitle> Training Success </DialogTitle>
+          ) : (
+            <DialogTitle> Training Failed</DialogTitle>
+          )
+        ) : null}
+      </Dialog>
     </div>
   );
 };

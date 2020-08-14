@@ -45,6 +45,7 @@ export async function fetchSessions(
                 graderGrade
                 lesson {
                   name
+                  lessonId
                 }
               }
             }
@@ -93,6 +94,7 @@ export async function fetchUserSession(
             }
             lesson {
               name
+              lessonId
             }
           }
         }
