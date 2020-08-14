@@ -180,10 +180,9 @@ export const LessonsTable = (props: { location: any }) => {
   const classes = useStyles();
   const [cookies] = useCookies(["user"]);
   const [lessons, setLessons] = React.useState<LessonsData>();
-  const [cursors, setCursors] = React.useState<string[]>([""]);
-  const [page, setPage] = React.useState(0);
+  const [cursor, setCursor] = React.useState("");
   const [sortBy, setSortBy] = React.useState("updatedAt");
-  const [sortDesc, setSortDesc] = React.useState(true);
+  const [sortAsc, setSortAsc] = React.useState(false);
   const [showCreator, setShowCreator] = React.useState<boolean>(cookies.user);
   const rowsPerPage = 10;
 
@@ -193,45 +192,41 @@ export const LessonsTable = (props: { location: any }) => {
 
   function onSort(id: string) {
     if (sortBy === id) {
-      setSortDesc(!sortDesc);
+      setSortAsc(!sortAsc);
     } else {
       setSortBy(id);
     }
+    setCursor("");
   }
 
   function nextPage() {
-    setPage(page + 1);
-  }
-
-  function prevPage() {
-    setPage(page - 1);
-  }
-
-  React.useEffect(() => {
-    fetchLessons(rowsPerPage, cursors[page], sortBy, sortDesc)
-      .then((l) => {
-        console.log(`fetchLessons got`, l);
-        if (l !== undefined) {
-          const tmp: any = l.edges;
-          tmp.map((lesson: any) => {
-            lesson.node.updatedAt = new Date(lesson.node.updatedAt);
-          });
-          setLessons(l);
-        }
-      })
-      .catch((err) => console.error(err));
-  }, [page, sortBy, sortDesc]);
-
-  React.useEffect(() => {
     if (!lessons) {
       return;
     }
-    const updateCursors = cursors;
-    if (lessons.pageInfo.hasNextPage) {
-      updateCursors[page + 1] = lessons.pageInfo.endCursor;
+    setCursor("next__" + lessons.pageInfo.endCursor);
+  }
+
+  function prevPage() {
+    if (!lessons) {
+      return;
     }
-    setCursors(updateCursors);
-  }, [lessons]);
+    setCursor("prev__" + lessons.pageInfo.startCursor);
+  }
+
+  React.useEffect(() => {
+    fetchLessons(rowsPerPage, cursor, sortBy, sortAsc)
+      .then((lesson: any) => {
+        console.log(`fetchLessons got`, lesson);
+        if (lesson !== undefined) {
+          const tmp: any = lesson.edges;
+          tmp.map((lesson: any) => {
+            lesson.node.updatedAt = new Date(lesson.node.updatedAt);
+          });
+          setLessons(lesson);
+        }
+      })
+      .catch((err) => console.error(err));
+  }, [rowsPerPage, cursor, sortBy, sortAsc]);
 
   if (!lessons) {
     return (
@@ -249,7 +244,7 @@ export const LessonsTable = (props: { location: any }) => {
             <ColumnHeader
               columns={columns}
               sortBy={sortBy}
-              sortDesc={sortDesc}
+              sortAsc={sortAsc}
               onSort={onSort}
             />
             <TableBody>
@@ -272,7 +267,7 @@ export const LessonsTable = (props: { location: any }) => {
       </Paper>
       <TableFooter
         classes={classes}
-        hasPrev={page > 0}
+        hasPrev={lessons.pageInfo.hasPreviousPage}
         hasNext={lessons.pageInfo.hasNextPage}
         showCreator={showCreator}
         onPrev={prevPage}

@@ -79,19 +79,8 @@ const useStyles = makeStyles({
   },
 });
 
-<<<<<<< HEAD
-type ExpectationProp = {
-  row: LessonExpectation;
-  index: number;
-};
-
-const LessonEdit = ({ search }: { search: any }) => {
-  let { lessonId } = search;
-  const originalId = lessonId;
-=======
 const LessonEdit = (props: { search: any }) => {
   const { lessonId } = props.search;
->>>>>>> b82b2ba... Show lesson creator username on lessons and sessions
   const classes = useStyles();
   const [cookies] = useCookies(["user"]);
   const [change, setChange] = React.useState(false);

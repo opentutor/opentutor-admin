@@ -1,5 +1,4 @@
 import axios from "axios";
-
 import {
   FetchSessions,
   FetchSession,
@@ -25,42 +24,36 @@ export async function fetchSessions(
   limit: number,
   cursor: string,
   sortBy: string,
-  sortDescending: boolean
+  sortAscending: boolean
 ): Promise<SessionsData> {
   const result = await axios.post<GQLResponse<FetchSessions>>(
     GRADER_GRAPHQL_ENDPOINT,
     {
       query: `
-      query($limit: Int!, $cursor: String!, $sortBy:String!, $sortDescending:Boolean!) {
-        sessions(limit:$limit, cursor:$cursor, sortBy:$sortBy, sortDescending:$sortDescending){
-          edges {
-            cursor 
-            node {
-              sessionId
-              username
-              classifierGrade
-              graderGrade
-              createdAt
-              updatedAt
-              lesson {
-                name
-                createdBy
+        query {
+          sessions(limit:${limit}, cursor:"${cursor}", sortBy:"${sortBy}", sortAscending:${sortAscending}){
+            edges {
+              cursor 
+              node {
+                sessionId
+                classifierGrade
+                graderGrade
+                createdAt
+                lesson {
+                  name
+                  createdBy
+                }
               }
             }
-          }
-          pageInfo {
-            endCursor
-            hasNextPage
+            pageInfo {
+              startCursor
+              endCursor
+              hasPreviousPage
+              hasNextPage
+            }
           }
         }
-      }
       `,
-      variables: {
-        limit: limit,
-        cursor: cursor,
-        sortBy: sortBy,
-        sortDescending: sortDescending,
-      },
     }
   );
   return result.data.data.sessions;
@@ -71,8 +64,8 @@ export async function fetchSession(sessionId: string): Promise<Session> {
     GRADER_GRAPHQL_ENDPOINT,
     {
       query: `
-        query ($sessionId: String!){
-          session(sessionId: $sessionId) {
+        query {
+          session(sessionId: "${sessionId}") {
             username
             graderGrade
             createdAt
@@ -95,10 +88,7 @@ export async function fetchSession(sessionId: string): Promise<Session> {
             }
           }
         }
-        `,
-      variables: {
-        sessionId: sessionId,
-      },
+      `,
     }
   );
   return result.data.data.session;
@@ -114,8 +104,8 @@ export async function setGrade(
     GRADER_GRAPHQL_ENDPOINT,
     {
       query: `
-        mutation ($sessionId: String!, $userAnswerIndex: Int!, $userExpectationIndex: Int!, $grade: String!) {
-          setGrade(sessionId: $sessionId, userAnswerIndex:$userAnswerIndex, userExpectationIndex:$userExpectationIndex grade:$grade){
+        mutation {
+          setGrade(sessionId: "${sessionId}", userAnswerIndex:${userAnswerIndex}, userExpectationIndex:${userExpectationIndex} grade:"${grade}"){
             username
             graderGrade
             question {
@@ -137,13 +127,7 @@ export async function setGrade(
             }
           }
         }
-        `,
-      variables: {
-        sessionId: sessionId,
-        userAnswerIndex: userAnswerIndex,
-        userExpectationIndex: userExpectationIndex,
-        grade: grade,
-      },
+      `,
     }
   );
   return result.data.data.setGrade;
@@ -153,47 +137,43 @@ export async function fetchLessons(
   limit: number,
   cursor: string,
   sortBy: string,
-  sortDescending: boolean
+  sortAscending: boolean
 ): Promise<LessonsData> {
   const result = await axios.post<GQLResponse<FetchLessons>>(
     GRADER_GRAPHQL_ENDPOINT,
     {
       query: `
-      query($limit: Int!, $cursor: String!, $sortBy:String!, $sortDescending:Boolean!){
-        lessons(limit:$limit, cursor:$cursor, sortBy:$sortBy, sortDescending:$sortDescending) {
-          edges {
-            cursor
-            node {
-              id
-              lessonId
-              name
-              intro
-              question
-              conclusion
-              expectations {
-                expectation
-                hints {
-                  text
+        query {
+          lessons(limit:${limit}, cursor:"${cursor}", sortBy:"${sortBy}", sortAscending:${sortAscending}) {
+            edges {
+              cursor
+              node {
+                id
+                lessonId
+                name
+                intro
+                question
+                conclusion
+                expectations {
+                  expectation
+                  hints {
+                    text
+                  }
                 }
+                createdBy
+                createdAt
+                updatedAt
               }
-              createdBy
-              createdAt
-              updatedAt
+            }
+            pageInfo {
+              startCursor
+              endCursor
+              hasPreviousPage
+              hasNextPage
             }
           }
-          pageInfo {
-            endCursor
-            hasNextPage
-          }
         }
-      }
-        `,
-      variables: {
-        limit: limit,
-        cursor: cursor,
-        sortBy: sortBy,
-        sortDescending: sortDescending,
-      },
+      `,
     }
   );
   return result.data.data.lessons;
@@ -204,8 +184,8 @@ export async function fetchLesson(lessonId: string): Promise<Lesson> {
     GRADER_GRAPHQL_ENDPOINT,
     {
       query: `
-        query ($lessonId: String!){
-          lesson(lessonId: $lessonId) {
+        query {
+          lesson(lessonId: "${lessonId}") {
             id
             lessonId
             intro
@@ -223,10 +203,7 @@ export async function fetchLesson(lessonId: string): Promise<Lesson> {
             updatedAt
           }
         }
-        `,
-      variables: {
-        lessonId: lessonId,
-      },
+      `,
     }
   );
   return result.data.data.lesson;
@@ -240,8 +217,8 @@ export async function updateLesson(
     GRADER_GRAPHQL_ENDPOINT,
     {
       query: `
-        mutation ($lessonId: String!, $lesson: String!) {
-          updateLesson(lessonId: $lessonId, lesson: $lesson){
+        mutation {
+          updateLesson(lessonId: "${lessonId}", lesson: ${lesson}){
             id
             lessonId
             intro
@@ -259,11 +236,7 @@ export async function updateLesson(
             updatedAt
           }
         }
-        `,
-      variables: {
-        lessonId: lessonId,
-        lesson: lesson,
-      },
+      `,
     }
   );
   return result.data.data.updateLesson;

@@ -95,7 +95,7 @@ export const LoginMenu = (props: { path: string; children: any }) => {
         variant="filled"
         label="username"
         value={input || ""}
-        disabled={cookies.user}
+        disabled={cookies.user ? true : false}
         onChange={(e: any) => {
           onInput(e.target.value);
         }}

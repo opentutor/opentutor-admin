@@ -18,10 +18,10 @@ export interface ColumnDef {
 export const ColumnHeader = (props: {
   columns: ColumnDef[];
   sortBy: string;
-  sortDesc: boolean;
+  sortAsc: boolean;
   onSort: any;
 }) => {
-  const { columns, sortBy, sortDesc, onSort } = props;
+  const { columns, sortBy, sortAsc, onSort } = props;
 
   return (
     <TableHead>
@@ -35,9 +35,7 @@ export const ColumnHeader = (props: {
             {!column.id ? undefined : (
               <TableSortLabel
                 active={sortBy === column.id}
-                direction={
-                  sortBy === column.id ? (sortDesc ? "asc" : "desc") : "asc"
-                }
+                direction={sortAsc ? "asc" : "desc"}
                 onClick={() => {
                   onSort(column.id);
                 }}

@@ -116,7 +116,12 @@ const LoginOption = (props: { classes: any }) => {
   }
 
   return (
-    <Button className={classes.login} color="inherit" component={Link} to={"/admin"}>
+    <Button
+      className={classes.login}
+      color="inherit"
+      component={Link}
+      to={"/admin"}
+    >
       Login
     </Button>
   );

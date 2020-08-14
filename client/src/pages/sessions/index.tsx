@@ -62,8 +62,8 @@ const useStyles = makeStyles({
 });
 
 const columns: ColumnDef[] = [
-  { id: "lesson.name", label: "Lesson", minWidth: 170, align: "left" },
-  { id: "lesson.createdBy", label: "Created By", minWidth: 170, align: "left" },
+  { id: "lessonName", label: "Lesson", minWidth: 170, align: "left" },
+  { id: "lessonCreatedBy", label: "Created By", minWidth: 170, align: "left" },
   { id: "createdAt", label: "Date", minWidth: 170, align: "center" },
   {
     id: "classifierGrade",
@@ -184,8 +184,7 @@ export const SessionsTable = (props: { path: string }) => {
   const [sessions, setSessions] = React.useState<SessionsData>();
   const [showGraded, setShowGraded] = React.useState(false);
   const [showCreator, setShowCreator] = React.useState<boolean>(cookies.user);
-  const [cursors, setCursors] = React.useState<string[]>([""]);
-  const [page, setPage] = React.useState(0);
+  const [cursor, setCursor] = React.useState("");
   const [sortBy, setSortBy] = React.useState("createdAt");
   const [sortDesc, setSortDesc] = React.useState(true);
   const rowsPerPage = 50;
@@ -196,14 +195,21 @@ export const SessionsTable = (props: { path: string }) => {
     } else {
       setSortBy(id);
     }
+    setCursor("");
   }
 
   function nextPage() {
-    setPage(page + 1);
+    if (!sessions) {
+      return;
+    }
+    setCursor("next__" + sessions.pageInfo.endCursor);
   }
 
   function prevPage() {
-    setPage(page - 1);
+    if (!sessions) {
+      return;
+    }
+    setCursor("prev__" + sessions.pageInfo.startCursor);
   }
 
   const handleShowGradedChange = (): void => {
@@ -215,7 +221,7 @@ export const SessionsTable = (props: { path: string }) => {
   };
 
   React.useEffect(() => {
-    fetchSessions(rowsPerPage, cursors[page], sortBy, sortDesc)
+    fetchSessions(rowsPerPage, cursor, sortBy, sortDesc)
       .then((sessions) => {
         console.log(`fetchSessions got`, sessions);
         if (sessions !== undefined) {
@@ -227,18 +233,7 @@ export const SessionsTable = (props: { path: string }) => {
         }
       })
       .catch((err) => console.error(err));
-  }, [page, sortBy, sortDesc]);
-
-  React.useEffect(() => {
-    if (!sessions) {
-      return;
-    }
-    const updateCursors = cursors;
-    if (sessions.pageInfo.hasNextPage) {
-      updateCursors[page + 1] = sessions.pageInfo.endCursor;
-    }
-    setCursors(updateCursors);
-  }, [sessions]);
+  }, [rowsPerPage, cursor, sortBy, sortDesc]);
 
   if (!sessions) {
     return (
@@ -260,7 +255,7 @@ export const SessionsTable = (props: { path: string }) => {
             <ColumnHeader
               columns={columns}
               sortBy={sortBy}
-              sortDesc={sortDesc}
+              sortAsc={sortDesc}
               onSort={onSort}
             />
             <TableBody>
@@ -281,7 +276,7 @@ export const SessionsTable = (props: { path: string }) => {
       <TableFooter
         classes={classes}
         hasNext={sessions.pageInfo.hasNextPage}
-        hasPrev={page > 0}
+        hasPrev={sessions.pageInfo.hasPreviousPage}
         showGraded={showGraded}
         showCreator={showCreator}
         onNext={nextPage}
