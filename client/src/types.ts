@@ -22,6 +22,7 @@ export interface FetchSessions {
 
 export interface SessionLesson {
   name: string;
+  lessonId: string;
 }
 
 export interface Session {

@@ -18,13 +18,13 @@ import {
   Toolbar,
   TableSortLabel,
 } from "@material-ui/core";
-import { withPrefix } from "gatsby";
+import { withPrefix, navigate } from "gatsby";
 import { Link } from "@reach/router";
 import { Edge, SessionsData } from "types";
 import { Checkbox } from "@material-ui/core";
 import KeyboardArrowLeftIcon from "@material-ui/icons/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
-
+import EditIcon from "@material-ui/icons/Edit";
 import { fetchSessions } from "api";
 import NavBar from "components/nav-bar";
 import "styles/layout.css";
@@ -91,6 +91,7 @@ export const SessionsTable = ({ path }: { path: string }) => {
           graderGrade: 0,
           lesson: {
             name: "",
+            lessonId: "",
           },
           sessionId: "",
           updatedAt: "",
@@ -143,6 +144,10 @@ export const SessionsTable = ({ path }: { path: string }) => {
     setShowGraded(event.target.checked);
   };
 
+  function handleEdit(lessonId: string): void {
+    navigate(withPrefix("/lessons/edit?lessonId=" + lessonId));
+  }
+
   return (
     <React.Fragment>
       <Paper className={classes.root}>
@@ -185,6 +190,7 @@ export const SessionsTable = ({ path }: { path: string }) => {
                     </TableSortLabel>
                   </TableCell>
                 ))}
+                <TableCell>Edit</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -231,6 +237,15 @@ export const SessionsTable = ({ path }: { path: string }) => {
                         {row.node.graderGrade || row.node.graderGrade === 0
                           ? Math.trunc(row.node.graderGrade * 100)
                           : "?"}
+                      </TableCell>
+                      <TableCell>
+                        <IconButton
+                          onClick={() => {
+                            handleEdit(row.node.lesson.lessonId);
+                          }}
+                        >
+                          <EditIcon />
+                        </IconButton>
                       </TableCell>
                     </TableRow>
                   );

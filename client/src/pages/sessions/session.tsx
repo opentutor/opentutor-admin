@@ -1,6 +1,6 @@
 import { withPrefix } from "gatsby";
 import React from "react";
-import { Link, navigate } from "@reach/router";
+import { navigate } from "@reach/router";
 import {
   MuiThemeProvider,
   createMuiTheme,
@@ -20,6 +20,7 @@ import {
   Button,
   IconButton,
 } from "@material-ui/core";
+import EditIcon from "@material-ui/icons/Edit";
 import withLocation from "wrap-with-location";
 import { UserSession } from "types";
 import { fetchUserSession, setGrade } from "api";
@@ -72,6 +73,10 @@ const SessionTable = ({ search }: { search: any }) => {
 
   function handleDone(): void {
     navigate(withPrefix(`/sessions`));
+  }
+
+  function handleEdit(lessonId: string): void {
+    navigate(withPrefix("/lessons/edit?lessonId=" + lessonId));
   }
 
   React.useEffect(() => {
@@ -248,9 +253,20 @@ const SessionTable = ({ search }: { search: any }) => {
           </TableBody>
         </Table>
       </TableContainer>
-      <Button variant="contained" onClick={handleDone}>
-        Done
-      </Button>
+      <div>
+        <Button variant="contained" onClick={handleDone}>
+          Done
+        </Button>
+        <IconButton
+          onClick={() => {
+            if (userSession) {
+              handleEdit(userSession.lesson.lessonId);
+            }
+          }}
+        >
+          <EditIcon />
+        </IconButton>
+      </div>
     </Paper>
   );
 };
