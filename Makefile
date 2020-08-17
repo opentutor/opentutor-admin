@@ -16,7 +16,6 @@ test-all:
 	$(MAKE) test-format
 	$(MAKE) test-lint
 	$(MAKE) test-types
-	# $(MAKE) test
 
 PHONY: test-audit
 test-audit:
@@ -36,4 +35,3 @@ test-lint:
 PHONY: test-types
 test-types:
 	cd client && $(MAKE) test-types
-	# cd docker && $(MAKE) test-types

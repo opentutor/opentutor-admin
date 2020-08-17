@@ -2,22 +2,27 @@
 web ui for grading opentutor sessions
 
 
-Usage
------
+## Usage
+
 
 A docker image that serves a web client for grading opentutor sessions .
 
 
-Variables
----------
+## Variables
 
 In order to function properly the client generally requires these environment variables defined:
 
 - **GRAPHQL_ENDPOINT**: The graphql endpoint for accessing grader data. Defaults to /grader/graphql
 
 
-Development
------------
+## Development
+
+### Required Software
+
+- unix system (osx or linux)
+- node/npm 12.X
+- yarn
+- docker
 
 Any changes made to this repo should be covered by tests. To run the existing tests:
 
@@ -37,7 +42,7 @@ To fix formatting issues:
 make format
 ```
 
-#### Cypress Testing
+### Cypress Testing
 
 To run cypress tests locally you need two shells, first make sure the client is running locally:
 
@@ -52,14 +57,34 @@ cd client && make test-cypress
 ```
 
 ```
-cd client && npm run cy:open
+cd client && yarn run cy:open
 ```
 
 ...then in the cypress browser window, click a spec to run it.
 
+### Cypress Visual-Regression Testing
 
-Releases
---------
+We use [cypress-image-snapshot](https://www.npmjs.com/package/cypress-image-snapshot) for visual-regression testing. 
+
+Generally, you don't want to run the image-snapshot tests while developing because they will fail based on small differences in rendering from environment to environment. For this reason, the default npm commands for `cy:open` and `cy:run` disable image-snapshot testing.
+
+What you *must* do, is update image snapshots before push any changes that change the presentation of the app (at least for screens under visual-regression test).
+
+To update snapshots do:
+
+```
+cd client && make cypress-update-snapshots
+```
+
+This command updates snapshots, running cypress in the same docker image used for testing in Circleci. It may take a while the first time you run it, because the process needs to install and cache dependencies in a distinct folder (because they will install/compile for the linux flavor in the docker image).
+
+If anything is failing with `make cypress-update-snapshots`, try
+
+```
+make clean-cypress-snapshot-cache
+```
+
+## Releases
 
 Currently, this image is semantically versioned. When making changes that you want to test in another project, create a branch and PR and then you can release a test tag one of two ways:
 

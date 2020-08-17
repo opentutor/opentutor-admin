@@ -55,45 +55,40 @@ exec-shell:
 
 .PHONY: format
 format:
-	npm run format
+	yarn run format
 
 node_modules/eslint:
-	npm install
+	yarn install --frozen-lockfile
 
 node_modules/jest:
-	npm install
+	yarn install --frozen-lockfile
 
 
 node_modules/prettier:
-	npm install
+	yarn install --frozen-lockfile
 
 node_modules/typescript:
-	npm install
+	yarn install --frozen-lockfile
 
 .PHONY: test
 test: node_modules/jest
-	npm run test
+	yarn run test
 
 .PHONY: test-all
 test-all:
 	$(MAKE) test-audit
 	$(MAKE) test-format
 	$(MAKE) test-lint
-	# $(MAKE) test-types
 	$(MAKE) test
 
 .PHONY: test-audit
 test-audit:
-	npm run test:audit
+	yarn run test:audit
 
 .PHONY: test-format
 test-format:
-	npm run test:format
+	yarn run test:format
 
 .PHONY: test-lint
 test-lint:
-	npm run test:lint
-
-# .PHONY: test-types
-# test-types: node_modules/typescript
-# 	npm run test:types
+	yarn run test:lint
