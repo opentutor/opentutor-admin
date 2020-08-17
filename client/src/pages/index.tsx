@@ -1,4 +1,4 @@
-import { withPrefix } from "gatsby";
+import { withPrefix, navigate } from "gatsby";
 import React from "react";
 import { CookiesProvider, useCookies } from "react-cookie";
 import {
@@ -55,6 +55,12 @@ export const LoginMenu = (props: { path: string; children: any }) => {
   const classes = useStyles();
   const [cookies, setCookie, removeCookie] = useCookies(["user"]);
   const [input, setInput] = React.useState(cookies.user);
+
+  React.useEffect(() => {
+    if (cookies.user) {
+      navigate(withPrefix("lessons"));
+    }
+  }, [cookies]);
 
   function onInput(text: string) {
     setInput(text);
