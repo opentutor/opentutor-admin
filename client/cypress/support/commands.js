@@ -26,4 +26,6 @@
 
 import { addMatchImageSnapshotCommand } from "cypress-image-snapshot/command";
 
-addMatchImageSnapshotCommand();
+addMatchImageSnapshotCommand({
+  customDiffDir: Cypress.env("CYPRESS_SNAPSHOT_DIFF_DIR"),
+});
