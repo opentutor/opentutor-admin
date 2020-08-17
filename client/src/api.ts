@@ -12,8 +12,7 @@ import {
   LessonsData,
 } from "types";
 
-export const GRAPHQL_ENDPOINT =
-  process.env.GRAPHQL_ENDPOINT || "/grading-api/graphql";
+export const GRAPHQL_ENDPOINT = process.env.GRAPHQL_ENDPOINT || "/graphql";
 
 interface GQLResponse<T> {
   errors: { message: string }[];
