@@ -1,5 +1,6 @@
-import { withPrefix, navigate } from "gatsby";
+import { withPrefix} from "gatsby";
 import React from "react";
+import { navigate } from "@reach/router";
 import { useCookies } from "react-cookie";
 import {
   AppBar,
