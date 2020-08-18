@@ -14,7 +14,14 @@ clean:
 
 build/client:
 	mkdir -p build
-	rsync -rv --exclude=node_modules $(CLIENT) build
+	rsync -rv \
+		--exclude=.cache  \
+		--exclude=.cypress-snapshot-cache  \
+		--exclude=cypress  \
+		--exclude=.env.*  \
+		--exclude=node_modules  \
+		--exclude=public  \
+	$(CLIENT) build
 
 build: build/client
 

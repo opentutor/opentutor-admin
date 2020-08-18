@@ -16,7 +16,7 @@ executors:
       - image: cypress/base:12
   node:
     docker:
-      - image: circleci/node:12.16.1
+      - image: circleci/node:12.18.3
 jobs:
   build-and-push:
     parameters:
