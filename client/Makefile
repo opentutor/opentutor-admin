@@ -26,22 +26,26 @@ format: node_modules/prettier
 	yarn run format
 
 node_modules/cypress:
-	yarn install --frozen-lockfile
+	$(MAKE) install
 
 node_modules/eslint:
-	yarn install --frozen-lockfile
+	$(MAKE) install
 
 node_modules/gatsby-cli:
-	yarn install --frozen-lockfile
+	$(MAKE) install
 
 node_modules/jest:
-	yarn install --frozen-lockfile
+	$(MAKE) install
 
 node_modules/prettier:
-	yarn install --frozen-lockfile
+	$(MAKE) install
 
 node_modules/typescript:
-	yarn install --frozen-lockfile
+	$(MAKE) install
+
+PHONY: install
+install:
+	yarn install --frozen-lockfile --ignore-optional
 
 .PHONY: test
 test: node_modules/jest
