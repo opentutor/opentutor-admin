@@ -12,7 +12,7 @@ A docker image that serves a web client for grading opentutor sessions .
 
 In order to function properly the client generally requires these environment variables defined:
 
-- **GRAPHQL_ENDPOINT**: The graphql endpoint for accessing grader data. Defaults to /grader/graphql
+- **GRAPHQL_ENDPOINT**: The graphql endpoint for accessing grader data. Defaults to /graphql
 
 
 ## Development

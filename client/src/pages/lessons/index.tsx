@@ -183,7 +183,9 @@ export const LessonsTable = (props: { location: any }) => {
   const [cursor, setCursor] = React.useState("");
   const [sortBy, setSortBy] = React.useState("updatedAt");
   const [sortAsc, setSortAsc] = React.useState(false);
-  const [showCreator, setShowCreator] = React.useState<boolean>(cookies.user);
+  const [showCreator, setShowCreator] = React.useState(
+    cookies.user ? true : false
+  );
   const rowsPerPage = 10;
 
   const onToggleShowCreator = (): void => {
@@ -214,10 +216,11 @@ export const LessonsTable = (props: { location: any }) => {
   }
 
   React.useEffect(() => {
+    let mounted = true;
     fetchLessons(rowsPerPage, cursor, sortBy, sortAsc)
       .then((lesson: any) => {
         console.log(`fetchLessons got`, lesson);
-        if (lesson) {
+        if (mounted && lesson) {
           lesson.edges.map((lesson: any) => {
             lesson.node.updatedAt = new Date(lesson.node.updatedAt);
           });
@@ -225,6 +228,9 @@ export const LessonsTable = (props: { location: any }) => {
         }
       })
       .catch((err) => console.error(err));
+    return () => {
+      mounted = false;
+    };
   }, [rowsPerPage, cursor, sortBy, sortAsc]);
 
   if (!lessons) {
