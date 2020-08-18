@@ -11,7 +11,7 @@ describe("screenshots - lesson edit", () => {
     cy.server();
     cy.route({
       method: "POST",
-      url: "**/grading-api/graphql",
+      url: "**/graphql",
       status: 200,
       response: {
         data: {
@@ -50,7 +50,7 @@ describe("screenshots - lesson edit", () => {
     cy.server();
     cy.route({
       method: "POST",
-      url: "**/grading-api/graphql",
+      url: "**/graphql",
       status: 200,
       response: {
         data: {

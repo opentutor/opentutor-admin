@@ -235,10 +235,11 @@ export const SessionsTable = (props: { path: string }) => {
   };
 
   React.useEffect(() => {
+    let mounted = true;
     fetchSessions(rowsPerPage, cursor, sortBy, sortAsc)
       .then((sessions) => {
         console.log(`fetchSessions got`, sessions);
-        if (sessions) {
+        if (mounted && sessions) {
           sessions.edges.map((session: any) => {
             session.node.createdAt = new Date(session.node.createdAt);
           });
@@ -246,6 +247,9 @@ export const SessionsTable = (props: { path: string }) => {
         }
       })
       .catch((err) => console.error(err));
+    return () => {
+      mounted = false;
+    };
   }, [rowsPerPage, cursor, sortBy, sortAsc]);
 
   if (!sessions) {

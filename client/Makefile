@@ -3,9 +3,9 @@ CYPRESS_DOCKER_ENTRYPOINT?=/bin/bash
 CYPRESS_SNAPSHOT_CACHE=$(PWD)/.cypress-snapshot-cache
 
 .env.development:
-	@echo "GRAPHQL_ENDPOINT=https://dev-opentutor.pal3.org/grading-api/graphql/" >> .env.development
+	@echo "GRAPHQL_ENDPOINT=https://dev-opentutor.pal3.org/graphql/" >> .env.development
 	@echo "Set up  a default .env.development file"
-	@echo "that configures GRAPHQL_ENDPOINT=https://dev-opentutor.pal3.org/grading-api/graphql/."
+	@echo "that configures GRAPHQL_ENDPOINT=https://dev-opentutor.pal3.org/graphql/."
 	@echo "This file should not be committed. "
 	@echo "Feel free to change to point to a local server if you're running one."
 
