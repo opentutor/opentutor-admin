@@ -3,6 +3,7 @@ import React from "react";
 import { CookiesProvider, useCookies } from "react-cookie";
 import {
   Button,
+  CircularProgress,
   InputAdornment,
   Typography,
   TextField,
@@ -49,6 +50,9 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(1),
     width: 300,
   },
+  progress: {
+    marginLeft: "50%",
+  },
 }));
 
 export const LoginMenu = (props: { path: string; children: any }) => {
@@ -87,6 +91,14 @@ export const LoginMenu = (props: { path: string; children: any }) => {
       </Button>
     );
   };
+
+  if (cookies.user) {
+    return (
+      <div className={classes.root}>
+        <CircularProgress className={classes.progress} />
+      </div>
+    );
+  }
 
   return (
     <div className={classes.root}>
