@@ -1,13 +1,13 @@
 import { navigate } from "gatsby";
 import React from "react";
 import { useCookies } from "react-cookie";
+import { ToastContainer, toast } from "react-toastify";
 import { v4 as uuid } from "uuid";
 import {
   Box,
   Button,
   TextField,
   Collapse,
-  Container,
   IconButton,
   Table,
   TableBody,
@@ -20,8 +20,6 @@ import {
   Grid,
   CircularProgress,
   Dialog,
-  DialogContent,
-  DialogContentText,
   DialogTitle,
 } from "@material-ui/core";
 import {
@@ -38,6 +36,7 @@ import NavBar from "components/nav-bar";
 import { Lesson } from "types";
 import withLocation from "wrap-with-location";
 import "styles/layout.css";
+import "react-toastify/dist/ReactToastify.css";
 
 import { fetchStatusUrl, fetchTraining } from "mock-api";
 
@@ -187,6 +186,7 @@ const LessonEdit = (props: { search: any }) => {
   }
 
   function handleSave() {
+    toast("Saving...");
     const converted = encodeURI(JSON.stringify(lesson));
     let origId = lessonId;
     if (lessonId === "new") {
@@ -198,9 +198,13 @@ const LessonEdit = (props: { search: any }) => {
         if (lesson !== undefined) {
           setLesson(lesson);
         }
+        toast("Success!");
+        navigate(`/lessons`);
       })
-      .catch((err) => console.error(err));
-    navigate(`/lessons`);
+      .catch((err) => {
+        toast("Failed to save lesson.");
+        console.error(err);
+      });
   }
 
   function handleCancel() {
@@ -703,6 +707,7 @@ const LessonEdit = (props: { search: any }) => {
           )
         ) : null}
       </Dialog>
+      <ToastContainer />
     </div>
   );
 };
