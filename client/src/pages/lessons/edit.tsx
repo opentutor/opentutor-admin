@@ -103,15 +103,19 @@ const LessonEdit = (props: { search: any }) => {
   const [lesson, setLesson] = React.useState(newLesson);
 
   React.useEffect(() => {
+    let mounted = true;
     if (lessonId !== "new") {
       fetchLesson(lessonId)
         .then((lesson: Lesson) => {
           console.log("fetchLesson got", lesson);
-          if (lesson) {
+          if (mounted && lesson) {
             setLesson(lesson);
           }
         })
         .catch((err: any) => console.error(err));
+      return () => {
+        mounted = false;
+      };
     } else {
       setLesson({ ...lesson, createdBy: cookies.user });
     }

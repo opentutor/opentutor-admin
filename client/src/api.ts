@@ -206,7 +206,7 @@ export async function updateLesson(
   const result = await axios.post<GQLResponse<UpdateLesson>>(GRAPHQL_ENDPOINT, {
     query: `
         mutation {
-          updateLesson(lessonId: "${lessonId}", lesson: ${lesson}){
+          updateLesson(lessonId: "${lessonId}", lesson: "${lesson}"){
             id
             lessonId
             intro
