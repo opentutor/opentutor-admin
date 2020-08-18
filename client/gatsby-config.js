@@ -5,6 +5,7 @@ module.exports = {
     description: ``,
   },
   plugins: [
+    `gatsby-plugin-typescript`,
     {
       resolve: `gatsby-plugin-manifest`,
       options: {
@@ -22,7 +23,9 @@ module.exports = {
         whitelist: ["GRAPHQL_ENDPOINT"],
       },
     },
-    `gatsby-plugin-typescript`,
+    {
+      resolve: 'gatsby-plugin-material-ui',
+    },
     {
       resolve: "gatsby-plugin-eslint",
       options: {
