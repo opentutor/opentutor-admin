@@ -98,6 +98,8 @@ const LessonEdit = (props: { search: any }) => {
         hints: [{ text: "Add a hint to help for the expectaion" }],
       },
     ],
+    isTrainable: false,
+    lastTrainedAt: "",
   };
   const [lesson, setLesson] = React.useState(newLesson);
 
@@ -302,7 +304,7 @@ const LessonEdit = (props: { search: any }) => {
         savedCallback.current();
       }
 
-      if (delay !== null) {
+      if (delay) {
         const id = setInterval(tick, delay);
         return () => clearInterval(id);
       }
@@ -310,12 +312,16 @@ const LessonEdit = (props: { search: any }) => {
   }
 
   function handleTrain(): void {
-    fetchStatusUrl(lesson.lessonId)
-      .then((statusUrl) => {
-        setStatusUrl(statusUrl);
-        setIsTraining(true);
-      })
-      .catch((err: any) => console.error(err));
+    if (lesson.isTrainable) {
+      fetchStatusUrl(lesson.lessonId)
+        .then((statusUrl) => {
+          setStatusUrl(statusUrl);
+          setIsTraining(true);
+        })
+        .catch((err: any) => console.error(err));
+    } else {
+      setTrainPopUp(true);
+    }
   }
 
   useInterval(
@@ -327,6 +333,22 @@ const LessonEdit = (props: { search: any }) => {
             setTrainPopUp(true);
             setCount(0);
             setIsTraining(false);
+            if (trainData.success) {
+              const date = new Date().toLocaleString();
+              const converted = encodeURI(
+                JSON.stringify({ ...lesson, lastTrainedAt: date })
+              );
+              updateLesson(lesson.lessonId, converted)
+                .then((lesson) => {
+                  console.log(`fetchUpdateLesson got`, lesson);
+                  if (lesson !== undefined) {
+                    setLesson(lesson);
+                  }
+                })
+                .catch((err) => {
+                  console.error(err);
+                });
+            }
           }
         })
         .catch((err: any) => console.error(err));
@@ -648,7 +670,11 @@ const LessonEdit = (props: { search: any }) => {
         }
       >
         <Typography variant="h5">Training Data</Typography>
-        <Typography>{`Last Trained:`}</Typography>
+        <Typography>
+          {lesson.lastTrainedAt
+            ? `Last Trained: ${lesson.lastTrainedAt}`
+            : `Last Trained: Never Trained`}
+        </Typography>
         {isTraining ? (
           <CircularProgress />
         ) : trainData.status === "COMPLETE" ? (
@@ -667,7 +693,7 @@ const LessonEdit = (props: { search: any }) => {
           variant="contained"
           color="primary"
           size="large"
-          style={{ background: "#1B6A9C" }}
+          style={{ background: lesson.isTrainable ? "#1B6A9C" : "#808080" }}
           disabled={isTraining}
           onClick={handleTrain}
         >
@@ -699,7 +725,9 @@ const LessonEdit = (props: { search: any }) => {
         </Button>
       </div>
       <Dialog open={trainPopUp} onClose={handleTrainPopUp}>
-        {trainData.status === "COMPLETE" ? (
+        {!lesson.isTrainable ? (
+          <DialogTitle> NEEDS MORE GRADED DATA </DialogTitle>
+        ) : trainData.status === "COMPLETE" ? (
           trainData.success ? (
             <DialogTitle> Training Success </DialogTitle>
           ) : (

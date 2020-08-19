@@ -105,7 +105,9 @@ const SessionTable = ({ search }: { search: any }) => {
       </div>
       <div id="username" key="username">
         {" "}
-        {session && session.username ? session.username : "Guest"}
+        {session && session.lesson && session.lesson.createdBy
+          ? session.lesson.createdBy
+          : "Guest"}
       </div>
       <div id="Date" key="Date">
         {" "}

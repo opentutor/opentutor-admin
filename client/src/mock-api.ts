@@ -10,18 +10,18 @@ interface GQLResponse<T> {
 }
 
 export async function fetchStatusUrl(lessonId: string): Promise<StatusUrl> {
-  const result = await axios.post<GQLResponse<StatusUrl>>(GRAPHQL_ENDPOINT, {
-    query: `
-      query{
-          statusUrl{
-            statusUrl
-          }
-        }
-        `,
-    variables: {
-      lessonId: lessonId,
-    },
-  });
+  // const result = await axios.post<GQLResponse<StatusUrl>>(GRAPHQL_ENDPOINT, {
+  //   query: `
+  //     query{
+  //         statusUrl{
+  //           statusUrl
+  //         }
+  //       }
+  //       `,
+  //   variables: {
+  //     lessonId: lessonId,
+  //   },
+  // });
   return { statusUrl: "/training/status/{jobId}" };
 }
 
@@ -29,9 +29,9 @@ export async function fetchTraining(
   statusUrl: string,
   count: number
 ): Promise<TrainStatus> {
-  const result = await axios.get<GQLResponse<TrainStatus>>(
-    "opentutor.org" + statusUrl
-  );
+  // const result = await axios.get<GQLResponse<TrainStatus>>(
+  //   "opentutor.org" + statusUrl
+  // );
   if (count < 3) {
     return {
       status: "IN_PROGRESS",
