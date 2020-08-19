@@ -16,7 +16,11 @@ describe("screenshots - grade session", () => {
       response: {
         data: {
           session: {
-            username: "username1",
+            sessionId: "session1",
+            lesson: {
+              name: "lesson 1",
+              createdBy: "username1",
+            },
             graderGrade: null,
             question: {
               text: "question?",
