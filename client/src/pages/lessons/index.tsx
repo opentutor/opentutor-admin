@@ -108,7 +108,7 @@ const LessonItem = (props: { location: any; row: Edge<Lesson>; i: number }) => {
         {row.node.createdBy}
       </TableCell>
       <TableCell key={`date-${i}`} align="center">
-        {row.node.updatedAt ? row.node.updatedAt.toLocaleString() : ""}
+        {row.node.updatedAt ? row.node.updatedAt : ""}
       </TableCell>
     </TableRow>
   );
@@ -221,9 +221,9 @@ export const LessonsTable = (props: { location: any }) => {
       .then((lesson: any) => {
         console.log(`fetchLessons got`, lesson);
         if (mounted && lesson) {
-          lesson.edges.map((lesson: any) => {
-            lesson.node.updatedAt = new Date(lesson.node.updatedAt);
-          });
+          // lesson.edges.map((lesson: any) => {
+          //   lesson.node.updatedAt = new Date(lesson.node.updatedAt);
+          // });
           setLessons(lesson);
         }
       })

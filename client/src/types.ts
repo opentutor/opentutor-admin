@@ -72,6 +72,8 @@ export interface Lesson {
   createdBy: string;
   createdAt: number;
   updatedAt: number;
+  lastTrainedAt: string;
+  isTrainable: boolean;
 }
 
 export interface LessonExpectation {

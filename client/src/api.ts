@@ -189,6 +189,8 @@ export async function fetchLesson(lessonId: string): Promise<Lesson> {
                 text
               }
             }
+            lastTrainedAt
+            isTrainable
             createdBy
             createdAt
             updatedAt
@@ -219,6 +221,8 @@ export async function updateLesson(
                 text
               }
             }
+            lastTrainedAt
+            isTrainable
             createdBy
             createdAt
             updatedAt
