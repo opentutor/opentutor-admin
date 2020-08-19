@@ -76,6 +76,11 @@ const useStyles = makeStyles({
   container: {
     maxHeight: 440,
   },
+  input: {
+    "&:invalid": {
+      border: "red solid 2px",
+    },
+  },
 });
 
 const LessonEdit = (props: { search: any }) => {
@@ -127,8 +132,14 @@ const LessonEdit = (props: { search: any }) => {
     setLesson({ ...lesson, name: name });
   }
 
+  const [validId, setValidId] = React.useState(true);
   function handleLessonIdChange(lessonId: string): void {
     setChange(true);
+    if (/^[a-z0-9-]+$/g.test(lessonId)) {
+      setValidId(true);
+    } else {
+      setValidId(false);
+    }
     setLesson({ ...lesson, lessonId: lessonId });
   }
 
@@ -389,6 +400,7 @@ const LessonEdit = (props: { search: any }) => {
             key="lesson-id"
             label="Lesson ID"
             placeholder="Unique alias to the lesson"
+            error={!validId}
             InputLabelProps={{
               shrink: true,
             }}
@@ -706,8 +718,9 @@ const LessonEdit = (props: { search: any }) => {
             variant="contained"
             color="primary"
             size="large"
-            style={{ background: "#1B6A9C" }}
+            style={{ background: validId ? "#1B6A9C" : "#808080" }}
             onClick={handleSave}
+            disabled={!validId}
           >
             Save
           </Button>
