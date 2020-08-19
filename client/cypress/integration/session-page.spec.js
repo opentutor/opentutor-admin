@@ -11,8 +11,8 @@ describe("session screen", () => {
             sessionId: "session1",
             lesson: {
               name: "lesson 1",
+              createdBy: "username1",
             },
-            username: "username1",
             graderGrade: null,
             question: {
               text: "question?",
@@ -85,7 +85,11 @@ describe("session screen", () => {
       response: {
         data: {
           session: {
-            username: "username1",
+            sessionId: "session1",
+            lesson: {
+              name: "lesson 1",
+              createdBy: "username1",
+            },
             graderGrade: null,
             question: {
               text: "question?",
