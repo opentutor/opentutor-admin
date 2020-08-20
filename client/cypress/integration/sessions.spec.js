@@ -18,7 +18,7 @@ describe("sessions screen", () => {
                   sessionId: "session 1",
                   classifierGrade: 1,
                   graderGrade: 1,
-                  createdAt: "0",
+                  createdAt: "1/1/20000, 12:00:00 AM",
                 },
               },
               {
@@ -30,7 +30,7 @@ describe("sessions screen", () => {
                   sessionId: "session 2",
                   classifierGrade: 0.5,
                   graderGrade: null,
-                  createdAt: "0",
+                  createdAt: "1/1/20000, 12:00:00 AM",
                 },
               },
             ],

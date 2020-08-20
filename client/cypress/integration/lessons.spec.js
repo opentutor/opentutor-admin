@@ -14,7 +14,7 @@ describe("lessons screen", () => {
                 node: {
                   lessonId: "lesson1",
                   name: "lesson 1",
-                  updatedAt: "0",
+                  updatedAt: "1/1/20000, 12:00:00 AM",
                 },
               },
               {
@@ -22,7 +22,7 @@ describe("lessons screen", () => {
                 node: {
                   lessonId: "lesson2",
                   name: "lesson 2",
-                  updatedAt: "1",
+                  updatedAt: "1/1/20000, 12:00:00 AM",
                 },
               },
             ],
