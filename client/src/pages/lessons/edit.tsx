@@ -345,9 +345,8 @@ const LessonEdit = (props: { search: any }) => {
             setCount(0);
             setIsTraining(false);
             if (trainData.success) {
-              const date = new Date().toLocaleString();
               const converted = encodeURI(
-                JSON.stringify({ ...lesson, lastTrainedAt: date })
+                JSON.stringify({ ...lesson, lastTrainedAt: new Date() })
               );
               updateLesson(lesson.lessonId, converted)
                 .then((lesson) => {

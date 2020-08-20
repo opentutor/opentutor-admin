@@ -183,13 +183,13 @@ export const LessonsTable = (props: { location: any }) => {
   const [cursor, setCursor] = React.useState("");
   const [sortBy, setSortBy] = React.useState("updatedAt");
   const [sortAsc, setSortAsc] = React.useState(false);
-  const [showCreator, setShowCreator] = React.useState(
+  const [onlyCreator, setOnlyCreator] = React.useState(
     cookies.user ? true : false
   );
   const rowsPerPage = 10;
 
   const onToggleShowCreator = (): void => {
-    setShowCreator(!showCreator);
+    setOnlyCreator(!onlyCreator);
   };
 
   function onSort(id: string) {
@@ -201,29 +201,13 @@ export const LessonsTable = (props: { location: any }) => {
     setCursor("");
   }
 
-  function nextPage() {
-    if (!lessons) {
-      return;
-    }
-    setCursor("next__" + lessons.pageInfo.endCursor);
-  }
-
-  function prevPage() {
-    if (!lessons) {
-      return;
-    }
-    setCursor("prev__" + lessons.pageInfo.startCursor);
-  }
-
   React.useEffect(() => {
+    const filter = onlyCreator ? { createdBy: `${cookies.user}` } : {};
     let mounted = true;
-    fetchLessons(rowsPerPage, cursor, sortBy, sortAsc)
+    fetchLessons(filter, rowsPerPage, cursor, sortBy, sortAsc)
       .then((lesson: any) => {
         console.log(`fetchLessons got`, lesson);
         if (mounted && lesson) {
-          // lesson.edges.map((lesson: any) => {
-          //   lesson.node.updatedAt = new Date(lesson.node.updatedAt);
-          // });
           setLessons(lesson);
         }
       })
@@ -231,7 +215,7 @@ export const LessonsTable = (props: { location: any }) => {
     return () => {
       mounted = false;
     };
-  }, [rowsPerPage, cursor, sortBy, sortAsc]);
+  }, [onlyCreator, rowsPerPage, cursor, sortBy, sortAsc]);
 
   if (!lessons) {
     return (
@@ -253,19 +237,14 @@ export const LessonsTable = (props: { location: any }) => {
               onSort={onSort}
             />
             <TableBody>
-              {lessons.edges
-                .filter(
-                  (edge: Edge<Lesson>) =>
-                    !showCreator || edge.node.createdBy === cookies.user
-                )
-                .map((row, i) => (
-                  <LessonItem
-                    key={`lesson-${i}`}
-                    location={props.location}
-                    row={row}
-                    i={i}
-                  />
-                ))}
+              {lessons.edges.map((row, i) => (
+                <LessonItem
+                  key={`lesson-${i}`}
+                  location={props.location}
+                  row={row}
+                  i={i}
+                />
+              ))}
             </TableBody>
           </Table>
         </TableContainer>
@@ -274,9 +253,13 @@ export const LessonsTable = (props: { location: any }) => {
         classes={classes}
         hasPrev={lessons.pageInfo.hasPreviousPage}
         hasNext={lessons.pageInfo.hasNextPage}
-        showCreator={showCreator}
-        onPrev={prevPage}
-        onNext={nextPage}
+        showCreator={onlyCreator}
+        onPrev={() => {
+          setCursor("prev__" + lessons.pageInfo.startCursor);
+        }}
+        onNext={() => {
+          setCursor("next__" + lessons.pageInfo.endCursor);
+        }}
         onToggle={onToggleShowCreator}
       />
     </div>
