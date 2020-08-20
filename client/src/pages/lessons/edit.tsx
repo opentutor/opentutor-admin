@@ -100,7 +100,7 @@ const LessonEdit = (props: { search: any }) => {
     expectations: [
       {
         expectation: "Add ideal answer for an expectation",
-        hints: [{ text: "Add a hint to help for the expectaion" }],
+        hints: [{ text: "Add a hint to help for the expectation" }],
       },
     ],
     isTrainable: false,
@@ -118,7 +118,7 @@ const LessonEdit = (props: { search: any }) => {
             setLesson(lesson);
           }
         })
-        .catch((err: any) => console.error(err));
+        .catch((err: string) => console.error(err));
       return () => {
         mounted = false;
       };
@@ -278,17 +278,11 @@ const LessonEdit = (props: { search: any }) => {
 
   function handleRemoveHint(expectationIndex: number, hintIndex: number): void {
     setChange(true);
-    const copyLesson = { ...lesson };
-    const copyExpectations = [...copyLesson.expectations] as Array<any>;
-    const copyHints = [
-      ...copyLesson.expectations[expectationIndex].hints,
-    ] as Array<any>;
-    copyHints.splice(hintIndex, 1);
-    copyExpectations[expectationIndex].hints = copyHints;
-    setLesson({ ...lesson, expectations: copyExpectations });
+    lesson.expectations[expectationIndex].hints.splice(hintIndex, 1);
+    setLesson({ ...lesson, expectations: [...lesson.expectations] });
   }
 
-  const [delay, setDelay] = React.useState(1000);
+  const delay = 1000;
   const [isTraining, setIsTraining] = React.useState(false);
   const [count, setCount] = React.useState(0);
   const [trainPopUp, setTrainPopUp] = React.useState(false);
@@ -303,7 +297,7 @@ const LessonEdit = (props: { search: any }) => {
     },
   });
 
-  function useInterval(callback: any, delay: any) {
+  function useInterval(callback: any, delay: number) {
     const savedCallback = React.useRef() as any;
 
     React.useEffect(() => {
@@ -329,7 +323,7 @@ const LessonEdit = (props: { search: any }) => {
           setStatusUrl(statusUrl);
           setIsTraining(true);
         })
-        .catch((err: any) => console.error(err));
+        .catch((err: string) => console.error(err));
     } else {
       setTrainPopUp(true);
     }
@@ -362,10 +356,10 @@ const LessonEdit = (props: { search: any }) => {
             }
           }
         })
-        .catch((err: any) => console.error(err));
+        .catch((err: string) => console.error(err));
       setCount(count + 1);
     },
-    count < 4 && isTraining ? delay : null
+    count < 4 && isTraining ? delay : 0
   );
 
   function handleTrainPopUp(): void {
@@ -441,6 +435,7 @@ const LessonEdit = (props: { search: any }) => {
               variant="outlined"
             />
           </div>
+          <br />
           <div>
             <TextField
               id="question"

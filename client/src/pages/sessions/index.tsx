@@ -241,9 +241,6 @@ export const SessionsTable = (props: { path: string }) => {
       .then((sessions) => {
         console.log(`fetchSessions got`, sessions);
         if (mounted && sessions) {
-          sessions.edges.map((session: any) => {
-            session.node.createdAt = new Date(session.node.createdAt);
-          });
           setSessions(sessions);
         }
       })

@@ -108,7 +108,7 @@ const LessonItem = (props: { location: any; row: Edge<Lesson>; i: number }) => {
         {row.node.createdBy}
       </TableCell>
       <TableCell key={`date-${i}`} align="center">
-        {row.node.updatedAt ? row.node.updatedAt : ""}
+        {row.node.updatedAt ? row.node.updatedAt.toLocaleString() : ""}
       </TableCell>
     </TableRow>
   );
@@ -218,13 +218,10 @@ export const LessonsTable = (props: { location: any }) => {
   React.useEffect(() => {
     let mounted = true;
     fetchLessons(rowsPerPage, cursor, sortBy, sortAsc)
-      .then((lesson: any) => {
-        console.log(`fetchLessons got`, lesson);
-        if (mounted && lesson) {
-          // lesson.edges.map((lesson: any) => {
-          //   lesson.node.updatedAt = new Date(lesson.node.updatedAt);
-          // });
-          setLessons(lesson);
+      .then((lessons: LessonsData) => {
+        console.log(`fetchLessons got`, lessons);
+        if (mounted && lessons) {
+          setLessons(lessons);
         }
       })
       .catch((err) => console.error(err));

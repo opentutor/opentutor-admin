@@ -68,7 +68,7 @@ const SessionTable = ({ search }: { search: any }) => {
           setSession(session);
         }
       })
-      .catch((err: any) => console.error(err));
+      .catch((err: string) => console.error(err));
   };
 
   function handleDone(): void {
@@ -90,7 +90,7 @@ const SessionTable = ({ search }: { search: any }) => {
         const d = new Date(session.createdAt);
         setDate(d.toLocaleString());
       })
-      .catch((err: any) => console.error(err));
+      .catch((err: string) => console.error(err));
     return () => {
       mounted = false;
     };
