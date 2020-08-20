@@ -20,6 +20,7 @@ interface GQLResponse<T> {
 }
 
 export async function fetchSessions(
+  filter: any,
   limit: number,
   cursor: string,
   sortBy: string,
@@ -30,12 +31,17 @@ export async function fetchSessions(
     {
       query: `
         query {
-          sessions(limit:${limit}, cursor:"${cursor}", sortBy:"${sortBy}", sortAscending:${sortAscending}){
+          sessions(
+            filter:"${encodeURI(JSON.stringify(filter))}"
+            limit:${limit},
+            cursor:"${cursor}",
+            sortBy:"${sortBy}",
+            sortAscending:${sortAscending}
+          ) {
             edges {
               cursor 
               node {
                 sessionId
-                username
                 classifierGrade
                 graderGrade
                 createdAt
@@ -65,7 +71,6 @@ export async function fetchSession(sessionId: string): Promise<Session> {
     query: `
         query {
           session(sessionId: "${sessionId}") {
-            username
             graderGrade
             createdAt
             question {
@@ -102,9 +107,14 @@ export async function setGrade(
   const result = await axios.post<GQLResponse<SetGrade>>(GRAPHQL_ENDPOINT, {
     query: `
         mutation {
-          setGrade(sessionId: "${sessionId}", userAnswerIndex:${userAnswerIndex}, userExpectationIndex:${userExpectationIndex} grade:"${grade}"){
-            username
+          setGrade(
+            sessionId: "${sessionId}",
+            userAnswerIndex:${userAnswerIndex},
+            userExpectationIndex:${userExpectationIndex}
+            grade:"${grade}"
+          ) {
             graderGrade
+            createdAt
             question {
               text
               expectations {
@@ -120,6 +130,7 @@ export async function setGrade(
             }
             lesson {
               name
+              lessonId
               createdBy
             }
           }
@@ -130,6 +141,7 @@ export async function setGrade(
 }
 
 export async function fetchLessons(
+  filter: any,
   limit: number,
   cursor: string,
   sortBy: string,
@@ -138,24 +150,19 @@ export async function fetchLessons(
   const result = await axios.post<GQLResponse<FetchLessons>>(GRAPHQL_ENDPOINT, {
     query: `
         query {
-          lessons(limit:${limit}, cursor:"${cursor}", sortBy:"${sortBy}", sortAscending:${sortAscending}) {
+          lessons(
+            filter:"${encodeURI(JSON.stringify(filter))}"
+            limit:${limit},
+            cursor:"${cursor}",
+            sortBy:"${sortBy}",
+            sortAscending:${sortAscending}
+          ) {
             edges {
               cursor
               node {
-                id
                 lessonId
                 name
-                intro
-                question
-                conclusion
-                expectations {
-                  expectation
-                  hints {
-                    text
-                  }
-                }
                 createdBy
-                createdAt
                 updatedAt
               }
             }
@@ -177,7 +184,6 @@ export async function fetchLesson(lessonId: string): Promise<Lesson> {
     query: `
         query {
           lesson(lessonId: "${lessonId}") {
-            id
             lessonId
             intro
             name
@@ -192,8 +198,6 @@ export async function fetchLesson(lessonId: string): Promise<Lesson> {
             lastTrainedAt
             isTrainable
             createdBy
-            createdAt
-            updatedAt
           }
         }
       `,
@@ -209,7 +213,6 @@ export async function updateLesson(
     query: `
         mutation {
           updateLesson(lessonId: "${lessonId}", lesson: "${lesson}"){
-            id
             lessonId
             intro
             name
@@ -224,8 +227,6 @@ export async function updateLesson(
             lastTrainedAt
             isTrainable
             createdBy
-            createdAt
-            updatedAt
           }
         }
       `,

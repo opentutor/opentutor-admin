@@ -20,8 +20,8 @@ export interface Session {
   classifierGrade: number;
   question: Question;
   userResponses: UserResponse[];
-  createdAt: number;
-  updatedAt: number;
+  createdAt: string;
+  updatedAt: string;
   lesson: Lesson;
 }
 
@@ -70,8 +70,8 @@ export interface Lesson {
   conclusion: string[];
   expectations: LessonExpectation[];
   createdBy: string;
-  createdAt: number;
-  updatedAt: number;
+  createdAt: string;
+  updatedAt: string;
   lastTrainedAt: string;
   isTrainable: boolean;
 }
