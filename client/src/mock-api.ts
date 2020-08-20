@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import axios from "axios";
 
 import { StatusUrl, TrainStatus } from "mock-types";
@@ -9,6 +10,7 @@ interface GQLResponse<T> {
   data: T;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function fetchStatusUrl(lessonId: string): Promise<StatusUrl> {
   // const result = await axios.post<GQLResponse<StatusUrl>>(GRAPHQL_ENDPOINT, {
   //   query: `
@@ -25,6 +27,7 @@ export async function fetchStatusUrl(lessonId: string): Promise<StatusUrl> {
   return { statusUrl: "/training/status/{jobId}" };
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function fetchTraining(
   statusUrl: string,
   count: number
