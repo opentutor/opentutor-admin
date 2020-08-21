@@ -105,7 +105,7 @@ const SessionItem = (props: { row: Edge<Session>; i: number }) => {
         {row.node.lesson.createdBy ? row.node.lesson.createdBy : "Guest"}
       </TableCell>
       <TableCell key={`date-${i}`} align="center">
-        {row.node.createdAt ? row.node.createdAt.toLocaleString() : ""}
+        {row.node.createdAt ? row.node.createdAt : ""}
       </TableCell>
       <TableCell key={`classifier-grade-${i}`} align="center">
         {row.node ? Math.trunc(row.node.classifierGrade * 100) : "?"}
@@ -198,7 +198,9 @@ export const SessionsTable = (props: { path: string }) => {
   const [cookies] = useCookies(["user"]);
   const [sessions, setSessions] = React.useState<SessionsData>();
   const [showGraded, setShowGraded] = React.useState(false);
-  const [showCreator, setShowCreator] = React.useState<boolean>(cookies.user);
+  const [onlyCreator, setOnlyCreator] = React.useState(
+    cookies.user ? true : false
+  );
   const [cursor, setCursor] = React.useState("");
   const [sortBy, setSortBy] = React.useState("createdAt");
   const [sortAsc, setSortAsc] = React.useState(false);
@@ -213,31 +215,24 @@ export const SessionsTable = (props: { path: string }) => {
     setCursor("");
   }
 
-  function nextPage() {
-    if (!sessions) {
-      return;
-    }
-    setCursor("next__" + sessions.pageInfo.endCursor);
-  }
-
-  function prevPage() {
-    if (!sessions) {
-      return;
-    }
-    setCursor("prev__" + sessions.pageInfo.startCursor);
-  }
-
   const handleShowGradedChange = (): void => {
     setShowGraded(!showGraded);
   };
 
   const handleShowCreatorChange = (): void => {
-    setShowCreator(!showCreator);
+    setOnlyCreator(!onlyCreator);
   };
 
   React.useEffect(() => {
+    const filter: any = {};
+    if (onlyCreator) {
+      filter["lessonCreatedBy"] = `${cookies.user}`;
+    }
+    if (!showGraded) {
+      filter["graderGrade"] = null;
+    }
     let mounted = true;
-    fetchSessions(rowsPerPage, cursor, sortBy, sortAsc)
+    fetchSessions(filter, rowsPerPage, cursor, sortBy, sortAsc)
       .then((sessions) => {
         console.log(`fetchSessions got`, sessions);
         if (mounted && sessions) {
@@ -248,7 +243,7 @@ export const SessionsTable = (props: { path: string }) => {
     return () => {
       mounted = false;
     };
-  }, [rowsPerPage, cursor, sortBy, sortAsc]);
+  }, [onlyCreator, showGraded, rowsPerPage, cursor, sortBy, sortAsc]);
 
   if (!sessions) {
     return (
@@ -273,9 +268,7 @@ export const SessionsTable = (props: { path: string }) => {
               {sessions.edges
                 .filter(
                   (edge: Edge<Session>) =>
-                    (showGraded || edge.node.graderGrade === null) &&
-                    (!showCreator ||
-                      edge.node.lesson.createdBy === cookies.user)
+                    showGraded || edge.node.graderGrade === null
                 )
                 .map((row, i) => (
                   <SessionItem key={row.node.sessionId} row={row} i={i} />
@@ -289,9 +282,13 @@ export const SessionsTable = (props: { path: string }) => {
         hasNext={sessions.pageInfo.hasNextPage}
         hasPrev={sessions.pageInfo.hasPreviousPage}
         showGraded={showGraded}
-        showCreator={showCreator}
-        onNext={nextPage}
-        onPrev={prevPage}
+        showCreator={onlyCreator}
+        onNext={() => {
+          setCursor("next__" + sessions.pageInfo.endCursor);
+        }}
+        onPrev={() => {
+          setCursor("prev__" + sessions.pageInfo.startCursor);
+        }}
         onToggleGraded={handleShowGradedChange}
         onToggleCreator={handleShowCreatorChange}
       />
