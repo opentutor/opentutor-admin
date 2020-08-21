@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e 
-yarn install --frozen-lockfile
+npm ci
 npx gatsby telemetry --disable
-yarn run develop &
+npm run develop &
 bash ./bin/gatsby_wait_for_ready.sh
 npx cypress run --env updateSnapshots=true
