@@ -79,7 +79,7 @@ const LoginOption = (props: { classes: any }) => {
 
   if (cookies.user) {
     return (
-      <div className={classes.login}>
+      <div id="nav-login-button" className={classes.login}>
         <Button
           onClick={handleMenu}
           startIcon={<AccountCircle />}
@@ -88,7 +88,7 @@ const LoginOption = (props: { classes: any }) => {
           {cookies.user}
         </Button>
         <Menu
-          id="menu-appbar"
+          id="nav-login-menu"
           anchorEl={anchorEl}
           anchorOrigin={{
             vertical: "top",
@@ -102,7 +102,9 @@ const LoginOption = (props: { classes: any }) => {
           open={open}
           onClose={handleClose}
         >
-          <MenuItem onClick={onLogout}>Logout</MenuItem>
+          <MenuItem id="nav-login-menu-logout" onClick={onLogout}>
+            Logout
+          </MenuItem>
         </Menu>
       </div>
     );
@@ -110,6 +112,7 @@ const LoginOption = (props: { classes: any }) => {
 
   return (
     <Button
+      id="nav-login-button"
       className={classes.login}
       color="inherit"
       component={Link}
@@ -129,10 +132,11 @@ export const NavBar = (props: { title: string }) => {
   };
 
   return (
-    <div className={classes.root}>
+    <div id="nav-bar" className={classes.root}>
       <AppBar position="fixed">
         <Toolbar>
           <IconButton
+            id="nav-menu-button"
             edge="start"
             color="inherit"
             aria-label="menu"
@@ -141,13 +145,14 @@ export const NavBar = (props: { title: string }) => {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" className={classes.title}>
+          <Typography id="nav-title" variant="h6" className={classes.title}>
             {props.title}
           </Typography>
           <LoginOption classes={classes} />
         </Toolbar>
       </AppBar>
       <SwipeableDrawer
+        id="nav-drawer"
         anchor="left"
         open={isDrawerOpen}
         onClose={() => toggleDrawer(false)}
