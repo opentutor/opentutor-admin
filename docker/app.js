@@ -11,7 +11,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(cors());
 app.use("/", express.static(path.join(__dirname, "public", "admin")));
 const port = process.env.NODE_PORT || 3000;
-server.listen(port, function() {
+server.listen(port, function () {
   console.log(`node listening on port ${port}`);
 });
 module.exports = app;

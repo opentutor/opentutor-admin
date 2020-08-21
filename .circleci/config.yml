@@ -69,17 +69,17 @@ jobs:
       - checkout
       - run:
           name: Audit js
-          command: cd client && yarn audit --level=moderate --groups dependencies
+          command: cd client && npm audit --level=moderate --production
   test-client-cypress:
     executor: cypress
     steps:
       - checkout
       - run:
           name: Install client
-          command: cd client && yarn install --frozen-lockfile
+          command: cd client && npm ci
       - run:
           name: Start gatsby
-          command: cd client && yarn run develop
+          command: cd client && npm run develop
           background: true
       - run:
           name: Wait for gatsby
@@ -98,30 +98,30 @@ jobs:
       - checkout
       - run:
           name: Install client
-          command: cd client && yarn install --frozen-lockfile
+          command: cd client && npm ci
       - run:
           name: Client test format
-          command: cd client && yarn run test:format
+          command: cd client && npm run test:format
   test-client-lint:
     executor: node
     steps:
       - checkout
       - run:
           name: Install client
-          command: cd client && yarn install --frozen-lockfile
+          command: cd client && npm ci
       - run:
           name: Client test lint
-          command: cd client && yarn run test:lint
+          command: cd client && npm run test:lint
   test-client-types:
     executor: node
     steps:
       - checkout
       - run:
           name: Install client
-          command: cd client && yarn install --frozen-lockfile
+          command: cd client && npm ci
       - run:
           name: Client test types
-          command: cd client && yarn run test:types
+          command: cd client && npm run test:types
 workflows:
   test-build-deploy:
     jobs:
