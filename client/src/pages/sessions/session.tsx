@@ -87,8 +87,7 @@ const SessionTable = ({ search }: { search: any }) => {
         if (mounted && session) {
           setSession(session);
         }
-        const d = new Date(session.createdAt);
-        setDate(d.toLocaleString());
+        setDate(session.createdAt);
       })
       .catch((err: string) => console.error(err));
     return () => {
