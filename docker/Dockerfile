@@ -13,9 +13,9 @@ RUN apt-get update && \
 WORKDIR /
 COPY . .
 RUN cd /build/client && \
-    yarn install --frozen-lockfile --ignore-optional && \
+    npm ci  && \
     npx gatsby telemetry --disable && \
-    yarn run build
+    npm run build
 FROM node:12.18.3-slim
 ENV TINI_VERSION=v0.16.1
 ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
@@ -24,6 +24,6 @@ WORKDIR /app
 COPY . .
 RUN rm -rf build
 COPY --from=builder /build/client/public /app/public/admin
-RUN yarn install --frozen-lockfile --ignore-optional --production 
+RUN npm ci  --production 
 RUN chmod +x /app/entrypoint.sh
 ENTRYPOINT ["/tini", "--", "/app/entrypoint.sh"]

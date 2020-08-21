@@ -25,6 +25,10 @@ build/client:
 
 build: build/client
 
+.PHONY: dependencies-update
+dependencies-update:
+	npm run dependencies-update
+
 .PHONY docker-build:
 docker-build: clean build/client
 	docker build \
@@ -62,24 +66,24 @@ exec-shell:
 
 .PHONY: format
 format:
-	yarn run format
+	npm run format
 
 node_modules/eslint:
-	yarn install --frozen-lockfile
+	npm ci
 
 node_modules/jest:
-	yarn install --frozen-lockfile
+	npm ci
 
 
 node_modules/prettier:
-	yarn install --frozen-lockfile
+	npm ci
 
 node_modules/typescript:
-	yarn install --frozen-lockfile
+	npm ci
 
 .PHONY: test
 test: node_modules/jest
-	yarn run test
+	npm run test
 
 .PHONY: test-all
 test-all:
@@ -90,12 +94,12 @@ test-all:
 
 .PHONY: test-audit
 test-audit:
-	yarn run test:audit
+	npm run test:audit
 
 .PHONY: test-format
 test-format:
-	yarn run test:format
+	npm run test:format
 
 .PHONY: test-lint
 test-lint:
-	yarn run test:lint
+	npm run test:lint

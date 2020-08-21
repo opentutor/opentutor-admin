@@ -21,7 +21,6 @@ In order to function properly the client generally requires these environment va
 
 - unix system (osx or linux)
 - node/npm 12.X
-- yarn
 - docker
 
 Any changes made to this repo should be covered by tests. To run the existing tests:
@@ -57,7 +56,7 @@ cd client && make test-cypress
 ```
 
 ```
-cd client && yarn run cy:open
+cd client && npm run cy:open
 ```
 
 ...then in the cypress browser window, click a spec to run it.
