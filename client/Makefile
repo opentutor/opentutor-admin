@@ -1,6 +1,6 @@
 CYPRESS_IMAGE?=cypress/base:12
 CYPRESS_DOCKER_ENTRYPOINT?=/bin/bash
-CYPRESS_SNAPSHOT_CACHE=$(PWD)/.cypress-snapshot-cache
+CYPRESS_DOCKER_CACHE=$(PWD)/.cypress-docker
 
 .env.development:
 	@echo "GRAPHQL_ENDPOINT=https://dev-opentutor.pal3.org/graphql/" >> .env.development
@@ -11,27 +11,27 @@ CYPRESS_SNAPSHOT_CACHE=$(PWD)/.cypress-snapshot-cache
 
 .PHONY: clean-cypress-snapshot-cache
 clean-cypress-snapshot-cache:
-	rm -rf $(CYPRESS_SNAPSHOT_CACHE)
+	rm -rf $(CYPRESS_DOCKER_CACHE)
 
 .PHONY: clean
 clean: clean-cypress-snapshot-cache
 	rm -rf .cache public
 
-
 .PHONY: cypress-docker
 cypress-docker:
-	mkdir -p $(CYPRESS_SNAPSHOT_CACHE)/.npm
-	mkdir -p $(CYPRESS_SNAPSHOT_CACHE)/.gatsby.cache
+	mkdir -p $(CYPRESS_DOCKER_CACHE)/.npm
+	mkdir -p $(CYPRESS_DOCKER_CACHE)/.gatsby.cache
+	mkdir -p $(CYPRESS_DOCKER_CACHE)/.root.cache
 	docker run \
 		--rm \
 		-it \
 		--entrypoint $(CYPRESS_DOCKER_ENTRYPOINT) \
 		-v $(PWD):/client \
-		-v /client/.cache \
 		-v /client/node_modules \
 		-v /client/public \
-		--mount type=bind,source="$(CYPRESS_SNAPSHOT_CACHE)"/.npm,destination=/root/.npm,consistency=delegated \
-		--mount type=bind,source="$(CYPRESS_SNAPSHOT_CACHE)"/.gatsby.cache,destination=/client/.cache,consistency=delegated \
+		--mount type=bind,source="$(CYPRESS_DOCKER_CACHE)"/.gatsby.cache,destination=/client/.cache,consistency=delegated \
+		--mount type=bind,source="$(CYPRESS_DOCKER_CACHE)"/.root.cache,destination=/root/.cache,consistency=delegated \
+		--mount type=bind,source="$(CYPRESS_DOCKER_CACHE)"/.npm,destination=/root/.npm,consistency=delegated \
 		--workdir /client \
 	$(CYPRESS_IMAGE)
 

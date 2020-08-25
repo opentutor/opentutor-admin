@@ -38,7 +38,7 @@ describe("edit screen", () => {
 
   it("types into introduction edit and shows value", () => {
     cy.visit("/lessons/edit?lessonId=lesson");
-    cy.get("#intro").type("Hello World");
+    cy.get("#intro").fill("Hello World");
     cy.get("#intro").should("have", "Hello World");
   });
 
@@ -49,13 +49,13 @@ describe("edit screen", () => {
 
   it("making an edit toggles save button visable", () => {
     cy.visit("/lessons/edit?lessonId=lesson");
-    cy.get("#lesson-name").type("{backspace}");
+    cy.get("#lesson-name").fill("{backspace}");
     cy.get("#save-button").should("be.visible");
   });
 
   it("making an edit and clicks on save", () => {
     cy.visit("/lessons/edit?lessonId=lesson");
-    cy.get("#lesson-name").type("{backspace}");
+    cy.get("#lesson-name").fill("{backspace}");
     cy.get("#save-button").click();
   });
 });
