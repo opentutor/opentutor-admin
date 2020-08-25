@@ -14,7 +14,7 @@ it("is logged out by default", () => {
 
 it("logs in and redirects to lessons", () => {
   cy.visit("/");
-  cy.get("#login-text-field").type("OpenTutor");
+  cy.get("#login-text-field").fill("OpenTutor");
   cy.get("#login-button").should("not.be.disabled");
   cy.get("#login-button").click();
   cy.get("#nav-title").contains("Lessons");
@@ -23,7 +23,7 @@ it("logs in and redirects to lessons", () => {
 
 it("logs out and redirects to home page", () => {
   cy.visit("/");
-  cy.get("#login-text-field").type("OpenTutor");
+  cy.get("#login-text-field").fill("OpenTutor");
   cy.get("#login-button").click();
   cy.get("#nav-login-button").click();
   cy.get("#nav-login-menu").contains("Logout");

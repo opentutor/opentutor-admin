@@ -50,5 +50,4 @@ typings/
 
 .DS_Store
 
-.cypress-docker
-.cypress-snapshot-cache
+.cypress-*
