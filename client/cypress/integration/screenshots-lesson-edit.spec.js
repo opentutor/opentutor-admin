@@ -85,7 +85,7 @@ describe("screenshots - lesson edit", () => {
     }).as("getLesson");
     cy.visit("/lessons/edit?lessonId=lesson");
     cy.wait("@getLesson");
-    cy.get("#intro").type("Hello World");
+    cy.get("#intro").fill("Hello World");
     cy.matchImageSnapshot(snapname("displays-save-button-enabled-after-edits"));
   });
 });

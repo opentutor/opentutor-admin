@@ -50,4 +50,4 @@ typings/
 
 .DS_Store
 
-.cypress-snapshot-cache
+.cypress-*

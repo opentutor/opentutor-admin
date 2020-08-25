@@ -4,4 +4,4 @@ static
 public
 .cache
 .gitignore
-.cypress-snapshot-cache
+.cypress-*
