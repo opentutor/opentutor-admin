@@ -63,15 +63,34 @@ const useStyles = makeStyles({
 });
 
 const columns: ColumnDef[] = [
-  { id: "lessonName", label: "Lesson", minWidth: 170, align: "left" },
-  { id: "lessonCreatedBy", label: "Created By", minWidth: 170, align: "left" },
-  { id: "createdAt", label: "Date", minWidth: 170, align: "center" },
+  {
+    id: "lessonName",
+    label: "Lesson",
+    minWidth: 170,
+    align: "left",
+    sortable: true,
+  },
+  {
+    id: "lessonCreatedBy",
+    label: "Created By",
+    minWidth: 170,
+    align: "left",
+    sortable: true,
+  },
+  {
+    id: "createdAt",
+    label: "Date",
+    minWidth: 170,
+    align: "center",
+    sortable: true,
+  },
   {
     id: "classifierGrade",
     label: "Classifier Grade",
     minWidth: 170,
     align: "center",
     format: (value: number): string => value.toLocaleString("en-US"),
+    sortable: true,
   },
   {
     id: "grade",
@@ -79,8 +98,9 @@ const columns: ColumnDef[] = [
     minWidth: 170,
     align: "center",
     format: (value: number): string => value.toLocaleString("en-US"),
+    sortable: true,
   },
-  { id: "", label: "Edit", minWidth: 0, align: "center" },
+  { id: "edit", label: "Edit", minWidth: 0, align: "center", sortable: false },
 ];
 
 const SessionItem = (props: { row: Edge<Session>; i: number }) => {
@@ -224,7 +244,7 @@ export const SessionsTable = (props: { path: string }) => {
   };
 
   React.useEffect(() => {
-    const filter: any = {};
+    const filter: any = { $or: [{ deleted: false }, { deleted: null }] };
     if (onlyCreator) {
       filter["lessonCreatedBy"] = `${cookies.user}`;
     }

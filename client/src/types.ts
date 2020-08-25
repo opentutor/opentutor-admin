@@ -23,6 +23,9 @@ export interface Session {
   createdAt: string;
   updatedAt: string;
   lesson: Lesson;
+  lessonName: string;
+  lessonCreatedBy: string;
+  deleted: boolean;
 }
 
 export interface Question {
@@ -74,6 +77,7 @@ export interface Lesson {
   updatedAt: string;
   lastTrainedAt: string;
   isTrainable: boolean;
+  deleted: boolean;
 }
 
 export interface LessonExpectation {
@@ -100,4 +104,12 @@ export interface LessonsData {
 
 export interface UpdateLesson {
   updateLesson: Lesson;
+}
+
+export interface DeleteLesson {
+  deleteLesson: Lesson;
+}
+
+export interface DeleteSession {
+  deleteSession: Session;
 }
