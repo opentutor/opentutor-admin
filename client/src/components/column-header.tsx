@@ -12,6 +12,7 @@ export interface ColumnDef {
   label: string;
   minWidth: number;
   align?: "right" | "left" | "center";
+  sortable?: boolean;
   format?: (v: number) => string;
 }
 
@@ -32,7 +33,9 @@ export const ColumnHeader = (props: {
             align={column.align}
             style={{ minWidth: column.minWidth }}
           >
-            {!column.id ? undefined : (
+            {!column.sortable ? (
+              column.label
+            ) : (
               <TableSortLabel
                 active={sortBy === column.id}
                 direction={sortAsc ? "asc" : "desc"}
