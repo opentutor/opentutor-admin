@@ -1,5 +1,7 @@
 import axios from "axios";
 import {
+  DeleteLesson,
+  DeleteSession,
   FetchSessions,
   FetchSession,
   Session,
@@ -232,4 +234,33 @@ export async function updateLesson(
       `,
   });
   return result.data.data.updateLesson;
+}
+
+export async function deleteLesson(lessonId: string): Promise<Lesson> {
+  const result = await axios.post<GQLResponse<DeleteLesson>>(GRAPHQL_ENDPOINT, {
+    query: `
+        mutation {
+          deleteLesson(lessonId: "${lessonId}"){
+            deleted
+          }
+        }
+      `,
+  });
+  return result.data.data.deleteLesson;
+}
+
+export async function deleteSession(sessionId: string): Promise<Session> {
+  const result = await axios.post<GQLResponse<DeleteSession>>(
+    GRAPHQL_ENDPOINT,
+    {
+      query: `
+        mutation {
+          deleteSession(sessionId: "${sessionId}"){
+            deleted
+          }
+        }
+      `,
+    }
+  );
+  return result.data.data.deleteSession;
 }
