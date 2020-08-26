@@ -192,8 +192,12 @@ const LessonItem = (props: {
         open={deleteMenuOpen}
         onClose={handleClose}
       >
-        <MenuItem onClick={confirmDelete}>Confirm</MenuItem>
-        <MenuItem onClick={handleClose}>Cancel</MenuItem>
+        <MenuItem id={`delete-lesson-${i}-confirm`} onClick={confirmDelete}>
+          Confirm
+        </MenuItem>
+        <MenuItem id={`delete-lesson-${i}-cancel`} onClick={handleClose}>
+          Cancel
+        </MenuItem>
       </Menu>
     </TableRow>
   );
