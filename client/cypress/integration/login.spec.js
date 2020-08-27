@@ -28,7 +28,6 @@ it("logs out and redirects to home page", () => {
   cy.get("#nav-login-button").click();
   cy.get("#nav-login-menu").contains("Logout");
   cy.get("#nav-login-menu-logout").click();
-  cy.get("#nav-title").contains("OpenTutor");
   cy.get("#nav-login-button").contains("Login");
   cy.get("#login-button").contains("Login");
   cy.get("#login-button").should("be.disabled");
@@ -38,5 +37,4 @@ it("nav login redirects to home page", () => {
   cy.visit("/lessons");
   cy.get("#nav-login-button").contains("Login");
   cy.get("#nav-login-button").click();
-  // cy.get("#nav-title").contains("OpenTutor");
 });

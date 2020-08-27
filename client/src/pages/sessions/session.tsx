@@ -104,9 +104,7 @@ const SessionTable = ({ search }: { search: any }) => {
       </div>
       <div id="username" key="username">
         {" "}
-        {session && session.lesson && session.lesson.createdBy
-          ? session.lesson.createdBy
-          : "Guest"}
+        {session && session.username ? session.username : "Guest"}
       </div>
       <div id="Date" key="Date">
         {" "}
@@ -145,19 +143,7 @@ const SessionTable = ({ search }: { search: any }) => {
             {session?.userResponses.map((row, i) => {
               return (
                 <TableRow hover role="checkbox" tabIndex={-1} key={`text-${i}`}>
-                  {/* <TableCell
-                      key={`launch-${i}`}
-                      id={`launch-${i}`}
-                    >
-                      <IconButton>
-                        <LaunchIcon />
-                      </IconButton>
-                    </TableCell> */}
-                  <TableCell
-                    key={`answer-${i}`}
-                    id={`answer-${i}`}
-                    //align="left"
-                  >
+                  <TableCell key={`answer-${i}`} id={`answer-${i}`}>
                     {row.text}
                   </TableCell>
 
