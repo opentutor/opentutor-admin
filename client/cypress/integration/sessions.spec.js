@@ -58,6 +58,7 @@ describe("sessions screen", () => {
     tableHead.get("th").eq(3).should("contain", "Classifier Grade");
     tableHead.get("th").eq(4).should("contain", "Date");
     tableHead.get("th").eq(5).should("contain", "Created By");
+    tableHead.get("th").eq(6).should("contain", "Username");
   });
 
   it("displays a list of ungraded sessions by default", () => {
@@ -68,7 +69,7 @@ describe("sessions screen", () => {
       "contain",
       "lesson 2"
     );
-    cy.get("table>tbody>tr:nth-child(1)>td:nth-child(5)").should(
+    cy.get("table>tbody>tr:nth-child(1)>td:nth-child(4)").should(
       "contain",
       "50"
     );
@@ -87,7 +88,7 @@ describe("sessions screen", () => {
       "contain",
       "lesson 1"
     );
-    cy.get("table>tbody>tr:nth-child(1)>td:nth-child(5)").should(
+    cy.get("table>tbody>tr:nth-child(1)>td:nth-child(4)").should(
       "contain",
       "100"
     );
@@ -99,7 +100,7 @@ describe("sessions screen", () => {
       "contain",
       "lesson 2"
     );
-    cy.get("table>tbody>tr:nth-child(2)>td:nth-child(5)").should(
+    cy.get("table>tbody>tr:nth-child(2)>td:nth-child(4)").should(
       "contain",
       "50"
     );

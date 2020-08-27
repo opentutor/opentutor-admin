@@ -319,7 +319,7 @@ export const LessonsTable = (props: { location: any }) => {
   };
 
   React.useEffect(() => {
-    const filter: any = { $or: [{ deleted: false }, { deleted: null }] };
+    const filter: any = {};
     if (onlyCreator) {
       filter["createdBy"] = `${cookies.user}`;
     }

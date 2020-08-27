@@ -145,9 +145,7 @@ const SessionItem = (props: { row: Edge<Session>; i: number }) => {
         </Link>
       </TableCell>
       <TableCell>
-        <IconButton
-          onClick={handleGrade}
-        >
+        <IconButton onClick={handleGrade}>
           <AssignmentIcon />
         </IconButton>
       </TableCell>{" "}
@@ -268,7 +266,7 @@ export const SessionsTable = (props: { path: string }) => {
   };
 
   React.useEffect(() => {
-    const filter: any = { $or: [{ deleted: false }, { deleted: null }] };
+    const filter: any = {};
     if (onlyCreator) {
       filter["lessonCreatedBy"] = `${cookies.user}`;
     }
