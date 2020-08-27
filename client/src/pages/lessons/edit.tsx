@@ -20,6 +20,7 @@ import {
   Grid,
   CircularProgress,
   Dialog,
+  DialogActions,
   DialogTitle,
 } from "@material-ui/core";
 import {
@@ -28,17 +29,15 @@ import {
   makeStyles,
 } from "@material-ui/core/styles";
 import AddIcon from "@material-ui/icons/Add";
-import RemoveIcon from "@material-ui/icons/Remove";
+import ClearOutlinedIcon from "@material-ui/icons/ClearOutlined";
 import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
-import { fetchLesson, updateLesson } from "api";
+import { fetchLesson, updateLesson, fetchStatusUrl, fetchTraining } from "api";
 import NavBar from "components/nav-bar";
 import { Lesson } from "types";
 import withLocation from "wrap-with-location";
 import "styles/layout.css";
 import "react-toastify/dist/ReactToastify.css";
-
-import { fetchStatusUrl, fetchTraining } from "mock-api";
 
 const theme = createMuiTheme({
   palette: {
@@ -50,7 +49,7 @@ const theme = createMuiTheme({
 
 const useStyles = makeStyles({
   root: {
-    width: "100%",
+    width: "100",
     "& .MuiTextField-root": {
       margin: theme.spacing(1),
       marginLeft: theme.spacing(1),
@@ -93,14 +92,23 @@ const LessonEdit = (props: { search: any }) => {
   const newLesson = {
     lessonId: uuid(),
     createdBy: "",
-    name: "Lesson Name",
-    intro: "Introduction",
-    question: "Question",
-    conclusion: ["Add a clossing to the lesson"],
+    name: "Display name for the lesson",
+    intro:
+      "Introduction to the lesson,  e.g. 'This is a lesson about RGB colors'",
+    question:
+      "Question the student needs to answer, e.g. 'What are the colors in RGB?'",
+    conclusion: [
+      "Add a conclusion statement, e.g. 'In summary,  RGB colors are red, green, and blue'",
+    ],
     expectations: [
       {
-        expectation: "Add ideal answer for an expectation",
-        hints: [{ text: "Add a hint to help for the expectation" }],
+        expectation: "Add a short ideal answer for an expectation, e.g. 'Red'",
+        hints: [
+          {
+            text:
+              "Add a hint to help for the expectation, e.g. 'One of them starts with R'",
+          },
+        ],
       },
     ],
     isTrainable: false,
@@ -166,6 +174,7 @@ const LessonEdit = (props: { search: any }) => {
   }
 
   function handleExpectationChange(exp: string, index: number): void {
+    setChange(true);
     setLesson({
       ...lesson,
       expectations: [
@@ -198,29 +207,13 @@ const LessonEdit = (props: { search: any }) => {
     });
   }
 
+  const [savePopUp, setSavePopUp] = React.useState(false);
+
   function handleSave() {
-    toast("Saving...");
-    const converted = encodeURI(JSON.stringify(lesson));
-    let origId = lessonId;
-    if (lessonId === "new") {
-      origId = lesson.lessonId;
-    }
-    updateLesson(origId, converted)
-      .then((lesson) => {
-        console.log(`fetchUpdateLesson got`, lesson);
-        if (lesson !== undefined) {
-          setLesson(lesson);
-        }
-        toast("Success!");
-        navigate(`/lessons`);
-      })
-      .catch((err) => {
-        toast("Failed to save lesson.");
-        console.error(err);
-      });
+    setSavePopUp(true);
   }
 
-  function handleCancel() {
+  function handleDiscard() {
     navigate(`/lessons`);
   }
 
@@ -231,8 +224,14 @@ const LessonEdit = (props: { search: any }) => {
       expectations: [
         ...lesson.expectations,
         {
-          expectation: "Add ideal answer for an expectation",
-          hints: [{ text: "Add a hint to help answer the expectation" }],
+          expectation:
+            "Add a short ideal answer for an expectation, e.g. 'Red'",
+          hints: [
+            {
+              text:
+                "Add a hint to help for the expectation, e.g. 'One of them starts with R'",
+            },
+          ],
         },
       ],
     });
@@ -247,7 +246,10 @@ const LessonEdit = (props: { search: any }) => {
     setChange(true);
     setLesson({
       ...lesson,
-      conclusion: [...lesson.conclusion, "Add a closing to the lesson"],
+      conclusion: [
+        ...lesson.conclusion,
+        "Add a conclusion statement, e.g. 'In summary,  RGB colors are red, green, and blue'",
+      ],
     });
   }
 
@@ -266,7 +268,8 @@ const LessonEdit = (props: { search: any }) => {
           hints: [
             ...lesson.expectations[index].hints,
             {
-              text: "Add a hint to help answer the expectation",
+              text:
+                "Add a hint to help for the expectation, e.g. 'One of them starts with R'",
             },
           ],
           expectation: lesson.expectations[index].expectation,
@@ -286,9 +289,7 @@ const LessonEdit = (props: { search: any }) => {
   const [isTraining, setIsTraining] = React.useState(false);
   const [count, setCount] = React.useState(0);
   const [trainPopUp, setTrainPopUp] = React.useState(false);
-  const [statusUrl, setStatusUrl] = React.useState({
-    statusUrl: "",
-  });
+  const [statusUrl, setStatusUrl] = React.useState("");
   const [trainData, setTrainData] = React.useState({
     status: "",
     success: false,
@@ -331,13 +332,14 @@ const LessonEdit = (props: { search: any }) => {
 
   useInterval(
     () => {
-      fetchTraining(statusUrl.statusUrl, count)
-        .then((trainData) => {
+      fetchTraining(statusUrl)
+        .then((trainData: any) => {
           setTrainData(trainData);
+          console.log("train data", trainData);
           if (trainData.status === "COMPLETE") {
             setTrainPopUp(true);
-            setCount(0);
             setIsTraining(false);
+            setCount(0);
             if (trainData.success) {
               const converted = encodeURI(
                 JSON.stringify({ ...lesson, lastTrainedAt: new Date() })
@@ -365,6 +367,41 @@ const LessonEdit = (props: { search: any }) => {
     setTrainPopUp(false);
   }
 
+  function handleSavePopUp(): void {
+    setSavePopUp(false);
+  }
+
+  function handleSaveExit(): void {
+    saveChanges();
+    navigate(`/lessons`);
+  }
+
+  function handleSaveContinue(): void {
+    saveChanges();
+    handleSavePopUp();
+  }
+
+  function saveChanges(): void {
+    toast("Saving...");
+    const converted = encodeURI(JSON.stringify(lesson));
+    let origId = lessonId;
+    if (lessonId === "new") {
+      origId = lesson.lessonId;
+    }
+    updateLesson(origId, converted)
+      .then((lesson) => {
+        console.log(`fetchUpdateLesson got`, lesson);
+        if (lesson !== undefined) {
+          setLesson(lesson);
+        }
+        toast("Success!");
+      })
+      .catch((err) => {
+        toast("Failed to save lesson.");
+        console.error(err);
+      });
+  }
+
   return (
     <div style={{ paddingTop: "20px" }}>
       <form className={classes.root} noValidate autoComplete="off">
@@ -378,7 +415,9 @@ const LessonEdit = (props: { search: any }) => {
             id="lesson-name"
             key="lesson-name"
             label="Lesson Name"
-            placeholder="Lesson Name"
+            placeholder="Display name for the lesson"
+            inputProps={{ maxLength: 100 }}
+            fullWidth
             InputLabelProps={{
               shrink: true,
             }}
@@ -393,6 +432,8 @@ const LessonEdit = (props: { search: any }) => {
             key="lesson-id"
             label="Lesson ID"
             placeholder="Unique alias to the lesson"
+            inputProps={{ maxLength: 100 }}
+            fullWidth
             error={!validId}
             InputLabelProps={{
               shrink: true,
@@ -417,40 +458,50 @@ const LessonEdit = (props: { search: any }) => {
             disabled={true}
           />
         </Grid>
-        <Grid container justify="flex-start" style={{ paddingTop: "40px" }}>
-          <div>
-            <TextField
-              id="intro"
-              key="intro"
-              label="Introduction"
-              placeholder="Introduction"
-              InputLabelProps={{
-                shrink: true,
-              }}
-              value={lesson.intro ? lesson.intro : ""}
-              onChange={(e) => {
-                handleIntroChange(e.target.value);
-              }}
-              variant="outlined"
-            />
-          </div>
-          <br />
-          <div>
-            <TextField
-              id="question"
-              key="question"
-              label="Question"
-              placeholder="Question"
-              InputLabelProps={{
-                shrink: true,
-              }}
-              value={lesson.question ? lesson.question : ""}
-              onChange={(e) => {
-                handleQuestionChange(e.target.value);
-              }}
-              variant="outlined"
-            />
-          </div>
+        <Grid
+          container
+          justify="flex-start"
+          direction="column"
+          alignItems="flex-start"
+          style={{ paddingTop: "40px" }}
+        >
+          <TextField
+            id="intro"
+            key="intro"
+            label="Introduction"
+            placeholder="Introduction to the lesson,  e.g. 'This is a lesson about RGB colors'"
+            multiline
+            rowsMax={4}
+            inputProps={{ maxLength: 400 }}
+            fullWidth
+            InputLabelProps={{
+              shrink: true,
+            }}
+            value={lesson.intro ? lesson.intro : ""}
+            onChange={(e) => {
+              handleIntroChange(e.target.value);
+            }}
+            variant="outlined"
+          />
+
+          <TextField
+            id="question"
+            key="question"
+            label="Question"
+            placeholder="Question the student needs to answer, e.g. 'What are the colors in RGB?'"
+            multiline
+            rowsMax={4}
+            inputProps={{ maxLength: 400 }}
+            fullWidth
+            InputLabelProps={{
+              shrink: true,
+            }}
+            value={lesson.question ? lesson.question : ""}
+            onChange={(e) => {
+              handleQuestionChange(e.target.value);
+            }}
+            variant="outlined"
+          />
         </Grid>
         <TableContainer component={Paper}>
           <Table>
@@ -466,14 +517,16 @@ const LessonEdit = (props: { search: any }) => {
                 return (
                   <React.Fragment key={`expectation-${i}`}>
                     <TableRow className={classes.root}>
-                      <TableCell>
+                      <TableCell align="left" width="50%">
                         <TextField
                           margin="normal"
                           name="expectations"
                           id={`edit-expectation-${i}`}
                           key={`edit-expectation-${i}`}
                           label={`Expectation ${i + 1}`}
-                          placeholder="Add ideal answer for an expectation"
+                          placeholder="Add a short ideal answer for an expectation, e.g. 'Red'"
+                          inputProps={{ maxLength: 100 }}
+                          fullWidth
                           InputLabelProps={{
                             shrink: true,
                           }}
@@ -482,23 +535,22 @@ const LessonEdit = (props: { search: any }) => {
                             handleExpectationChange(e.target.value, i);
                           }}
                           variant="outlined"
-                          fullWidth
                         />
                       </TableCell>
-                      <TableCell>
+                      <TableCell align="left" width="40%">
                         {lesson.expectations.length > 1 ? (
                           <IconButton
-                            aria-label="remove expectaion"
+                            aria-label="remove expectation"
                             size="small"
                             onClick={() => {
                               handleRemoveExpectation(i);
                             }}
                           >
-                            <RemoveIcon />
+                            <ClearOutlinedIcon />
                           </IconButton>
                         ) : null}
                       </TableCell>
-                      <TableCell>
+                      <TableCell align="center" width="10%">
                         <IconButton
                           aria-label="expand expectation"
                           size="small"
@@ -526,32 +578,26 @@ const LessonEdit = (props: { search: any }) => {
                             <Table size="small" aria-label="hint">
                               <TableHead>
                                 <TableRow>
-                                  <TableCell>Hint</TableCell>
-                                  <TableCell />
-                                  <TableCell>
-                                    {" "}
-                                    <IconButton
-                                      aria-label="add hint"
-                                      size="small"
-                                      onClick={() => {
-                                        handleAddHint(i);
-                                      }}
-                                    >
-                                      <AddIcon />
-                                    </IconButton>
+                                  <TableCell style={{ minWidth: 170 }}>
+                                    Hint
                                   </TableCell>
+                                  <TableCell />
                                 </TableRow>
                               </TableHead>
                               <TableBody>
                                 {row.hints.map((hint, j) => (
                                   <TableRow key={`hint-${i}-${j}`}>
-                                    <TableCell>
+                                    <TableCell align="left" width="60%">
                                       <TextField
                                         margin="normal"
                                         id={`edit-hint-${i}-${j}`}
                                         key={`edit-hint-${i}-${j}`}
                                         label={`Hint ${j + 1}`}
-                                        placeholder="Add a hint to help answer the expectation"
+                                        placeholder="Add a hint to help for the expectation, e.g. 'One of them starts with R'"
+                                        multiline
+                                        rowsMax={4}
+                                        inputProps={{ maxLength: 400 }}
+                                        fullWidth
                                         InputLabelProps={{
                                           shrink: true,
                                         }}
@@ -566,7 +612,7 @@ const LessonEdit = (props: { search: any }) => {
                                         variant="outlined"
                                       />
                                     </TableCell>
-                                    <TableCell>
+                                    <TableCell align="left" width="40%">
                                       {row.hints.length > 1 ? (
                                         <IconButton
                                           aria-label="remove hint"
@@ -575,13 +621,23 @@ const LessonEdit = (props: { search: any }) => {
                                             handleRemoveHint(i, j);
                                           }}
                                         >
-                                          <RemoveIcon />
+                                          <ClearOutlinedIcon />
                                         </IconButton>
                                       ) : null}
                                     </TableCell>
                                   </TableRow>
                                 ))}
                               </TableBody>
+                              <Button
+                                startIcon={<AddIcon />}
+                                className={classes.button}
+                                style={{ float: "left" }}
+                                onClick={() => {
+                                  handleAddHint(i);
+                                }}
+                              >
+                                Add Hint
+                              </Button>
                             </Table>
                           </Box>
                         </Collapse>
@@ -593,11 +649,9 @@ const LessonEdit = (props: { search: any }) => {
             </TableBody>
           </Table>
           <Button
-            variant="contained"
-            color="primary"
             startIcon={<AddIcon />}
             className={classes.button}
-            style={{ background: "#1B6A9C" }}
+            style={{ float: "left" }}
             onClick={handleAddExpectation}
           >
             Add Expectation
@@ -609,7 +663,7 @@ const LessonEdit = (props: { search: any }) => {
               <TableRow>
                 <TableCell>{`Conclusion`}</TableCell>
                 <TableCell />
-                <TableCell>
+                {/* <TableCell>
                   {" "}
                   <IconButton
                     aria-label="add conclusion"
@@ -618,19 +672,23 @@ const LessonEdit = (props: { search: any }) => {
                   >
                     <AddIcon />
                   </IconButton>
-                </TableCell>
+                </TableCell> */}
               </TableRow>
             </TableHead>
             <TableBody>
               {lesson.conclusion.map((row, i) => (
                 <TableRow key={`conclusion-${i}`}>
-                  <TableCell>
+                  <TableCell align="left" width="60%">
                     <TextField
                       margin="normal"
                       id={`edit-conslusion-${i}`}
                       key={`edit-conclusion-${i}=`}
                       label={`Conclusion ${i + 1}`}
-                      placeholder="Add a closing to the lesson"
+                      multiline
+                      rowsMax={4}
+                      inputProps={{ maxLength: 400 }}
+                      fullWidth
+                      placeholder="Add a conclusion statement, e.g. 'In summary,  RGB colors are red, green, and blue'"
                       InputLabelProps={{
                         shrink: true,
                       }}
@@ -641,7 +699,7 @@ const LessonEdit = (props: { search: any }) => {
                       variant="outlined"
                     />
                   </TableCell>
-                  <TableCell>
+                  <TableCell align="left" width="40%">
                     {lesson.conclusion.length > 1 ? (
                       <IconButton
                         aria-label="remove conclusion"
@@ -650,7 +708,7 @@ const LessonEdit = (props: { search: any }) => {
                           handleRemoveConclusion(i);
                         }}
                       >
-                        <RemoveIcon />
+                        <ClearOutlinedIcon />
                       </IconButton>
                     ) : null}
                   </TableCell>
@@ -658,14 +716,24 @@ const LessonEdit = (props: { search: any }) => {
               ))}
             </TableBody>
           </Table>
+          <Button
+            startIcon={<AddIcon />}
+            className={classes.button}
+            style={{ float: "left" }}
+            onClick={handleAddConclusion}
+          >
+            Add Conclusion
+          </Button>
         </TableContainer>
       </form>
 
       <Box
         border={5}
         borderColor={
-          trainData.status === "COMPLETE"
-            ? trainData.info.accuracy < 0.2 || !trainData.success
+          trainData.status && trainData.status === "COMPLETE"
+            ? !trainData.success
+              ? "#FF0000"
+              : trainData.info.accuracy < 0.2 || !trainData.success
               ? "#FF0000"
               : trainData.info.accuracy >= 0.2 && trainData.info.accuracy < 0.4
               ? "#FFA500"
@@ -720,15 +788,15 @@ const LessonEdit = (props: { search: any }) => {
           </Button>
         ) : null}
         <Button
-          id="cancel-button"
+          id="discard-button"
           className={classes.button}
           variant="contained"
           color="primary"
           size="large"
           style={{ background: "#1B6A9C" }}
-          onClick={handleCancel}
+          onClick={handleDiscard}
         >
-          Cancel
+          Discard
         </Button>
       </div>
       <Dialog open={trainPopUp} onClose={handleTrainPopUp}>
@@ -741,6 +809,19 @@ const LessonEdit = (props: { search: any }) => {
             <DialogTitle> Training Failed</DialogTitle>
           )
         ) : null}
+      </Dialog>
+      <Dialog open={savePopUp} onClose={handleSavePopUp}>
+        <DialogTitle> Save </DialogTitle>
+        <DialogActions>
+          <Button onClick={handleSaveContinue} color="primary">
+            {" "}
+            Continue{" "}
+          </Button>
+          <Button onClick={handleSaveExit} color="primary">
+            {" "}
+            Exit{" "}
+          </Button>
+        </DialogActions>
       </Dialog>
       <ToastContainer />
     </div>

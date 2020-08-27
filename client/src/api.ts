@@ -12,6 +12,8 @@ import {
   UpdateLesson,
   SessionsData,
   LessonsData,
+  StatusUrl, 
+  TrainStatus,
 } from "types";
 
 export const GRAPHQL_ENDPOINT = process.env.GRAPHQL_ENDPOINT || "/graphql";
@@ -263,4 +265,24 @@ export async function deleteSession(sessionId: string): Promise<Session> {
     }
   );
   return result.data.data.deleteSession;
+}
+
+export const CLASSIFIER_ENTRYPOINT =
+  process.env.CLASSIFIER_ENTRYPOINT || "http://classifier/classifier";
+
+interface GQLResponse<T> {
+  errors: { message: string }[];
+  data: T;
+}
+
+export async function fetchStatusUrl(lessonId: string): Promise<any> {
+  const result = await axios.post<any>(`${CLASSIFIER_ENTRYPOINT}/train`, {
+    lesson: lessonId,
+  });
+  return result.data.data.statusUrl;
+}
+
+export async function fetchTraining(statusUrl: string): Promise<any> {
+  const result = await axios.get<any>(`${CLASSIFIER_ENTRYPOINT}${statusUrl}`);
+  return result.data.data.trainStatus;
 }

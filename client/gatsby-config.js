@@ -20,7 +20,7 @@ module.exports = {
     {
       resolve: `gatsby-plugin-env-variables`,
       options: {
-        whitelist: ["GRAPHQL_ENDPOINT"],
+        whitelist: ["GRAPHQL_ENDPOINT", "CLASSIFIER_ENTRYPOINT"],
       },
     },
     {

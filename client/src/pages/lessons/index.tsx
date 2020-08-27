@@ -28,6 +28,7 @@ import {
 import LaunchIcon from "@material-ui/icons/Launch";
 import AddIcon from "@material-ui/icons/Add";
 import DeleteIcon from "@material-ui/icons/Delete";
+import AssignmentIcon from "@material-ui/icons/Assignment";
 import KeyboardArrowLeftIcon from "@material-ui/icons/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
 import { Link, navigate } from "@reach/router";
@@ -74,6 +75,7 @@ const useStyles = makeStyles({
 });
 
 const columns: ColumnDef[] = [
+  { id: "name", label: "Lesson", minWidth: 200, align: "left", sortable: true },
   {
     id: "launch",
     label: "Launch",
@@ -81,19 +83,25 @@ const columns: ColumnDef[] = [
     align: "left",
     sortable: false,
   },
-  { id: "name", label: "Lesson", minWidth: 200, align: "left", sortable: true },
-  {
-    id: "createdBy",
-    label: "Created By",
-    minWidth: 200,
-    align: "left",
-    sortable: true,
-  },
+  // {
+  //   id: "grade",
+  //   label: "Grade",
+  //   minWidth: 0,
+  //   align: "center",
+  //   sortable: false,
+  // },
   {
     id: "updatedAt",
     label: "Date",
     minWidth: 170,
     align: "center",
+    sortable: true,
+  },
+  {
+    id: "createdBy",
+    label: "Created By",
+    minWidth: 200,
+    align: "left",
     sortable: true,
   },
   {
@@ -121,6 +129,10 @@ const LessonItem = (props: {
     window.location.href = path;
   }
 
+  // function handleGrade(sessionId: string): void {
+  //   navigate(withPrefix(`/sessions/session?sessionId=${row.node.sessionId}`));
+  // }
+
   const handleDelete = (e: any) => {
     setAnchorEl(e.currentTarget);
   };
@@ -144,6 +156,11 @@ const LessonItem = (props: {
 
   return (
     <TableRow hover role="checkbox" tabIndex={-1}>
+      <TableCell key={`lesson-name-${i}`} id={`lesson-name-${i}`} align="left">
+        <Link to={withPrefix(`/lessons/edit?lessonId=${row.node.lessonId}`)}>
+          {row.node.name ? row.node.name : "No Lesson Name"}
+        </Link>
+      </TableCell>
       <TableCell
         key={`lesson-launch-${i}`}
         id={`lesson-launch-${i}`}
@@ -153,20 +170,24 @@ const LessonItem = (props: {
           <LaunchIcon />
         </IconButton>
       </TableCell>
-      <TableCell key={`lesson-name-${i}`} id={`lesson-name-${i}`} align="left">
-        <Link to={withPrefix(`/lessons/edit?lessonId=${row.node.lessonId}`)}>
-          {row.node.name ? row.node.name : "No Lesson Name"}
-        </Link>
+      {/* <TableCell>
+        <IconButton
+          onClick={() => {
+            handleGrade(row.node.sessionId);
+          }}
+        >
+          <AssignmentIcon />
+        </IconButton>
+      </TableCell>{" "} */}
+      <TableCell key={`date-${i}`} align="center">
+        {row.node.updatedAt ? row.node.updatedAt.toLocaleString() : ""}
       </TableCell>
       <TableCell
         key={`lesson-creator-${i}`}
         id={`lesson-creator-${i}`}
-        align="left"
+        align="center"
       >
         {row.node.createdBy}
-      </TableCell>
-      <TableCell key={`date-${i}`} align="center">
-        {row.node.updatedAt ? row.node.updatedAt.toLocaleString() : ""}
       </TableCell>
       <TableCell
         key={`delete-lesson-${i}`}

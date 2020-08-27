@@ -25,7 +25,7 @@ import {
 import { Link } from "@reach/router";
 import KeyboardArrowLeftIcon from "@material-ui/icons/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
-import EditIcon from "@material-ui/icons/Edit";
+import AssignmentIcon from "@material-ui/icons/Assignment";
 import { fetchSessions } from "api";
 import { Edge, Session, SessionsData } from "types";
 import NavBar from "components/nav-bar";
@@ -71,17 +71,18 @@ const columns: ColumnDef[] = [
     sortable: true,
   },
   {
-    id: "lessonCreatedBy",
-    label: "Created By",
-    minWidth: 170,
-    align: "left",
-    sortable: true,
+    id: "grade",
+    label: "Grade",
+    minWidth: 0,
+    align: "center",
+    sortable: false,
   },
   {
-    id: "createdAt",
-    label: "Date",
+    id: "instructorgrade",
+    label: "Instructor Grade",
     minWidth: 170,
     align: "center",
+    format: (value: number): string => value.toLocaleString("en-US"),
     sortable: true,
   },
   {
@@ -93,57 +94,72 @@ const columns: ColumnDef[] = [
     sortable: true,
   },
   {
-    id: "grade",
-    label: "Grade",
+    id: "createdAt",
+    label: "Date",
     minWidth: 170,
     align: "center",
-    format: (value: number): string => value.toLocaleString("en-US"),
     sortable: true,
   },
-  { id: "edit", label: "Edit", minWidth: 0, align: "center", sortable: false },
+  {
+    id: "lessonCreatedBy",
+    label: "Created By",
+    minWidth: 170,
+    align: "center",
+    sortable: true,
+  },
 ];
 
 const SessionItem = (props: { row: Edge<Session>; i: number }) => {
   const { row, i } = props;
 
-  function handleEdit(lessonId: string): void {
-    navigate(withPrefix("/lessons/edit?lessonId=" + lessonId));
+  function handleGrade(sessionId: string): void {
+    navigate(withPrefix(`/sessions/session?sessionId=${row.node.sessionId}`));
   }
 
   return (
-    <TableRow hover role="checkbox" tabIndex={-1}>
-      <TableCell key={`session-${i}`} id={`session-${i}`} align="left">
+    <TableRow
+      hover
+      role="checkbox"
+      tabIndex={-1}
+      style={{
+        backgroundColor:
+          row.node.graderGrade || row.node.graderGrade === 0
+            ? "#D3D3D3"
+            : "white",
+      }}
+    >
+      <TableCell key={`lesson-${i}`} id={`lesson-${i}`} align="left">
         <Link
-          to={withPrefix(`/sessions/session?sessionId=${row.node.sessionId}`)}
+          to={withPrefix(`/lessons/edit?lessonId=${row.node.lesson.lessonId}`)}
         >
           {row.node.lesson && row.node.lesson.name
             ? row.node.lesson.name
             : "No Lesson Name"}
         </Link>
       </TableCell>
-      <TableCell key={`creator-${i}`} align="left">
-        {row.node.lesson.createdBy ? row.node.lesson.createdBy : "Guest"}
-      </TableCell>
-      <TableCell key={`date-${i}`} align="center">
-        {row.node.createdAt ? row.node.createdAt : ""}
-      </TableCell>
-      <TableCell key={`classifier-grade-${i}`} align="center">
-        {row.node ? Math.trunc(row.node.classifierGrade * 100) : "?"}
-      </TableCell>
-      <TableCell key={`grade-${i}`} align="center">
+      <TableCell>
+        <IconButton
+          onClick={() => {
+            handleGrade(row.node.sessionId);
+          }}
+        >
+          <AssignmentIcon />
+        </IconButton>
+      </TableCell>{" "}
+      <TableCell key={`instructor-grade-${i}`} align="center">
         {row.node.graderGrade || row.node.graderGrade === 0
           ? Math.trunc(row.node.graderGrade * 100)
           : "?"}
       </TableCell>
-      <TableCell>
-        <IconButton
-          onClick={() => {
-            handleEdit(row.node.lesson.lessonId);
-          }}
-        >
-          <EditIcon />
-        </IconButton>
-      </TableCell>{" "}
+      <TableCell key={`classifier-grade-${i}`} align="center">
+        {row.node ? Math.trunc(row.node.classifierGrade * 100) : "?"}
+      </TableCell>
+      <TableCell key={`date-${i}`} align="center">
+        {row.node.createdAt ? row.node.createdAt : ""}
+      </TableCell>
+      <TableCell key={`creator-${i}`} align="center">
+        {row.node.lesson.createdBy ? row.node.lesson.createdBy : "Guest"}
+      </TableCell>
     </TableRow>
   );
 };
@@ -319,7 +335,7 @@ export const SessionsTable = (props: { path: string }) => {
 const SessionsPage = (props: { path: string; children: any }) => {
   return (
     <MuiThemeProvider theme={theme}>
-      <NavBar title="Sessions" />
+      <NavBar title="Grading" />
       <SessionsTable path={props.path} />
       {props.children}
     </MuiThemeProvider>
