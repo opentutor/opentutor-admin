@@ -78,7 +78,7 @@ const columns: ColumnDef[] = [
     sortable: false,
   },
   {
-    id: "instructorgrade",
+    id: "grade",
     label: "Instructor Grade",
     minWidth: 170,
     align: "center",
@@ -107,12 +107,19 @@ const columns: ColumnDef[] = [
     align: "center",
     sortable: true,
   },
+  {
+    id: "username",
+    label: "Username",
+    minWidth: 170,
+    align: "center",
+    sortable: true,
+  },
 ];
 
 const SessionItem = (props: { row: Edge<Session>; i: number }) => {
   const { row, i } = props;
 
-  function handleGrade(sessionId: string): void {
+  function handleGrade(): void {
     navigate(withPrefix(`/sessions/session?sessionId=${row.node.sessionId}`));
   }
 
@@ -139,9 +146,7 @@ const SessionItem = (props: { row: Edge<Session>; i: number }) => {
       </TableCell>
       <TableCell>
         <IconButton
-          onClick={() => {
-            handleGrade(row.node.sessionId);
-          }}
+          onClick={handleGrade}
         >
           <AssignmentIcon />
         </IconButton>
@@ -159,6 +164,9 @@ const SessionItem = (props: { row: Edge<Session>; i: number }) => {
       </TableCell>
       <TableCell key={`creator-${i}`} align="center">
         {row.node.lesson.createdBy ? row.node.lesson.createdBy : "Guest"}
+      </TableCell>
+      <TableCell key={`username-${i}`} align="center">
+        {row.node.username ? row.node.username : "Guest"}
       </TableCell>
     </TableRow>
   );
