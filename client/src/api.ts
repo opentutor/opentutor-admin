@@ -12,7 +12,7 @@ import {
   UpdateLesson,
   SessionsData,
   LessonsData,
-  StatusUrl, 
+  StatusUrl,
   TrainStatus,
 } from "types";
 
