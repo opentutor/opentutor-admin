@@ -68,7 +68,7 @@ describe("sessions screen", () => {
       "contain",
       "lesson 2"
     );
-    cy.get("table>tbody>tr:nth-child(1)>td:nth-child(4)").should(
+    cy.get("table>tbody>tr:nth-child(1)>td:nth-child(5)").should(
       "contain",
       "50"
     );
@@ -87,7 +87,7 @@ describe("sessions screen", () => {
       "contain",
       "lesson 1"
     );
-    cy.get("table>tbody>tr:nth-child(1)>td:nth-child(4)").should(
+    cy.get("table>tbody>tr:nth-child(1)>td:nth-child(5)").should(
       "contain",
       "100"
     );
@@ -99,7 +99,7 @@ describe("sessions screen", () => {
       "contain",
       "lesson 2"
     );
-    cy.get("table>tbody>tr:nth-child(2)>td:nth-child(4)").should(
+    cy.get("table>tbody>tr:nth-child(2)>td:nth-child(5)").should(
       "contain",
       "50"
     );
