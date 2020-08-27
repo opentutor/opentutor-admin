@@ -58,6 +58,7 @@ describe("sessions screen", () => {
     tableHead.get("th").eq(3).should("contain", "Classifier Grade");
     tableHead.get("th").eq(4).should("contain", "Date");
     tableHead.get("th").eq(5).should("contain", "Created By");
+    tableHead.get("th").eq(6).should("contain", "Username");
   });
 
   it("displays a list of ungraded sessions by default", () => {

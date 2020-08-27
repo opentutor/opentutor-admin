@@ -45,6 +45,7 @@ export async function fetchSessions(
             edges {
               cursor 
               node {
+                username
                 sessionId
                 classifierGrade
                 graderGrade
@@ -75,6 +76,7 @@ export async function fetchSession(sessionId: string): Promise<Session> {
     query: `
         query {
           session(sessionId: "${sessionId}") {
+            username
             graderGrade
             createdAt
             question {
@@ -93,7 +95,6 @@ export async function fetchSession(sessionId: string): Promise<Session> {
             lesson {
               name
               lessonId
-              createdBy
             }
           }
         }
@@ -117,6 +118,7 @@ export async function setGrade(
             userExpectationIndex:${userExpectationIndex}
             grade:"${grade}"
           ) {
+            username
             graderGrade
             createdAt
             question {
@@ -135,7 +137,6 @@ export async function setGrade(
             lesson {
               name
               lessonId
-              createdBy
             }
           }
         }

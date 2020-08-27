@@ -8,6 +8,7 @@ describe("session screen", () => {
       response: {
         data: {
           session: {
+            username: "username1",
             sessionId: "session1",
             lesson: {
               name: "lesson 1",

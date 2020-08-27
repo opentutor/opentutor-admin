@@ -120,12 +120,14 @@ const LessonItem = (props: {
   onDeleted: (id: string) => void;
 }) => {
   const { location, row, i, onDeleted } = props;
+  const [cookies] = useCookies(["user"]);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const deleteMenuOpen = Boolean(anchorEl);
 
   function launchLesson(id: string) {
     const host = process.env.TUTOR_ENDPOINT || location.origin;
-    const path = `${host}/tutor?lesson=${id}`;
+    const guest = cookies.user ? `&guest=${cookies.user}` : "";
+    const path = `${host}/tutor?lesson=${id}${guest}`;
     window.location.href = path;
   }
 
@@ -317,7 +319,7 @@ export const LessonsTable = (props: { location: any }) => {
   };
 
   React.useEffect(() => {
-    const filter: any = { $or: [{ deleted: false }, { deleted: null }] };
+    const filter: any = {};
     if (onlyCreator) {
       filter["createdBy"] = `${cookies.user}`;
     }
