@@ -28,12 +28,11 @@ import {
 import LaunchIcon from "@material-ui/icons/Launch";
 import AddIcon from "@material-ui/icons/Add";
 import DeleteIcon from "@material-ui/icons/Delete";
-import AssignmentIcon from "@material-ui/icons/Assignment";
 import KeyboardArrowLeftIcon from "@material-ui/icons/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
 import { Link, navigate } from "@reach/router";
 import { fetchLessons, deleteLesson } from "api";
-import { Edge, Lesson, LessonsData } from "types";
+import { Connection, Edge, Lesson } from "types";
 import { ColumnDef, ColumnHeader } from "components/column-header";
 import NavBar from "components/nav-bar";
 import "styles/layout.css";
@@ -291,7 +290,7 @@ const TableFooter = (props: {
 export const LessonsTable = (props: { location: any }) => {
   const classes = useStyles();
   const [cookies] = useCookies(["user"]);
-  const [lessons, setLessons] = React.useState<LessonsData>();
+  const [lessons, setLessons] = React.useState<Connection<Lesson>>();
   const [cursor, setCursor] = React.useState("");
   const [sortBy, setSortBy] = React.useState("updatedAt");
   const [sortAsc, setSortAsc] = React.useState(false);
@@ -325,7 +324,7 @@ export const LessonsTable = (props: { location: any }) => {
     }
     let mounted = true;
     fetchLessons(filter, rowsPerPage, cursor, sortBy, sortAsc)
-      .then((lessons: LessonsData) => {
+      .then((lessons) => {
         console.log(`fetchLessons got`, lessons);
         if (mounted && lessons) {
           setLessons(lessons);

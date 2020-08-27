@@ -10,17 +10,20 @@ import {
   FetchLessons,
   FetchLesson,
   UpdateLesson,
-  SessionsData,
-  LessonsData,
-  StatusUrl,
+  TrainJob,
   TrainStatus,
+  Connection,
 } from "types";
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const urljoin = require("url-join");
 
+export const CLASSIFIER_ENTRYPOINT =
+  process.env.CLASSIFIER_ENTRYPOINT || "/classifier";
 export const GRAPHQL_ENDPOINT = process.env.GRAPHQL_ENDPOINT || "/graphql";
 
 interface GQLResponse<T> {
-  errors: { message: string }[];
-  data: T;
+  errors?: { message: string }[];
+  data?: T;
 }
 
 export async function fetchSessions(
@@ -29,7 +32,7 @@ export async function fetchSessions(
   cursor: string,
   sortBy: string,
   sortAscending: boolean
-): Promise<SessionsData> {
+): Promise<Connection<Session>> {
   const result = await axios.post<GQLResponse<FetchSessions>>(
     GRAPHQL_ENDPOINT,
     {
@@ -68,7 +71,8 @@ export async function fetchSessions(
       `,
     }
   );
-  return result.data.data.sessions;
+  // TODO: must handle errors including in tests
+  return result.data.data!.sessions;
 }
 
 export async function fetchSession(sessionId: string): Promise<Session> {
@@ -100,7 +104,8 @@ export async function fetchSession(sessionId: string): Promise<Session> {
         }
       `,
   });
-  return result.data.data.session;
+  // TODO: must handle errors including in tests
+  return result.data.data!.session;
 }
 
 export async function setGrade(
@@ -142,7 +147,8 @@ export async function setGrade(
         }
       `,
   });
-  return result.data.data.setGrade;
+  // TODO: must handle errors including in tests
+  return result.data.data!.setGrade;
 }
 
 export async function fetchLessons(
@@ -151,7 +157,7 @@ export async function fetchLessons(
   cursor: string,
   sortBy: string,
   sortAscending: boolean
-): Promise<LessonsData> {
+): Promise<Connection<Lesson>> {
   const result = await axios.post<GQLResponse<FetchLessons>>(GRAPHQL_ENDPOINT, {
     query: `
         query {
@@ -181,7 +187,9 @@ export async function fetchLessons(
         }
       `,
   });
-  return result.data.data.lessons;
+
+  // TODO: must handle errors including in tests
+  return result.data.data!.lessons;
 }
 
 export async function fetchLesson(lessonId: string): Promise<Lesson> {
@@ -207,7 +215,8 @@ export async function fetchLesson(lessonId: string): Promise<Lesson> {
         }
       `,
   });
-  return result.data.data.lesson;
+  // TODO: must handle errors including in tests
+  return result.data.data!.lesson;
 }
 
 export async function updateLesson(
@@ -236,7 +245,8 @@ export async function updateLesson(
         }
       `,
   });
-  return result.data.data.updateLesson;
+  // TODO: must handle errors including in tests
+  return result.data.data!.updateLesson;
 }
 
 export async function deleteLesson(lessonId: string): Promise<Lesson> {
@@ -249,7 +259,8 @@ export async function deleteLesson(lessonId: string): Promise<Lesson> {
         }
       `,
   });
-  return result.data.data.deleteLesson;
+  // TODO: must handle errors including in tests
+  return result.data.data!.deleteLesson;
 }
 
 export async function deleteSession(sessionId: string): Promise<Session> {
@@ -265,25 +276,24 @@ export async function deleteSession(sessionId: string): Promise<Session> {
       `,
     }
   );
-  return result.data.data.deleteSession;
+  // TODO: must handle errors including in tests
+  return result.data.data!.deleteSession;
 }
 
-export const CLASSIFIER_ENTRYPOINT =
-  process.env.CLASSIFIER_ENTRYPOINT || "http://classifier/classifier";
-
-interface GQLResponse<T> {
-  errors: { message: string }[];
-  data: T;
+export async function trainLesson(lessonId: string): Promise<TrainJob> {
+  const res = await axios.post<GQLResponse<TrainJob>>(
+    urljoin(CLASSIFIER_ENTRYPOINT, "train"),
+    {
+      lesson: lessonId,
+    }
+  );
+  // TODO: must handle errors including in tests
+  return res.data.data!;
 }
 
-export async function fetchStatusUrl(lessonId: string): Promise<any> {
-  const result = await axios.post<any>(`${CLASSIFIER_ENTRYPOINT}/train`, {
-    lesson: lessonId,
-  });
-  return result.data.data.statusUrl;
-}
-
-export async function fetchTraining(statusUrl: string): Promise<any> {
-  const result = await axios.get<any>(`${CLASSIFIER_ENTRYPOINT}${statusUrl}`);
-  return result.data.data.trainStatus;
+export async function fetchTrainingStatus(
+  statusUrl: string
+): Promise<TrainStatus> {
+  const result = await axios.get<GQLResponse<TrainStatus>>(statusUrl);
+  return result.data.data!;
 }

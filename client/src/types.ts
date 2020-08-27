@@ -13,6 +13,11 @@ export interface PageInfo {
   endCursor: string;
 }
 
+export interface Connection<T> {
+  edges: Edge<T>[];
+  pageInfo: PageInfo;
+}
+
 export interface Session {
   sessionId: string;
   username: string;
@@ -52,12 +57,7 @@ export interface FetchSession {
 }
 
 export interface FetchSessions {
-  sessions: SessionsData;
-}
-
-export interface SessionsData {
-  edges: Edge<Session>[];
-  pageInfo: PageInfo;
+  sessions: Connection<Session>;
 }
 
 export interface SetGrade {
@@ -94,12 +94,7 @@ export interface FetchLesson {
 }
 
 export interface FetchLessons {
-  lessons: LessonsData;
-}
-
-export interface LessonsData {
-  edges: Edge<Lesson>[];
-  pageInfo: PageInfo;
+  lessons: Connection<Lesson>;
 }
 
 export interface UpdateLesson {
@@ -114,16 +109,32 @@ export interface DeleteSession {
   deleteSession: Session;
 }
 
-export interface StatusUrl {
+export interface TrainJob {
+  id: string;
+  lesson: boolean;
   statusUrl: string;
 }
 
+export enum TrainStatusType {
+  FAILURE = "FAILURE",
+  NONE = "NONE",
+  SUCCESS = "SUCCESS",
+}
+
 export interface TrainStatus {
-  status: string;
-  success?: boolean;
+  status: TrainStatusType;
   info?: TrainingInfo;
 }
 
-export interface TrainingInfo {
+export interface TrainExpectionResult {
   accuracy: number;
+}
+
+export interface TrainResult {
+  expectations: TrainExpectionResult[];
+}
+
+export interface TrainingInfo {
+  lesson: string;
+  expectations?: TrainExpectionResult[];
 }

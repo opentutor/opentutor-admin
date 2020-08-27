@@ -32,9 +32,14 @@ import AddIcon from "@material-ui/icons/Add";
 import ClearOutlinedIcon from "@material-ui/icons/ClearOutlined";
 import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
-import { fetchLesson, updateLesson, fetchStatusUrl, fetchTraining } from "api";
+import {
+  fetchLesson,
+  updateLesson,
+  fetchTrainingStatus,
+  trainLesson,
+} from "api";
 import NavBar from "components/nav-bar";
-import { Lesson } from "types";
+import { Lesson, TrainStatus, TrainStatusType } from "types";
 import withLocation from "wrap-with-location";
 import "styles/layout.css";
 import "react-toastify/dist/ReactToastify.css";
@@ -285,20 +290,19 @@ const LessonEdit = (props: { search: any }) => {
     setLesson({ ...lesson, expectations: [...lesson.expectations] });
   }
 
-  const delay = 1000;
+  const TRAIN_STATUS_POLL_INTERVAL_MILLIS: number = !isNaN(
+    Number(process.env.TRAIN_STATUS_POLL_INTERVAL_MILLIS)
+  )
+    ? Number(process.env.TRAIN_STATUS_POLL_INTERVAL_MILLIS)
+    : 1000;
   const [isTraining, setIsTraining] = React.useState(false);
-  const [count, setCount] = React.useState(0);
   const [trainPopUp, setTrainPopUp] = React.useState(false);
   const [statusUrl, setStatusUrl] = React.useState("");
-  const [trainData, setTrainData] = React.useState({
-    status: "",
-    success: false,
-    info: {
-      accuracy: 0,
-    },
+  const [trainData, setTrainData] = React.useState<TrainStatus>({
+    status: TrainStatusType.NONE,
   });
 
-  function useInterval(callback: any, delay: number) {
+  function useInterval(callback: any, delay: number | null) {
     const savedCallback = React.useRef() as any;
 
     React.useEffect(() => {
@@ -319,9 +323,9 @@ const LessonEdit = (props: { search: any }) => {
 
   function handleTrain(): void {
     if (lesson.isTrainable) {
-      fetchStatusUrl(lesson.lessonId)
-        .then((statusUrl) => {
-          setStatusUrl(statusUrl);
+      trainLesson(lesson.lessonId)
+        .then((trainJob) => {
+          setStatusUrl(trainJob.statusUrl);
           setIsTraining(true);
         })
         .catch((err: string) => console.error(err));
@@ -332,15 +336,17 @@ const LessonEdit = (props: { search: any }) => {
 
   useInterval(
     () => {
-      fetchTraining(statusUrl)
-        .then((trainData: any) => {
-          setTrainData(trainData);
-          console.log("train data", trainData);
-          if (trainData.status === "COMPLETE") {
+      fetchTrainingStatus(statusUrl)
+        .then((trainStatus) => {
+          setTrainData(trainStatus);
+          console.log("train data", trainStatus);
+          if (
+            trainStatus.status === TrainStatusType.SUCCESS ||
+            trainStatus.status === TrainStatusType.FAILURE
+          ) {
             setTrainPopUp(true);
             setIsTraining(false);
-            setCount(0);
-            if (trainData.success) {
+            if (trainStatus.status === TrainStatusType.SUCCESS) {
               const converted = encodeURI(
                 JSON.stringify({ ...lesson, lastTrainedAt: new Date() })
               );
@@ -358,9 +364,8 @@ const LessonEdit = (props: { search: any }) => {
           }
         })
         .catch((err: string) => console.error(err));
-      setCount(count + 1);
     },
-    count < 4 && isTraining ? delay : 0
+    isTraining ? TRAIN_STATUS_POLL_INTERVAL_MILLIS : null
   );
 
   function handleTrainPopUp(): void {
@@ -730,16 +735,22 @@ const LessonEdit = (props: { search: any }) => {
       <Box
         border={5}
         borderColor={
-          trainData.status && trainData.status === "COMPLETE"
-            ? !trainData.success
-              ? "#FF0000"
-              : trainData.info.accuracy < 0.2 || !trainData.success
-              ? "#FF0000"
-              : trainData.info.accuracy >= 0.2 && trainData.info.accuracy < 0.4
-              ? "#FFA500"
-              : trainData.info.accuracy >= 0.4 && trainData.info.accuracy < 0.6
-              ? "#FFFF00"
-              : "#008000"
+          trainData.status !== TrainStatusType.SUCCESS &&
+          trainData.status !== TrainStatusType.FAILURE
+            ? null
+            : trainData.status === TrainStatusType.FAILURE
+            ? "#FF0000"
+            : !trainData.info &&
+              trainData.info!.expectations &&
+              Array.isArray(trainData.info!.expectations) &&
+              trainData.info!.expectations!.length > 0
+            ? "#FFFF00"
+            : trainData.info!.expectations![0].accuracy >= 0.6
+            ? "#FFFF00"
+            : trainData.info!.expectations![0].accuracy >= 0.4
+            ? "#008000"
+            : trainData.info!.expectations![0].accuracy >= 0.2
+            ? "#FF0000"
             : null
         }
       >
@@ -751,12 +762,12 @@ const LessonEdit = (props: { search: any }) => {
         </Typography>
         {isTraining ? (
           <CircularProgress />
-        ) : trainData.status === "COMPLETE" ? (
-          trainData.success ? (
-            <Typography>{`Accurracy: ${trainData.info.accuracy}`}</Typography>
-          ) : (
-            <Typography>{`TRAINING FAILED`}</Typography>
-          )
+        ) : trainData.status === TrainStatusType.SUCCESS ? (
+          <Typography>{`Accurracy: ${
+            trainData.info!.expectations![0].accuracy
+          }`}</Typography>
+        ) : trainData.status === TrainStatusType.FAILURE ? (
+          <Typography>{`TRAINING FAILED`}</Typography>
         ) : null}
       </Box>
 
@@ -802,12 +813,10 @@ const LessonEdit = (props: { search: any }) => {
       <Dialog open={trainPopUp} onClose={handleTrainPopUp}>
         {!lesson.isTrainable ? (
           <DialogTitle> NEEDS MORE GRADED DATA </DialogTitle>
-        ) : trainData.status === "COMPLETE" ? (
-          trainData.success ? (
-            <DialogTitle> Training Success </DialogTitle>
-          ) : (
-            <DialogTitle> Training Failed</DialogTitle>
-          )
+        ) : trainData.status === TrainStatusType.SUCCESS ? (
+          <DialogTitle> Training Success </DialogTitle>
+        ) : trainData.status === TrainStatusType.FAILURE ? (
+          <DialogTitle> Training Failed</DialogTitle>
         ) : null}
       </Dialog>
       <Dialog open={savePopUp} onClose={handleSavePopUp}>
