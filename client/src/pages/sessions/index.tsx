@@ -16,6 +16,7 @@ import {
   TableContainer,
   TableRow,
   Toolbar,
+  Grid,
 } from "@material-ui/core";
 import {
   MuiThemeProvider,
@@ -56,7 +57,7 @@ const useStyles = makeStyles({
   progress: {
     marginLeft: "50%",
   },
-  toggle: {
+  paging: {
     position: "absolute",
     right: theme.spacing(1),
   },
@@ -197,12 +198,6 @@ const TableFooter = (props: {
   return (
     <AppBar position="sticky" color="default" className={classes.appBar}>
       <Toolbar>
-        <IconButton disabled={!hasPrev} onClick={onPrev}>
-          <KeyboardArrowLeftIcon />
-        </IconButton>
-        <IconButton disabled={!hasNext} onClick={onNext}>
-          <KeyboardArrowRightIcon />
-        </IconButton>
         {!cookies.user ? undefined : (
           <FormGroup>
             <FormControlLabel
@@ -217,7 +212,7 @@ const TableFooter = (props: {
             />
           </FormGroup>
         )}
-        <FormGroup className={classes.toggle}>
+        <FormGroup>
           <FormControlLabel
             control={
               <Switch
@@ -230,6 +225,14 @@ const TableFooter = (props: {
             label={"Show Graded"}
           />
         </FormGroup>
+        <div className={classes.paging}>
+          <IconButton disabled={!hasPrev} onClick={onPrev}>
+            <KeyboardArrowLeftIcon />
+          </IconButton>
+          <IconButton disabled={!hasNext} onClick={onNext}>
+            <KeyboardArrowRightIcon />
+          </IconButton>
+        </div>
       </Toolbar>
     </AppBar>
   );
