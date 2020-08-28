@@ -101,7 +101,7 @@ const columns: ColumnDef[] = [
     id: "createdBy",
     label: "Created By",
     minWidth: 200,
-    align: "left",
+    align: "center",
     sortable: true,
   },
   {
