@@ -145,7 +145,7 @@ const SessionItem = (props: { row: Edge<Session>; i: number }) => {
         </Link>
       </TableCell>
       <TableCell>
-        <IconButton onClick={handleGrade}>
+        <IconButton id={`launch-${i}`} onClick={handleGrade}>
           <AssignmentIcon />
         </IconButton>
       </TableCell>{" "}
