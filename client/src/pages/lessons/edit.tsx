@@ -663,16 +663,6 @@ const LessonEdit = (props: { search: any }) => {
               <TableRow>
                 <TableCell>{`Conclusion`}</TableCell>
                 <TableCell />
-                {/* <TableCell>
-                  {" "}
-                  <IconButton
-                    aria-label="add conclusion"
-                    size="small"
-                    onClick={handleAddConclusion}
-                  >
-                    <AddIcon />
-                  </IconButton>
-                </TableCell> */}
               </TableRow>
             </TableHead>
             <TableBody>
@@ -813,11 +803,15 @@ const LessonEdit = (props: { search: any }) => {
       <Dialog open={savePopUp} onClose={handleSavePopUp}>
         <DialogTitle> Save </DialogTitle>
         <DialogActions>
-          <Button onClick={handleSaveContinue} color="primary">
+          <Button
+            id="save-continue"
+            onClick={handleSaveContinue}
+            color="primary"
+          >
             {" "}
             Continue{" "}
           </Button>
-          <Button onClick={handleSaveExit} color="primary">
+          <Button id="save-exit" onClick={handleSaveExit} color="primary">
             {" "}
             Exit{" "}
           </Button>
