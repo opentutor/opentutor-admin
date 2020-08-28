@@ -32,9 +32,14 @@ import AddIcon from "@material-ui/icons/Add";
 import ClearOutlinedIcon from "@material-ui/icons/ClearOutlined";
 import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
-import { fetchLesson, updateLesson, fetchStatusUrl, fetchTraining } from "api";
+import {
+  fetchLesson,
+  updateLesson,
+  fetchTrainingStatus,
+  trainLesson,
+} from "api";
 import NavBar from "components/nav-bar";
-import { Lesson } from "types";
+import { Lesson, TrainStatus, TrainState } from "types";
 import withLocation from "wrap-with-location";
 import "styles/layout.css";
 import "react-toastify/dist/ReactToastify.css";
@@ -82,8 +87,17 @@ const useStyles = makeStyles({
   },
 });
 
-const LessonEdit = (props: { search: any }) => {
+const TRAIN_STATUS_POLL_INTERVAL_DEFAULT = 1000;
+
+const LessonEdit = (props: {
+  search: { lessonId: string; trainStatusPollInterval?: number };
+}) => {
   const { lessonId } = props.search;
+  const trainStatusPollInterval = !isNaN(
+    Number(props.search.trainStatusPollInterval)
+  )
+    ? Number(props.search.trainStatusPollInterval)
+    : TRAIN_STATUS_POLL_INTERVAL_DEFAULT;
   const classes = useStyles();
   const [cookies] = useCookies(["user"]);
   const [change, setChange] = React.useState(false);
@@ -285,20 +299,14 @@ const LessonEdit = (props: { search: any }) => {
     setLesson({ ...lesson, expectations: [...lesson.expectations] });
   }
 
-  const delay = 1000;
   const [isTraining, setIsTraining] = React.useState(false);
-  const [count, setCount] = React.useState(0);
   const [trainPopUp, setTrainPopUp] = React.useState(false);
   const [statusUrl, setStatusUrl] = React.useState("");
-  const [trainData, setTrainData] = React.useState({
-    status: "",
-    success: false,
-    info: {
-      accuracy: 0,
-    },
+  const [trainData, setTrainData] = React.useState<TrainStatus>({
+    state: TrainState.NONE,
   });
 
-  function useInterval(callback: any, delay: number) {
+  function useInterval(callback: any, delay: number | null) {
     const savedCallback = React.useRef() as any;
 
     React.useEffect(() => {
@@ -319,12 +327,20 @@ const LessonEdit = (props: { search: any }) => {
 
   function handleTrain(): void {
     if (lesson.isTrainable) {
-      fetchStatusUrl(lesson.lessonId)
-        .then((statusUrl) => {
-          setStatusUrl(statusUrl);
+      trainLesson(lesson.lessonId)
+        .then((trainJob) => {
+          setStatusUrl(trainJob.statusUrl);
           setIsTraining(true);
         })
-        .catch((err: string) => console.error(err));
+        .catch((err: any) => {
+          console.error(err);
+          setTrainData({
+            state: TrainState.FAILURE,
+            status: err.message || `${err}`,
+          });
+          setIsTraining(false);
+          setTrainPopUp(true);
+        });
     } else {
       setTrainPopUp(true);
     }
@@ -332,15 +348,17 @@ const LessonEdit = (props: { search: any }) => {
 
   useInterval(
     () => {
-      fetchTraining(statusUrl)
-        .then((trainData: any) => {
-          setTrainData(trainData);
-          console.log("train data", trainData);
-          if (trainData.status === "COMPLETE") {
+      fetchTrainingStatus(statusUrl)
+        .then((trainStatus) => {
+          console.log("train status", trainStatus);
+          setTrainData(trainStatus);
+          if (
+            trainStatus.state === TrainState.SUCCESS ||
+            trainStatus.state === TrainState.FAILURE
+          ) {
             setTrainPopUp(true);
             setIsTraining(false);
-            setCount(0);
-            if (trainData.success) {
+            if (trainStatus.state === TrainState.SUCCESS) {
               const converted = encodeURI(
                 JSON.stringify({ ...lesson, lastTrainedAt: new Date() })
               );
@@ -357,10 +375,14 @@ const LessonEdit = (props: { search: any }) => {
             }
           }
         })
-        .catch((err: string) => console.error(err));
-      setCount(count + 1);
+        .catch((err: Error) => {
+          setTrainData({ state: TrainState.FAILURE, status: err.message });
+          setTrainPopUp(true);
+          setIsTraining(false);
+          console.error(err);
+        });
     },
-    count < 4 && isTraining ? delay : 0
+    isTraining ? trainStatusPollInterval : null
   );
 
   function handleTrainPopUp(): void {
@@ -720,16 +742,22 @@ const LessonEdit = (props: { search: any }) => {
       <Box
         border={5}
         borderColor={
-          trainData.status && trainData.status === "COMPLETE"
-            ? !trainData.success
-              ? "#FF0000"
-              : trainData.info.accuracy < 0.2 || !trainData.success
-              ? "#FF0000"
-              : trainData.info.accuracy >= 0.2 && trainData.info.accuracy < 0.4
-              ? "#FFA500"
-              : trainData.info.accuracy >= 0.4 && trainData.info.accuracy < 0.6
-              ? "#FFFF00"
-              : "#008000"
+          trainData.state !== TrainState.SUCCESS &&
+          trainData.state !== TrainState.FAILURE
+            ? null
+            : trainData.state === TrainState.FAILURE
+            ? "#FF0000"
+            : !trainData.info &&
+              trainData.info!.expectations &&
+              Array.isArray(trainData.info!.expectations) &&
+              trainData.info!.expectations!.length > 0
+            ? "#FFFF00"
+            : trainData.info!.expectations![0].accuracy >= 0.6
+            ? "#FFFF00"
+            : trainData.info!.expectations![0].accuracy >= 0.4
+            ? "#008000"
+            : trainData.info!.expectations![0].accuracy >= 0.2
+            ? "#FF0000"
             : null
         }
       >
@@ -741,12 +769,12 @@ const LessonEdit = (props: { search: any }) => {
         </Typography>
         {isTraining ? (
           <CircularProgress />
-        ) : trainData.status === "COMPLETE" ? (
-          trainData.success ? (
-            <Typography>{`Accurracy: ${trainData.info.accuracy}`}</Typography>
-          ) : (
-            <Typography>{`TRAINING FAILED`}</Typography>
-          )
+        ) : trainData.state === TrainState.SUCCESS ? (
+          <Typography id="train-success-accuracy">{`Accurracy: ${
+            trainData.info!.expectations![0].accuracy
+          }`}</Typography>
+        ) : trainData.state === TrainState.FAILURE ? (
+          <Typography id="train-failure">{`TRAINING FAILED`}</Typography>
         ) : null}
       </Box>
 
@@ -792,12 +820,10 @@ const LessonEdit = (props: { search: any }) => {
       <Dialog open={trainPopUp} onClose={handleTrainPopUp}>
         {!lesson.isTrainable ? (
           <DialogTitle> NEEDS MORE GRADED DATA </DialogTitle>
-        ) : trainData.status === "COMPLETE" ? (
-          trainData.success ? (
-            <DialogTitle> Training Success </DialogTitle>
-          ) : (
-            <DialogTitle> Training Failed</DialogTitle>
-          )
+        ) : trainData.state === TrainState.SUCCESS ? (
+          <DialogTitle> Training Success </DialogTitle>
+        ) : trainData.state === TrainState.FAILURE ? (
+          <DialogTitle> Training Failed</DialogTitle>
         ) : null}
       </Dialog>
       <Dialog open={savePopUp} onClose={handleSavePopUp}>

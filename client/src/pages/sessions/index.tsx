@@ -28,7 +28,7 @@ import KeyboardArrowLeftIcon from "@material-ui/icons/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
 import AssignmentIcon from "@material-ui/icons/Assignment";
 import { fetchSessions } from "api";
-import { Edge, Session, SessionsData } from "types";
+import { Connection, Edge, Session } from "types";
 import NavBar from "components/nav-bar";
 import { ColumnDef, ColumnHeader } from "components/column-header";
 import "styles/layout.css";
@@ -241,7 +241,7 @@ const TableFooter = (props: {
 export const SessionsTable = (props: { path: string }) => {
   const classes = useStyles();
   const [cookies] = useCookies(["user"]);
-  const [sessions, setSessions] = React.useState<SessionsData>();
+  const [sessions, setSessions] = React.useState<Connection<Session>>();
   const [showGraded, setShowGraded] = React.useState(false);
   const [onlyCreator, setOnlyCreator] = React.useState(
     cookies.user ? true : false
