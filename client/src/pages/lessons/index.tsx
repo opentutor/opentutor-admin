@@ -83,13 +83,13 @@ const columns: ColumnDef[] = [
     align: "left",
     sortable: false,
   },
-  // {
-  //   id: "grade",
-  //   label: "Grade",
-  //   minWidth: 0,
-  //   align: "center",
-  //   sortable: false,
-  // },
+  {
+    id: "grade",
+    label: "Grade",
+    minWidth: 0,
+    align: "center",
+    sortable: false,
+  },
   {
     id: "updatedAt",
     label: "Date",
@@ -131,9 +131,9 @@ const LessonItem = (props: {
     window.location.href = path;
   }
 
-  // function handleGrade(sessionId: string): void {
-  //   navigate(withPrefix(`/sessions/session?sessionId=${row.node.sessionId}`));
-  // }
+  function handleGrade(): void {
+    navigate(withPrefix(`/sessions/`));
+  }
 
   const handleDelete = (e: any) => {
     setAnchorEl(e.currentTarget);
@@ -172,15 +172,15 @@ const LessonItem = (props: {
           <LaunchIcon />
         </IconButton>
       </TableCell>
-      {/* <TableCell>
+      <TableCell>
         <IconButton
           onClick={() => {
-            handleGrade(row.node.sessionId);
+            handleGrade();
           }}
         >
           <AssignmentIcon />
         </IconButton>
-      </TableCell>{" "} */}
+      </TableCell>{" "}
       <TableCell key={`date-${i}`} align="center">
         {row.node.updatedAt ? row.node.updatedAt.toLocaleString() : ""}
       </TableCell>
@@ -200,7 +200,6 @@ const LessonItem = (props: {
           <DeleteIcon />
         </IconButton>
       </TableCell>
-
       <Menu
         anchorEl={anchorEl}
         anchorOrigin={{
