@@ -747,18 +747,18 @@ const LessonEdit = (props: {
             ? null
             : trainData.state === TrainState.FAILURE
             ? "#FF0000"
-            : !trainData.info &&
-              trainData.info!.expectations &&
-              Array.isArray(trainData.info!.expectations) &&
-              trainData.info!.expectations!.length > 0
-            ? "#FFFF00"
-            : trainData.info!.expectations![0].accuracy >= 0.6
-            ? "#FFFF00"
-            : trainData.info!.expectations![0].accuracy >= 0.4
-            ? "#008000"
-            : trainData.info!.expectations![0].accuracy >= 0.2
+            : !(
+                trainData.info &&
+                trainData.info!.expectations &&
+                Array.isArray(trainData.info!.expectations) &&
+                trainData.info!.expectations!.length > 0
+              )
             ? "#FF0000"
-            : null
+            : trainData.info!.expectations![0].accuracy >= 0.6
+            ? "#008000"
+            : trainData.info!.expectations![0].accuracy >= 0.4
+            ? "#FFFF00"
+            : "#FF0000"
         }
       >
         <Typography variant="h5">Training Data</Typography>
