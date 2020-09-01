@@ -171,30 +171,42 @@ describe("edit screen", () => {
 
   [
     {
-      progressCount: 3,
-      successInfo: {
-        expectations: [{ accuracy: 0.83 }],
+      pendingCount: 1,
+      progressCount: 1,
+      info: {
+        expectations: [{ accuracy: 0.17 }],
       },
-      expectedAccuracy: 0.83,
-      // TODO: we need to align accuracy feedback with
-      // one classifier per expectation
+      expectedAccuracy: 0.17,
+      expectedFeedback: "red",
     },
     {
+      pendingCount: 1,
       progressCount: 1,
-      successInfo: {
-        expectations: [{ accuracy: 0.99 }],
+      info: {
+        expectations: [{ accuracy: 0.41 }],
       },
-      expectedAccuracy: 0.99,
+      expectedAccuracy: 0.41,
+      expectedFeedback: "yellow",
+    },
+    {
+      pendingCount: 1,
+      progressCount: 1,
+      info: {
+        expectations: [{ accuracy: 0.61 }],
+      },
+      expectedAccuracy: 0.61,
+      expectedFeedback: "green",
     },
   ].forEach((ex) => {
-    it(`train lesson succeeds with accuracy ${ex.expectedAccuracy}`, () => {
+    it(`train lesson displays ${ex.expectedFeedback} feedback on success with accuracy ${ex.expectedAccuracy}`, () => {
       const waitTrainLesson = mockTrainLesson(cy);
       const waitComplete = mockTrainStatusSeq(cy, [
-        { status: { state: TrainState.IN_PROGRESS }, repeat: ex.progressCount },
+        { status: { state: TrainState.PENDING }, repeat: ex.pendingCount },
+        { status: { state: TrainState.STARTED }, repeat: ex.progressCount },
         {
           status: {
             state: TrainState.SUCCESS,
-            info: ex.successInfo,
+            info: ex.info,
           },
         },
       ]);
@@ -203,6 +215,11 @@ describe("edit screen", () => {
       waitTrainLesson();
       waitComplete();
       cy.get("#train-success-accuracy").should("contain", ex.expectedAccuracy);
+      cy.matchImageSnapshot(
+        snapname(
+          `train-success-with-accuracy-${ex.expectedAccuracy}-and-feedback-${ex.expectedFeedback}`
+        )
+      );
     });
   });
 
@@ -210,7 +227,8 @@ describe("edit screen", () => {
     cy.visit("/lessons/edit?lessonId=lesson&trainStatusPollInterval=10");
     const waitTrainLesson = mockTrainLesson(cy);
     const waitComplete = mockTrainStatusSeq(cy, [
-      { status: { state: TrainState.IN_PROGRESS } },
+      { status: { state: TrainState.PENDING } },
+      { status: { state: TrainState.STARTED } },
       {
         status: {
           state: TrainState.FAILURE,
@@ -235,7 +253,8 @@ describe("edit screen", () => {
     cy.visit("/lessons/edit?lessonId=lesson&trainStatusPollInterval=10");
     const waitTrainLesson = mockTrainLesson(cy);
     const waitComplete = mockTrainStatusSeq(cy, [
-      { status: { state: TrainState.IN_PROGRESS } },
+      { status: { state: TrainState.PENDING } },
+      { status: { state: TrainState.STARTED } },
       {
         status: {
           state: TrainState.FAILURE,

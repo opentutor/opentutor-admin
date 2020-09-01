@@ -6,8 +6,8 @@ export interface TrainJob {
 
 export enum TrainState {
   FAILURE = "FAILURE",
-  IN_PROGRESS = "IN_PROGRESS",
-  NONE = "NONE",
+  PENDING = "PENDING",
+  STARTED = "STARTED",
   SUCCESS = "SUCCESS",
 }
 
