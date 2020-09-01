@@ -20,7 +20,6 @@ import {
   TableRow,
   Toolbar,
 } from "@material-ui/core";
-import { MuiThemeProvider } from "@material-ui/core/styles";
 import { makeStyles } from "@material-ui/core/styles";
 import AddIcon from "@material-ui/icons/Add";
 import AssignmentIcon from "@material-ui/icons/Assignment";
@@ -175,7 +174,7 @@ const LessonItem = (props: {
   }
 
   function handleGrade(): void {
-    navigate(withPrefix(`/sessions/`));
+    navigate(withPrefix(`/sessions?lessonId=${row.node.lessonId}`));
   }
 
   const handleDelete = (e: any) => {
@@ -189,7 +188,7 @@ const LessonItem = (props: {
   const confirmDelete = () => {
     toast("Deleting...");
     deleteLesson(row.node.lessonId)
-      .then((lesson: Lesson) => {
+      .then(() => {
         onDeleted(row.node.lessonId);
         setAnchorEl(null);
       })

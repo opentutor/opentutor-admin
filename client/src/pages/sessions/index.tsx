@@ -27,6 +27,7 @@ import { Connection, Edge, Session } from "types";
 import NavBar from "components/nav-bar";
 import { ColumnDef, ColumnHeader } from "components/column-header";
 import ToggleContext from "context/toggle";
+import withLocation from "wrap-with-location";
 import "styles/layout.css";
 
 const useStyles = makeStyles((theme) => ({
@@ -67,7 +68,7 @@ const columns: ColumnDef[] = [
     sortable: false,
   },
   {
-    id: "grade",
+    id: "graderGrade",
     label: "Instructor Grade",
     minWidth: 170,
     align: "center",
@@ -214,7 +215,10 @@ const SessionItem = (props: { row: Edge<Session>; i: number }) => {
   );
 };
 
-export const SessionsTable = (props: { path: string }) => {
+const SessionsTable = (props: {
+  path: string;
+  search: { lessonId: string };
+}) => {
   const classes = useStyles();
   const toggle = useContext(ToggleContext);
   const [cookies] = useCookies(["user"]);
@@ -222,8 +226,9 @@ export const SessionsTable = (props: { path: string }) => {
   const [cursor, setCursor] = React.useState("");
   const [sortBy, setSortBy] = React.useState("createdAt");
   const [sortAsc, setSortAsc] = React.useState(false);
-  const rowsPerPage = 50;
   const { onlyCreator, showGraded } = toggle;
+  const { lessonId } = props.search;
+  const rowsPerPage = 50;
 
   function onSort(id: string) {
     if (sortBy === id) {
@@ -241,6 +246,9 @@ export const SessionsTable = (props: { path: string }) => {
     }
     if (!showGraded) {
       filter["graderGrade"] = null;
+    }
+    if (lessonId) {
+      filter["lessonId"] = lessonId;
     }
     let mounted = true;
     fetchSessions(filter, rowsPerPage, cursor, sortBy, sortAsc)
@@ -298,14 +306,19 @@ export const SessionsTable = (props: { path: string }) => {
   );
 };
 
-const SessionsPage = (props: { path: string; children: any }) => {
+const SessionsPage = (props: {
+  path: string;
+  search: { lessonId: string };
+  children: any;
+}) => {
   return (
     <div>
       <NavBar title="Grading" />
-      <SessionsTable path={props.path} />
+      <SessionsTable path={props.path} search={props.search} />
       {props.children}
     </div>
   );
 };
 
-export default SessionsPage;
+export default withLocation(SessionsPage);
+export { SessionsTable };

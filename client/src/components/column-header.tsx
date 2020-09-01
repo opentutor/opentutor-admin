@@ -20,7 +20,7 @@ export const ColumnHeader = (props: {
   columns: ColumnDef[];
   sortBy: string;
   sortAsc: boolean;
-  onSort: any;
+  onSort: (id: string) => void;
 }) => {
   const { columns, sortBy, sortAsc, onSort } = props;
 
