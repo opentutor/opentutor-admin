@@ -41,7 +41,7 @@ describe("lessons screen", () => {
     });
   });
 
-  it.only("displays a table with header Lesson and Date", () => {
+  it("displays a table with header Lesson and Date", () => {
     cy.visit("/lessons");
     const tableHead = cy.get("table thead tr");
     tableHead.get("th").eq(0).should("contain", "Lesson");

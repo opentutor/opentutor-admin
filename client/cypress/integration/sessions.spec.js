@@ -61,27 +61,8 @@ describe("sessions screen", () => {
     tableHead.get("th").eq(6).should("contain", "Username");
   });
 
-  it("displays a list of ungraded sessions by default", () => {
+  it("displays a list of sessions", () => {
     cy.visit("/sessions");
-    const tableBody = cy.get("table tbody");
-    tableBody.get("tr").should("have.length", 2);
-    cy.get("table>tbody>tr:nth-child(1)>td:nth-child(1)").should(
-      "contain",
-      "lesson 2"
-    );
-    cy.get("table>tbody>tr:nth-child(1)>td:nth-child(4)").should(
-      "contain",
-      "50"
-    );
-    cy.get("table>tbody>tr:nth-child(1)>td:nth-child(3)").should(
-      "contain",
-      "?"
-    );
-  });
-
-  it("toggles a list of graded and ungraded session", () => {
-    cy.visit("/sessions");
-    cy.get("#toggle").click();
     const tableBody = cy.get("table tbody");
     tableBody.get("tr").should("have.length", 3);
     cy.get("table>tbody>tr:nth-child(1)>td:nth-child(1)").should(
@@ -114,11 +95,6 @@ describe("sessions screen", () => {
     cy.visit("/sessions");
     const option = cy.get("#show-graded-checkbox");
     option.should("not.have.attr", "checked");
+    cy.get("#toggle").click();
   });
-
-  // it("opens grading for a session on tap link", () => {
-  //   cy.visit("/sessions");
-  //   cy.get("#session-0 a").click();
-  //   cy.get("#session-display-name").should("contain", "No Lesson Name");
-  // });
 });

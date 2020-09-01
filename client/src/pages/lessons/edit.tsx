@@ -23,11 +23,7 @@ import {
   DialogActions,
   DialogTitle,
 } from "@material-ui/core";
-import {
-  MuiThemeProvider,
-  createMuiTheme,
-  makeStyles,
-} from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import AddIcon from "@material-ui/icons/Add";
 import ClearOutlinedIcon from "@material-ui/icons/ClearOutlined";
 import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
@@ -44,15 +40,7 @@ import withLocation from "wrap-with-location";
 import "styles/layout.css";
 import "react-toastify/dist/ReactToastify.css";
 
-const theme = createMuiTheme({
-  palette: {
-    primary: {
-      main: "#1b6a9c",
-    },
-  },
-});
-
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   root: {
     width: "100",
     "& .MuiTextField-root": {
@@ -85,7 +73,7 @@ const useStyles = makeStyles({
       border: "red solid 2px",
     },
   },
-});
+}));
 
 const TRAIN_STATUS_POLL_INTERVAL_DEFAULT = 1000;
 
@@ -850,10 +838,10 @@ const LessonEdit = (props: {
 
 const EditPage = (props: { path: string; search: any }) => {
   return (
-    <MuiThemeProvider theme={theme}>
+    <div>
       <NavBar title="Edit Lesson" />
       <LessonEdit search={props.search} />
-    </MuiThemeProvider>
+    </div>
   );
 };
 

@@ -1,11 +1,7 @@
 import { withPrefix } from "gatsby";
 import React from "react";
 import { navigate } from "@reach/router";
-import {
-  MuiThemeProvider,
-  createMuiTheme,
-  makeStyles,
-} from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import {
   Paper,
   Table,
@@ -26,14 +22,6 @@ import { Session } from "types";
 import { fetchSession, setGrade } from "api";
 import NavBar from "components/nav-bar";
 import "styles/layout.css";
-
-const theme = createMuiTheme({
-  palette: {
-    primary: {
-      main: "#1b6a9c",
-    },
-  },
-});
 
 const useStyles = makeStyles({
   root: {
@@ -260,10 +248,10 @@ const SessionTable = ({ search }: { search: any }) => {
 
 const SessionPage = ({ path, search }: { path: string; search: any }) => {
   return (
-    <MuiThemeProvider theme={theme}>
+    <div>
       <NavBar title="Grade Session" />
       <SessionTable search={search} />
-    </MuiThemeProvider>
+    </div>
   );
 };
 

@@ -18,18 +18,6 @@ describe("screenshots - grade session list", () => {
           sessions: {
             edges: [
               {
-                cursor: "cursor 1",
-                node: {
-                  lesson: {
-                    name: "lesson 1",
-                  },
-                  sessionId: "session 1",
-                  classifierGrade: 1,
-                  graderGrade: 1,
-                  createdAt: "1/1/2000, 12:00:00 AM",
-                },
-              },
-              {
                 cursor: "cursor 2",
                 node: {
                   lesson: {

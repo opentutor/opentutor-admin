@@ -1,5 +1,5 @@
 import { withPrefix } from "gatsby";
-import React from "react";
+import React, { useContext } from "react";
 import { navigate } from "@reach/router";
 import { useCookies } from "react-cookie";
 import {
@@ -16,13 +16,8 @@ import {
   TableContainer,
   TableRow,
   Toolbar,
-  Grid,
 } from "@material-ui/core";
-import {
-  MuiThemeProvider,
-  createMuiTheme,
-  makeStyles,
-} from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import { Link } from "@reach/router";
 import KeyboardArrowLeftIcon from "@material-ui/icons/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
@@ -31,17 +26,10 @@ import { fetchSessions } from "api";
 import { Connection, Edge, Session } from "types";
 import NavBar from "components/nav-bar";
 import { ColumnDef, ColumnHeader } from "components/column-header";
+import ToggleContext from "context/toggle";
 import "styles/layout.css";
 
-const theme = createMuiTheme({
-  palette: {
-    primary: {
-      main: "#1b6a9c",
-    },
-  },
-});
-
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
     flexFlow: "column",
@@ -61,7 +49,7 @@ const useStyles = makeStyles({
     position: "absolute",
     right: theme.spacing(1),
   },
-});
+}));
 
 const columns: ColumnDef[] = [
   {
@@ -72,7 +60,7 @@ const columns: ColumnDef[] = [
     sortable: true,
   },
   {
-    id: "grade",
+    id: "grade-link",
     label: "Grade",
     minWidth: 0,
     align: "center",
@@ -116,6 +104,61 @@ const columns: ColumnDef[] = [
     sortable: true,
   },
 ];
+
+const TableFooter = (props: {
+  classes: any;
+  hasNext: boolean;
+  hasPrev: boolean;
+  onNext: () => void;
+  onPrev: () => void;
+}) => {
+  const { classes, hasNext, hasPrev, onNext, onPrev } = props;
+  const [cookies] = useCookies(["user"]);
+  const toggle = useContext(ToggleContext);
+  const { onlyCreator, showGraded, toggleCreator, toggleGraded } = toggle;
+
+  return (
+    <AppBar position="sticky" color="default" className={classes.appBar}>
+      <Toolbar>
+        {!cookies.user ? undefined : (
+          <FormGroup>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={onlyCreator}
+                  onChange={toggleCreator}
+                  aria-label="switch"
+                />
+              }
+              label={"Only Mine"}
+            />
+          </FormGroup>
+        )}
+        <FormGroup>
+          <FormControlLabel
+            control={
+              <Switch
+                id="toggle"
+                checked={showGraded}
+                onChange={toggleGraded}
+                aria-label="switch"
+              />
+            }
+            label={"Show Graded"}
+          />
+        </FormGroup>
+        <div className={classes.paging}>
+          <IconButton disabled={!hasPrev} onClick={onPrev}>
+            <KeyboardArrowLeftIcon />
+          </IconButton>
+          <IconButton disabled={!hasNext} onClick={onNext}>
+            <KeyboardArrowRightIcon />
+          </IconButton>
+        </div>
+      </Toolbar>
+    </AppBar>
+  );
+};
 
 const SessionItem = (props: { row: Edge<Session>; i: number }) => {
   const { row, i } = props;
@@ -171,85 +214,16 @@ const SessionItem = (props: { row: Edge<Session>; i: number }) => {
   );
 };
 
-const TableFooter = (props: {
-  classes: any;
-  hasNext: boolean;
-  hasPrev: boolean;
-  showGraded: boolean;
-  showCreator: boolean;
-  onNext: () => void;
-  onPrev: () => void;
-  onToggleGraded: () => void;
-  onToggleCreator: () => void;
-}) => {
-  const {
-    classes,
-    hasNext,
-    hasPrev,
-    showGraded,
-    showCreator,
-    onNext,
-    onPrev,
-    onToggleGraded,
-    onToggleCreator,
-  } = props;
-  const [cookies] = useCookies(["user"]);
-
-  return (
-    <AppBar position="sticky" color="default" className={classes.appBar}>
-      <Toolbar>
-        {!cookies.user ? undefined : (
-          <FormGroup>
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={showCreator}
-                  onChange={onToggleCreator}
-                  aria-label="switch"
-                />
-              }
-              label={"Only Mine"}
-            />
-          </FormGroup>
-        )}
-        <FormGroup>
-          <FormControlLabel
-            control={
-              <Switch
-                id="toggle"
-                checked={showGraded}
-                onChange={onToggleGraded}
-                aria-label="switch"
-              />
-            }
-            label={"Show Graded"}
-          />
-        </FormGroup>
-        <div className={classes.paging}>
-          <IconButton disabled={!hasPrev} onClick={onPrev}>
-            <KeyboardArrowLeftIcon />
-          </IconButton>
-          <IconButton disabled={!hasNext} onClick={onNext}>
-            <KeyboardArrowRightIcon />
-          </IconButton>
-        </div>
-      </Toolbar>
-    </AppBar>
-  );
-};
-
 export const SessionsTable = (props: { path: string }) => {
   const classes = useStyles();
+  const toggle = useContext(ToggleContext);
   const [cookies] = useCookies(["user"]);
   const [sessions, setSessions] = React.useState<Connection<Session>>();
-  const [showGraded, setShowGraded] = React.useState(false);
-  const [onlyCreator, setOnlyCreator] = React.useState(
-    cookies.user ? true : false
-  );
   const [cursor, setCursor] = React.useState("");
   const [sortBy, setSortBy] = React.useState("createdAt");
   const [sortAsc, setSortAsc] = React.useState(false);
   const rowsPerPage = 50;
+  const { onlyCreator, showGraded } = toggle;
 
   function onSort(id: string) {
     if (sortBy === id) {
@@ -259,14 +233,6 @@ export const SessionsTable = (props: { path: string }) => {
     }
     setCursor("");
   }
-
-  const handleShowGradedChange = (): void => {
-    setShowGraded(!showGraded);
-  };
-
-  const handleShowCreatorChange = (): void => {
-    setOnlyCreator(!onlyCreator);
-  };
 
   React.useEffect(() => {
     const filter: any = {};
@@ -310,14 +276,9 @@ export const SessionsTable = (props: { path: string }) => {
               onSort={onSort}
             />
             <TableBody>
-              {sessions.edges
-                .filter(
-                  (edge: Edge<Session>) =>
-                    showGraded || edge.node.graderGrade === null
-                )
-                .map((row, i) => (
-                  <SessionItem key={row.node.sessionId} row={row} i={i} />
-                ))}
+              {sessions.edges.map((row, i) => (
+                <SessionItem key={row.node.sessionId} row={row} i={i} />
+              ))}
             </TableBody>
           </Table>
         </TableContainer>
@@ -326,16 +287,12 @@ export const SessionsTable = (props: { path: string }) => {
         classes={classes}
         hasNext={sessions.pageInfo.hasNextPage}
         hasPrev={sessions.pageInfo.hasPreviousPage}
-        showGraded={showGraded}
-        showCreator={onlyCreator}
         onNext={() => {
           setCursor("next__" + sessions.pageInfo.endCursor);
         }}
         onPrev={() => {
           setCursor("prev__" + sessions.pageInfo.startCursor);
         }}
-        onToggleGraded={handleShowGradedChange}
-        onToggleCreator={handleShowCreatorChange}
       />
     </div>
   );
@@ -343,11 +300,11 @@ export const SessionsTable = (props: { path: string }) => {
 
 const SessionsPage = (props: { path: string; children: any }) => {
   return (
-    <MuiThemeProvider theme={theme}>
+    <div>
       <NavBar title="Grading" />
       <SessionsTable path={props.path} />
       {props.children}
-    </MuiThemeProvider>
+    </div>
   );
 };
 

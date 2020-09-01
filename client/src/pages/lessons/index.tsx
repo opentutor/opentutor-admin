@@ -1,5 +1,5 @@
 import { withPrefix } from "gatsby";
-import React from "react";
+import React, { useContext } from "react";
 import { useCookies } from "react-cookie";
 import { ToastContainer, toast } from "react-toastify";
 import {
@@ -20,11 +20,8 @@ import {
   TableRow,
   Toolbar,
 } from "@material-ui/core";
-import {
-  MuiThemeProvider,
-  createMuiTheme,
-  makeStyles,
-} from "@material-ui/core/styles";
+import { MuiThemeProvider } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import AddIcon from "@material-ui/icons/Add";
 import AssignmentIcon from "@material-ui/icons/Assignment";
 import DeleteIcon from "@material-ui/icons/Delete";
@@ -36,18 +33,11 @@ import { fetchLessons, deleteLesson } from "api";
 import { Connection, Edge, Lesson } from "types";
 import { ColumnDef, ColumnHeader } from "components/column-header";
 import NavBar from "components/nav-bar";
+import ToggleContext from "context/toggle";
 import "styles/layout.css";
 import "react-toastify/dist/ReactToastify.css";
 
-const theme = createMuiTheme({
-  palette: {
-    primary: {
-      main: "#1b6a9c",
-    },
-  },
-});
-
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
     flexFlow: "column",
@@ -72,7 +62,7 @@ const useStyles = makeStyles({
   progress: {
     marginLeft: "50%",
   },
-});
+}));
 
 const columns: ColumnDef[] = [
   { id: "name", label: "Lesson", minWidth: 200, align: "left", sortable: true },
@@ -112,6 +102,59 @@ const columns: ColumnDef[] = [
     sortable: false,
   },
 ];
+
+const TableFooter = (props: {
+  classes: any;
+  hasNext: boolean;
+  hasPrev: boolean;
+  onNext: () => void;
+  onPrev: () => void;
+}) => {
+  const { classes, hasNext, hasPrev, onNext, onPrev } = props;
+  const [cookies] = useCookies(["user"]);
+  const toggle = useContext(ToggleContext);
+
+  function onCreate() {
+    navigate(withPrefix("/lessons/edit?lessonId=new"));
+  }
+
+  return (
+    <AppBar position="sticky" color="default" className={classes.appBar}>
+      <Toolbar>
+        <IconButton disabled={!hasPrev} onClick={onPrev}>
+          <KeyboardArrowLeftIcon />
+        </IconButton>
+        <IconButton disabled={!hasNext} onClick={onNext}>
+          <KeyboardArrowRightIcon />
+        </IconButton>
+        {!cookies.user ? undefined : (
+          <FormGroup>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={toggle.onlyCreator}
+                  onChange={toggle.toggleCreator}
+                  aria-label="switch"
+                />
+              }
+              label={"Only Mine"}
+            />
+          </FormGroup>
+        )}
+        <Fab
+          id="create-button"
+          variant="extended"
+          color="primary"
+          className={classes.fab}
+          onClick={onCreate}
+        >
+          <AddIcon />
+          Create Lesson
+        </Fab>
+      </Toolbar>
+    </AppBar>
+  );
+};
 
 const LessonItem = (props: {
   location: any;
@@ -225,84 +268,16 @@ const LessonItem = (props: {
   );
 };
 
-const TableFooter = (props: {
-  classes: any;
-  hasNext: boolean;
-  hasPrev: boolean;
-  showCreator: boolean;
-  onNext: () => void;
-  onPrev: () => void;
-  onToggle: () => void;
-}) => {
-  const {
-    classes,
-    hasNext,
-    hasPrev,
-    showCreator,
-    onNext,
-    onPrev,
-    onToggle,
-  } = props;
-  const [cookies] = useCookies(["user"]);
-
-  function onCreate() {
-    navigate(withPrefix("/lessons/edit?lessonId=new"));
-  }
-
-  return (
-    <AppBar position="sticky" color="default" className={classes.appBar}>
-      <Toolbar>
-        <IconButton disabled={!hasPrev} onClick={onPrev}>
-          <KeyboardArrowLeftIcon />
-        </IconButton>
-        <IconButton disabled={!hasNext} onClick={onNext}>
-          <KeyboardArrowRightIcon />
-        </IconButton>
-        {!cookies.user ? undefined : (
-          <FormGroup>
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={showCreator}
-                  onChange={onToggle}
-                  aria-label="switch"
-                />
-              }
-              label={"Only Mine"}
-            />
-          </FormGroup>
-        )}
-        <Fab
-          id="create-button"
-          variant="extended"
-          color="primary"
-          className={classes.fab}
-          onClick={onCreate}
-        >
-          <AddIcon />
-          Create Lesson
-        </Fab>
-      </Toolbar>
-    </AppBar>
-  );
-};
-
 export const LessonsTable = (props: { location: any }) => {
   const classes = useStyles();
+  const toggle = useContext(ToggleContext);
   const [cookies] = useCookies(["user"]);
   const [lessons, setLessons] = React.useState<Connection<Lesson>>();
   const [cursor, setCursor] = React.useState("");
   const [sortBy, setSortBy] = React.useState("updatedAt");
   const [sortAsc, setSortAsc] = React.useState(false);
-  const [onlyCreator, setOnlyCreator] = React.useState(
-    cookies.user ? true : false
-  );
   const [deleted, setDeleted] = React.useState("");
   const rowsPerPage = 10;
-
-  const onToggleShowCreator = (): void => {
-    setOnlyCreator(!onlyCreator);
-  };
 
   const onDeleted = (id: string): void => {
     setDeleted(id);
@@ -319,7 +294,7 @@ export const LessonsTable = (props: { location: any }) => {
 
   React.useEffect(() => {
     const filter: any = {};
-    if (onlyCreator) {
+    if (toggle.onlyCreator) {
       filter["createdBy"] = `${cookies.user}`;
     }
     let mounted = true;
@@ -334,7 +309,7 @@ export const LessonsTable = (props: { location: any }) => {
     return () => {
       mounted = false;
     };
-  }, [deleted, onlyCreator, rowsPerPage, cursor, sortBy, sortAsc]);
+  }, [deleted, toggle.onlyCreator, rowsPerPage, cursor, sortBy, sortAsc]);
 
   if (!lessons) {
     return (
@@ -373,14 +348,12 @@ export const LessonsTable = (props: { location: any }) => {
         classes={classes}
         hasPrev={lessons.pageInfo.hasPreviousPage}
         hasNext={lessons.pageInfo.hasNextPage}
-        showCreator={onlyCreator}
         onPrev={() => {
           setCursor("prev__" + lessons.pageInfo.startCursor);
         }}
         onNext={() => {
           setCursor("next__" + lessons.pageInfo.endCursor);
         }}
-        onToggle={onToggleShowCreator}
       />
       <ToastContainer />
     </div>
@@ -389,11 +362,11 @@ export const LessonsTable = (props: { location: any }) => {
 
 const LessonsPage = (props: { location: any; path: string; children: any }) => {
   return (
-    <MuiThemeProvider theme={theme}>
+    <div>
       <NavBar title="Lessons" />
       <LessonsTable location={props.location} />
       {props.children}
-    </MuiThemeProvider>
+    </div>
   );
 };
 
