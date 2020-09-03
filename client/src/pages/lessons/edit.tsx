@@ -6,28 +6,16 @@ import { v4 as uuid } from "uuid";
 import {
   Box,
   Button,
-  TextField,
-  Collapse,
-  IconButton,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Typography,
-  Paper,
-  Grid,
   CircularProgress,
   Dialog,
   DialogActions,
   DialogTitle,
+  Divider,
+  Grid,
+  TextField,
+  Typography,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import AddIcon from "@material-ui/icons/Add";
-import ClearOutlinedIcon from "@material-ui/icons/ClearOutlined";
-import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
-import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
 import {
   fetchLesson,
   updateLesson,
@@ -35,10 +23,14 @@ import {
   trainLesson,
 } from "api";
 import NavBar from "components/nav-bar";
-import { Lesson, TrainStatus, TrainState } from "types";
+import ConclusionsList from "components/conclusions-list";
+import ExpectationsList from "components/expectations-list";
+import { Lesson, LessonExpectation, TrainStatus, TrainState } from "types";
 import withLocation from "wrap-with-location";
 import "styles/layout.css";
 import "react-toastify/dist/ReactToastify.css";
+
+const TRAIN_STATUS_POLL_INTERVAL_DEFAULT = 1000;
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -52,6 +44,22 @@ const useStyles = makeStyles((theme) => ({
     "& > *": {
       borderBottom: "unset",
     },
+  },
+  expand: {
+    transform: "rotate(0deg)",
+    marginLeft: "auto",
+    transition: theme.transitions.create("transform", {
+      duration: theme.transitions.duration.shortest,
+    }),
+  },
+  expandOpen: {
+    transform: "rotate(180deg)",
+  },
+  list: {
+    background: "#F5F5F5",
+  },
+  listDragging: {
+    background: "lightgreen",
   },
   button: {
     margin: theme.spacing(2),
@@ -75,8 +83,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const TRAIN_STATUS_POLL_INTERVAL_DEFAULT = 1000;
-
 const LessonEdit = (props: {
   search: { lessonId: string; trainStatusPollInterval?: number };
 }) => {
@@ -89,8 +95,6 @@ const LessonEdit = (props: {
   const classes = useStyles();
   const [cookies] = useCookies(["user"]);
   const [change, setChange] = React.useState(false);
-  const [expectationOpen, setExpectationOpen] = React.useState(true);
-
   const newLesson = {
     lessonId: uuid(),
     createdBy: "",
@@ -163,49 +167,19 @@ const LessonEdit = (props: {
     setLesson({ ...lesson, question: question });
   }
 
-  function handleConclusionChange(con: string, index: number): void {
+  function handleExpectationsChange(exp: LessonExpectation[]): void {
     setChange(true);
     setLesson({
       ...lesson,
-      conclusion: [
-        ...lesson.conclusion.slice(0, index),
-        con,
-        ...lesson.conclusion.slice(index + 1),
-      ],
+      expectations: exp,
     });
   }
 
-  function handleExpectationChange(exp: string, index: number): void {
+  function handleConclusionsChange(conclusions: string[]): void {
     setChange(true);
     setLesson({
       ...lesson,
-      expectations: [
-        ...lesson.expectations.slice(0, index),
-        {
-          hints: lesson.expectations[index].hints,
-          expectation: exp,
-        },
-        ...lesson.expectations.slice(index + 1),
-      ],
-    });
-  }
-
-  function handleHintChange(hnt: string, eIndex: number, hIndex: number): void {
-    setChange(true);
-    setLesson({
-      ...lesson,
-      expectations: [
-        ...lesson.expectations.slice(0, eIndex),
-        {
-          hints: [
-            ...lesson.expectations[eIndex].hints.slice(0, hIndex),
-            { text: hnt },
-            ...lesson.expectations[eIndex].hints.slice(hIndex + 1),
-          ],
-          expectation: lesson.expectations[eIndex].expectation,
-        },
-        ...lesson.expectations.slice(eIndex + 1),
-      ],
+      conclusion: conclusions,
     });
   }
 
@@ -217,74 +191,6 @@ const LessonEdit = (props: {
 
   function handleDiscard() {
     navigate(`/lessons`);
-  }
-
-  function handleAddExpectation(): void {
-    setChange(true);
-    setLesson({
-      ...lesson,
-      expectations: [
-        ...lesson.expectations,
-        {
-          expectation:
-            "Add a short ideal answer for an expectation, e.g. 'Red'",
-          hints: [
-            {
-              text:
-                "Add a hint to help for the expectation, e.g. 'One of them starts with R'",
-            },
-          ],
-        },
-      ],
-    });
-  }
-
-  function handleRemoveExpectation(index: number): void {
-    lesson.expectations.splice(index, 1);
-    setLesson({ ...lesson, expectations: [...lesson.expectations] });
-  }
-
-  function handleAddConclusion(): void {
-    setChange(true);
-    setLesson({
-      ...lesson,
-      conclusion: [
-        ...lesson.conclusion,
-        "Add a conclusion statement, e.g. 'In summary,  RGB colors are red, green, and blue'",
-      ],
-    });
-  }
-
-  function handleRemoveConclusion(index: number): void {
-    lesson.conclusion.splice(index, 1);
-    setLesson({ ...lesson, conclusion: [...lesson.conclusion] });
-  }
-
-  function handleAddHint(index: number): void {
-    setChange(true);
-    setLesson({
-      ...lesson,
-      expectations: [
-        ...lesson.expectations.slice(0, index),
-        {
-          hints: [
-            ...lesson.expectations[index].hints,
-            {
-              text:
-                "Add a hint to help for the expectation, e.g. 'One of them starts with R'",
-            },
-          ],
-          expectation: lesson.expectations[index].expectation,
-        },
-        ...lesson.expectations.slice(index + 1),
-      ],
-    });
-  }
-
-  function handleRemoveHint(expectationIndex: number, hintIndex: number): void {
-    setChange(true);
-    lesson.expectations[expectationIndex].hints.splice(hintIndex, 1);
-    setLesson({ ...lesson, expectations: [...lesson.expectations] });
   }
 
   const [isTraining, setIsTraining] = React.useState(false);
@@ -431,7 +337,7 @@ const LessonEdit = (props: {
             InputLabelProps={{
               shrink: true,
             }}
-            value={lesson.name ? lesson.name : ""}
+            value={lesson.name || ""}
             onChange={(e) => {
               handleLessonNameChange(e.target.value);
             }}
@@ -448,7 +354,7 @@ const LessonEdit = (props: {
             InputLabelProps={{
               shrink: true,
             }}
-            value={lesson.lessonId ? lesson.lessonId : ""}
+            value={lesson.lessonId || ""}
             onChange={(e) => {
               handleLessonIdChange(e.target.value);
             }}
@@ -466,6 +372,7 @@ const LessonEdit = (props: {
             }}
             value={lesson.createdBy}
             disabled={true}
+            size="small"
           />
         </Grid>
         <Grid
@@ -487,13 +394,12 @@ const LessonEdit = (props: {
             InputLabelProps={{
               shrink: true,
             }}
-            value={lesson.intro ? lesson.intro : ""}
+            value={lesson.intro || ""}
             onChange={(e) => {
               handleIntroChange(e.target.value);
             }}
             variant="outlined"
           />
-
           <TextField
             id="question"
             key="question"
@@ -506,225 +412,25 @@ const LessonEdit = (props: {
             InputLabelProps={{
               shrink: true,
             }}
-            value={lesson.question ? lesson.question : ""}
+            value={lesson.question || ""}
             onChange={(e) => {
               handleQuestionChange(e.target.value);
             }}
             variant="outlined"
           />
         </Grid>
-        <TableContainer component={Paper}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Expectation</TableCell>
-                <TableCell />
-                <TableCell />
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {lesson?.expectations.map((row, i) => {
-                return (
-                  <React.Fragment key={`expectation-${i}`}>
-                    <TableRow className={classes.root}>
-                      <TableCell align="left" width="50%">
-                        <TextField
-                          margin="normal"
-                          name="expectations"
-                          id={`edit-expectation-${i}`}
-                          key={`edit-expectation-${i}`}
-                          label={`Expectation ${i + 1}`}
-                          placeholder="Add a short ideal answer for an expectation, e.g. 'Red'"
-                          inputProps={{ maxLength: 100 }}
-                          fullWidth
-                          InputLabelProps={{
-                            shrink: true,
-                          }}
-                          value={row.expectation ? row.expectation : ""}
-                          onChange={(e) => {
-                            handleExpectationChange(e.target.value, i);
-                          }}
-                          variant="outlined"
-                        />
-                      </TableCell>
-                      <TableCell align="left" width="40%">
-                        {lesson.expectations.length > 1 ? (
-                          <IconButton
-                            aria-label="remove expectation"
-                            size="small"
-                            onClick={() => {
-                              handleRemoveExpectation(i);
-                            }}
-                          >
-                            <ClearOutlinedIcon />
-                          </IconButton>
-                        ) : null}
-                      </TableCell>
-                      <TableCell align="center" width="10%">
-                        <IconButton
-                          aria-label="expand expectation"
-                          size="small"
-                          onClick={() => setExpectationOpen(!expectationOpen)}
-                        >
-                          {expectationOpen ? (
-                            <KeyboardArrowUpIcon />
-                          ) : (
-                            <KeyboardArrowDownIcon />
-                          )}
-                        </IconButton>
-                      </TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell
-                        style={{ paddingBottom: 0, paddingTop: 0 }}
-                        colSpan={6}
-                      >
-                        <Collapse
-                          in={expectationOpen}
-                          timeout="auto"
-                          unmountOnExit
-                        >
-                          <Box margin={1}>
-                            <Table size="small" aria-label="hint">
-                              <TableHead>
-                                <TableRow>
-                                  <TableCell style={{ minWidth: 170 }}>
-                                    Hint
-                                  </TableCell>
-                                  <TableCell />
-                                </TableRow>
-                              </TableHead>
-                              <TableBody>
-                                {row.hints.map((hint, j) => (
-                                  <TableRow key={`hint-${i}-${j}`}>
-                                    <TableCell align="left" width="60%">
-                                      <TextField
-                                        margin="normal"
-                                        id={`edit-hint-${i}-${j}`}
-                                        key={`edit-hint-${i}-${j}`}
-                                        label={`Hint ${j + 1}`}
-                                        placeholder="Add a hint to help for the expectation, e.g. 'One of them starts with R'"
-                                        multiline
-                                        rowsMax={4}
-                                        inputProps={{ maxLength: 400 }}
-                                        fullWidth
-                                        InputLabelProps={{
-                                          shrink: true,
-                                        }}
-                                        value={hint.text ? hint.text : ""}
-                                        onChange={(e) => {
-                                          handleHintChange(
-                                            e.target.value,
-                                            i,
-                                            j
-                                          );
-                                        }}
-                                        variant="outlined"
-                                      />
-                                    </TableCell>
-                                    <TableCell align="left" width="40%">
-                                      {row.hints.length > 1 ? (
-                                        <IconButton
-                                          aria-label="remove hint"
-                                          size="small"
-                                          onClick={() => {
-                                            handleRemoveHint(i, j);
-                                          }}
-                                        >
-                                          <ClearOutlinedIcon />
-                                        </IconButton>
-                                      ) : null}
-                                    </TableCell>
-                                  </TableRow>
-                                ))}
-                              </TableBody>
-                              <Button
-                                startIcon={<AddIcon />}
-                                className={classes.button}
-                                style={{ float: "left" }}
-                                onClick={() => {
-                                  handleAddHint(i);
-                                }}
-                              >
-                                Add Hint
-                              </Button>
-                            </Table>
-                          </Box>
-                        </Collapse>
-                      </TableCell>
-                    </TableRow>
-                  </React.Fragment>
-                );
-              })}
-            </TableBody>
-          </Table>
-          <Button
-            startIcon={<AddIcon />}
-            className={classes.button}
-            style={{ float: "left" }}
-            onClick={handleAddExpectation}
-          >
-            Add Expectation
-          </Button>
-        </TableContainer>
-        <TableContainer>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>{`Conclusion`}</TableCell>
-                <TableCell />
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {lesson.conclusion.map((row, i) => (
-                <TableRow key={`conclusion-${i}`}>
-                  <TableCell align="left" width="60%">
-                    <TextField
-                      margin="normal"
-                      id={`edit-conslusion-${i}`}
-                      key={`edit-conclusion-${i}=`}
-                      label={`Conclusion ${i + 1}`}
-                      multiline
-                      rowsMax={4}
-                      inputProps={{ maxLength: 400 }}
-                      fullWidth
-                      placeholder="Add a conclusion statement, e.g. 'In summary,  RGB colors are red, green, and blue'"
-                      InputLabelProps={{
-                        shrink: true,
-                      }}
-                      value={row ? row : ""}
-                      onChange={(e) => {
-                        handleConclusionChange(e.target.value, i);
-                      }}
-                      variant="outlined"
-                    />
-                  </TableCell>
-                  <TableCell align="left" width="40%">
-                    {lesson.conclusion.length > 1 ? (
-                      <IconButton
-                        aria-label="remove conclusion"
-                        size="small"
-                        onClick={() => {
-                          handleRemoveConclusion(i);
-                        }}
-                      >
-                        <ClearOutlinedIcon />
-                      </IconButton>
-                    ) : null}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-          <Button
-            startIcon={<AddIcon />}
-            className={classes.button}
-            style={{ float: "left" }}
-            onClick={handleAddConclusion}
-          >
-            Add Conclusion
-          </Button>
-        </TableContainer>
+        <Divider style={{ marginTop: 20 }} />
+        <ExpectationsList
+          classes={classes}
+          expectations={lesson.expectations}
+          updateExpectations={handleExpectationsChange}
+        />
+        <Divider />
+        <ConclusionsList
+          classes={classes}
+          conclusions={lesson.conclusion}
+          updateConclusions={handleConclusionsChange}
+        />
       </form>
 
       <Box
@@ -765,7 +471,6 @@ const LessonEdit = (props: {
           <Typography id="train-failure">{`TRAINING FAILED`}</Typography>
         ) : null}
       </Box>
-
       <div>
         <Button
           id="train-button"
@@ -805,6 +510,7 @@ const LessonEdit = (props: {
           Discard
         </Button>
       </div>
+
       <Dialog open={trainPopUp} onClose={handleTrainPopUp}>
         {!lesson.isTrainable ? (
           <DialogTitle> NEEDS MORE GRADED DATA </DialogTitle>
@@ -815,19 +521,17 @@ const LessonEdit = (props: {
         ) : null}
       </Dialog>
       <Dialog open={savePopUp} onClose={handleSavePopUp}>
-        <DialogTitle> Save </DialogTitle>
+        <DialogTitle>Save</DialogTitle>
         <DialogActions>
           <Button
             id="save-continue"
             onClick={handleSaveContinue}
             color="primary"
           >
-            {" "}
-            Continue{" "}
+            Continue
           </Button>
           <Button id="save-exit" onClick={handleSaveExit} color="primary">
-            {" "}
-            Exit{" "}
+            Exit
           </Button>
         </DialogActions>
       </Dialog>
