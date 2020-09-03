@@ -25,10 +25,11 @@ export const ColumnHeader = (props: {
   const { columns, sortBy, sortAsc, onSort } = props;
 
   return (
-    <TableHead>
+    <TableHead id="column-header">
       <TableRow>
         {columns.map((column) => (
           <TableCell
+            id={`${column.id}`}
             key={column.id}
             align={column.align}
             style={{ minWidth: column.minWidth }}

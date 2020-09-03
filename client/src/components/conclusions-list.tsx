@@ -23,31 +23,31 @@ import DragHandleIcon from "@material-ui/icons/DragHandle";
 import "styles/layout.css";
 
 const ConclusionCard = (props: {
-  i: number;
   conclusion: string;
+  idx: number;
   canDelete: boolean;
   handleConclusionChange: (val: string) => void;
   handleRemoveConclusion: () => void;
 }) => {
   const {
-    i,
     conclusion,
+    idx,
     canDelete,
     handleConclusionChange,
     handleRemoveConclusion,
   } = props;
 
   return (
-    <Card>
+    <Card id={`conclusion-${idx}`}>
       <CardContent style={{ display: "flex", flexDirection: "row" }}>
         <CardActions>
           <DragHandleIcon />
         </CardActions>
         <TextField
           margin="normal"
-          id={`edit-conslusion-${i}`}
-          key={`edit-conclusion-${i}=`}
-          label={`Conclusion ${i + 1}`}
+          id="edit-conclusion"
+          key="edit-conclusion"
+          label={`Conclusion ${idx + 1}`}
           multiline
           rowsMax={4}
           inputProps={{ maxLength: 400 }}
@@ -65,6 +65,7 @@ const ConclusionCard = (props: {
         <CardActions>
           {canDelete ? (
             <IconButton
+              id="delete-conclusion"
               aria-label="remove conclusion"
               size="small"
               onClick={handleRemoveConclusion}
@@ -129,33 +130,31 @@ const ConclusionsList = (props: {
               }
             >
               {conclusions.map((row, i) => (
-                <ListItem>
-                  <Draggable
-                    key={`conclusion-${i}`}
-                    draggableId={`conclusion-${i}`}
-                    index={i}
-                  >
-                    {(provided, snapshot) => (
-                      <div
-                        ref={provided.innerRef}
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}
-                      >
-                        <ConclusionCard
-                          i={i}
-                          conclusion={row}
-                          canDelete={conclusions.length > 1}
-                          handleConclusionChange={(val: string) => {
-                            handleConclusionChange(val, i);
-                          }}
-                          handleRemoveConclusion={() => {
-                            handleRemoveConclusion(i);
-                          }}
-                        />
-                      </div>
-                    )}
-                  </Draggable>
-                </ListItem>
+                <Draggable
+                  key={`conclusion-${i}`}
+                  draggableId={`conclusion-${i}`}
+                  index={i}
+                >
+                  {(provided, snapshot) => (
+                    <ListItem
+                      ref={provided.innerRef}
+                      {...provided.draggableProps}
+                      {...provided.dragHandleProps}
+                    >
+                      <ConclusionCard
+                        idx={i}
+                        conclusion={row}
+                        canDelete={conclusions.length > 1}
+                        handleConclusionChange={(val: string) => {
+                          handleConclusionChange(val, i);
+                        }}
+                        handleRemoveConclusion={() => {
+                          handleRemoveConclusion(i);
+                        }}
+                      />
+                    </ListItem>
+                  )}
+                </Draggable>
               ))}
               {provided.placeholder}
             </List>

@@ -48,7 +48,7 @@ const ExpectationCard = (props: {
   const [expanded, setExpanded] = React.useState(true);
 
   return (
-    <Card>
+    <Card id={`expectation-${expIdx}`}>
       <CardContent>
         <div style={{ display: "flex", flexDirection: "row" }}>
           <CardActions>
@@ -57,8 +57,8 @@ const ExpectationCard = (props: {
           <TextField
             margin="normal"
             name="expectations"
-            id={`edit-expectation-${expIdx}`}
-            key={`edit-expectation-${expIdx}`}
+            id="edit-expectation"
+            key="edit-expectation"
             label={`Expectation ${expIdx + 1}`}
             placeholder="Add a short ideal answer for an expectation, e.g. 'Red'"
             variant="outlined"
@@ -75,6 +75,7 @@ const ExpectationCard = (props: {
           <CardActions>
             {canDelete ? (
               <IconButton
+                id="delete-expectation"
                 aria-label="remove expectation"
                 size="small"
                 onClick={handleRemoveExpectation}
@@ -83,6 +84,7 @@ const ExpectationCard = (props: {
               </IconButton>
             ) : null}
             <IconButton
+              id="expand-expectation"
               aria-label="expand expectation"
               size="small"
               aria-expanded={expanded}
@@ -104,7 +106,6 @@ const ExpectationCard = (props: {
           <HintsList
             classes={classes}
             hints={expectation.hints}
-            expIdx={expIdx}
             updateHints={handleHintChange}
           />
         </Collapse>
@@ -176,37 +177,35 @@ const ExpectationsList = (props: {
               }
             >
               {expectations.map((exp, i) => (
-                <ListItem>
-                  <Draggable
-                    key={`expectation-${i}`}
-                    draggableId={`expectation-${i}`}
-                    index={i}
-                  >
-                    {(provided, snapshot) => (
-                      <div
-                        ref={provided.innerRef}
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}
-                      >
-                        <ExpectationCard
-                          classes={classes}
-                          expectation={exp}
-                          expIdx={i}
-                          canDelete={expectations.length > 1}
-                          handleExpectationChange={(val: string) => {
-                            handleExpectationChange(val, i);
-                          }}
-                          handleRemoveExpectation={() => {
-                            handleRemoveExpectation(i);
-                          }}
-                          handleHintChange={(val: Hint[]) => {
-                            handleHintChange(val, i);
-                          }}
-                        />
-                      </div>
-                    )}
-                  </Draggable>
-                </ListItem>
+                <Draggable
+                  key={`expectation-${i}`}
+                  draggableId={`expectation-${i}`}
+                  index={i}
+                >
+                  {(provided, snapshot) => (
+                    <ListItem
+                      ref={provided.innerRef}
+                      {...provided.draggableProps}
+                      {...provided.dragHandleProps}
+                    >
+                      <ExpectationCard
+                        classes={classes}
+                        expectation={exp}
+                        expIdx={i}
+                        canDelete={expectations.length > 1}
+                        handleExpectationChange={(val: string) => {
+                          handleExpectationChange(val, i);
+                        }}
+                        handleRemoveExpectation={() => {
+                          handleRemoveExpectation(i);
+                        }}
+                        handleHintChange={(val: Hint[]) => {
+                          handleHintChange(val, i);
+                        }}
+                      />
+                    </ListItem>
+                  )}
+                </Draggable>
               ))}
               {provided.placeholder}
             </List>

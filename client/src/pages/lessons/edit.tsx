@@ -432,7 +432,6 @@ const LessonEdit = (props: {
           updateConclusions={handleConclusionsChange}
         />
       </form>
-
       <Box
         border={5}
         borderColor={
@@ -510,7 +509,6 @@ const LessonEdit = (props: {
           Discard
         </Button>
       </div>
-
       <Dialog open={trainPopUp} onClose={handleTrainPopUp}>
         {!lesson.isTrainable ? (
           <DialogTitle> NEEDS MORE GRADED DATA </DialogTitle>

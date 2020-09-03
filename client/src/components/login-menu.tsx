@@ -85,7 +85,7 @@ export const LoginMenu = (props: { path: string; children: any }) => {
   }
 
   return (
-    <div className={classes.root}>
+    <div id="login-menu" className={classes.root}>
       <NavBar title="OpenTutor" />
       <Typography variant="h5" className={classes.title}>
         {cookies.user

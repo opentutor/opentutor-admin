@@ -4,12 +4,10 @@ import { useCookies } from "react-cookie";
 const ToggleContext = React.createContext({
   showGraded: false,
   onlyCreator: false,
-  toggleGraded: () => {
-    1 + 1;
-  },
-  toggleCreator: () => {
-    1 + 1;
-  },
+  // eslint-disable-next-line
+  toggleGraded: () => {},
+  // eslint-disable-next-line
+  toggleCreator: () => {},
 });
 
 const ToggleProvider = (props: { children: any }) => {

@@ -170,6 +170,7 @@ const SessionItem = (props: { row: Edge<Session>; i: number }) => {
 
   return (
     <TableRow
+      id={`session-${i}`}
       hover
       role="checkbox"
       tabIndex={-1}
@@ -180,7 +181,7 @@ const SessionItem = (props: { row: Edge<Session>; i: number }) => {
             : "white",
       }}
     >
-      <TableCell key={`lesson-${i}`} id={`lesson-${i}`} align="left">
+      <TableCell id={`lesson`} align="left">
         <Link
           to={withPrefix(`/lessons/edit?lessonId=${row.node.lesson.lessonId}`)}
         >
@@ -190,25 +191,25 @@ const SessionItem = (props: { row: Edge<Session>; i: number }) => {
         </Link>
       </TableCell>
       <TableCell>
-        <IconButton id={`launch-${i}`} onClick={handleGrade}>
+        <IconButton id={`grade`} onClick={handleGrade}>
           <AssignmentIcon />
         </IconButton>
-      </TableCell>{" "}
-      <TableCell key={`instructor-grade-${i}`} align="center">
+      </TableCell>
+      <TableCell id={`instructor-grade`} align="center">
         {row.node.graderGrade || row.node.graderGrade === 0
           ? Math.trunc(row.node.graderGrade * 100)
           : "?"}
       </TableCell>
-      <TableCell key={`classifier-grade-${i}`} align="center">
+      <TableCell id={`classifier-grade`} align="center">
         {row.node ? Math.trunc(row.node.classifierGrade * 100) : "?"}
       </TableCell>
-      <TableCell key={`date-${i}`} align="center">
+      <TableCell id={`date`} align="center">
         {row.node.createdAt ? row.node.createdAt : ""}
       </TableCell>
-      <TableCell key={`creator-${i}`} align="center">
+      <TableCell id={`creator`} align="center">
         {row.node.lesson.createdBy ? row.node.lesson.createdBy : "Guest"}
       </TableCell>
-      <TableCell key={`username-${i}`} align="center">
+      <TableCell id={`username`} align="center">
         {row.node.username ? row.node.username : "Guest"}
       </TableCell>
     </TableRow>
@@ -283,7 +284,7 @@ const SessionsTable = (props: {
               sortAsc={sortAsc}
               onSort={onSort}
             />
-            <TableBody>
+            <TableBody id="sessions">
               {sessions.edges.map((row, i) => (
                 <SessionItem key={row.node.sessionId} row={row} i={i} />
               ))}

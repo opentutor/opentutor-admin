@@ -199,22 +199,18 @@ const LessonItem = (props: {
   };
 
   return (
-    <TableRow hover role="checkbox" tabIndex={-1}>
-      <TableCell key={`lesson-name-${i}`} id={`lesson-name-${i}`} align="left">
+    <TableRow id={`lesson-${i}`} hover role="checkbox" tabIndex={-1}>
+      <TableCell id={`name`} align="left">
         <Link to={withPrefix(`/lessons/edit?lessonId=${row.node.lessonId}`)}>
           {row.node.name ? row.node.name : "No Lesson Name"}
         </Link>
       </TableCell>
-      <TableCell
-        key={`lesson-launch-${i}`}
-        id={`lesson-launch-${i}`}
-        align="left"
-      >
+      <TableCell id={`launch`} align="left">
         <IconButton onClick={() => launchLesson(row.node.lessonId)}>
           <LaunchIcon />
         </IconButton>
       </TableCell>
-      <TableCell>
+      <TableCell id={`grade`}>
         <IconButton
           onClick={() => {
             handleGrade();
@@ -223,26 +219,19 @@ const LessonItem = (props: {
           <AssignmentIcon />
         </IconButton>
       </TableCell>{" "}
-      <TableCell key={`date-${i}`} align="center">
+      <TableCell id={`date`} align="center">
         {row.node.updatedAt ? row.node.updatedAt.toLocaleString() : ""}
       </TableCell>
-      <TableCell
-        key={`lesson-creator-${i}`}
-        id={`lesson-creator-${i}`}
-        align="center"
-      >
+      <TableCell id={`creator`} align="center">
         {row.node.createdBy}
       </TableCell>
-      <TableCell
-        key={`delete-lesson-${i}`}
-        id={`delete-lesson-${i}`}
-        align="center"
-      >
+      <TableCell id={`delete`} align="center">
         <IconButton onClick={handleDelete}>
           <DeleteIcon />
         </IconButton>
       </TableCell>
       <Menu
+        id={`delete-menu`}
         anchorEl={anchorEl}
         anchorOrigin={{
           vertical: "top",
@@ -256,10 +245,10 @@ const LessonItem = (props: {
         open={deleteMenuOpen}
         onClose={handleClose}
       >
-        <MenuItem id={`delete-lesson-${i}-confirm`} onClick={confirmDelete}>
+        <MenuItem id={`confirm-delete`} onClick={confirmDelete}>
           Confirm
         </MenuItem>
-        <MenuItem id={`delete-lesson-${i}-cancel`} onClick={handleClose}>
+        <MenuItem id={`cancel-delete`} onClick={handleClose}>
           Cancel
         </MenuItem>
       </Menu>
@@ -267,7 +256,7 @@ const LessonItem = (props: {
   );
 };
 
-export const LessonsTable = (props: { location: any }) => {
+const LessonsTable = (props: { location: any }) => {
   const classes = useStyles();
   const toggle = useContext(ToggleContext);
   const [cookies] = useCookies(["user"]);
@@ -329,7 +318,7 @@ export const LessonsTable = (props: { location: any }) => {
               sortAsc={sortAsc}
               onSort={onSort}
             />
-            <TableBody>
+            <TableBody id="lessons">
               {lessons.edges.map((row, i) => (
                 <LessonItem
                   key={`lesson-${i}`}

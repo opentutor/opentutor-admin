@@ -15,6 +15,7 @@ describe("lessons screen", () => {
                   lessonId: "lesson1",
                   name: "lesson 1",
                   updatedAt: "1/1/20000, 12:00:00 AM",
+                  createdBy: "teacher 1",
                 },
               },
               {
@@ -23,6 +24,7 @@ describe("lessons screen", () => {
                   lessonId: "lesson2",
                   name: "lesson 2",
                   updatedAt: "1/1/20000, 12:00:00 AM",
+                  createdBy: "teacher 2",
                 },
               },
             ],
@@ -41,38 +43,46 @@ describe("lessons screen", () => {
     });
   });
 
-  it("displays a table with header Lesson and Date", () => {
+  it("displays lesson table with headers", () => {
     cy.visit("/lessons");
-    const tableHead = cy.get("table thead tr");
-    tableHead.get("th").eq(0).should("contain", "Lesson");
-    tableHead.get("th").eq(1).should("contain", "Launch");
-    tableHead.get("th").eq(2).should("contain", "Grade");
-    tableHead.get("th").eq(3).should("contain", "Date");
-    tableHead.get("th").eq(4).should("contain", "Created By");
-    tableHead.get("th").eq(5).should("contain", "Delete");
+    cy.get("#column-header");
+    cy.get("#column-header #name").contains("Lesson");
+    cy.get("#column-header #launch").contains("Launch");
+    cy.get("#column-header #grade").contains("Grade");
+    cy.get("#column-header #updatedAt").contains("Date");
+    cy.get("#column-header #createdBy").contains("Created By");
+    cy.get("#column-header #delete").contains("Delete");
   });
 
-  it("displays 2 lesson names by row", () => {
+  it("displays a list of lessons", () => {
     cy.visit("/lessons");
-    const tableBody = cy.get("table tbody");
-    tableBody.get("tr").should("have.length", 3);
-    cy.get("table>tbody>tr:nth-child(1)>td:nth-child(1)").should(
-      "contain",
-      "lesson 1"
-    );
-    cy.get("table>tbody>tr:nth-child(2)>td:nth-child(1)").should(
-      "contain",
-      "lesson 2"
-    );
+    cy.get("#lessons").children().should("have.length", 2);
+    cy.get("#lesson-0 #name").contains("lesson 1");
+    cy.get("#lesson-0 #date").contains("1/1/20000, 12:00:00 AM");
+    cy.get("#lesson-0 #creator").contains("teacher 1");
+    cy.get("#lesson-1 #name").contains("lesson 2");
+    cy.get("#lesson-1 #date").contains("1/1/20000, 12:00:00 AM");
+    cy.get("#lesson-1 #creator").contains("teacher 2");
   });
 
-  it("opens edit for a lesson on tap link", () => {
+  it("opens edit for a lesson", () => {
     cy.visit("/lessons");
-    cy.get("#lesson-name-0 a").click();
+    cy.get("#lesson-0 #name a").click();
+    cy.location("pathname").should("eq", "/lessons/edit");
+    cy.location("search").should("eq", "?lessonId=lesson1");
   });
 
-  it("clicks on create lesson and opens to an edit page for the lesson", () => {
+  it("opens grade for a lesson", () => {
+    cy.visit("/lessons");
+    cy.get("#lesson-0 #grade").click();
+    cy.location("pathname").should("eq", "/sessions");
+    cy.location("search").should("eq", "?lessonId=lesson1");
+  });
+
+  it("clicks on create lesson and opens to an edit page for new lesson", () => {
     cy.visit("/lessons");
     cy.get("#create-button").click();
+    cy.location("pathname").should("eq", "/lessons/edit");
+    cy.location("search").should("eq", "?lessonId=new");
   });
 });

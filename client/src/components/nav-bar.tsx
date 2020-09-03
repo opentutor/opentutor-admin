@@ -79,8 +79,9 @@ const LoginOption = (props: { classes: any }) => {
 
   if (cookies.user) {
     return (
-      <div id="nav-login-button" className={classes.login}>
+      <div id="login-option" className={classes.login}>
         <Button
+          id="login"
           onClick={handleMenu}
           startIcon={<AccountCircle />}
           style={{ color: "white" }}
@@ -88,7 +89,7 @@ const LoginOption = (props: { classes: any }) => {
           {cookies.user}
         </Button>
         <Menu
-          id="nav-login-menu"
+          id="login-menu"
           anchorEl={anchorEl}
           anchorOrigin={{
             vertical: "top",
@@ -102,7 +103,7 @@ const LoginOption = (props: { classes: any }) => {
           open={open}
           onClose={handleClose}
         >
-          <MenuItem id="nav-login-menu-logout" onClick={onLogout}>
+          <MenuItem id="logout" onClick={onLogout}>
             Logout
           </MenuItem>
         </Menu>
@@ -111,15 +112,11 @@ const LoginOption = (props: { classes: any }) => {
   }
 
   return (
-    <Button
-      id="nav-login-button"
-      className={classes.login}
-      color="inherit"
-      component={Link}
-      to={"/admin"}
-    >
-      Login
-    </Button>
+    <div id="login-option" className={classes.login}>
+      <Button id="login" color="inherit" component={Link} to={"/admin"}>
+        Login
+      </Button>
+    </div>
   );
 };
 
@@ -136,7 +133,7 @@ export const NavBar = (props: { title: string }) => {
       <AppBar position="fixed">
         <Toolbar>
           <IconButton
-            id="nav-menu-button"
+            id="menu-button"
             edge="start"
             color="inherit"
             aria-label="menu"
@@ -145,14 +142,14 @@ export const NavBar = (props: { title: string }) => {
           >
             <MenuIcon />
           </IconButton>
-          <Typography id="nav-title" variant="h6" className={classes.title}>
+          <Typography id="title" variant="h6" className={classes.title}>
             {props.title}
           </Typography>
           <LoginOption classes={classes} />
         </Toolbar>
       </AppBar>
       <SwipeableDrawer
-        id="nav-drawer"
+        id="drawer"
         anchor="left"
         open={isDrawerOpen}
         onClose={() => toggleDrawer(false)}

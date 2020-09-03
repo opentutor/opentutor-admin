@@ -13,24 +13,30 @@ describe("sessions screen", () => {
                 cursor: "cursor 1",
                 node: {
                   lesson: {
+                    lessonId: "lesson1",
                     name: "lesson 1",
+                    createdBy: "teacher 1",
                   },
-                  sessionId: "session 1",
+                  sessionId: "session1",
                   classifierGrade: 1,
                   graderGrade: 1,
                   createdAt: "1/1/20000, 12:00:00 AM",
+                  username: "user 1",
                 },
               },
               {
                 cursor: "cursor 2",
                 node: {
                   lesson: {
+                    lessonId: "lesson2",
                     name: "lesson 2",
+                    createdBy: "teacher 2",
                   },
-                  sessionId: "session 2",
+                  sessionId: "session2",
                   classifierGrade: 0.5,
                   graderGrade: null,
                   createdAt: "1/1/20000, 12:00:00 AM",
+                  username: "user 2",
                 },
               },
             ],
@@ -49,46 +55,46 @@ describe("sessions screen", () => {
     });
   });
 
-  it("displays a table with headers Session Id, Username, Date, Classifier Grade, Grade", () => {
+  it("displays session table with headers", () => {
     cy.visit("/sessions");
-    const tableHead = cy.get("table thead tr");
-    tableHead.get("th").eq(0).should("contain", "Lesson");
-    tableHead.get("th").eq(1).should("contain", "Grade");
-    tableHead.get("th").eq(2).should("contain", "Instructor Grade");
-    tableHead.get("th").eq(3).should("contain", "Classifier Grade");
-    tableHead.get("th").eq(4).should("contain", "Date");
-    tableHead.get("th").eq(5).should("contain", "Created By");
-    tableHead.get("th").eq(6).should("contain", "Username");
+    cy.get("#column-header");
+    cy.get("#column-header #lessonName").contains("Lesson");
+    cy.get("#column-header #grade-link").contains("Grade");
+    cy.get("#column-header #graderGrade").contains("Instructor Grade");
+    cy.get("#column-header #classifierGrade").contains("Classifier Grade");
+    cy.get("#column-header #createdAt").contains("Date");
+    cy.get("#column-header #lessonCreatedBy").contains("Created By");
+    cy.get("#column-header #username").contains("Username");
   });
 
   it("displays a list of sessions", () => {
     cy.visit("/sessions");
-    const tableBody = cy.get("table tbody");
-    tableBody.get("tr").should("have.length", 3);
-    cy.get("table>tbody>tr:nth-child(1)>td:nth-child(1)").should(
-      "contain",
-      "lesson 1"
-    );
-    cy.get("table>tbody>tr:nth-child(1)>td:nth-child(4)").should(
-      "contain",
-      "100"
-    );
-    cy.get("table>tbody>tr:nth-child(1)>td:nth-child(3)").should(
-      "contain",
-      "100"
-    );
-    cy.get("table>tbody>tr:nth-child(2)>td:nth-child(1)").should(
-      "contain",
-      "lesson 2"
-    );
-    cy.get("table>tbody>tr:nth-child(2)>td:nth-child(4)").should(
-      "contain",
-      "50"
-    );
-    cy.get("table>tbody>tr:nth-child(2)>td:nth-child(3)").should(
-      "contain",
-      "?"
-    );
+    cy.get("#sessions").children().should("have.length", 2);
+    cy.get("#session-0 #lesson").contains("lesson 1");
+    cy.get("#session-0 #instructor-grade").contains("100");
+    cy.get("#session-0 #classifier-grade").contains("100");
+    cy.get("#session-0 #date").contains("1/1/20000, 12:00:00 AM");
+    cy.get("#session-0 #creator").contains("teacher 1");
+    cy.get("#session-0 #username").contains("user 1");
+    cy.get("#session-1 #lesson").contains("lesson 2");
+    cy.get("#session-1 #instructor-grade").contains("?");
+    cy.get("#session-1 #classifier-grade").contains("50");
+    cy.get("#session-1 #creator").contains("teacher 2");
+    cy.get("#session-1 #username").contains("user 2");
+  });
+
+  it("opens edit for a session", () => {
+    cy.visit("/sessions");
+    cy.get("#session-0 #lesson a").click();
+    cy.location("pathname").should("eq", "/lessons/edit");
+    cy.location("search").should("eq", "?lessonId=lesson1");
+  });
+
+  it("opens grade for a session", () => {
+    cy.visit("/sessions");
+    cy.get("#session-0 #grade").click();
+    cy.location("pathname").should("eq", "/sessions/session");
+    cy.location("search").should("eq", "?sessionId=session1");
   });
 
   it("displays an option to view already graded sessions", () => {

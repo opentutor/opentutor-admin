@@ -25,7 +25,6 @@ import "styles/layout.css";
 
 const HintCard = (props: {
   hint: Hint;
-  expIdx: number;
   hintIdx: number;
   canDelete: boolean;
   handleHintChange: (val: string) => void;
@@ -33,7 +32,6 @@ const HintCard = (props: {
 }) => {
   const {
     hint,
-    expIdx,
     hintIdx,
     canDelete,
     handleHintChange,
@@ -41,15 +39,15 @@ const HintCard = (props: {
   } = props;
 
   return (
-    <Card variant="outlined" key={`hint-${expIdx}-${hintIdx}`}>
+    <Card id={`hint-${hintIdx}`} variant="outlined">
       <CardContent style={{ display: "flex", flexDirection: "row" }}>
         <CardActions>
           <DragHandleIcon />
         </CardActions>
         <TextField
           margin="normal"
-          id={`edit-hint-${expIdx}-${hintIdx}`}
-          key={`edit-hint-${expIdx}-${hintIdx}`}
+          id="edit-hint"
+          key="edit-hint"
           label={`Hint ${hintIdx + 1}`}
           placeholder="Add a hint to help for the expectation, e.g. 'One of them starts with R'"
           multiline
@@ -68,6 +66,7 @@ const HintCard = (props: {
         <CardActions>
           {canDelete ? (
             <IconButton
+              id="delete-hint"
               aria-label="remove hint"
               size="small"
               onClick={handleRemoveHint}
@@ -84,10 +83,9 @@ const HintCard = (props: {
 const HintsList = (props: {
   classes: any;
   hints: Hint[];
-  expIdx: number;
   updateHints: (val: Hint[]) => void;
 }) => {
-  const { classes, hints, expIdx, updateHints } = props;
+  const { classes, hints, updateHints } = props;
 
   function onDragEnd(result: DropResult) {
     if (!result.destination) {
@@ -137,34 +135,31 @@ const HintsList = (props: {
               }
             >
               {hints.map((hint, i) => (
-                <ListItem>
-                  <Draggable
-                    key={`hint-${i}`}
-                    draggableId={`hint-${i}`}
-                    index={i}
-                  >
-                    {(provided, snapshot) => (
-                      <div
-                        ref={provided.innerRef}
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}
-                      >
-                        <HintCard
-                          hint={hint}
-                          expIdx={expIdx}
-                          hintIdx={i}
-                          canDelete={hints.length > 1}
-                          handleHintChange={(val: string) => {
-                            handleHintChange(val, i);
-                          }}
-                          handleRemoveHint={() => {
-                            handleRemoveHint(i);
-                          }}
-                        />
-                      </div>
-                    )}
-                  </Draggable>
-                </ListItem>
+                <Draggable
+                  key={`hint-${i}`}
+                  draggableId={`hint-${i}`}
+                  index={i}
+                >
+                  {(provided, snapshot) => (
+                    <ListItem
+                      ref={provided.innerRef}
+                      {...provided.draggableProps}
+                      {...provided.dragHandleProps}
+                    >
+                      <HintCard
+                        hint={hint}
+                        hintIdx={i}
+                        canDelete={hints.length > 1}
+                        handleHintChange={(val: string) => {
+                          handleHintChange(val, i);
+                        }}
+                        handleRemoveHint={() => {
+                          handleRemoveHint(i);
+                        }}
+                      />
+                    </ListItem>
+                  )}
+                </Draggable>
               ))}
               {provided.placeholder}
             </List>
