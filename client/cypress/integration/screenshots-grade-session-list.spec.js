@@ -99,7 +99,7 @@ describe("screenshots - grade session list", () => {
       },
     }).as("sessionsList");
     cy.visit("/sessions");
-    cy.get("#toggle").check();
+    cy.get("#toggle-graded").check();
     cy.wait("@sessionsList");
     cy.matchImageSnapshot(snapname("displays-sessions-show-graded-enabled"));
   });

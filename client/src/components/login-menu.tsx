@@ -64,7 +64,7 @@ export const LoginMenu = (props: { path: string; children: any }) => {
   const LoginButton = () => {
     return (
       <Button
-        id="login-button"
+        id="login"
         variant="contained"
         color="primary"
         onClick={onLogin}
@@ -94,7 +94,7 @@ export const LoginMenu = (props: { path: string; children: any }) => {
       </Typography>
       Teacher Login
       <TextField
-        id="login-text-field"
+        id="login-input"
         variant="filled"
         label="username"
         value={input || ""}

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import {
   DragDropContext,
   Droppable,
@@ -45,9 +45,8 @@ const HintCard = (props: {
           <DragHandleIcon />
         </CardActions>
         <TextField
+          id="edit"
           margin="normal"
-          id="edit-hint"
-          key="edit-hint"
           label={`Hint ${hintIdx + 1}`}
           placeholder="Add a hint to help for the expectation, e.g. 'One of them starts with R'"
           multiline
@@ -66,7 +65,7 @@ const HintCard = (props: {
         <CardActions>
           {canDelete ? (
             <IconButton
-              id="delete-hint"
+              id="delete"
               aria-label="remove hint"
               size="small"
               onClick={handleRemoveHint}
@@ -87,38 +86,47 @@ const HintsList = (props: {
 }) => {
   const { classes, hints, updateHints } = props;
 
-  function onDragEnd(result: DropResult) {
-    if (!result.destination) {
-      return;
-    }
-    const startIdx = result.source.index;
-    const endIdx = result.destination.index;
-    const [removed] = hints.splice(startIdx, 1);
-    hints.splice(endIdx, 0, removed);
-    updateHints([...hints]);
-  }
+  const onDragEnd = useCallback(
+    (result: DropResult) => {
+      if (!result.destination) {
+        return;
+      }
+      const startIdx = result.source.index;
+      const endIdx = result.destination.index;
+      const [removed] = hints.splice(startIdx, 1);
+      hints.splice(endIdx, 0, removed);
+      updateHints([...hints]);
+    },
+    [hints]
+  );
 
-  function handleHintChange(val: string, idx: number): void {
-    hints[idx].text = val;
-    updateHints([...hints]);
-  }
+  const handleHintChange = useCallback(
+    (val: string, idx: number) => {
+      hints[idx].text = val;
+      updateHints([...hints]);
+    },
+    [hints]
+  );
 
-  function handleAddHint(): void {
+  const handleAddHint = useCallback(() => {
     const newItem = {
       text:
         "Add a hint to help for the expectation, e.g. 'One of them starts with R'",
     };
     hints.push(newItem);
     updateHints([...hints]);
-  }
+  }, [hints]);
 
-  function handleRemoveHint(idx: number): void {
-    hints.splice(idx, 1);
-    updateHints([...hints]);
-  }
+  const handleRemoveHint = useCallback(
+    (idx: number) => {
+      hints.splice(idx, 1);
+      updateHints([...hints]);
+    },
+    [hints]
+  );
 
   return (
-    <Paper elevation={0} style={{ textAlign: "left" }}>
+    <Paper id="hints" elevation={0} style={{ textAlign: "left" }}>
       <Typography variant="body2" style={{ padding: 5 }}>
         Hints
       </Typography>
@@ -167,6 +175,7 @@ const HintsList = (props: {
         </Droppable>
       </DragDropContext>
       <Button
+        id="add"
         startIcon={<AddIcon />}
         className={classes.button}
         onClick={handleAddHint}

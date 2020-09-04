@@ -126,6 +126,7 @@ const TableFooter = (props: {
             <FormControlLabel
               control={
                 <Switch
+                  id="toggle-creator"
                   checked={onlyCreator}
                   onChange={toggleCreator}
                   aria-label="switch"
@@ -139,7 +140,7 @@ const TableFooter = (props: {
           <FormControlLabel
             control={
               <Switch
-                id="toggle"
+                id="toggle-graded"
                 checked={showGraded}
                 onChange={toggleGraded}
                 aria-label="switch"
@@ -149,10 +150,10 @@ const TableFooter = (props: {
           />
         </FormGroup>
         <div className={classes.paging}>
-          <IconButton disabled={!hasPrev} onClick={onPrev}>
+          <IconButton id="prev-page" disabled={!hasPrev} onClick={onPrev}>
             <KeyboardArrowLeftIcon />
           </IconButton>
-          <IconButton disabled={!hasNext} onClick={onNext}>
+          <IconButton id="next-page" disabled={!hasNext} onClick={onNext}>
             <KeyboardArrowRightIcon />
           </IconButton>
         </div>
@@ -181,7 +182,7 @@ const SessionItem = (props: { row: Edge<Session>; i: number }) => {
             : "white",
       }}
     >
-      <TableCell id={`lesson`} align="left">
+      <TableCell id="lesson" align="left">
         <Link
           to={withPrefix(`/lessons/edit?lessonId=${row.node.lesson.lessonId}`)}
         >
@@ -191,25 +192,25 @@ const SessionItem = (props: { row: Edge<Session>; i: number }) => {
         </Link>
       </TableCell>
       <TableCell>
-        <IconButton id={`grade`} onClick={handleGrade}>
+        <IconButton id="grade" onClick={handleGrade}>
           <AssignmentIcon />
         </IconButton>
       </TableCell>
-      <TableCell id={`instructor-grade`} align="center">
+      <TableCell id="instructor-grade" align="center">
         {row.node.graderGrade || row.node.graderGrade === 0
           ? Math.trunc(row.node.graderGrade * 100)
           : "?"}
       </TableCell>
-      <TableCell id={`classifier-grade`} align="center">
+      <TableCell id="classifier-grade" align="center">
         {row.node ? Math.trunc(row.node.classifierGrade * 100) : "?"}
       </TableCell>
-      <TableCell id={`date`} align="center">
+      <TableCell id="date" align="center">
         {row.node.createdAt ? row.node.createdAt : ""}
       </TableCell>
-      <TableCell id={`creator`} align="center">
+      <TableCell id="creator" align="center">
         {row.node.lesson.createdBy ? row.node.lesson.createdBy : "Guest"}
       </TableCell>
-      <TableCell id={`username`} align="center">
+      <TableCell id="username" align="center">
         {row.node.username ? row.node.username : "Guest"}
       </TableCell>
     </TableRow>

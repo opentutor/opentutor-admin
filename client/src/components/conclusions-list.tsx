@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import {
   DragDropContext,
   Droppable,
@@ -45,8 +45,7 @@ const ConclusionCard = (props: {
         </CardActions>
         <TextField
           margin="normal"
-          id="edit-conclusion"
-          key="edit-conclusion"
+          id="edit"
           label={`Conclusion ${idx + 1}`}
           multiline
           rowsMax={4}
@@ -65,7 +64,7 @@ const ConclusionCard = (props: {
         <CardActions>
           {canDelete ? (
             <IconButton
-              id="delete-conclusion"
+              id="delete"
               aria-label="remove conclusion"
               size="small"
               onClick={handleRemoveConclusion}
@@ -86,36 +85,45 @@ const ConclusionsList = (props: {
 }) => {
   const { classes, conclusions, updateConclusions } = props;
 
-  function onDragEnd(result: DropResult) {
-    if (!result.destination) {
-      return;
-    }
-    const startIdx = result.source.index;
-    const endIdx = result.destination.index;
-    const [removed] = conclusions.splice(startIdx, 1);
-    conclusions.splice(endIdx, 0, removed);
-    updateConclusions([...conclusions]);
-  }
+  const onDragEnd = useCallback(
+    (result: DropResult) => {
+      if (!result.destination) {
+        return;
+      }
+      const startIdx = result.source.index;
+      const endIdx = result.destination.index;
+      const [removed] = conclusions.splice(startIdx, 1);
+      conclusions.splice(endIdx, 0, removed);
+      updateConclusions([...conclusions]);
+    },
+    [conclusions]
+  );
 
-  function handleConclusionChange(val: string, idx: number): void {
-    conclusions[idx] = val;
-    updateConclusions([...conclusions]);
-  }
+  const handleConclusionChange = useCallback(
+    (val: string, idx: number) => {
+      conclusions[idx] = val;
+      updateConclusions([...conclusions]);
+    },
+    [conclusions]
+  );
 
-  function handleAddConclusion(): void {
+  const handleAddConclusion = useCallback(() => {
     conclusions.push(
       "Add a conclusion statement, e.g. 'In summary,  RGB colors are red, green, and blue'"
     );
     updateConclusions([...conclusions]);
-  }
+  }, [conclusions]);
 
-  function handleRemoveConclusion(index: number): void {
-    conclusions.splice(index, 1);
-    updateConclusions([...conclusions]);
-  }
+  const handleRemoveConclusion = useCallback(
+    (index: number) => {
+      conclusions.splice(index, 1);
+      updateConclusions([...conclusions]);
+    },
+    [conclusions]
+  );
 
   return (
-    <Paper elevation={0} style={{ textAlign: "left" }}>
+    <Paper id="conclusions" elevation={0} style={{ textAlign: "left" }}>
       <Typography variant="body2" style={{ padding: 15 }}>
         Conclusions
       </Typography>
@@ -162,6 +170,7 @@ const ConclusionsList = (props: {
         </Droppable>
       </DragDropContext>
       <Button
+        id="add"
         startIcon={<AddIcon />}
         className={classes.button}
         onClick={handleAddConclusion}

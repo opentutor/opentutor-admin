@@ -29,7 +29,7 @@ export const ColumnHeader = (props: {
       <TableRow>
         {columns.map((column) => (
           <TableCell
-            id={`${column.id}`}
+            id={column.id}
             key={column.id}
             align={column.align}
             style={{ minWidth: column.minWidth }}
@@ -38,6 +38,7 @@ export const ColumnHeader = (props: {
               column.label
             ) : (
               <TableSortLabel
+                id="sort"
                 active={sortBy === column.id}
                 direction={sortAsc ? "asc" : "desc"}
                 onClick={() => {

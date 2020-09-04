@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import React from "react";
+import React, { useCallback } from "react";
 import {
   DragDropContext,
   Droppable,
@@ -55,10 +55,9 @@ const ExpectationCard = (props: {
             <DragHandleIcon />
           </CardActions>
           <TextField
+            id="edit"
             margin="normal"
             name="expectations"
-            id="edit-expectation"
-            key="edit-expectation"
             label={`Expectation ${expIdx + 1}`}
             placeholder="Add a short ideal answer for an expectation, e.g. 'Red'"
             variant="outlined"
@@ -75,7 +74,7 @@ const ExpectationCard = (props: {
           <CardActions>
             {canDelete ? (
               <IconButton
-                id="delete-expectation"
+                id="delete"
                 aria-label="remove expectation"
                 size="small"
                 onClick={handleRemoveExpectation}
@@ -84,7 +83,7 @@ const ExpectationCard = (props: {
               </IconButton>
             ) : null}
             <IconButton
-              id="expand-expectation"
+              id="expand"
               aria-label="expand expectation"
               size="small"
               aria-expanded={expanded}
@@ -121,24 +120,30 @@ const ExpectationsList = (props: {
 }) => {
   const { classes, expectations, updateExpectations } = props;
 
-  function onDragEnd(result: DropResult) {
-    if (!result.destination) {
-      return;
-    }
-    const startIdx = result.source.index;
-    const endIdx = result.destination.index;
-    const [removed] = expectations.splice(startIdx, 1);
-    expectations.splice(endIdx, 0, removed);
-    updateExpectations([...expectations]);
-  }
+  const onDragEnd = useCallback(
+    (result: DropResult) => {
+      if (!result.destination) {
+        return;
+      }
+      const startIdx = result.source.index;
+      const endIdx = result.destination.index;
+      const [removed] = expectations.splice(startIdx, 1);
+      expectations.splice(endIdx, 0, removed);
+      updateExpectations([...expectations]);
+    },
+    [expectations]
+  );
 
-  function handleExpectationChange(val: string, idx: number): void {
-    expectations[idx].expectation = val;
-    updateExpectations([...expectations]);
-  }
+  const handleExpectationChange = useCallback(
+    (val: string, idx: number) => {
+      expectations[idx].expectation = val;
+      updateExpectations([...expectations]);
+    },
+    [expectations]
+  );
 
-  function handleAddExpectation(): void {
-    const newItem = {
+  const handleAddExpectation = useCallback(() => {
+    expectations.push({
       expectation: "Add a short ideal answer for an expectation, e.g. 'Red'",
       hints: [
         {
@@ -146,23 +151,28 @@ const ExpectationsList = (props: {
             "Add a hint to help for the expectation, e.g. 'One of them starts with R'",
         },
       ],
-    };
-    expectations.push(newItem);
+    });
     updateExpectations([...expectations]);
-  }
+  }, [expectations]);
 
-  function handleRemoveExpectation(idx: number): void {
-    expectations.splice(idx, 1);
-    updateExpectations([...expectations]);
-  }
+  const handleRemoveExpectation = useCallback(
+    (idx: number) => {
+      expectations.splice(idx, 1);
+      updateExpectations([...expectations]);
+    },
+    [expectations]
+  );
 
-  function handleHintChange(val: Hint[], eIdx: number): void {
-    expectations[eIdx].hints = val;
-    updateExpectations([...expectations]);
-  }
+  const handleHintChange = useCallback(
+    (val: Hint[], eIdx: number) => {
+      expectations[eIdx].hints = val;
+      updateExpectations([...expectations]);
+    },
+    [expectations]
+  );
 
   return (
-    <Paper elevation={0} style={{ textAlign: "left" }}>
+    <Paper id="expectations" elevation={0} style={{ textAlign: "left" }}>
       <Typography variant="body2" style={{ padding: 15 }}>
         Expectations
       </Typography>
@@ -213,6 +223,7 @@ const ExpectationsList = (props: {
         </Droppable>
       </DragDropContext>
       <Button
+        id="add"
         startIcon={<AddIcon />}
         className={classes.button}
         onClick={handleAddExpectation}

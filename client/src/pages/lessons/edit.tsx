@@ -329,7 +329,6 @@ const LessonEdit = (props: {
         >
           <TextField
             id="lesson-name"
-            key="lesson-name"
             label="Lesson Name"
             placeholder="Display name for the lesson"
             inputProps={{ maxLength: 100 }}
@@ -345,7 +344,6 @@ const LessonEdit = (props: {
           />
           <TextField
             id="lesson-id"
-            key="lesson-id"
             label="Lesson ID"
             placeholder="Unique alias to the lesson"
             inputProps={{ maxLength: 100 }}
@@ -363,7 +361,6 @@ const LessonEdit = (props: {
           />
           <TextField
             id="lesson-creator"
-            key="lesson-creator"
             label="Created By"
             placeholder="Guest"
             variant="outlined"
@@ -384,7 +381,6 @@ const LessonEdit = (props: {
         >
           <TextField
             id="intro"
-            key="intro"
             label="Introduction"
             placeholder="Introduction to the lesson,  e.g. 'This is a lesson about RGB colors'"
             multiline
@@ -402,7 +398,6 @@ const LessonEdit = (props: {
           />
           <TextField
             id="question"
-            key="question"
             label="Question"
             placeholder="Question the student needs to answer, e.g. 'What are the colors in RGB?'"
             multiline

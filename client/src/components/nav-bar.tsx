@@ -81,7 +81,7 @@ const LoginOption = (props: { classes: any }) => {
     return (
       <div id="login-option" className={classes.login}>
         <Button
-          id="login"
+          id="login-button"
           onClick={handleMenu}
           startIcon={<AccountCircle />}
           style={{ color: "white" }}
@@ -113,7 +113,7 @@ const LoginOption = (props: { classes: any }) => {
 
   return (
     <div id="login-option" className={classes.login}>
-      <Button id="login" color="inherit" component={Link} to={"/admin"}>
+      <Button id="login-button" color="inherit" component={Link} to={"/admin"}>
         Login
       </Button>
     </div>

@@ -120,10 +120,10 @@ const TableFooter = (props: {
   return (
     <AppBar position="sticky" color="default" className={classes.appBar}>
       <Toolbar>
-        <IconButton disabled={!hasPrev} onClick={onPrev}>
+        <IconButton id="prev-page" disabled={!hasPrev} onClick={onPrev}>
           <KeyboardArrowLeftIcon />
         </IconButton>
-        <IconButton disabled={!hasNext} onClick={onNext}>
+        <IconButton id="next-page" disabled={!hasNext} onClick={onNext}>
           <KeyboardArrowRightIcon />
         </IconButton>
         {!cookies.user ? undefined : (
@@ -131,6 +131,7 @@ const TableFooter = (props: {
             <FormControlLabel
               control={
                 <Switch
+                  id="toggle-creator"
                   checked={toggle.onlyCreator}
                   onChange={toggle.toggleCreator}
                   aria-label="switch"
@@ -200,17 +201,17 @@ const LessonItem = (props: {
 
   return (
     <TableRow id={`lesson-${i}`} hover role="checkbox" tabIndex={-1}>
-      <TableCell id={`name`} align="left">
+      <TableCell id="name" align="left">
         <Link to={withPrefix(`/lessons/edit?lessonId=${row.node.lessonId}`)}>
           {row.node.name ? row.node.name : "No Lesson Name"}
         </Link>
       </TableCell>
-      <TableCell id={`launch`} align="left">
+      <TableCell id="launch" align="left">
         <IconButton onClick={() => launchLesson(row.node.lessonId)}>
           <LaunchIcon />
         </IconButton>
       </TableCell>
-      <TableCell id={`grade`}>
+      <TableCell id="grade">
         <IconButton
           onClick={() => {
             handleGrade();
@@ -218,20 +219,20 @@ const LessonItem = (props: {
         >
           <AssignmentIcon />
         </IconButton>
-      </TableCell>{" "}
-      <TableCell id={`date`} align="center">
+      </TableCell>
+      <TableCell id="date" align="center">
         {row.node.updatedAt ? row.node.updatedAt.toLocaleString() : ""}
       </TableCell>
-      <TableCell id={`creator`} align="center">
+      <TableCell id="creator" align="center">
         {row.node.createdBy}
       </TableCell>
-      <TableCell id={`delete`} align="center">
+      <TableCell id="delete" align="center">
         <IconButton onClick={handleDelete}>
           <DeleteIcon />
         </IconButton>
       </TableCell>
       <Menu
-        id={`delete-menu`}
+        id="delete-menu"
         anchorEl={anchorEl}
         anchorOrigin={{
           vertical: "top",
@@ -245,10 +246,10 @@ const LessonItem = (props: {
         open={deleteMenuOpen}
         onClose={handleClose}
       >
-        <MenuItem id={`confirm-delete`} onClick={confirmDelete}>
+        <MenuItem id="confirm-delete" onClick={confirmDelete}>
           Confirm
         </MenuItem>
-        <MenuItem id={`cancel-delete`} onClick={handleClose}>
+        <MenuItem id="cancel-delete" onClick={handleClose}>
           Cancel
         </MenuItem>
       </Menu>
