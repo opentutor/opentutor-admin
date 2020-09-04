@@ -1,11 +1,7 @@
 import { withPrefix } from "gatsby";
 import React from "react";
 import { navigate } from "@reach/router";
-import {
-  MuiThemeProvider,
-  createMuiTheme,
-  makeStyles,
-} from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import {
   Paper,
   Table,
@@ -26,14 +22,6 @@ import { Session } from "types";
 import { fetchSession, setGrade } from "api";
 import NavBar from "components/nav-bar";
 import "styles/layout.css";
-
-const theme = createMuiTheme({
-  palette: {
-    primary: {
-      main: "#1b6a9c",
-    },
-  },
-});
 
 const useStyles = makeStyles({
   root: {
@@ -97,34 +85,29 @@ const SessionTable = ({ search }: { search: any }) => {
 
   return (
     <Paper className={classes.root}>
-      <div id="session-display-name" key="session-display-name">
+      <div id="lesson">
         {session && session.lesson && session.lesson.name
           ? session.lesson.name
           : "No Lesson Name"}
       </div>
-      <div id="username" key="username">
-        {" "}
+      <div id="username">
         {session && session.username ? session.username : "Guest"}
       </div>
-      <div id="Date" key="Date">
-        {" "}
-        {date ? date : ""}
-      </div>
+      <div id="date">{date ? date : ""}</div>
       <div id="question"> {session ? session.question.text : ""} </div>
       <div id="score">
-        {" "}
         Score:{" "}
         {session
           ? session.graderGrade || session.graderGrade !== null
             ? Math.trunc(session.graderGrade * 100)
             : "?"
-          : "?"}{" "}
+          : "?"}
       </div>
       <TableContainer className={classes.container}>
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
             <TableRow>
-              <TableCell id="userAnswer" align="center" style={{ width: 100 }}>
+              <TableCell align="center" style={{ width: 100 }}>
                 User Answer
               </TableCell>
               {session?.question?.expectations.map((column, i) => (
@@ -142,11 +125,14 @@ const SessionTable = ({ search }: { search: any }) => {
           <TableBody>
             {session?.userResponses.map((row, i) => {
               return (
-                <TableRow hover role="checkbox" tabIndex={-1} key={`text-${i}`}>
-                  <TableCell key={`answer-${i}`} id={`answer-${i}`}>
-                    {row.text}
-                  </TableCell>
-
+                <TableRow
+                  id={`response-${i}`}
+                  key={`response-${i}`}
+                  hover
+                  role="checkbox"
+                  tabIndex={-1}
+                >
+                  <TableCell id="answer">{row.text}</TableCell>
                   {session?.question?.expectations.map((column, j) => (
                     <TableCell
                       style={{
@@ -167,13 +153,12 @@ const SessionTable = ({ search }: { search: any }) => {
                             ? "#D3D3D3"
                             : "white",
                       }}
-                      key={`grade-${i}-${j}`}
-                      id={`grade-${i}-${j}`}
+                      key={`grade-${j}`}
+                      id={`grade-${j}`}
                       align="left"
                     >
                       <Typography
-                        key={`classifier-grade-${i}-${j}`}
-                        id={`classifier-grade-${i}-${j}`}
+                        id="classifier-grade"
                         align="right"
                         component={"span"}
                       >
@@ -184,16 +169,14 @@ const SessionTable = ({ search }: { search: any }) => {
                       </Typography>
                       <br />
                       <Typography
-                        key={`expectation-grade-${i}-${j}`}
-                        id={`expectation-grade-${i}-${j}`}
+                        id="instructor-grade"
                         align="right"
                         component={"span"}
                       >
                         Grade:
                         <Select
+                          id="select-grade"
                           labelId={`set-grade-${i}-${j}`}
-                          id={`select-grade-${i}-${j}`}
-                          key={`select-grade-${i}-${j}`}
                           value={
                             row.expectationScores[j]
                               ? row.expectationScores[j].graderGrade
@@ -202,32 +185,16 @@ const SessionTable = ({ search }: { search: any }) => {
                           name={`${i} ${j}`}
                           onChange={handleGradeExpectationChange}
                         >
-                          <MenuItem
-                            id={`empty-grade-${i}-${j}`}
-                            key={`empty-grade-${i}-${j}`}
-                            value=""
-                          >
+                          <MenuItem id="none" value="">
                             <em>Empty</em>
                           </MenuItem>
-                          <MenuItem
-                            id={`good-grade-${i}-${j}`}
-                            key={`good-grade-${i}-${j}`}
-                            value={"Good"}
-                          >
+                          <MenuItem id="good" value={"Good"}>
                             Good
                           </MenuItem>
-                          <MenuItem
-                            id={`bad-grade-${i}-${j}`}
-                            key={`bad-grade-${i}-${j}`}
-                            value={"Bad"}
-                          >
+                          <MenuItem id="bad" value={"Bad"}>
                             Bad
                           </MenuItem>
-                          <MenuItem
-                            id={`neutral-grade-${i}-${j}`}
-                            key={`neutral-grade-${i}-${j}`}
-                            value={"Neutral"}
-                          >
+                          <MenuItem id="neutral" value={"Neutral"}>
                             Neutral
                           </MenuItem>
                         </Select>
@@ -260,10 +227,10 @@ const SessionTable = ({ search }: { search: any }) => {
 
 const SessionPage = ({ path, search }: { path: string; search: any }) => {
   return (
-    <MuiThemeProvider theme={theme}>
+    <div>
       <NavBar title="Grade Session" />
       <SessionTable search={search} />
-    </MuiThemeProvider>
+    </div>
   );
 };
 

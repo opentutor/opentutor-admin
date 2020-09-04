@@ -18,18 +18,6 @@ describe("screenshots - grade session list", () => {
           sessions: {
             edges: [
               {
-                cursor: "cursor 1",
-                node: {
-                  lesson: {
-                    name: "lesson 1",
-                  },
-                  sessionId: "session 1",
-                  classifierGrade: 1,
-                  graderGrade: 1,
-                  createdAt: "1/1/2000, 12:00:00 AM",
-                },
-              },
-              {
                 cursor: "cursor 2",
                 node: {
                   lesson: {
@@ -111,7 +99,7 @@ describe("screenshots - grade session list", () => {
       },
     }).as("sessionsList");
     cy.visit("/sessions");
-    cy.get("#toggle").check();
+    cy.get("#toggle-graded").check();
     cy.wait("@sessionsList");
     cy.matchImageSnapshot(snapname("displays-sessions-show-graded-enabled"));
   });

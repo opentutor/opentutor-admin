@@ -1,5 +1,5 @@
 import { withPrefix } from "gatsby";
-import React from "react";
+import React, { useContext } from "react";
 import { navigate } from "@reach/router";
 import { useCookies } from "react-cookie";
 import {
@@ -16,13 +16,8 @@ import {
   TableContainer,
   TableRow,
   Toolbar,
-  Grid,
 } from "@material-ui/core";
-import {
-  MuiThemeProvider,
-  createMuiTheme,
-  makeStyles,
-} from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import { Link } from "@reach/router";
 import KeyboardArrowLeftIcon from "@material-ui/icons/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
@@ -31,17 +26,11 @@ import { fetchSessions } from "api";
 import { Connection, Edge, Session } from "types";
 import NavBar from "components/nav-bar";
 import { ColumnDef, ColumnHeader } from "components/column-header";
+import ToggleContext from "context/toggle";
+import withLocation from "wrap-with-location";
 import "styles/layout.css";
 
-const theme = createMuiTheme({
-  palette: {
-    primary: {
-      main: "#1b6a9c",
-    },
-  },
-});
-
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
     flexFlow: "column",
@@ -61,7 +50,7 @@ const useStyles = makeStyles({
     position: "absolute",
     right: theme.spacing(1),
   },
-});
+}));
 
 const columns: ColumnDef[] = [
   {
@@ -72,14 +61,14 @@ const columns: ColumnDef[] = [
     sortable: true,
   },
   {
-    id: "grade",
+    id: "grade-link",
     label: "Grade",
     minWidth: 0,
     align: "center",
     sortable: false,
   },
   {
-    id: "grade",
+    id: "graderGrade",
     label: "Instructor Grade",
     minWidth: 170,
     align: "center",
@@ -117,83 +106,17 @@ const columns: ColumnDef[] = [
   },
 ];
 
-const SessionItem = (props: { row: Edge<Session>; i: number }) => {
-  const { row, i } = props;
-
-  function handleGrade(): void {
-    navigate(withPrefix(`/sessions/session?sessionId=${row.node.sessionId}`));
-  }
-
-  return (
-    <TableRow
-      hover
-      role="checkbox"
-      tabIndex={-1}
-      style={{
-        backgroundColor:
-          row.node.graderGrade || row.node.graderGrade === 0
-            ? "#D3D3D3"
-            : "white",
-      }}
-    >
-      <TableCell key={`lesson-${i}`} id={`lesson-${i}`} align="left">
-        <Link
-          to={withPrefix(`/lessons/edit?lessonId=${row.node.lesson.lessonId}`)}
-        >
-          {row.node.lesson && row.node.lesson.name
-            ? row.node.lesson.name
-            : "No Lesson Name"}
-        </Link>
-      </TableCell>
-      <TableCell>
-        <IconButton id={`launch-${i}`} onClick={handleGrade}>
-          <AssignmentIcon />
-        </IconButton>
-      </TableCell>{" "}
-      <TableCell key={`instructor-grade-${i}`} align="center">
-        {row.node.graderGrade || row.node.graderGrade === 0
-          ? Math.trunc(row.node.graderGrade * 100)
-          : "?"}
-      </TableCell>
-      <TableCell key={`classifier-grade-${i}`} align="center">
-        {row.node ? Math.trunc(row.node.classifierGrade * 100) : "?"}
-      </TableCell>
-      <TableCell key={`date-${i}`} align="center">
-        {row.node.createdAt ? row.node.createdAt : ""}
-      </TableCell>
-      <TableCell key={`creator-${i}`} align="center">
-        {row.node.lesson.createdBy ? row.node.lesson.createdBy : "Guest"}
-      </TableCell>
-      <TableCell key={`username-${i}`} align="center">
-        {row.node.username ? row.node.username : "Guest"}
-      </TableCell>
-    </TableRow>
-  );
-};
-
 const TableFooter = (props: {
   classes: any;
   hasNext: boolean;
   hasPrev: boolean;
-  showGraded: boolean;
-  showCreator: boolean;
   onNext: () => void;
   onPrev: () => void;
-  onToggleGraded: () => void;
-  onToggleCreator: () => void;
 }) => {
-  const {
-    classes,
-    hasNext,
-    hasPrev,
-    showGraded,
-    showCreator,
-    onNext,
-    onPrev,
-    onToggleGraded,
-    onToggleCreator,
-  } = props;
+  const { classes, hasNext, hasPrev, onNext, onPrev } = props;
   const [cookies] = useCookies(["user"]);
+  const toggle = useContext(ToggleContext);
+  const { onlyCreator, showGraded, toggleCreator, toggleGraded } = toggle;
 
   return (
     <AppBar position="sticky" color="default" className={classes.appBar}>
@@ -203,8 +126,9 @@ const TableFooter = (props: {
             <FormControlLabel
               control={
                 <Switch
-                  checked={showCreator}
-                  onChange={onToggleCreator}
+                  id="toggle-creator"
+                  checked={onlyCreator}
+                  onChange={toggleCreator}
                   aria-label="switch"
                 />
               }
@@ -216,9 +140,9 @@ const TableFooter = (props: {
           <FormControlLabel
             control={
               <Switch
-                id="toggle"
+                id="toggle-graded"
                 checked={showGraded}
-                onChange={onToggleGraded}
+                onChange={toggleGraded}
                 aria-label="switch"
               />
             }
@@ -226,10 +150,10 @@ const TableFooter = (props: {
           />
         </FormGroup>
         <div className={classes.paging}>
-          <IconButton disabled={!hasPrev} onClick={onPrev}>
+          <IconButton id="prev-page" disabled={!hasPrev} onClick={onPrev}>
             <KeyboardArrowLeftIcon />
           </IconButton>
-          <IconButton disabled={!hasNext} onClick={onNext}>
+          <IconButton id="next-page" disabled={!hasNext} onClick={onNext}>
             <KeyboardArrowRightIcon />
           </IconButton>
         </div>
@@ -238,17 +162,74 @@ const TableFooter = (props: {
   );
 };
 
-export const SessionsTable = (props: { path: string }) => {
+const SessionItem = (props: { row: Edge<Session>; i: number }) => {
+  const { row, i } = props;
+
+  function handleGrade(): void {
+    navigate(withPrefix(`/sessions/session?sessionId=${row.node.sessionId}`));
+  }
+
+  return (
+    <TableRow
+      id={`session-${i}`}
+      hover
+      role="checkbox"
+      tabIndex={-1}
+      style={{
+        backgroundColor:
+          row.node.graderGrade || row.node.graderGrade === 0
+            ? "#D3D3D3"
+            : "white",
+      }}
+    >
+      <TableCell id="lesson" align="left">
+        <Link
+          to={withPrefix(`/lessons/edit?lessonId=${row.node.lesson.lessonId}`)}
+        >
+          {row.node.lesson && row.node.lesson.name
+            ? row.node.lesson.name
+            : "No Lesson Name"}
+        </Link>
+      </TableCell>
+      <TableCell>
+        <IconButton id="grade" onClick={handleGrade}>
+          <AssignmentIcon />
+        </IconButton>
+      </TableCell>
+      <TableCell id="instructor-grade" align="center">
+        {row.node.graderGrade || row.node.graderGrade === 0
+          ? Math.trunc(row.node.graderGrade * 100)
+          : "?"}
+      </TableCell>
+      <TableCell id="classifier-grade" align="center">
+        {row.node ? Math.trunc(row.node.classifierGrade * 100) : "?"}
+      </TableCell>
+      <TableCell id="date" align="center">
+        {row.node.createdAt ? row.node.createdAt : ""}
+      </TableCell>
+      <TableCell id="creator" align="center">
+        {row.node.lesson.createdBy ? row.node.lesson.createdBy : "Guest"}
+      </TableCell>
+      <TableCell id="username" align="center">
+        {row.node.username ? row.node.username : "Guest"}
+      </TableCell>
+    </TableRow>
+  );
+};
+
+const SessionsTable = (props: {
+  path: string;
+  search: { lessonId: string };
+}) => {
   const classes = useStyles();
+  const toggle = useContext(ToggleContext);
   const [cookies] = useCookies(["user"]);
   const [sessions, setSessions] = React.useState<Connection<Session>>();
-  const [showGraded, setShowGraded] = React.useState(false);
-  const [onlyCreator, setOnlyCreator] = React.useState(
-    cookies.user ? true : false
-  );
   const [cursor, setCursor] = React.useState("");
   const [sortBy, setSortBy] = React.useState("createdAt");
   const [sortAsc, setSortAsc] = React.useState(false);
+  const { onlyCreator, showGraded } = toggle;
+  const { lessonId } = props.search;
   const rowsPerPage = 50;
 
   function onSort(id: string) {
@@ -260,14 +241,6 @@ export const SessionsTable = (props: { path: string }) => {
     setCursor("");
   }
 
-  const handleShowGradedChange = (): void => {
-    setShowGraded(!showGraded);
-  };
-
-  const handleShowCreatorChange = (): void => {
-    setOnlyCreator(!onlyCreator);
-  };
-
   React.useEffect(() => {
     const filter: any = {};
     if (onlyCreator) {
@@ -275,6 +248,9 @@ export const SessionsTable = (props: { path: string }) => {
     }
     if (!showGraded) {
       filter["graderGrade"] = null;
+    }
+    if (lessonId) {
+      filter["lessonId"] = lessonId;
     }
     let mounted = true;
     fetchSessions(filter, rowsPerPage, cursor, sortBy, sortAsc)
@@ -309,15 +285,10 @@ export const SessionsTable = (props: { path: string }) => {
               sortAsc={sortAsc}
               onSort={onSort}
             />
-            <TableBody>
-              {sessions.edges
-                .filter(
-                  (edge: Edge<Session>) =>
-                    showGraded || edge.node.graderGrade === null
-                )
-                .map((row, i) => (
-                  <SessionItem key={row.node.sessionId} row={row} i={i} />
-                ))}
+            <TableBody id="sessions">
+              {sessions.edges.map((row, i) => (
+                <SessionItem key={row.node.sessionId} row={row} i={i} />
+              ))}
             </TableBody>
           </Table>
         </TableContainer>
@@ -326,29 +297,30 @@ export const SessionsTable = (props: { path: string }) => {
         classes={classes}
         hasNext={sessions.pageInfo.hasNextPage}
         hasPrev={sessions.pageInfo.hasPreviousPage}
-        showGraded={showGraded}
-        showCreator={onlyCreator}
         onNext={() => {
           setCursor("next__" + sessions.pageInfo.endCursor);
         }}
         onPrev={() => {
           setCursor("prev__" + sessions.pageInfo.startCursor);
         }}
-        onToggleGraded={handleShowGradedChange}
-        onToggleCreator={handleShowCreatorChange}
       />
     </div>
   );
 };
 
-const SessionsPage = (props: { path: string; children: any }) => {
+const SessionsPage = (props: {
+  path: string;
+  search: { lessonId: string };
+  children: any;
+}) => {
   return (
-    <MuiThemeProvider theme={theme}>
+    <div>
       <NavBar title="Grading" />
-      <SessionsTable path={props.path} />
+      <SessionsTable path={props.path} search={props.search} />
       {props.children}
-    </MuiThemeProvider>
+    </div>
   );
 };
 
-export default SessionsPage;
+export default withLocation(SessionsPage);
+export { SessionsTable };
