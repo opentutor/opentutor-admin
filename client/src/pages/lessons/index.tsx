@@ -1,5 +1,5 @@
 import { withPrefix } from "gatsby";
-import React from "react";
+import React, { useContext } from "react";
 import { useCookies } from "react-cookie";
 import { ToastContainer, toast } from "react-toastify";
 import {
@@ -20,11 +20,7 @@ import {
   TableRow,
   Toolbar,
 } from "@material-ui/core";
-import {
-  MuiThemeProvider,
-  createMuiTheme,
-  makeStyles,
-} from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import AddIcon from "@material-ui/icons/Add";
 import AssignmentIcon from "@material-ui/icons/Assignment";
 import DeleteIcon from "@material-ui/icons/Delete";
@@ -36,18 +32,11 @@ import { fetchLessons, deleteLesson } from "api";
 import { Connection, Edge, Lesson } from "types";
 import { ColumnDef, ColumnHeader } from "components/column-header";
 import NavBar from "components/nav-bar";
+import ToggleContext from "context/toggle";
 import "styles/layout.css";
 import "react-toastify/dist/ReactToastify.css";
 
-const theme = createMuiTheme({
-  palette: {
-    primary: {
-      main: "#1b6a9c",
-    },
-  },
-});
-
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
     flexFlow: "column",
@@ -72,7 +61,7 @@ const useStyles = makeStyles({
   progress: {
     marginLeft: "50%",
   },
-});
+}));
 
 const columns: ColumnDef[] = [
   { id: "name", label: "Lesson", minWidth: 200, align: "left", sortable: true },
@@ -113,137 +102,16 @@ const columns: ColumnDef[] = [
   },
 ];
 
-const LessonItem = (props: {
-  location: any;
-  row: Edge<Lesson>;
-  i: number;
-  onDeleted: (id: string) => void;
-}) => {
-  const { location, row, i, onDeleted } = props;
-  const [cookies] = useCookies(["user"]);
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const deleteMenuOpen = Boolean(anchorEl);
-
-  function launchLesson(id: string) {
-    const host = process.env.TUTOR_ENDPOINT || location.origin;
-    const guest = cookies.user ? `&guest=${cookies.user}` : "";
-    const path = `${host}/tutor?lesson=${id}${guest}`;
-    window.location.href = path;
-  }
-
-  function handleGrade(): void {
-    navigate(withPrefix(`/sessions/`));
-  }
-
-  const handleDelete = (e: any) => {
-    setAnchorEl(e.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  const confirmDelete = () => {
-    toast("Deleting...");
-    deleteLesson(row.node.lessonId)
-      .then((lesson: Lesson) => {
-        onDeleted(row.node.lessonId);
-        setAnchorEl(null);
-      })
-      .catch((err) => {
-        toast("Failed to delete lesson.");
-        console.error(err);
-      });
-  };
-
-  return (
-    <TableRow hover role="checkbox" tabIndex={-1}>
-      <TableCell key={`lesson-name-${i}`} id={`lesson-name-${i}`} align="left">
-        <Link to={withPrefix(`/lessons/edit?lessonId=${row.node.lessonId}`)}>
-          {row.node.name ? row.node.name : "No Lesson Name"}
-        </Link>
-      </TableCell>
-      <TableCell
-        key={`lesson-launch-${i}`}
-        id={`lesson-launch-${i}`}
-        align="left"
-      >
-        <IconButton onClick={() => launchLesson(row.node.lessonId)}>
-          <LaunchIcon />
-        </IconButton>
-      </TableCell>
-      <TableCell>
-        <IconButton
-          onClick={() => {
-            handleGrade();
-          }}
-        >
-          <AssignmentIcon />
-        </IconButton>
-      </TableCell>{" "}
-      <TableCell key={`date-${i}`} align="center">
-        {row.node.updatedAt ? row.node.updatedAt.toLocaleString() : ""}
-      </TableCell>
-      <TableCell
-        key={`lesson-creator-${i}`}
-        id={`lesson-creator-${i}`}
-        align="center"
-      >
-        {row.node.createdBy}
-      </TableCell>
-      <TableCell
-        key={`delete-lesson-${i}`}
-        id={`delete-lesson-${i}`}
-        align="center"
-      >
-        <IconButton onClick={handleDelete}>
-          <DeleteIcon />
-        </IconButton>
-      </TableCell>
-      <Menu
-        anchorEl={anchorEl}
-        anchorOrigin={{
-          vertical: "top",
-          horizontal: "right",
-        }}
-        keepMounted
-        transformOrigin={{
-          vertical: "top",
-          horizontal: "right",
-        }}
-        open={deleteMenuOpen}
-        onClose={handleClose}
-      >
-        <MenuItem id={`delete-lesson-${i}-confirm`} onClick={confirmDelete}>
-          Confirm
-        </MenuItem>
-        <MenuItem id={`delete-lesson-${i}-cancel`} onClick={handleClose}>
-          Cancel
-        </MenuItem>
-      </Menu>
-    </TableRow>
-  );
-};
-
 const TableFooter = (props: {
   classes: any;
   hasNext: boolean;
   hasPrev: boolean;
-  showCreator: boolean;
   onNext: () => void;
   onPrev: () => void;
-  onToggle: () => void;
 }) => {
-  const {
-    classes,
-    hasNext,
-    hasPrev,
-    showCreator,
-    onNext,
-    onPrev,
-    onToggle,
-  } = props;
+  const { classes, hasNext, hasPrev, onNext, onPrev } = props;
   const [cookies] = useCookies(["user"]);
+  const toggle = useContext(ToggleContext);
 
   function onCreate() {
     navigate(withPrefix("/lessons/edit?lessonId=new"));
@@ -252,10 +120,10 @@ const TableFooter = (props: {
   return (
     <AppBar position="sticky" color="default" className={classes.appBar}>
       <Toolbar>
-        <IconButton disabled={!hasPrev} onClick={onPrev}>
+        <IconButton id="prev-page" disabled={!hasPrev} onClick={onPrev}>
           <KeyboardArrowLeftIcon />
         </IconButton>
-        <IconButton disabled={!hasNext} onClick={onNext}>
+        <IconButton id="next-page" disabled={!hasNext} onClick={onNext}>
           <KeyboardArrowRightIcon />
         </IconButton>
         {!cookies.user ? undefined : (
@@ -263,8 +131,9 @@ const TableFooter = (props: {
             <FormControlLabel
               control={
                 <Switch
-                  checked={showCreator}
-                  onChange={onToggle}
+                  id="toggle-creator"
+                  checked={toggle.onlyCreator}
+                  onChange={toggle.toggleCreator}
                   aria-label="switch"
                 />
               }
@@ -287,22 +156,117 @@ const TableFooter = (props: {
   );
 };
 
-export const LessonsTable = (props: { location: any }) => {
+const LessonItem = (props: {
+  location: any;
+  row: Edge<Lesson>;
+  i: number;
+  onDeleted: (id: string) => void;
+}) => {
+  const { location, row, i, onDeleted } = props;
+  const [cookies] = useCookies(["user"]);
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const deleteMenuOpen = Boolean(anchorEl);
+
+  function launchLesson(id: string) {
+    const host = process.env.TUTOR_ENDPOINT || location.origin;
+    const guest = cookies.user ? `&guest=${cookies.user}` : "";
+    const path = `${host}/tutor?lesson=${id}${guest}`;
+    window.location.href = path;
+  }
+
+  function handleGrade(): void {
+    navigate(withPrefix(`/sessions?lessonId=${row.node.lessonId}`));
+  }
+
+  const handleDelete = (e: any) => {
+    setAnchorEl(e.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const confirmDelete = () => {
+    toast("Deleting...");
+    deleteLesson(row.node.lessonId)
+      .then(() => {
+        onDeleted(row.node.lessonId);
+        setAnchorEl(null);
+      })
+      .catch((err) => {
+        toast("Failed to delete lesson.");
+        console.error(err);
+      });
+  };
+
+  return (
+    <TableRow id={`lesson-${i}`} hover role="checkbox" tabIndex={-1}>
+      <TableCell id="name" align="left">
+        <Link to={withPrefix(`/lessons/edit?lessonId=${row.node.lessonId}`)}>
+          {row.node.name ? row.node.name : "No Lesson Name"}
+        </Link>
+      </TableCell>
+      <TableCell id="launch" align="left">
+        <IconButton onClick={() => launchLesson(row.node.lessonId)}>
+          <LaunchIcon />
+        </IconButton>
+      </TableCell>
+      <TableCell id="grade">
+        <IconButton
+          onClick={() => {
+            handleGrade();
+          }}
+        >
+          <AssignmentIcon />
+        </IconButton>
+      </TableCell>
+      <TableCell id="date" align="center">
+        {row.node.updatedAt ? row.node.updatedAt.toLocaleString() : ""}
+      </TableCell>
+      <TableCell id="creator" align="center">
+        {row.node.createdBy}
+      </TableCell>
+      <TableCell id="delete" align="center">
+        <IconButton onClick={handleDelete}>
+          <DeleteIcon />
+        </IconButton>
+      </TableCell>
+      <Menu
+        id="delete-menu"
+        anchorEl={anchorEl}
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+        keepMounted
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+        open={deleteMenuOpen}
+        onClose={handleClose}
+      >
+        <MenuItem id="confirm-delete" onClick={confirmDelete}>
+          Confirm
+        </MenuItem>
+        <MenuItem id="cancel-delete" onClick={handleClose}>
+          Cancel
+        </MenuItem>
+      </Menu>
+    </TableRow>
+  );
+};
+
+const LessonsTable = (props: { location: any }) => {
   const classes = useStyles();
+  const toggle = useContext(ToggleContext);
   const [cookies] = useCookies(["user"]);
   const [lessons, setLessons] = React.useState<Connection<Lesson>>();
   const [cursor, setCursor] = React.useState("");
   const [sortBy, setSortBy] = React.useState("updatedAt");
   const [sortAsc, setSortAsc] = React.useState(false);
-  const [onlyCreator, setOnlyCreator] = React.useState(
-    cookies.user ? true : false
-  );
   const [deleted, setDeleted] = React.useState("");
   const rowsPerPage = 10;
-
-  const onToggleShowCreator = (): void => {
-    setOnlyCreator(!onlyCreator);
-  };
 
   const onDeleted = (id: string): void => {
     setDeleted(id);
@@ -319,7 +283,7 @@ export const LessonsTable = (props: { location: any }) => {
 
   React.useEffect(() => {
     const filter: any = {};
-    if (onlyCreator) {
+    if (toggle.onlyCreator) {
       filter["createdBy"] = `${cookies.user}`;
     }
     let mounted = true;
@@ -334,7 +298,7 @@ export const LessonsTable = (props: { location: any }) => {
     return () => {
       mounted = false;
     };
-  }, [deleted, onlyCreator, rowsPerPage, cursor, sortBy, sortAsc]);
+  }, [deleted, toggle.onlyCreator, rowsPerPage, cursor, sortBy, sortAsc]);
 
   if (!lessons) {
     return (
@@ -355,7 +319,7 @@ export const LessonsTable = (props: { location: any }) => {
               sortAsc={sortAsc}
               onSort={onSort}
             />
-            <TableBody>
+            <TableBody id="lessons">
               {lessons.edges.map((row, i) => (
                 <LessonItem
                   key={`lesson-${i}`}
@@ -373,14 +337,12 @@ export const LessonsTable = (props: { location: any }) => {
         classes={classes}
         hasPrev={lessons.pageInfo.hasPreviousPage}
         hasNext={lessons.pageInfo.hasNextPage}
-        showCreator={onlyCreator}
         onPrev={() => {
           setCursor("prev__" + lessons.pageInfo.startCursor);
         }}
         onNext={() => {
           setCursor("next__" + lessons.pageInfo.endCursor);
         }}
-        onToggle={onToggleShowCreator}
       />
       <ToastContainer />
     </div>
@@ -389,11 +351,11 @@ export const LessonsTable = (props: { location: any }) => {
 
 const LessonsPage = (props: { location: any; path: string; children: any }) => {
   return (
-    <MuiThemeProvider theme={theme}>
+    <div>
       <NavBar title="Lessons" />
       <LessonsTable location={props.location} />
       {props.children}
-    </MuiThemeProvider>
+    </div>
   );
 };
 
