@@ -170,7 +170,7 @@ const ConclusionsList = (props: {
         </Droppable>
       </DragDropContext>
       <Button
-        id="add"
+        id="add-conclusion"
         startIcon={<AddIcon />}
         className={classes.button}
         onClick={handleAddConclusion}

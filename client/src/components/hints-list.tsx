@@ -175,7 +175,7 @@ const HintsList = (props: {
         </Droppable>
       </DragDropContext>
       <Button
-        id="add"
+        id="add-hint"
         startIcon={<AddIcon />}
         className={classes.button}
         onClick={handleAddHint}

@@ -223,7 +223,7 @@ const ExpectationsList = (props: {
         </Droppable>
       </DragDropContext>
       <Button
-        id="add"
+        id="add-expectation"
         startIcon={<AddIcon />}
         className={classes.button}
         onClick={handleAddExpectation}
