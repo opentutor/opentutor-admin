@@ -45,7 +45,7 @@ const ConclusionCard = (props: {
         </CardActions>
         <TextField
           margin="normal"
-          id="edit"
+          id="edit-conclusion"
           label={`Conclusion ${idx + 1}`}
           multiline
           rowsMax={4}
@@ -123,7 +123,7 @@ const ConclusionsList = (props: {
   );
 
   return (
-    <Paper id="conclusions" elevation={0} style={{ textAlign: "left" }}>
+    <Paper elevation={0} style={{ textAlign: "left" }}>
       <Typography variant="body2" style={{ padding: 15 }}>
         Conclusions
       </Typography>
@@ -132,6 +132,7 @@ const ConclusionsList = (props: {
           {(provided, snapshot) => (
             <List
               {...provided.droppableProps}
+              id="conclusions"
               ref={provided.innerRef}
               className={
                 snapshot.isDraggingOver ? classes.listDragging : classes.list

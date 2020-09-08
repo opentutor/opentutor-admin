@@ -103,7 +103,7 @@ function mockTrainStatusSeq(
   };
 }
 
-describe("edit screen", () => {
+describe("lesson screen", () => {
   beforeEach(() => {
     cy.server();
     cy.route({
@@ -139,34 +139,6 @@ describe("edit screen", () => {
         "Content-Type": "application/json",
       },
     });
-  });
-
-  it("loads edit page ", () => {
-    cy.visit("/lessons/edit?lessonId=lesson");
-  });
-
-  it("types into introduction edit and shows value", () => {
-    cy.visit("/lessons/edit?lessonId=lesson");
-    cy.get("#intro").fill("Hello World");
-    cy.get("#intro").should("have", "Hello World");
-  });
-
-  it("save button by default not visible", () => {
-    cy.visit("/lessons/edit?lessonId=lesson");
-    cy.get("#save-button").should("not.visible");
-  });
-
-  it("making an edit toggles save button visable", () => {
-    cy.visit("/lessons/edit?lessonId=lesson");
-    cy.get("#lesson-name").fill("{backspace}");
-    cy.get("#save-button").should("be.visible");
-  });
-
-  it("making an edit and clicks on save", () => {
-    cy.visit("/lessons/edit?lessonId=lesson");
-    cy.get("#lesson-name").fill("{backspace}");
-    cy.get("#save-button").click();
-    // TODO: there are no expectatons here, not a meaningful test
   });
 
   [

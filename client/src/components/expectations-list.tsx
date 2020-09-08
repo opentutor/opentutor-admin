@@ -55,7 +55,7 @@ const ExpectationCard = (props: {
             <DragHandleIcon />
           </CardActions>
           <TextField
-            id="edit"
+            id="edit-expectation"
             margin="normal"
             name="expectations"
             label={`Expectation ${expIdx + 1}`}
@@ -172,7 +172,7 @@ const ExpectationsList = (props: {
   );
 
   return (
-    <Paper id="expectations" elevation={0} style={{ textAlign: "left" }}>
+    <Paper elevation={0} style={{ textAlign: "left" }}>
       <Typography variant="body2" style={{ padding: 15 }}>
         Expectations
       </Typography>
@@ -181,6 +181,7 @@ const ExpectationsList = (props: {
           {(provided, snapshot) => (
             <List
               {...provided.droppableProps}
+              id="expectations"
               ref={provided.innerRef}
               className={
                 snapshot.isDraggingOver ? classes.listDragging : classes.list

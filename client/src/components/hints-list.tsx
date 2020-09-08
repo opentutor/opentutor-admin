@@ -45,7 +45,7 @@ const HintCard = (props: {
           <DragHandleIcon />
         </CardActions>
         <TextField
-          id="edit"
+          id="edit-hint"
           margin="normal"
           label={`Hint ${hintIdx + 1}`}
           placeholder="Add a hint to help for the expectation, e.g. 'One of them starts with R'"
@@ -126,7 +126,7 @@ const HintsList = (props: {
   );
 
   return (
-    <Paper id="hints" elevation={0} style={{ textAlign: "left" }}>
+    <Paper elevation={0} style={{ textAlign: "left" }}>
       <Typography variant="body2" style={{ padding: 5 }}>
         Hints
       </Typography>
@@ -135,6 +135,7 @@ const HintsList = (props: {
           {(provided, snapshot) => (
             <List
               {...provided.droppableProps}
+              id="hints"
               ref={provided.innerRef}
               dense
               disablePadding
