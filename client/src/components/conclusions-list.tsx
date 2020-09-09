@@ -85,42 +85,33 @@ const ConclusionsList = (props: {
 }) => {
   const { classes, conclusions, updateConclusions } = props;
 
-  const onDragEnd = useCallback(
-    (result: DropResult) => {
-      if (!result.destination) {
-        return;
-      }
-      const startIdx = result.source.index;
-      const endIdx = result.destination.index;
-      const [removed] = conclusions.splice(startIdx, 1);
-      conclusions.splice(endIdx, 0, removed);
-      updateConclusions([...conclusions]);
-    },
-    [conclusions]
-  );
+  const onDragEnd = (result: DropResult) => {
+    if (!result.destination) {
+      return;
+    }
+    const startIdx = result.source.index;
+    const endIdx = result.destination.index;
+    const [removed] = conclusions.splice(startIdx, 1);
+    conclusions.splice(endIdx, 0, removed);
+    updateConclusions([...conclusions]);
+  };
 
-  const handleConclusionChange = useCallback(
-    (val: string, idx: number) => {
-      conclusions[idx] = val;
-      updateConclusions([...conclusions]);
-    },
-    [conclusions]
-  );
+  const handleConclusionChange = (val: string, idx: number) => {
+    conclusions[idx] = val;
+    updateConclusions([...conclusions]);
+  };
 
-  const handleAddConclusion = useCallback(() => {
+  const handleAddConclusion = () => {
     conclusions.push(
       "Add a conclusion statement, e.g. 'In summary,  RGB colors are red, green, and blue'"
     );
     updateConclusions([...conclusions]);
-  }, [conclusions]);
+  };
 
-  const handleRemoveConclusion = useCallback(
-    (index: number) => {
-      conclusions.splice(index, 1);
-      updateConclusions([...conclusions]);
-    },
-    [conclusions]
-  );
+  const handleRemoveConclusion = (index: number) => {
+    conclusions.splice(index, 1);
+    updateConclusions([...conclusions]);
+  };
 
   return (
     <Paper elevation={0} style={{ textAlign: "left" }}>
