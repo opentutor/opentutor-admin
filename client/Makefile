@@ -4,7 +4,6 @@ CYPRESS_DOCKER_CACHE=$(PWD)/.cypress-docker
 
 .env.development:
 	@echo "GRAPHQL_ENDPOINT=https://dev-opentutor.pal3.org/graphql/" >> .env.development
-	@echo "CLASSIFIER_ENTRYPOINT=https://dev-opentutor.pal3.org/classifier/" >> .env.development
 	@echo "Set up  a default .env.development file"
 	@echo "that configures GRAPHQL_ENDPOINT=https://dev-opentutor.pal3.org/graphql/"
 	@echo "and configures CLASSIFIER_ENTRYPOINT=https://dev-opentutor.pal3.org/classifier/."

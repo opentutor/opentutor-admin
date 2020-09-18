@@ -228,7 +228,6 @@ const SessionsTable = (props: {
   const [cursor, setCursor] = React.useState("");
   const [sortBy, setSortBy] = React.useState("createdAt");
   const [sortAsc, setSortAsc] = React.useState(false);
-  const { onlyCreator, showGraded } = toggle;
   const { lessonId } = props.search;
   const rowsPerPage = 50;
 
@@ -242,11 +241,15 @@ const SessionsTable = (props: {
   }
 
   React.useEffect(() => {
+    setCursor("");
+  }, [toggle.onlyCreator, toggle.showGraded]);
+
+  React.useEffect(() => {
     const filter: any = {};
-    if (onlyCreator) {
+    if (toggle.onlyCreator) {
       filter["lessonCreatedBy"] = `${cookies.user}`;
     }
-    if (!showGraded) {
+    if (!toggle.showGraded) {
       filter["graderGrade"] = null;
     }
     if (lessonId) {
@@ -264,7 +267,14 @@ const SessionsTable = (props: {
     return () => {
       mounted = false;
     };
-  }, [onlyCreator, showGraded, rowsPerPage, cursor, sortBy, sortAsc]);
+  }, [
+    toggle.onlyCreator,
+    toggle.showGraded,
+    rowsPerPage,
+    cursor,
+    sortBy,
+    sortAsc,
+  ]);
 
   if (!sessions) {
     return (

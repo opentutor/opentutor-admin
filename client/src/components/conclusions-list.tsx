@@ -45,7 +45,7 @@ const ConclusionCard = (props: {
         </CardActions>
         <TextField
           margin="normal"
-          id="edit"
+          id="edit-conclusion"
           label={`Conclusion ${idx + 1}`}
           multiline
           rowsMax={4}
@@ -85,45 +85,36 @@ const ConclusionsList = (props: {
 }) => {
   const { classes, conclusions, updateConclusions } = props;
 
-  const onDragEnd = useCallback(
-    (result: DropResult) => {
-      if (!result.destination) {
-        return;
-      }
-      const startIdx = result.source.index;
-      const endIdx = result.destination.index;
-      const [removed] = conclusions.splice(startIdx, 1);
-      conclusions.splice(endIdx, 0, removed);
-      updateConclusions([...conclusions]);
-    },
-    [conclusions]
-  );
+  const onDragEnd = (result: DropResult) => {
+    if (!result.destination) {
+      return;
+    }
+    const startIdx = result.source.index;
+    const endIdx = result.destination.index;
+    const [removed] = conclusions.splice(startIdx, 1);
+    conclusions.splice(endIdx, 0, removed);
+    updateConclusions([...conclusions]);
+  };
 
-  const handleConclusionChange = useCallback(
-    (val: string, idx: number) => {
-      conclusions[idx] = val;
-      updateConclusions([...conclusions]);
-    },
-    [conclusions]
-  );
+  const handleConclusionChange = (val: string, idx: number) => {
+    conclusions[idx] = val;
+    updateConclusions([...conclusions]);
+  };
 
-  const handleAddConclusion = useCallback(() => {
+  const handleAddConclusion = () => {
     conclusions.push(
       "Add a conclusion statement, e.g. 'In summary,  RGB colors are red, green, and blue'"
     );
     updateConclusions([...conclusions]);
-  }, [conclusions]);
+  };
 
-  const handleRemoveConclusion = useCallback(
-    (index: number) => {
-      conclusions.splice(index, 1);
-      updateConclusions([...conclusions]);
-    },
-    [conclusions]
-  );
+  const handleRemoveConclusion = (index: number) => {
+    conclusions.splice(index, 1);
+    updateConclusions([...conclusions]);
+  };
 
   return (
-    <Paper id="conclusions" elevation={0} style={{ textAlign: "left" }}>
+    <Paper elevation={0} style={{ textAlign: "left" }}>
       <Typography variant="body2" style={{ padding: 15 }}>
         Conclusions
       </Typography>
@@ -132,6 +123,7 @@ const ConclusionsList = (props: {
           {(provided, snapshot) => (
             <List
               {...provided.droppableProps}
+              id="conclusions"
               ref={provided.innerRef}
               className={
                 snapshot.isDraggingOver ? classes.listDragging : classes.list
@@ -170,7 +162,7 @@ const ConclusionsList = (props: {
         </Droppable>
       </DragDropContext>
       <Button
-        id="add"
+        id="add-conclusion"
         startIcon={<AddIcon />}
         className={classes.button}
         onClick={handleAddConclusion}

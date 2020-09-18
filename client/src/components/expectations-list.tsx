@@ -55,7 +55,7 @@ const ExpectationCard = (props: {
             <DragHandleIcon />
           </CardActions>
           <TextField
-            id="edit"
+            id="edit-expectation"
             margin="normal"
             name="expectations"
             label={`Expectation ${expIdx + 1}`}
@@ -120,29 +120,23 @@ const ExpectationsList = (props: {
 }) => {
   const { classes, expectations, updateExpectations } = props;
 
-  const onDragEnd = useCallback(
-    (result: DropResult) => {
-      if (!result.destination) {
-        return;
-      }
-      const startIdx = result.source.index;
-      const endIdx = result.destination.index;
-      const [removed] = expectations.splice(startIdx, 1);
-      expectations.splice(endIdx, 0, removed);
-      updateExpectations([...expectations]);
-    },
-    [expectations]
-  );
+  const onDragEnd = (result: DropResult) => {
+    if (!result.destination) {
+      return;
+    }
+    const startIdx = result.source.index;
+    const endIdx = result.destination.index;
+    const [removed] = expectations.splice(startIdx, 1);
+    expectations.splice(endIdx, 0, removed);
+    updateExpectations([...expectations]);
+  };
 
-  const handleExpectationChange = useCallback(
-    (val: string, idx: number) => {
-      expectations[idx].expectation = val;
-      updateExpectations([...expectations]);
-    },
-    [expectations]
-  );
+  const handleExpectationChange = (val: string, idx: number) => {
+    expectations[idx].expectation = val;
+    updateExpectations([...expectations]);
+  };
 
-  const handleAddExpectation = useCallback(() => {
+  const handleAddExpectation = () => {
     expectations.push({
       expectation: "Add a short ideal answer for an expectation, e.g. 'Red'",
       hints: [
@@ -153,26 +147,20 @@ const ExpectationsList = (props: {
       ],
     });
     updateExpectations([...expectations]);
-  }, [expectations]);
+  };
 
-  const handleRemoveExpectation = useCallback(
-    (idx: number) => {
-      expectations.splice(idx, 1);
-      updateExpectations([...expectations]);
-    },
-    [expectations]
-  );
+  const handleRemoveExpectation = (idx: number) => {
+    expectations.splice(idx, 1);
+    updateExpectations([...expectations]);
+  };
 
-  const handleHintChange = useCallback(
-    (val: Hint[], eIdx: number) => {
-      expectations[eIdx].hints = val;
-      updateExpectations([...expectations]);
-    },
-    [expectations]
-  );
+  const handleHintChange = (val: Hint[], eIdx: number) => {
+    expectations[eIdx].hints = val;
+    updateExpectations([...expectations]);
+  };
 
   return (
-    <Paper id="expectations" elevation={0} style={{ textAlign: "left" }}>
+    <Paper elevation={0} style={{ textAlign: "left" }}>
       <Typography variant="body2" style={{ padding: 15 }}>
         Expectations
       </Typography>
@@ -181,6 +169,7 @@ const ExpectationsList = (props: {
           {(provided, snapshot) => (
             <List
               {...provided.droppableProps}
+              id="expectations"
               ref={provided.innerRef}
               className={
                 snapshot.isDraggingOver ? classes.listDragging : classes.list
@@ -223,7 +212,7 @@ const ExpectationsList = (props: {
         </Droppable>
       </DragDropContext>
       <Button
-        id="add"
+        id="add-expectation"
         startIcon={<AddIcon />}
         className={classes.button}
         onClick={handleAddExpectation}
