@@ -282,6 +282,10 @@ const LessonsTable = (props: { location: any }) => {
   };
 
   React.useEffect(() => {
+    setCursor("");
+  }, [toggle.onlyCreator]);
+
+  React.useEffect(() => {
     const filter: any = {};
     if (toggle.onlyCreator) {
       filter["createdBy"] = `${cookies.user}`;
@@ -298,7 +302,7 @@ const LessonsTable = (props: { location: any }) => {
     return () => {
       mounted = false;
     };
-  }, [deleted, toggle.onlyCreator, rowsPerPage, cursor, sortBy, sortAsc]);
+  }, [toggle.onlyCreator, deleted, rowsPerPage, cursor, sortBy, sortAsc]);
 
   if (!lessons) {
     return (

@@ -85,4 +85,37 @@ describe("lessons screen", () => {
     cy.location("pathname").should("eq", "/lessons/edit");
     cy.location("search").should("eq", "?lessonId=new");
   });
+
+  it("can toggle lessons by creator if logged in", () => {
+    cy.visit("/");
+    cy.get("#login-menu #login-input").type("OpenTutor");
+    cy.get("#login-menu #login").click();
+    cy.location("pathname").should("eq", "/lessons");
+    cy.get("#toggle-creator");
+  });
+
+  it("toggle is hidden if not logged in", () => {
+    cy.visit("/lessons");
+    cy.get("#toggle-creator").should("not.exist");
+  });
+
+  it("launches a lesson as guest", () => {
+    cy.visit("/lessons");
+    cy.get("#lesson-0 #launch button").click();
+    cy.location("pathname").should("eq", "/tutor");
+    // cy.location("search").should("eq", "?lesson=lesson1&guest=guest");
+  });
+
+  it("launches a lesson as logged in user", () => {
+    cy.visit("/");
+    cy.get("#login-menu #login-input").type("OpenTutor");
+    cy.get("#login-menu #login").click();
+    cy.location("pathname").should("eq", "/lessons");
+    cy.get("#lesson-0 #launch button").click();
+    cy.location("pathname").should("eq", "/tutor");
+    // cy.location('search').should(
+    //   'eq',
+    //   '?lesson=lesson1&guest=OpenTutor'
+    // );
+  });
 });

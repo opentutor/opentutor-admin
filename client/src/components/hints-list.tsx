@@ -45,7 +45,7 @@ const HintCard = (props: {
           <DragHandleIcon />
         </CardActions>
         <TextField
-          id="edit"
+          id="edit-hint"
           margin="normal"
           label={`Hint ${hintIdx + 1}`}
           placeholder="Add a hint to help for the expectation, e.g. 'One of them starts with R'"
@@ -86,47 +86,38 @@ const HintsList = (props: {
 }) => {
   const { classes, hints, updateHints } = props;
 
-  const onDragEnd = useCallback(
-    (result: DropResult) => {
-      if (!result.destination) {
-        return;
-      }
-      const startIdx = result.source.index;
-      const endIdx = result.destination.index;
-      const [removed] = hints.splice(startIdx, 1);
-      hints.splice(endIdx, 0, removed);
-      updateHints([...hints]);
-    },
-    [hints]
-  );
+  const onDragEnd = (result: DropResult) => {
+    if (!result.destination) {
+      return;
+    }
+    const startIdx = result.source.index;
+    const endIdx = result.destination.index;
+    const [removed] = hints.splice(startIdx, 1);
+    hints.splice(endIdx, 0, removed);
+    updateHints([...hints]);
+  };
 
-  const handleHintChange = useCallback(
-    (val: string, idx: number) => {
-      hints[idx].text = val;
-      updateHints([...hints]);
-    },
-    [hints]
-  );
+  const handleHintChange = (val: string, idx: number) => {
+    hints[idx].text = val;
+    updateHints([...hints]);
+  };
 
-  const handleAddHint = useCallback(() => {
+  const handleAddHint = () => {
     const newItem = {
       text:
         "Add a hint to help for the expectation, e.g. 'One of them starts with R'",
     };
     hints.push(newItem);
     updateHints([...hints]);
-  }, [hints]);
+  };
 
-  const handleRemoveHint = useCallback(
-    (idx: number) => {
-      hints.splice(idx, 1);
-      updateHints([...hints]);
-    },
-    [hints]
-  );
+  const handleRemoveHint = (idx: number) => {
+    hints.splice(idx, 1);
+    updateHints([...hints]);
+  };
 
   return (
-    <Paper id="hints" elevation={0} style={{ textAlign: "left" }}>
+    <Paper elevation={0} style={{ textAlign: "left" }}>
       <Typography variant="body2" style={{ padding: 5 }}>
         Hints
       </Typography>
@@ -135,6 +126,7 @@ const HintsList = (props: {
           {(provided, snapshot) => (
             <List
               {...provided.droppableProps}
+              id="hints"
               ref={provided.innerRef}
               dense
               disablePadding
@@ -175,7 +167,7 @@ const HintsList = (props: {
         </Droppable>
       </DragDropContext>
       <Button
-        id="add"
+        id="add-hint"
         startIcon={<AddIcon />}
         className={classes.button}
         onClick={handleAddHint}
