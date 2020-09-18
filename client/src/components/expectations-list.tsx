@@ -62,7 +62,6 @@ const ExpectationCard = (props: {
             placeholder="Add a short ideal answer for an expectation, e.g. 'Red'"
             variant="outlined"
             fullWidth
-            inputProps={{ maxLength: 100 }}
             InputLabelProps={{
               shrink: true,
             }}

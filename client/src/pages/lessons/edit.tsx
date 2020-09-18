@@ -331,7 +331,6 @@ const LessonEdit = (props: {
             id="lesson-name"
             label="Lesson Name"
             placeholder="Display name for the lesson"
-            inputProps={{ maxLength: 100 }}
             fullWidth
             InputLabelProps={{
               shrink: true,
@@ -346,7 +345,6 @@ const LessonEdit = (props: {
             id="lesson-id"
             label="Lesson ID"
             placeholder="Unique alias to the lesson"
-            inputProps={{ maxLength: 100 }}
             fullWidth
             error={!validId}
             InputLabelProps={{
@@ -385,7 +383,6 @@ const LessonEdit = (props: {
             placeholder="Introduction to the lesson,  e.g. 'This is a lesson about RGB colors'"
             multiline
             rowsMax={4}
-            inputProps={{ maxLength: 400 }}
             fullWidth
             InputLabelProps={{
               shrink: true,
@@ -402,7 +399,6 @@ const LessonEdit = (props: {
             placeholder="Question the student needs to answer, e.g. 'What are the colors in RGB?'"
             multiline
             rowsMax={4}
-            inputProps={{ maxLength: 400 }}
             fullWidth
             InputLabelProps={{
               shrink: true,

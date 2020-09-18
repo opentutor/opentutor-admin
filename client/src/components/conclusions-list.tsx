@@ -49,7 +49,6 @@ const ConclusionCard = (props: {
           label={`Conclusion ${idx + 1}`}
           multiline
           rowsMax={4}
-          inputProps={{ maxLength: 400 }}
           fullWidth
           placeholder="Add a conclusion statement, e.g. 'In summary,  RGB colors are red, green, and blue'"
           InputLabelProps={{
