@@ -125,8 +125,8 @@ jobs:
 workflows:
   test-build-deploy:
     jobs:
-      - test-client-audit:
-          filters: *only-untagged
+      # - test-client-audit:
+      #     filters: *only-untagged
       - test-client-cypress:
           filters: *only-untagged
       - test-client-format:
@@ -139,7 +139,7 @@ workflows:
           filters: *only-untagged
           type: approval
           requires:
-            - test-client-audit
+            # - test-client-audit
             - test-client-cypress
             - test-client-format
             - test-client-lint
@@ -151,8 +151,8 @@ workflows:
             - approve-build-and-push
   test-build-deploy-release:
     jobs:
-      - test-client-audit:
-          filters: *only-tagged-releases
+      # - test-client-audit:
+      #     filters: *only-tagged-releases
       - test-client-cypress:
           filters: *only-tagged-releases
       - test-client-format:
@@ -165,7 +165,7 @@ workflows:
           is-release-tag: true
           filters: *only-tagged-releases
           requires:
-            - test-client-audit
+            # - test-client-audit
             - test-client-cypress
             - test-client-format
             - test-client-lint
