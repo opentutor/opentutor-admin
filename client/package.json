@@ -52,7 +52,6 @@
     "gatsby-plugin-root-import": "^2.0.5",
     "identity-obj-proxy": "^3.0.0",
     "jest": "^26.0.1",
-    "license-check-and-add": "^3.0.4",
     "prettier": "^2.0.5",
     "react-refresh": "^0.8.3",
     "react-test-renderer": "^16.13.1",
@@ -80,9 +79,7 @@
     "test:format": "prettier --check '**/*.{js,jsx,json,ts,tsx}'",
     "test:lint": "eslint src --ext ts --ext tsx --ext js --ext jsx",
     "test:types": "tsc --noEmit",
-    "test:watch": "jest --watch",
-    "license:fix": "license-check-and-add remove -f license-config.json && license-check-and-add add -f license-config.json",
-    "test:license": "license-check-and-add check -f license-config.json"
+    "test:watch": "jest --watch"
   },
   "repository": {
     "type": "git",
