@@ -15,6 +15,7 @@ test-all:
 	# $(MAKE) test-audit
 	$(MAKE) test-format
 	$(MAKE) test-lint
+	$(MAKE) test-license
 	$(MAKE) test-types
 
 PHONY: test-audit
@@ -35,3 +36,22 @@ test-lint:
 PHONY: test-types
 test-types:
 	cd client && $(MAKE) test-types
+
+LICENSE:
+	@echo "you must have a LICENSE file" 1>&2
+	exit 1
+
+LICENSE_HEADER:
+	@echo "you must have a LICENSE_HEADER file" 1>&2
+	exit 1
+
+.PHONY: license
+license: LICENSE LICENSE_HEADER
+	cd client && npm run license:fix
+
+.PHONY: test-license
+test-license: LICENSE LICENSE_HEADER
+	cd client && npm run test:license
+
+node_modules/license-check-and-add:
+	npm ci 

@@ -112,6 +112,17 @@ jobs:
       - run:
           name: Client test lint
           command: cd client && npm run test:lint
+  test-client-license:
+    executor: node
+    steps:
+      - checkout
+      - run: 
+          name: Install client
+          command: cd client && npm ci
+      - run:
+          name: Client test license
+          command:
+            cd client && npm run test:license
   test-client-types:
     executor: node
     steps:
@@ -125,24 +136,27 @@ jobs:
 workflows:
   test-build-deploy:
     jobs:
-      - test-client-audit:
-          filters: *only-untagged
+      # - test-client-audit:
+      #     filters: *only-untagged
       - test-client-cypress:
           filters: *only-untagged
       - test-client-format:
           filters: *only-untagged
       - test-client-lint:
           filters: *only-untagged
+      - test-client-license:
+          filters: *only-untagged          
       - test-client-types:
           filters: *only-untagged
       - approve-build-and-push:
           filters: *only-untagged
           type: approval
           requires:
-            - test-client-audit
+            # - test-client-audit
             - test-client-cypress
             - test-client-format
             - test-client-lint
+            - test-client-license
             - test-client-types
       - build-and-push:
           is-release-tag: false
@@ -151,22 +165,25 @@ workflows:
             - approve-build-and-push
   test-build-deploy-release:
     jobs:
-      - test-client-audit:
-          filters: *only-tagged-releases
+      # - test-client-audit:
+      #     filters: *only-tagged-releases
       - test-client-cypress:
           filters: *only-tagged-releases
       - test-client-format:
           filters: *only-tagged-releases
       - test-client-lint:
           filters: *only-tagged-releases
+      - test-client-license:
+          filters: *only-untagged          
       - test-client-types:
           filters: *only-tagged-releases
       - build-and-push:
           is-release-tag: true
           filters: *only-tagged-releases
           requires:
-            - test-client-audit
+            # - test-client-audit
             - test-client-cypress
             - test-client-format
             - test-client-lint
+            - test-client-license
             - test-client-types

@@ -40,7 +40,7 @@ const SessionTable = ({ search }: { search: any }) => {
 
   const handleGradeExpectationChange = (
     event: React.ChangeEvent<{ value: unknown; name?: unknown }>
-  ):void => {
+  ): void => {
     const indeces = event.target.name as string;
     const indexSplit = indeces.split(" ");
 
