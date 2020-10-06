@@ -12,6 +12,8 @@ import {
   DialogTitle,
   Divider,
   Grid,
+  List,
+  ListItem,
   TextField,
   Typography,
 } from "@material-ui/core";
@@ -442,9 +444,13 @@ const LessonEdit = (props: {
                 trainData.info!.expectations!.length > 0
               )
             ? "#FF0000"
-            : trainData.info!.expectations![0].accuracy >= 0.6
+            : Math.min(
+                ...trainData.info!.expectations!.map((x) => x.accuracy)
+              ) >= 0.6
             ? "#008000"
-            : trainData.info!.expectations![0].accuracy >= 0.4
+            : Math.min(
+                ...trainData.info!.expectations!.map((x) => x.accuracy)
+              ) >= 0.4
             ? "#FFFF00"
             : "#FF0000"
         }
@@ -458,9 +464,15 @@ const LessonEdit = (props: {
         {isTraining ? (
           <CircularProgress />
         ) : trainData.state === TrainState.SUCCESS ? (
-          <Typography id="train-success-accuracy">{`Accurracy: ${
-            trainData.info!.expectations![0].accuracy
-          }`}</Typography>
+          <List>
+            {trainData.info!.expectations!.map((x, i) => (
+              <ListItem key={`train-success-accuracy-${i}`}>
+                <Typography
+                  id={`train-success-accuracy-${i}`}
+                >{`Accurracy: ${x.accuracy}`}</Typography>
+              </ListItem>
+            ))}
+          </List>
         ) : trainData.state === TrainState.FAILURE ? (
           <Typography id="train-failure">{`TRAINING FAILED`}</Typography>
         ) : null}

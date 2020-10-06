@@ -109,7 +109,7 @@ function mockTrainStatusSeq(
   };
 }
 
-describe("lesson screen", () => {
+describe("lesson screen - training", () => {
   beforeEach(() => {
     cy.server();
     cy.route({
@@ -152,31 +152,39 @@ describe("lesson screen", () => {
       pendingCount: 1,
       progressCount: 1,
       info: {
-        expectations: [{ accuracy: 0.17 }],
+        expectations: [
+          { accuracy: 0.17 },
+          { accuracy: 0.99 },
+          { accuracy: 0.99 },
+        ],
       },
-      expectedAccuracy: 0.17,
+      expectedAccuracies: [0.17, 0.99, 0.99],
       expectedFeedback: "red",
     },
     {
       pendingCount: 1,
       progressCount: 1,
       info: {
-        expectations: [{ accuracy: 0.41 }],
+        expectations: [{ accuracy: 0.95 }, { accuracy: 0.41 }],
       },
-      expectedAccuracy: 0.41,
+      expectedAccuracies: [0.95, 0.41],
       expectedFeedback: "yellow",
     },
     {
       pendingCount: 1,
       progressCount: 1,
       info: {
-        expectations: [{ accuracy: 0.61 }],
+        expectations: [{ accuracy: 0.61 }, { accuracy: 0.99 }],
       },
-      expectedAccuracy: 0.61,
+      expectedAccuracies: [0.61, 0.99],
       expectedFeedback: "green",
     },
   ].forEach((ex) => {
-    it(`train lesson displays ${ex.expectedFeedback} feedback on success with accuracy ${ex.expectedAccuracy}`, () => {
+    it(`train lesson displays ${
+      ex.expectedFeedback
+    } feedback on success when expectation accuracies ${JSON.stringify(
+      ex.expectedAccuracies
+    )}`, () => {
       const waitTrainLesson = mockTrainLesson(cy);
       const waitComplete = mockTrainStatusSeq(cy, [
         { status: { state: TrainState.PENDING }, repeat: ex.pendingCount },
@@ -192,10 +200,17 @@ describe("lesson screen", () => {
       cy.get("#train-button").click();
       waitTrainLesson();
       waitComplete();
-      cy.get("#train-success-accuracy").should("contain", ex.expectedAccuracy);
+      for (let i = 0; i < ex.expectedAccuracies.length; i++) {
+        cy.get(`#train-success-accuracy-${i}`).should(
+          "contain",
+          ex.expectedAccuracies[i]
+        );
+      }
       cy.matchImageSnapshot(
         snapname(
-          `train-success-with-accuracy-${ex.expectedAccuracy}-and-feedback-${ex.expectedFeedback}`
+          `train-success-displays-${
+            ex.expectedFeedback
+          }-for-expectation-accuracies-${ex.expectedAccuracies.join("-")}`
         )
       );
     });
