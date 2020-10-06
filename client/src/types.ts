@@ -76,6 +76,7 @@ export interface Lesson {
   name: string;
   intro: string;
   question: string;
+  image: string;
   conclusion: string[];
   expectations: LessonExpectation[];
   createdBy: string;

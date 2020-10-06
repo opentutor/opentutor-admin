@@ -57,7 +57,6 @@ const HintCard = (props: {
           placeholder="Add a hint to help for the expectation, e.g. 'One of them starts with R'"
           multiline
           rowsMax={4}
-          inputProps={{ maxLength: 400 }}
           fullWidth
           InputLabelProps={{
             shrink: true,

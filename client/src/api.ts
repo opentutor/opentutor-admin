@@ -207,6 +207,7 @@ export async function fetchLesson(lessonId: string): Promise<Lesson> {
             intro
             name
             question
+            image
             conclusion
             expectations {
               expectation
@@ -237,6 +238,7 @@ export async function updateLesson(
             intro
             name
             question
+            image
             conclusion
             expectations {
               expectation

@@ -18,6 +18,7 @@ describe("lesson screen", () => {
             name: "lesson",
             introduction: "introduction",
             question: "question",
+            image: null,
             conclusion: ["conclusion"],
             expectations: [
               {
@@ -40,6 +41,11 @@ describe("lesson screen", () => {
         "Content-Type": "application/json",
       },
     });
+    cy.route({
+      url:
+        "https://cdn.jpegmini.com/user/images/slider_puffin_before_mobile.jpg",
+      response: "fixtures:image.jpg,binary",
+    });
   });
 
   it("loads edit page ", () => {
@@ -58,6 +64,7 @@ describe("lesson screen", () => {
       "have",
       "Question the student needs to answer, e.g. 'What are the colors in RGB?'"
     );
+    cy.get("#image").should("have", "");
     cy.get("#expectations").children().should("have.length", 1);
     cy.get("#expectation-0 #edit-expectation").should(
       "have",
@@ -85,6 +92,9 @@ describe("lesson screen", () => {
     cy.get("#question").fill(
       "With a DC input source, does current flow in the same or the opposite direction of the diode arrow?"
     );
+    cy.get("#image").fill(
+      "https://cdn.jpegmini.com/user/images/slider_puffin_before_mobile.jpg"
+    );
     cy.get("#expectation-0 #edit-expectation").fill(
       "Current flows in the same direction as the arrow."
     );
@@ -106,6 +116,15 @@ describe("lesson screen", () => {
       "have",
       "With a DC input source, does current flow in the same or the opposite direction of the diode arrow?"
     );
+    cy.get("#image").should(
+      "have",
+      "https://cdn.jpegmini.com/user/images/slider_puffin_before_mobile.jpg"
+    );
+    cy.get("#image-thumbnail").should(
+      "have.attr",
+      "src",
+      "https://cdn.jpegmini.com/user/images/slider_puffin_before_mobile.jpg"
+    );
     cy.get("#expectation-0 #edit-expectation").should(
       "have",
       "Current flows in the same direction as the arrow."
@@ -118,6 +137,23 @@ describe("lesson screen", () => {
       "have",
       "Summing up, this diode is forward biased. Positive current flows in the same direction of the arrow, from anode to cathode."
     );
+  });
+
+  it("opens image thumbnail", () => {
+    cy.visit("/lessons/edit?lessonId=new");
+    cy.get("#image").fill(
+      "https://cdn.jpegmini.com/user/images/slider_puffin_before_mobile.jpg"
+    );
+    cy.get("#image").should(
+      "have",
+      "https://cdn.jpegmini.com/user/images/slider_puffin_before_mobile.jpg"
+    );
+    cy.get("#image-thumbnail").should(
+      "have.attr",
+      "src",
+      "https://cdn.jpegmini.com/user/images/slider_puffin_before_mobile.jpg"
+    );
+    // cy.get("#image-thumbnail").click();
   });
 
   it("can expand and collapse an expectation", () => {
