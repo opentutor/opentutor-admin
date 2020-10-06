@@ -205,6 +205,14 @@ const LessonEdit = (props: {
     setSavePopUp(true);
   }
 
+  function handleLaunch() {
+    saveChanges();
+    const host = process.env.TUTOR_ENDPOINT || location.origin;
+    const guest = cookies.user ? `&guest=${cookies.user}` : "";
+    const path = `${host}/tutor?lesson=${lessonId}${guest}`;
+    window.location.href = path;
+  }
+
   function handleDiscard() {
     navigate(`/lessons`);
   }
@@ -525,6 +533,17 @@ const LessonEdit = (props: {
           onClick={handleTrain}
         >
           Train
+        </Button>
+        <Button
+          id="launch-button"
+          className={classes.button}
+          variant="contained"
+          color="primary"
+          size="large"
+          disabled={lessonId === "new"}
+          onClick={handleLaunch}
+        >
+          Launch
         </Button>
         {change ? (
           <Button

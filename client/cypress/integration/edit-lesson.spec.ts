@@ -156,6 +156,17 @@ describe("lesson screen", () => {
     // cy.get("#image-thumbnail").click();
   });
 
+  it("launches lesson", () => {
+    cy.visit("/lessons/edit?lessonId=q1");
+    cy.get("#launch-button").click();
+    cy.location("pathname").should("eq", "/tutor");
+  });
+
+  it("launch lesson disabled if new lesson", () => {
+    cy.visit("/lessons/edit?lessonId=new");
+    cy.get("#launch-button").should("be.disabled");
+  });
+
   it("can expand and collapse an expectation", () => {
     cy.visit("/lessons/edit?lessonId=new");
     // expectation is expanded by default
