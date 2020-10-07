@@ -430,6 +430,7 @@ const LessonEdit = (props: {
         />
       </form>
       <Box
+        id="train-data"
         border={5}
         borderColor={
           trainData.state !== TrainState.SUCCESS &&
@@ -469,7 +470,7 @@ const LessonEdit = (props: {
               <ListItem key={`train-success-accuracy-${i}`}>
                 <Typography
                   id={`train-success-accuracy-${i}`}
-                >{`Accurracy: ${x.accuracy}`}</Typography>
+                >{`Accurracy: ${x.accuracy.toFixed(2)}`}</Typography>
               </ListItem>
             ))}
           </List>

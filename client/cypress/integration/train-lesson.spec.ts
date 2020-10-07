@@ -153,19 +153,19 @@ describe("lesson screen - training", () => {
       progressCount: 1,
       info: {
         expectations: [
-          { accuracy: 0.17 },
-          { accuracy: 0.99 },
-          { accuracy: 0.99 },
+          { accuracy: 0.1732423 },
+          { accuracy: 0.976524 },
+          { accuracy: 0.994324 },
         ],
       },
-      expectedAccuracies: [0.17, 0.99, 0.99],
+      expectedAccuracies: [0.17, 0.98, 0.99],
       expectedFeedback: "red",
     },
     {
       pendingCount: 1,
       progressCount: 1,
       info: {
-        expectations: [{ accuracy: 0.95 }, { accuracy: 0.41 }],
+        expectations: [{ accuracy: 0.95123 }, { accuracy: 0.41123 }],
       },
       expectedAccuracies: [0.95, 0.41],
       expectedFeedback: "yellow",
@@ -174,7 +174,7 @@ describe("lesson screen - training", () => {
       pendingCount: 1,
       progressCount: 1,
       info: {
-        expectations: [{ accuracy: 0.61 }, { accuracy: 0.99 }],
+        expectations: [{ accuracy: 0.61123 }, { accuracy: 0.99123 }],
       },
       expectedAccuracies: [0.61, 0.99],
       expectedFeedback: "green",
@@ -206,7 +206,7 @@ describe("lesson screen - training", () => {
           ex.expectedAccuracies[i]
         );
       }
-      cy.matchImageSnapshot(
+      cy.get("#train-data").matchImageSnapshot(
         snapname(
           `train-success-displays-${
             ex.expectedFeedback
