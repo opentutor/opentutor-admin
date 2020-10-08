@@ -209,7 +209,7 @@ const LessonEdit = (props: {
     saveChanges();
     const host = process.env.TUTOR_ENDPOINT || location.origin;
     const guest = cookies.user ? `&guest=${cookies.user}` : "";
-    const path = `${host}/tutor?lesson=${lessonId}${guest}`;
+    const path = `${host}/tutor?lesson=${lessonId}&admin=true${guest}`;
     window.location.href = path;
   }
 

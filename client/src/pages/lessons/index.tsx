@@ -170,7 +170,7 @@ const LessonItem = (props: {
   function launchLesson(id: string) {
     const host = process.env.TUTOR_ENDPOINT || location.origin;
     const guest = cookies.user ? `&guest=${cookies.user}` : "";
-    const path = `${host}/tutor?lesson=${id}${guest}`;
+    const path = `${host}/tutor?lesson=${id}&admin=true${guest}`;
     window.location.href = path;
   }
 
