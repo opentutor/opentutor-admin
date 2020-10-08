@@ -258,7 +258,6 @@ const SessionsTable = (props: {
     let mounted = true;
     fetchSessions(filter, rowsPerPage, cursor, sortBy, sortAsc)
       .then((sessions) => {
-        console.log(`fetchSessions got`, sessions);
         if (mounted && sessions) {
           setSessions(sessions);
         }

@@ -293,7 +293,6 @@ const LessonsTable = (props: { location: any }) => {
     let mounted = true;
     fetchLessons(filter, rowsPerPage, cursor, sortBy, sortAsc)
       .then((lessons) => {
-        console.log(`fetchLessons got`, lessons);
         if (mounted && lessons) {
           setLessons(lessons);
         }

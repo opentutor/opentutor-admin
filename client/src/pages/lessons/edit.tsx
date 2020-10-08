@@ -14,6 +14,7 @@ import {
   Grid,
   List,
   ListItem,
+  ListItemText,
   TextField,
   Typography,
 } from "@material-ui/core";
@@ -129,7 +130,6 @@ const LessonEdit = (props: {
     if (lessonId !== "new") {
       fetchLesson(lessonId)
         .then((lesson: Lesson) => {
-          console.log("fetchLesson got", lesson);
           if (mounted && lesson) {
             setLesson(lesson);
           }
@@ -246,7 +246,6 @@ const LessonEdit = (props: {
     () => {
       fetchTrainingStatus(statusUrl)
         .then((trainStatus) => {
-          console.log("train status", trainStatus);
           setTrainData(trainStatus);
           if (
             trainStatus.state === TrainState.SUCCESS ||
@@ -260,7 +259,6 @@ const LessonEdit = (props: {
               );
               updateLesson(lesson.lessonId, converted)
                 .then((lesson) => {
-                  console.log(`fetchUpdateLesson got`, lesson);
                   if (lesson !== undefined) {
                     setLesson(lesson);
                   }
@@ -308,7 +306,6 @@ const LessonEdit = (props: {
     }
     updateLesson(origId, converted)
       .then((lesson) => {
-        console.log(`fetchUpdateLesson got`, lesson);
         if (lesson !== undefined) {
           setLesson(lesson);
         }
@@ -467,10 +464,10 @@ const LessonEdit = (props: {
         ) : trainData.state === TrainState.SUCCESS ? (
           <List>
             {trainData.info!.expectations!.map((x, i) => (
-              <ListItem key={`train-success-accuracy-${i}`}>
-                <Typography
+              <ListItem key={`train-success-accuracy-${i}`} alignItems="center">
+                <ListItemText
                   id={`train-success-accuracy-${i}`}
-                >{`Accurracy: ${x.accuracy.toFixed(2)}`}</Typography>
+                >{`Accurracy: ${x.accuracy.toFixed(2)}`}</ListItemText>
               </ListItem>
             ))}
           </List>
