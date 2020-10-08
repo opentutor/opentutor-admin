@@ -49,7 +49,6 @@ describe("screenshots - lesson edit", () => {
       },
     }).as("getLesson");
     cy.visit("/lessons/edit?lessonId=lesson");
-
     cy.wait("@getLesson");
     // cy.matchImageSnapshot(snapname("displays-lesson-form-on-load"));
   });
