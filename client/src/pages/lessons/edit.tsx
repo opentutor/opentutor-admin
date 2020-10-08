@@ -464,10 +464,11 @@ const LessonEdit = (props: {
         ) : trainData.state === TrainState.SUCCESS ? (
           <List>
             {trainData.info!.expectations!.map((x, i) => (
-              <ListItem key={`train-success-accuracy-${i}`} alignItems="center">
+              <ListItem key={`train-success-accuracy-${i}`}>
                 <ListItemText
+                  style={{ textAlign: "center" }}
                   id={`train-success-accuracy-${i}`}
-                >{`Accurracy: ${x.accuracy.toFixed(2)}`}</ListItemText>
+                >{`Accuracy: ${x.accuracy.toFixed(2)}`}</ListItemText>
               </ListItem>
             ))}
           </List>
