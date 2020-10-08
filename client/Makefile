@@ -31,8 +31,6 @@ cypress-docker:
 		-v /client/node_modules \
 		-v /client/public \
 		--mount type=bind,source="$(CYPRESS_DOCKER_CACHE)"/.gatsby.cache,destination=/client/.cache,consistency=delegated \
-		--mount type=bind,source="$(CYPRESS_DOCKER_CACHE)"/.root.cache,destination=/root/.cache,consistency=delegated \
-		--mount type=bind,source="$(CYPRESS_DOCKER_CACHE)"/.npm,destination=/root/.npm,consistency=delegated \
 		--workdir /client \
 	$(CYPRESS_IMAGE)
 

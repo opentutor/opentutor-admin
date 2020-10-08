@@ -12,6 +12,9 @@ import {
   DialogTitle,
   Divider,
   Grid,
+  List,
+  ListItem,
+  ListItemText,
   TextField,
   Typography,
 } from "@material-ui/core";
@@ -127,7 +130,6 @@ const LessonEdit = (props: {
     if (lessonId !== "new") {
       fetchLesson(lessonId)
         .then((lesson: Lesson) => {
-          console.log("fetchLesson got", lesson);
           if (mounted && lesson) {
             setLesson(lesson);
           }
@@ -244,7 +246,6 @@ const LessonEdit = (props: {
     () => {
       fetchTrainingStatus(statusUrl)
         .then((trainStatus) => {
-          console.log("train status", trainStatus);
           setTrainData(trainStatus);
           if (
             trainStatus.state === TrainState.SUCCESS ||
@@ -258,7 +259,6 @@ const LessonEdit = (props: {
               );
               updateLesson(lesson.lessonId, converted)
                 .then((lesson) => {
-                  console.log(`fetchUpdateLesson got`, lesson);
                   if (lesson !== undefined) {
                     setLesson(lesson);
                   }
@@ -306,7 +306,6 @@ const LessonEdit = (props: {
     }
     updateLesson(origId, converted)
       .then((lesson) => {
-        console.log(`fetchUpdateLesson got`, lesson);
         if (lesson !== undefined) {
           setLesson(lesson);
         }
@@ -428,6 +427,7 @@ const LessonEdit = (props: {
         />
       </form>
       <Box
+        id="train-data"
         border={5}
         borderColor={
           trainData.state !== TrainState.SUCCESS &&
@@ -442,9 +442,13 @@ const LessonEdit = (props: {
                 trainData.info!.expectations!.length > 0
               )
             ? "#FF0000"
-            : trainData.info!.expectations![0].accuracy >= 0.6
+            : Math.min(
+                ...trainData.info!.expectations!.map((x) => x.accuracy)
+              ) >= 0.6
             ? "#008000"
-            : trainData.info!.expectations![0].accuracy >= 0.4
+            : Math.min(
+                ...trainData.info!.expectations!.map((x) => x.accuracy)
+              ) >= 0.4
             ? "#FFFF00"
             : "#FF0000"
         }
@@ -458,9 +462,16 @@ const LessonEdit = (props: {
         {isTraining ? (
           <CircularProgress />
         ) : trainData.state === TrainState.SUCCESS ? (
-          <Typography id="train-success-accuracy">{`Accurracy: ${
-            trainData.info!.expectations![0].accuracy
-          }`}</Typography>
+          <List>
+            {trainData.info!.expectations!.map((x, i) => (
+              <ListItem key={`train-success-accuracy-${i}`}>
+                <ListItemText
+                  style={{ textAlign: "center" }}
+                  id={`train-success-accuracy-${i}`}
+                >{`Accuracy: ${x.accuracy.toFixed(2)}`}</ListItemText>
+              </ListItem>
+            ))}
+          </List>
         ) : trainData.state === TrainState.FAILURE ? (
           <Typography id="train-failure">{`TRAINING FAILED`}</Typography>
         ) : null}
