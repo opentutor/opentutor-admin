@@ -108,7 +108,7 @@ const LessonEdit = (props: {
   const [change, setChange] = React.useState(false);
   const newLesson = {
     lessonId: uuid(),
-    createdBy: "",
+    createdBy: cookies.user || "",
     name: "Display name for the lesson",
     intro:
       "Introduction to the lesson,  e.g. 'This is a lesson about RGB colors'",
@@ -133,6 +133,8 @@ const LessonEdit = (props: {
     lastTrainedAt: "",
   };
   const [lesson, setLesson] = React.useState(newLesson);
+  const [loaded, setLoaded] = React.useState(false);
+  const [savePopUp, setSavePopUp] = React.useState(false);
 
   React.useEffect(() => {
     let mounted = true;
@@ -141,6 +143,7 @@ const LessonEdit = (props: {
         .then((lesson: Lesson) => {
           if (mounted && lesson) {
             setLesson(lesson);
+            setLoaded(true);
           }
         })
         .catch((err: string) => console.error(err));
@@ -148,23 +151,21 @@ const LessonEdit = (props: {
         mounted = false;
       };
     } else {
-      setLesson({ ...lesson, createdBy: cookies.user });
+      setLoaded(true);
     }
   }, []);
+
+  function isValidId(): boolean {
+    return /^[a-z0-9-]+$/g.test(lesson.lessonId);
+  }
 
   function handleLessonNameChange(name: string): void {
     setChange(true);
     setLesson({ ...lesson, name: name });
   }
 
-  const [validId, setValidId] = React.useState(true);
   function handleLessonIdChange(lessonId: string): void {
     setChange(true);
-    if (/^[a-z0-9-]+$/g.test(lessonId)) {
-      setValidId(true);
-    } else {
-      setValidId(false);
-    }
     setLesson({ ...lesson, lessonId: lessonId });
   }
 
@@ -198,8 +199,6 @@ const LessonEdit = (props: {
       conclusion: conclusions,
     });
   }
-
-  const [savePopUp, setSavePopUp] = React.useState(false);
 
   function handleSave() {
     setSavePopUp(true);
@@ -367,7 +366,7 @@ const LessonEdit = (props: {
             label="Lesson ID"
             placeholder="Unique alias to the lesson"
             fullWidth
-            error={!validId}
+            error={!isValidId()}
             InputLabelProps={{
               shrink: true,
             }}
@@ -540,7 +539,7 @@ const LessonEdit = (props: {
           variant="contained"
           color="primary"
           size="large"
-          disabled={lessonId === "new"}
+          disabled={lessonId === "new" || !loaded || !isValidId()}
           onClick={handleLaunch}
         >
           Launch
@@ -552,9 +551,8 @@ const LessonEdit = (props: {
             variant="contained"
             color="primary"
             size="large"
-            style={{ background: validId ? "#1B6A9C" : "#808080" }}
             onClick={handleSave}
-            disabled={!validId}
+            disabled={!isValidId()}
           >
             Save
           </Button>
