@@ -31,6 +31,7 @@ import ExpectationsList from "components/expectations-list";
 import { Lesson, LessonExpectation, TrainStatus, TrainState } from "types";
 import withLocation from "wrap-with-location";
 import "styles/layout.css";
+import "jsoneditor-react/es/editor.min.css";
 import "react-toastify/dist/ReactToastify.css";
 
 const TRAIN_STATUS_POLL_INTERVAL_DEFAULT = 1000;
@@ -127,14 +128,22 @@ const LessonEdit = (props: {
               "Add a hint to help for the expectation, e.g. 'One of them starts with R'",
           },
         ],
+        additionalFeatures: null,
       },
     ],
+    additionalFeatures: null,
     isTrainable: false,
     lastTrainedAt: "",
   };
   const [lesson, setLesson] = React.useState(newLesson);
   const [loaded, setLoaded] = React.useState(false);
   const [savePopUp, setSavePopUp] = React.useState(false);
+  const [isTraining, setIsTraining] = React.useState(false);
+  const [trainPopUp, setTrainPopUp] = React.useState(false);
+  const [statusUrl, setStatusUrl] = React.useState("");
+  const [trainData, setTrainData] = React.useState<TrainStatus>({
+    state: TrainState.NONE,
+  });
 
   React.useEffect(() => {
     let mounted = true;
@@ -144,6 +153,7 @@ const LessonEdit = (props: {
           if (mounted && lesson) {
             setLesson(lesson);
             setLoaded(true);
+            console.log(`lesson: `, lesson);
           }
         })
         .catch((err: string) => console.error(err));
@@ -185,11 +195,15 @@ const LessonEdit = (props: {
   }
 
   function handleExpectationsChange(exp: LessonExpectation[]): void {
-    setChange(true);
-    setLesson({
-      ...lesson,
-      expectations: exp,
-    });
+    try {
+      setChange(true);
+      setLesson({
+        ...lesson,
+        expectations: exp,
+      });
+    } catch (e) {
+      console.error(e);
+    }
   }
 
   function handleConclusionsChange(conclusions: string[]): void {
@@ -215,13 +229,6 @@ const LessonEdit = (props: {
   function handleDiscard() {
     navigate(`/lessons`);
   }
-
-  const [isTraining, setIsTraining] = React.useState(false);
-  const [trainPopUp, setTrainPopUp] = React.useState(false);
-  const [statusUrl, setStatusUrl] = React.useState("");
-  const [trainData, setTrainData] = React.useState<TrainStatus>({
-    state: TrainState.NONE,
-  });
 
   function useInterval(callback: any, delay: number | null) {
     const savedCallback = React.useRef() as any;
