@@ -13,7 +13,6 @@ import {
   Draggable,
   DropResult,
 } from "react-beautiful-dnd";
-import { JsonEditor } from "jsoneditor-react";
 import {
   Button,
   Card,
@@ -88,6 +87,21 @@ const ExpectationCard = (props: {
     setCurJson(json);
   }, [props.expectation.expectation]);
 
+  function JSONEditor(): any {
+    if (typeof window === "undefined") {
+      return <div></div>;
+    }
+    const { JsonEditor } = require("jsoneditor-react");
+    return (
+      <JsonEditor
+        ref={editorRef}
+        value={json}
+        ajv={ajv}
+        onChange={onEditJson}
+      />
+    );
+  }
+
   function onEditJson(json: any): void {
     setCurJson(json);
     handleAdditionalFeaturesChange(json);
@@ -155,12 +169,7 @@ const ExpectationCard = (props: {
           <Typography variant="body2" style={{ padding: 5 }}>
             Additional Features
           </Typography>
-          <JsonEditor
-            ref={editorRef}
-            value={json}
-            ajv={ajv}
-            onChange={onEditJson}
-          />
+          {JSONEditor()}
         </Collapse>
       </CardContent>
     </Card>
