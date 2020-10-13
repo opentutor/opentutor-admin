@@ -128,10 +128,10 @@ const LessonEdit = (props: {
               "Add a hint to help for the expectation, e.g. 'One of them starts with R'",
           },
         ],
-        additionalFeatures: null,
+        additionalFeatures: "",
       },
     ],
-    additionalFeatures: null,
+    additionalFeatures: "",
     isTrainable: false,
     lastTrainedAt: "",
   };
@@ -153,7 +153,6 @@ const LessonEdit = (props: {
           if (mounted && lesson) {
             setLesson(lesson);
             setLoaded(true);
-            console.log(`lesson: `, lesson);
           }
         })
         .catch((err: string) => console.error(err));
@@ -216,6 +215,40 @@ const LessonEdit = (props: {
 
   function handleSave() {
     setSavePopUp(true);
+  }
+
+  function handleSavePopUp(): void {
+    setSavePopUp(false);
+  }
+
+  function handleSaveExit(): void {
+    saveChanges();
+    navigate(`/lessons`);
+  }
+
+  function handleSaveContinue(): void {
+    saveChanges();
+    handleSavePopUp();
+  }
+
+  function saveChanges(): void {
+    toast("Saving...");
+    const converted = encodeURI(JSON.stringify(lesson));
+    let origId = lessonId;
+    if (lessonId === "new") {
+      origId = lesson.lessonId;
+    }
+    updateLesson(origId, converted)
+      .then((lesson) => {
+        if (lesson) {
+          setLesson(lesson);
+        }
+        toast("Success!");
+      })
+      .catch((err) => {
+        toast("Failed to save lesson.");
+        console.error(err);
+      });
   }
 
   function handleLaunch() {
@@ -309,40 +342,6 @@ const LessonEdit = (props: {
 
   function handleTrainPopUp(): void {
     setTrainPopUp(false);
-  }
-
-  function handleSavePopUp(): void {
-    setSavePopUp(false);
-  }
-
-  function handleSaveExit(): void {
-    saveChanges();
-    navigate(`/lessons`);
-  }
-
-  function handleSaveContinue(): void {
-    saveChanges();
-    handleSavePopUp();
-  }
-
-  function saveChanges(): void {
-    toast("Saving...");
-    const converted = encodeURI(JSON.stringify(lesson));
-    let origId = lessonId;
-    if (lessonId === "new") {
-      origId = lesson.lessonId;
-    }
-    updateLesson(origId, converted)
-      .then((lesson) => {
-        if (lesson !== undefined) {
-          setLesson(lesson);
-        }
-        toast("Success!");
-      })
-      .catch((err) => {
-        toast("Failed to save lesson.");
-        console.error(err);
-      });
   }
 
   return (

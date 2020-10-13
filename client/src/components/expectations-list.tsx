@@ -56,25 +56,41 @@ const ExpectationCard = (props: {
     handleHintChange,
     handleAdditionalFeaturesChange,
   } = props;
+
   const [expanded, setExpanded] = React.useState(true);
-  const editorRef = React.useRef();
-
+  const [curJson, setCurJson] = React.useState({});
+  const editorRef = React.useRef<any>();
   const ajv = new Ajv({ allErrors: true, verbose: true });
-  const expFeatures = expectation.additionalFeatures
-    ? typeof expectation.additionalFeatures == "string"
-      ? JSON.parse(expectation.additionalFeatures)
-      : expectation.additionalFeatures
-    : {};
-  console.log(`exp features: `, expFeatures);
-  const json = {
-    ideal: expectation.expectation,
-    bad_regex: [],
-    good_regex: [],
-    ...expFeatures,
-  };
 
-  if (editorRef !== undefined && editorRef.current !== undefined) {
-    editorRef.current.jsonEditor.set(json);
+  let json = {};
+  React.useEffect(() => {
+    let expFeatures = {};
+    try {
+      if (expectation.additionalFeatures) {
+        expFeatures = JSON.parse(expectation.additionalFeatures);
+      } else {
+        expFeatures = { bad_regex: [], good_regex: [] };
+      }
+    } catch (e) {
+      console.error(e);
+      expFeatures = { bad_regex: [], good_regex: [] };
+    }
+    json = {
+      ...curJson,
+      ...expFeatures,
+      ideal: expectation.expectation,
+    };
+    try {
+      editorRef?.current.jsonEditor.set(json);
+    } catch (e) {
+      console.error(e);
+    }
+    setCurJson(json);
+  }, [props.expectation.expectation]);
+
+  function onEditJson(json: any): void {
+    setCurJson(json);
+    handleAdditionalFeaturesChange(json);
   }
 
   return (
@@ -143,7 +159,7 @@ const ExpectationCard = (props: {
             ref={editorRef}
             value={json}
             ajv={ajv}
-            onChange={handleAdditionalFeaturesChange}
+            onChange={onEditJson}
           />
         </Collapse>
       </CardContent>
@@ -175,7 +191,7 @@ const ExpectationsList = (props: {
   };
 
   const handleAdditionalFeaturesChange = (val: any, idx: number) => {
-    expectations[idx].additionalFeatures = val;
+    expectations[idx].additionalFeatures = JSON.stringify(val);
     updateExpectations([...expectations]);
   };
 
@@ -188,7 +204,7 @@ const ExpectationsList = (props: {
             "Add a hint to help for the expectation, e.g. 'One of them starts with R'",
         },
       ],
-      additionalFeatures: {},
+      additionalFeatures: "",
     });
     updateExpectations([...expectations]);
   };
