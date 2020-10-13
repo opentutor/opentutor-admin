@@ -59,9 +59,12 @@ const ExpectationCard = (props: {
   const [expanded, setExpanded] = React.useState(true);
   const [curJson, setCurJson] = React.useState({});
   const editorRef = React.useRef<any>();
-  const ajv = new Ajv({ allErrors: true, verbose: true });
 
+  const ajv = new Ajv({ allErrors: true, verbose: true });
+  /* eslint-disable-next-line @typescript-eslint/no-var-requires */
+  const schema = require("schemas/expectation-feature-schema.json");
   let json = {};
+
   React.useEffect(() => {
     let expFeatures = {};
     try {
@@ -98,6 +101,7 @@ const ExpectationCard = (props: {
         ref={editorRef}
         value={json}
         ajv={ajv}
+        schema={schema}
         onChange={onEditJson}
       />
     );

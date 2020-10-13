@@ -1,0 +1,22 @@
+{
+  "properties": {
+    "ideal": {
+      "type": "string",
+      "description": "Expectation's ideal answer"
+    },
+    "good": {
+      "type": "array",
+      "description": "List of good regex answers",
+      "items": {
+        "type": "string"
+      }
+    },
+    "bad": {
+      "type": "array",
+      "description": "List of bad regex answers",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

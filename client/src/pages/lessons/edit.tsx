@@ -153,6 +153,7 @@ const LessonEdit = (props: {
           if (mounted && lesson) {
             setLesson(lesson);
             setLoaded(true);
+            console.log(lesson);
           }
         })
         .catch((err: string) => console.error(err));
