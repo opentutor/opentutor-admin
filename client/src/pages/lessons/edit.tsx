@@ -128,10 +128,10 @@ const LessonEdit = (props: {
               "Add a hint to help for the expectation, e.g. 'One of them starts with R'",
           },
         ],
-        additionalFeatures: "",
+        features: "",
       },
     ],
-    additionalFeatures: "",
+    features: "",
     isTrainable: false,
     lastTrainedAt: "",
   };

@@ -28,13 +28,13 @@ describe("lesson screen", () => {
                     text: "hint 1.1",
                   },
                 ],
-                additionalFeatures: JSON.stringify({
+                features: JSON.stringify({
                   ideal: "ideal answer",
-                  bad_regex: ["bad1", "bad2"],
+                  bad: ["bad1", "bad2"],
                 }),
               },
             ],
-            additionalFeatures: "",
+            features: "",
             isTrainable: true,
             lastTrainedAt: "",
           },
@@ -78,8 +78,8 @@ describe("lesson screen", () => {
     cy.get("#expectation-0 .jsoneditor").contains(
       "Add a short ideal answer for an expectation, e.g. 'Red'"
     );
-    cy.get("#expectation-0 .jsoneditor").contains("bad_regex");
-    cy.get("#expectation-0 .jsoneditor").contains("good_regex");
+    cy.get("#expectation-0 .jsoneditor").contains("bad");
+    cy.get("#expectation-0 .jsoneditor").contains("good");
     cy.get("#expectation-0 #hints").children().should("have.length", 1);
     cy.get("#hint-0 #edit-hint").should(
       "have.value",

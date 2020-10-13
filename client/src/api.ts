@@ -211,12 +211,12 @@ export async function fetchLesson(lessonId: string): Promise<Lesson> {
             conclusion
             expectations {
               expectation
-              additionalFeatures
+              features
               hints {
                 text
               }
             }
-            additionalFeatures
+            features
             lastTrainedAt
             isTrainable
             createdBy
@@ -244,12 +244,12 @@ export async function updateLesson(
             conclusion
             expectations {
               expectation
-              additionalFeatures
+              features
               hints {
                 text
               }
             }
-            additionalFeatures
+            features
             lastTrainedAt
             isTrainable
             createdBy

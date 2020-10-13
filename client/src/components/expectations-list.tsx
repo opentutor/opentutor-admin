@@ -43,7 +43,7 @@ const ExpectationCard = (props: {
   handleExpectationChange: (val: string) => void;
   handleRemoveExpectation: () => void;
   handleHintChange: (val: Hint[]) => void;
-  handleAdditionalFeaturesChange: (val: any) => void;
+  handlefeaturesChange: (val: any) => void;
 }) => {
   const {
     classes,
@@ -53,7 +53,7 @@ const ExpectationCard = (props: {
     handleExpectationChange,
     handleRemoveExpectation,
     handleHintChange,
-    handleAdditionalFeaturesChange,
+    handlefeaturesChange,
   } = props;
 
   const [expanded, setExpanded] = React.useState(true);
@@ -65,14 +65,14 @@ const ExpectationCard = (props: {
   React.useEffect(() => {
     let expFeatures = {};
     try {
-      if (expectation.additionalFeatures) {
-        expFeatures = JSON.parse(expectation.additionalFeatures);
+      if (expectation.features) {
+        expFeatures = JSON.parse(expectation.features);
       } else {
-        expFeatures = { bad_regex: [], good_regex: [] };
+        expFeatures = { bad: [], good: [] };
       }
     } catch (e) {
       console.error(e);
-      expFeatures = { bad_regex: [], good_regex: [] };
+      expFeatures = { bad: [], good: [] };
     }
     json = {
       ...curJson,
@@ -91,6 +91,7 @@ const ExpectationCard = (props: {
     if (typeof window === "undefined") {
       return <div></div>;
     }
+    /* eslint-disable-next-line @typescript-eslint/no-var-requires */
     const { JsonEditor } = require("jsoneditor-react");
     return (
       <JsonEditor
@@ -104,7 +105,7 @@ const ExpectationCard = (props: {
 
   function onEditJson(json: any): void {
     setCurJson(json);
-    handleAdditionalFeaturesChange(json);
+    handlefeaturesChange(json);
   }
 
   return (
@@ -199,8 +200,8 @@ const ExpectationsList = (props: {
     updateExpectations([...expectations]);
   };
 
-  const handleAdditionalFeaturesChange = (val: any, idx: number) => {
-    expectations[idx].additionalFeatures = JSON.stringify(val);
+  const handlefeaturesChange = (val: any, idx: number) => {
+    expectations[idx].features = JSON.stringify(val);
     updateExpectations([...expectations]);
   };
 
@@ -213,7 +214,7 @@ const ExpectationsList = (props: {
             "Add a hint to help for the expectation, e.g. 'One of them starts with R'",
         },
       ],
-      additionalFeatures: "",
+      features: "",
     });
     updateExpectations([...expectations]);
   };
@@ -270,8 +271,8 @@ const ExpectationsList = (props: {
                         handleHintChange={(val: Hint[]) => {
                           handleHintChange(val, i);
                         }}
-                        handleAdditionalFeaturesChange={(val: any) => {
-                          handleAdditionalFeaturesChange(val, i);
+                        handlefeaturesChange={(val: any) => {
+                          handlefeaturesChange(val, i);
                         }}
                       />
                     </ListItem>
