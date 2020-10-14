@@ -18,6 +18,7 @@ describe("lesson screen", () => {
             name: "lesson",
             introduction: "introduction",
             question: "question",
+            image: null,
             conclusion: ["conclusion"],
             expectations: [
               {
@@ -40,6 +41,11 @@ describe("lesson screen", () => {
         "Content-Type": "application/json",
       },
     });
+    cy.route({
+      url:
+        "https://cdn.jpegmini.com/user/images/slider_puffin_before_mobile.jpg",
+      response: "fixtures:image.jpg,binary",
+    });
   });
 
   it("loads edit page ", () => {
@@ -48,29 +54,30 @@ describe("lesson screen", () => {
 
   it("new lesson has default values", () => {
     cy.visit("/lessons/edit?lessonId=new");
-    cy.get("#lesson-name").should("have", "Display name for the lesson");
-    cy.get("#lesson-creator").should("have", "Guest");
+    cy.get("#lesson-name").should("have.value", "Display name for the lesson");
+    cy.get("#lesson-creator").should("have.value", "");
     cy.get("#intro").should(
-      "have",
+      "have.value",
       "Introduction to the lesson,  e.g. 'This is a lesson about RGB colors'"
     );
     cy.get("#question").should(
-      "have",
+      "have.value",
       "Question the student needs to answer, e.g. 'What are the colors in RGB?'"
     );
+    cy.get("#image").should("have.value", "");
     cy.get("#expectations").children().should("have.length", 1);
     cy.get("#expectation-0 #edit-expectation").should(
-      "have",
+      "have.value",
       "Add a short ideal answer for an expectation, e.g. 'Red'"
     );
     cy.get("#expectation-0 #hints").children().should("have.length", 1);
     cy.get("#hint-0 #edit-hint").should(
-      "have",
+      "have.value",
       "Add a hint to help for the expectation, e.g. 'One of them starts with R'"
     );
     cy.get("#conclusions").children().should("have.length", 1);
     cy.get("#conclusion-0 #edit-conclusion").should(
-      "have",
+      "have.value",
       "Add a conclusion statement, e.g. 'In summary,  RGB colors are red, green, and blue'"
     );
   });
@@ -85,6 +92,9 @@ describe("lesson screen", () => {
     cy.get("#question").fill(
       "With a DC input source, does current flow in the same or the opposite direction of the diode arrow?"
     );
+    cy.get("#image").fill(
+      "https://cdn.jpegmini.com/user/images/slider_puffin_before_mobile.jpg"
+    );
     cy.get("#expectation-0 #edit-expectation").fill(
       "Current flows in the same direction as the arrow."
     );
@@ -95,29 +105,66 @@ describe("lesson screen", () => {
       "Summing up, this diode is forward biased. Positive current flows in the same direction of the arrow, from anode to cathode."
     );
 
-    cy.get("#lesson-name").should("have", "Review Diode Current Flow");
-    cy.get("#lesson-id").should("have", "review-diode-current-flow");
-    cy.get("#lesson-creator").should("have", "Guest");
+    cy.get("#lesson-name").should("have.value", "Review Diode Current Flow");
+    cy.get("#lesson-id").should("have.value", "review-diode-current-flow");
+    cy.get("#lesson-creator").should("have.value", "");
     cy.get("#intro").should(
-      "have",
+      "have.value",
       "This is a warm up question on the behavior of P-N junction diodes."
     );
     cy.get("#question").should(
-      "have",
+      "have.value",
       "With a DC input source, does current flow in the same or the opposite direction of the diode arrow?"
     );
+    cy.get("#image").should(
+      "have.value",
+      "https://cdn.jpegmini.com/user/images/slider_puffin_before_mobile.jpg"
+    );
+    cy.get("#image-thumbnail").should(
+      "have.attr",
+      "src",
+      "https://cdn.jpegmini.com/user/images/slider_puffin_before_mobile.jpg"
+    );
     cy.get("#expectation-0 #edit-expectation").should(
-      "have",
+      "have.value",
       "Current flows in the same direction as the arrow."
     );
     cy.get("#expectation-0 #hint-0 #edit-hint").should(
-      "have",
+      "have.value",
       "What is the current direction through the diode when the input signal is DC input?"
     );
     cy.get("#conclusion-0 #edit-conclusion").should(
-      "have",
+      "have.value",
       "Summing up, this diode is forward biased. Positive current flows in the same direction of the arrow, from anode to cathode."
     );
+  });
+
+  it("opens image thumbnail", () => {
+    cy.visit("/lessons/edit?lessonId=new");
+    cy.get("#image").fill(
+      "https://cdn.jpegmini.com/user/images/slider_puffin_before_mobile.jpg"
+    );
+    cy.get("#image").should(
+      "have.value",
+      "https://cdn.jpegmini.com/user/images/slider_puffin_before_mobile.jpg"
+    );
+    cy.get("#image-thumbnail").should(
+      "have.attr",
+      "src",
+      "https://cdn.jpegmini.com/user/images/slider_puffin_before_mobile.jpg"
+    );
+    // cy.get("#image-thumbnail").click();
+  });
+
+  it("launches lesson", () => {
+    cy.visit("/lessons/edit?lessonId=q1");
+    cy.get("#launch-button").click();
+    cy.location("pathname").should("eq", "/tutor");
+  });
+
+  it("launch lesson disabled if new lesson", () => {
+    cy.visit("/lessons/edit?lessonId=new");
+    cy.get("#launch-button").should("be.disabled");
   });
 
   it("can expand and collapse an expectation", () => {

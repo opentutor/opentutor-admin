@@ -84,6 +84,14 @@ const useStyles = makeStyles((theme) => ({
       border: "red solid 2px",
     },
   },
+  image: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  thumbnail: {
+    padding: 10,
+  },
 }));
 
 const LessonEdit = (props: {
@@ -100,12 +108,13 @@ const LessonEdit = (props: {
   const [change, setChange] = React.useState(false);
   const newLesson = {
     lessonId: uuid(),
-    createdBy: "",
+    createdBy: cookies.user || "",
     name: "Display name for the lesson",
     intro:
       "Introduction to the lesson,  e.g. 'This is a lesson about RGB colors'",
     question:
       "Question the student needs to answer, e.g. 'What are the colors in RGB?'",
+    image: "",
     conclusion: [
       "Add a conclusion statement, e.g. 'In summary,  RGB colors are red, green, and blue'",
     ],
@@ -124,6 +133,8 @@ const LessonEdit = (props: {
     lastTrainedAt: "",
   };
   const [lesson, setLesson] = React.useState(newLesson);
+  const [loaded, setLoaded] = React.useState(false);
+  const [savePopUp, setSavePopUp] = React.useState(false);
 
   React.useEffect(() => {
     let mounted = true;
@@ -132,6 +143,7 @@ const LessonEdit = (props: {
         .then((lesson: Lesson) => {
           if (mounted && lesson) {
             setLesson(lesson);
+            setLoaded(true);
           }
         })
         .catch((err: string) => console.error(err));
@@ -139,23 +151,21 @@ const LessonEdit = (props: {
         mounted = false;
       };
     } else {
-      setLesson({ ...lesson, createdBy: cookies.user });
+      setLoaded(true);
     }
   }, []);
+
+  function isValidId(): boolean {
+    return /^[a-z0-9-]+$/g.test(lesson.lessonId);
+  }
 
   function handleLessonNameChange(name: string): void {
     setChange(true);
     setLesson({ ...lesson, name: name });
   }
 
-  const [validId, setValidId] = React.useState(true);
   function handleLessonIdChange(lessonId: string): void {
     setChange(true);
-    if (/^[a-z0-9-]+$/g.test(lessonId)) {
-      setValidId(true);
-    } else {
-      setValidId(false);
-    }
     setLesson({ ...lesson, lessonId: lessonId });
   }
 
@@ -167,6 +177,11 @@ const LessonEdit = (props: {
   function handleQuestionChange(question: string): void {
     setChange(true);
     setLesson({ ...lesson, question: question });
+  }
+
+  function handleImageChange(image: string): void {
+    setChange(true);
+    setLesson({ ...lesson, image: image });
   }
 
   function handleExpectationsChange(exp: LessonExpectation[]): void {
@@ -185,10 +200,16 @@ const LessonEdit = (props: {
     });
   }
 
-  const [savePopUp, setSavePopUp] = React.useState(false);
-
   function handleSave() {
     setSavePopUp(true);
+  }
+
+  function handleLaunch() {
+    saveChanges();
+    const host = process.env.TUTOR_ENDPOINT || location.origin;
+    const guest = cookies.user ? `&guest=${cookies.user}` : "";
+    const path = `${host}/tutor?lesson=${lessonId}&admin=true${guest}`;
+    window.location.href = path;
   }
 
   function handleDiscard() {
@@ -330,7 +351,6 @@ const LessonEdit = (props: {
             id="lesson-name"
             label="Lesson Name"
             placeholder="Display name for the lesson"
-            inputProps={{ maxLength: 100 }}
             fullWidth
             InputLabelProps={{
               shrink: true,
@@ -345,9 +365,8 @@ const LessonEdit = (props: {
             id="lesson-id"
             label="Lesson ID"
             placeholder="Unique alias to the lesson"
-            inputProps={{ maxLength: 100 }}
             fullWidth
-            error={!validId}
+            error={!isValidId()}
             InputLabelProps={{
               shrink: true,
             }}
@@ -384,7 +403,6 @@ const LessonEdit = (props: {
             placeholder="Introduction to the lesson,  e.g. 'This is a lesson about RGB colors'"
             multiline
             rowsMax={4}
-            inputProps={{ maxLength: 400 }}
             fullWidth
             InputLabelProps={{
               shrink: true,
@@ -401,7 +419,6 @@ const LessonEdit = (props: {
             placeholder="Question the student needs to answer, e.g. 'What are the colors in RGB?'"
             multiline
             rowsMax={4}
-            inputProps={{ maxLength: 400 }}
             fullWidth
             InputLabelProps={{
               shrink: true,
@@ -412,6 +429,33 @@ const LessonEdit = (props: {
             }}
             variant="outlined"
           />
+          <div className={classes.image}>
+            <TextField
+              id="image"
+              label="Image"
+              placeholder="Link to image url"
+              multiline
+              rowsMax={4}
+              fullWidth
+              InputLabelProps={{
+                shrink: true,
+              }}
+              value={lesson.image || ""}
+              onChange={(e) => {
+                handleImageChange(e.target.value);
+              }}
+              variant="outlined"
+            />
+            <img
+              className={classes.thumbnail}
+              id="image-thumbnail"
+              src={lesson.image}
+              style={{ height: 50 }}
+              onClick={() => {
+                window.open(lesson.image, "_blank");
+              }}
+            />
+          </div>
         </Grid>
         <Divider style={{ marginTop: 20 }} />
         <ExpectationsList
@@ -489,6 +533,17 @@ const LessonEdit = (props: {
         >
           Train
         </Button>
+        <Button
+          id="launch-button"
+          className={classes.button}
+          variant="contained"
+          color="primary"
+          size="large"
+          disabled={lessonId === "new" || !loaded || !isValidId()}
+          onClick={handleLaunch}
+        >
+          Launch
+        </Button>
         {change ? (
           <Button
             id="save-button"
@@ -496,9 +551,8 @@ const LessonEdit = (props: {
             variant="contained"
             color="primary"
             size="large"
-            style={{ background: validId ? "#1B6A9C" : "#808080" }}
             onClick={handleSave}
-            disabled={!validId}
+            disabled={!isValidId()}
           >
             Save
           </Button>
