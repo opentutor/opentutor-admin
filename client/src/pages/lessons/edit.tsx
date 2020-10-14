@@ -1,3 +1,4 @@
+import Ajv from "ajv";
 import { navigate } from "gatsby";
 import React from "react";
 import { useCookies } from "react-cookie";
@@ -153,7 +154,6 @@ const LessonEdit = (props: {
           if (mounted && lesson) {
             setLesson(lesson);
             setLoaded(true);
-            console.log(lesson);
           }
         })
         .catch((err: string) => console.error(err));
@@ -167,6 +167,30 @@ const LessonEdit = (props: {
 
   function isValidId(): boolean {
     return /^[a-z0-9-]+$/g.test(lesson.lessonId);
+  }
+
+  function isExpValid(exp: LessonExpectation): boolean {
+    const ajv = new Ajv({ allErrors: true, verbose: true });
+    /* eslint-disable-next-line @typescript-eslint/no-var-requires */
+    const schema = require("schemas/expectation-feature-schema.json");
+    const validate = ajv.compile(schema);
+    let json = {};
+    try {
+      json = JSON.parse(exp.features);
+    } catch (e) {
+      console.error(e);
+    }
+    const valid = validate(json) === true;
+    return !exp.features || valid;
+  }
+
+  function isLessonValid(): boolean {
+    return (
+      lesson &&
+      loaded &&
+      isValidId() &&
+      lesson.expectations.every((exp) => isExpValid(exp))
+    );
   }
 
   function handleLessonNameChange(name: string): void {
@@ -374,6 +398,7 @@ const LessonEdit = (props: {
             placeholder="Unique alias to the lesson"
             fullWidth
             error={!isValidId()}
+            helperText={isValidId() ? "" : "must be a-z 0-9"}
             InputLabelProps={{
               shrink: true,
             }}
@@ -546,7 +571,7 @@ const LessonEdit = (props: {
           variant="contained"
           color="primary"
           size="large"
-          disabled={lessonId === "new" || !loaded || !isValidId()}
+          disabled={lessonId === "new" || !isLessonValid()}
           onClick={handleLaunch}
         >
           Launch
@@ -559,7 +584,7 @@ const LessonEdit = (props: {
             color="primary"
             size="large"
             onClick={handleSave}
-            disabled={!isValidId()}
+            disabled={!isLessonValid()}
           >
             Save
           </Button>
