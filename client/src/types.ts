@@ -82,7 +82,7 @@ export interface Lesson {
   createdBy: string;
   createdAt: string;
   updatedAt: string;
-  features: string;
+  features: any;
   lastTrainedAt: string;
   isTrainable: boolean;
   deleted: boolean;
@@ -90,7 +90,7 @@ export interface Lesson {
 
 export interface LessonExpectation {
   expectation: string;
-  features: string;
+  features: any;
   hints: Hint[];
 }
 

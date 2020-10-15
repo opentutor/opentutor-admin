@@ -37,25 +37,26 @@ import "jsoneditor-react/es/editor.min.css";
 
 const ExpectationCard = (props: {
   classes: any;
+  loaded: boolean;
   expectation: LessonExpectation;
   expIdx: number;
   canDelete: boolean;
   handleExpectationChange: (val: string) => void;
   handleRemoveExpectation: () => void;
   handleHintChange: (val: Hint[]) => void;
-  handlefeaturesChange: (val: any) => void;
+  handleFeaturesChange: (val: any) => void;
 }) => {
   const {
     classes,
+    loaded,
     expectation,
     expIdx,
     canDelete,
     handleExpectationChange,
     handleRemoveExpectation,
     handleHintChange,
-    handlefeaturesChange,
+    handleFeaturesChange,
   } = props;
-
   const [expanded, setExpanded] = React.useState(true);
   const [curJson, setCurJson] = React.useState({});
   const editorRef = React.useRef<any>();
@@ -64,31 +65,32 @@ const ExpectationCard = (props: {
   /* eslint-disable-next-line @typescript-eslint/no-var-requires */
   const schema = require("schemas/expectation-feature-schema.json");
   let json = {};
-
   React.useEffect(() => {
-    let expFeatures = {};
-    try {
-      if (expectation.features) {
-        expFeatures = JSON.parse(expectation.features);
-      } else {
-        expFeatures = { bad: [], good: [] };
-      }
-    } catch (e) {
-      console.error(e);
-      expFeatures = { bad: [], good: [] };
+    if (!loaded) {
+      return;
     }
+    const expFeatures = expectation.features;
     json = {
-      ...curJson,
-      ...expFeatures,
+      ...Object.assign(expFeatures, curJson),
       ideal: expectation.expectation,
     };
-    try {
+    if (!("bad" in json)) {
+      json = {
+        ...json,
+        bad: [],
+      };
+    }
+    if (!("good" in json)) {
+      json = {
+        ...json,
+        good: [],
+      };
+    }
+    if (editorRef && editorRef.current) {
       editorRef?.current.jsonEditor.set(json);
-    } catch (e) {
-      console.error(e);
     }
     setCurJson(json);
-  }, [props.expectation.expectation]);
+  }, [expanded, loaded, props.expectation.expectation]);
 
   function JSONEditor(): any {
     if (typeof window === "undefined") {
@@ -98,6 +100,7 @@ const ExpectationCard = (props: {
     const { JsonEditor } = require("jsoneditor-react");
     return (
       <JsonEditor
+        style={{ minHeight: 500 }}
         ref={editorRef}
         value={json}
         ajv={ajv}
@@ -109,7 +112,7 @@ const ExpectationCard = (props: {
 
   function onEditJson(json: any): void {
     setCurJson(json);
-    handlefeaturesChange(json);
+    handleFeaturesChange(json);
   }
 
   return (
@@ -183,10 +186,17 @@ const ExpectationCard = (props: {
 
 const ExpectationsList = (props: {
   classes: any;
+  loaded: boolean;
   expectations: LessonExpectation[];
   updateExpectations: (val: LessonExpectation[]) => void;
 }) => {
-  const { classes, expectations, updateExpectations } = props;
+  const { classes, loaded, expectations, updateExpectations } = props;
+
+  function replaceItem<T>(a: Array<T>, index: number, item: T): Array<T> {
+    const newArr = [...a];
+    newArr[index] = item;
+    return newArr;
+  }
 
   const onDragEnd = (result: DropResult) => {
     if (!result.destination) {
@@ -200,36 +210,50 @@ const ExpectationsList = (props: {
   };
 
   const handleExpectationChange = (val: string, idx: number) => {
-    expectations[idx].expectation = val;
-    updateExpectations([...expectations]);
+    updateExpectations(
+      replaceItem(expectations, idx, {
+        ...expectations[idx],
+        expectation: val,
+      })
+    );
   };
 
-  const handlefeaturesChange = (val: any, idx: number) => {
-    expectations[idx].features = JSON.stringify(val);
-    updateExpectations([...expectations]);
+  const handleFeaturesChange = (val: any, idx: number) => {
+    updateExpectations(
+      replaceItem(expectations, idx, {
+        ...expectations[idx],
+        features: val,
+      })
+    );
+  };
+
+  const handleHintChange = (val: Hint[], idx: number) => {
+    updateExpectations(
+      replaceItem(expectations, idx, {
+        ...expectations[idx],
+        hints: val,
+      })
+    );
   };
 
   const handleAddExpectation = () => {
-    expectations.push({
-      expectation: "Add a short ideal answer for an expectation, e.g. 'Red'",
-      hints: [
-        {
-          text:
-            "Add a hint to help for the expectation, e.g. 'One of them starts with R'",
-        },
-      ],
-      features: "",
-    });
-    updateExpectations([...expectations]);
+    updateExpectations([
+      ...expectations,
+      {
+        expectation: "Add a short ideal answer for an expectation, e.g. 'Red'",
+        hints: [
+          {
+            text:
+              "Add a hint to help for the expectation, e.g. 'One of them starts with R'",
+          },
+        ],
+        features: "",
+      },
+    ]);
   };
 
   const handleRemoveExpectation = (idx: number) => {
     expectations.splice(idx, 1);
-    updateExpectations([...expectations]);
-  };
-
-  const handleHintChange = (val: Hint[], eIdx: number) => {
-    expectations[eIdx].hints = val;
     updateExpectations([...expectations]);
   };
 
@@ -263,6 +287,7 @@ const ExpectationsList = (props: {
                     >
                       <ExpectationCard
                         classes={classes}
+                        loaded={loaded}
                         expectation={exp}
                         expIdx={i}
                         canDelete={expectations.length > 1}
@@ -275,8 +300,8 @@ const ExpectationsList = (props: {
                         handleHintChange={(val: Hint[]) => {
                           handleHintChange(val, i);
                         }}
-                        handlefeaturesChange={(val: any) => {
-                          handlefeaturesChange(val, i);
+                        handleFeaturesChange={(val: any) => {
+                          handleFeaturesChange(val, i);
                         }}
                       />
                     </ListItem>

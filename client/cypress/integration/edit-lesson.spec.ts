@@ -28,13 +28,13 @@ describe("lesson screen", () => {
                     text: "hint 1.1",
                   },
                 ],
-                features: JSON.stringify({
+                features: {
                   ideal: "ideal answer",
                   bad: ["bad1", "bad2"],
-                }),
+                },
               },
             ],
-            features: "",
+            features: {},
             isTrainable: true,
             lastTrainedAt: "",
           },

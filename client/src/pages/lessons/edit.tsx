@@ -129,10 +129,10 @@ const LessonEdit = (props: {
               "Add a hint to help for the expectation, e.g. 'One of them starts with R'",
           },
         ],
-        features: "",
+        features: {},
       },
     ],
-    features: "",
+    features: {},
     isTrainable: false,
     lastTrainedAt: "",
   };
@@ -170,18 +170,14 @@ const LessonEdit = (props: {
   }
 
   function isExpValid(exp: LessonExpectation): boolean {
+    if (!exp.features) {
+      return true;
+    }
     const ajv = new Ajv({ allErrors: true, verbose: true });
     /* eslint-disable-next-line @typescript-eslint/no-var-requires */
     const schema = require("schemas/expectation-feature-schema.json");
     const validate = ajv.compile(schema);
-    let json = {};
-    try {
-      json = JSON.parse(exp.features);
-    } catch (e) {
-      console.error(e);
-    }
-    const valid = validate(json) === true;
-    return !exp.features || valid;
+    return validate(exp.features) === true;
   }
 
   function isLessonValid(): boolean {
@@ -492,6 +488,7 @@ const LessonEdit = (props: {
         <Divider style={{ marginTop: 20 }} />
         <ExpectationsList
           classes={classes}
+          loaded={loaded}
           expectations={lesson.expectations}
           updateExpectations={handleExpectationsChange}
         />
