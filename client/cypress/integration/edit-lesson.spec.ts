@@ -29,12 +29,11 @@ describe("lesson screen", () => {
                   },
                 ],
                 features: {
-                  ideal: "ideal answer",
                   bad: ["bad1", "bad2"],
                 },
               },
             ],
-            features: {},
+            features: null,
             isTrainable: true,
             lastTrainedAt: "",
           },
@@ -75,9 +74,6 @@ describe("lesson screen", () => {
       "have.value",
       "Add a short ideal answer for an expectation, e.g. 'Red'"
     );
-    cy.get("#expectation-0 .jsoneditor").contains(
-      "Add a short ideal answer for an expectation, e.g. 'Red'"
-    );
     cy.get("#expectation-0 .jsoneditor").contains("bad");
     cy.get("#expectation-0 .jsoneditor").contains("good");
     cy.get("#expectation-0 #hints").children().should("have.length", 1);
@@ -106,9 +102,6 @@ describe("lesson screen", () => {
       "https://cdn.jpegmini.com/user/images/slider_puffin_before_mobile.jpg"
     );
     cy.get("#expectation-0 #edit-expectation").fill(
-      "Current flows in the same direction as the arrow."
-    );
-    cy.get("#expectation-0 .jsoneditor").contains(
       "Current flows in the same direction as the arrow."
     );
     cy.get("#expectation-0 #hint-0 #edit-hint").fill(

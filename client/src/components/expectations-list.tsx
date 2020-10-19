@@ -58,39 +58,23 @@ const ExpectationCard = (props: {
     handleFeaturesChange,
   } = props;
   const [expanded, setExpanded] = React.useState(true);
-  const [curJson, setCurJson] = React.useState({});
   const editorRef = React.useRef<any>();
 
   const ajv = new Ajv({ allErrors: true, verbose: true });
   /* eslint-disable-next-line @typescript-eslint/no-var-requires */
   const schema = require("schemas/expectation-feature-schema.json");
-  let json = {};
+  let features = {};
   React.useEffect(() => {
     if (!loaded) {
       return;
     }
-    const expFeatures = expectation.features;
-    json = {
-      ...Object.assign(expFeatures, curJson),
-      ideal: expectation.expectation,
-    };
-    if (!("bad" in json)) {
-      json = {
-        ...json,
-        bad: [],
-      };
-    }
-    if (!("good" in json)) {
-      json = {
-        ...json,
-        good: [],
-      };
-    }
+    features = expectation.features || { bad: [], good: [] };
     if (editorRef && editorRef.current) {
-      editorRef?.current.jsonEditor.set(json);
+      editorRef?.current.jsonEditor.set(features);
+      editorRef?.current.jsonEditor.expandAll();
+      editorRef?.current.jsonEditor.focus();
     }
-    setCurJson(json);
-  }, [expanded, loaded, props.expectation.expectation]);
+  }, [expanded, loaded]);
 
   function JSONEditor(): any {
     if (typeof window === "undefined") {
@@ -100,9 +84,8 @@ const ExpectationCard = (props: {
     const { JsonEditor } = require("jsoneditor-react");
     return (
       <JsonEditor
-        style={{ minHeight: 500 }}
         ref={editorRef}
-        value={json}
+        value={features}
         ajv={ajv}
         schema={schema}
         onChange={onEditJson}
@@ -111,7 +94,6 @@ const ExpectationCard = (props: {
   }
 
   function onEditJson(json: any): void {
-    setCurJson(json);
     handleFeaturesChange(json);
   }
 
@@ -247,7 +229,7 @@ const ExpectationsList = (props: {
               "Add a hint to help for the expectation, e.g. 'One of them starts with R'",
           },
         ],
-        features: "",
+        features: null,
       },
     ]);
   };
