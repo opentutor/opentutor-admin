@@ -31,6 +31,7 @@ import ClearOutlinedIcon from "@material-ui/icons/ClearOutlined";
 import DragHandleIcon from "@material-ui/icons/DragHandle";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import HintsList from "components/hints-list";
+import { expectationFeatureSchema } from "schemas/validation";
 import { LessonExpectation, Hint } from "types";
 import "styles/layout.css";
 import "jsoneditor-react/es/editor.min.css";
@@ -61,8 +62,6 @@ const ExpectationCard = (props: {
   const editorRef = React.useRef<any>();
 
   const ajv = new Ajv({ allErrors: true, verbose: true });
-  /* eslint-disable-next-line @typescript-eslint/no-var-requires */
-  const schema = require("schemas/expectation-feature-schema.json");
   let features = {};
   React.useEffect(() => {
     if (!loaded) {
@@ -87,7 +86,7 @@ const ExpectationCard = (props: {
         ref={editorRef}
         value={features}
         ajv={ajv}
-        schema={schema}
+        schema={expectationFeatureSchema}
         onChange={onEditJson}
       />
     );

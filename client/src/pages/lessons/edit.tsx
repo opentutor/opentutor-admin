@@ -1,4 +1,3 @@
-import Ajv from "ajv";
 import { navigate } from "gatsby";
 import React from "react";
 import { useCookies } from "react-cookie";
@@ -29,6 +28,7 @@ import {
 import NavBar from "components/nav-bar";
 import ConclusionsList from "components/conclusions-list";
 import ExpectationsList from "components/expectations-list";
+import { validateExpectationFeatures } from "schemas/validation";
 import { Lesson, LessonExpectation, TrainStatus, TrainState } from "types";
 import withLocation from "wrap-with-location";
 import "styles/layout.css";
@@ -173,11 +173,7 @@ const LessonEdit = (props: {
     if (!exp.features) {
       return true;
     }
-    const ajv = new Ajv({ allErrors: true, verbose: true });
-    /* eslint-disable-next-line @typescript-eslint/no-var-requires */
-    const schema = require("schemas/expectation-feature-schema.json");
-    const validate = ajv.compile(schema);
-    return validate(exp.features) === true;
+    return validateExpectationFeatures(exp.features);
   }
 
   function isLessonValid(): boolean {
