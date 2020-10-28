@@ -51,7 +51,6 @@ const SessionTable = ({ search }: { search: any }) => {
       event.target.value as string
     )
       .then((session: Session) => {
-        console.log("updated grade", session);
         if (session) {
           setSession(session);
         }
@@ -71,7 +70,6 @@ const SessionTable = ({ search }: { search: any }) => {
     let mounted = true;
     fetchSession(sessionId)
       .then((session: Session) => {
-        console.log("fetchSession got", session);
         if (mounted && session) {
           setSession(session);
         }

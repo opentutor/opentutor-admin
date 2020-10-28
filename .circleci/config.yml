@@ -145,7 +145,7 @@ workflows:
       - test-client-lint:
           filters: *only-untagged
       - test-client-license:
-          filters: *only-untagged          
+          filters: *only-untagged
       - test-client-types:
           filters: *only-untagged
       - approve-build-and-push:
@@ -174,7 +174,7 @@ workflows:
       - test-client-lint:
           filters: *only-tagged-releases
       - test-client-license:
-          filters: *only-untagged          
+          filters: *only-untagged
       - test-client-types:
           filters: *only-tagged-releases
       - build-and-push:

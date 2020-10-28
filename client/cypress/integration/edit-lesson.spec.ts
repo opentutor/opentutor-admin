@@ -28,8 +28,12 @@ describe("lesson screen", () => {
                     text: "hint 1.1",
                   },
                 ],
+                features: {
+                  bad: ["bad1", "bad2"],
+                },
               },
             ],
+            features: null,
             isTrainable: true,
             lastTrainedAt: "",
           },
@@ -70,6 +74,8 @@ describe("lesson screen", () => {
       "have.value",
       "Add a short ideal answer for an expectation, e.g. 'Red'"
     );
+    cy.get("#expectation-0 .jsoneditor").contains("bad");
+    cy.get("#expectation-0 .jsoneditor").contains("good");
     cy.get("#expectation-0 #hints").children().should("have.length", 1);
     cy.get("#hint-0 #edit-hint").should(
       "have.value",
@@ -137,6 +143,34 @@ describe("lesson screen", () => {
       "have.value",
       "Summing up, this diode is forward biased. Positive current flows in the same direction of the arrow, from anode to cathode."
     );
+  });
+
+  it("validates lessonId", () => {
+    cy.visit("/lessons/edit?lessonId=test");
+    // no capitals
+    cy.get("#lesson-id").fill("A");
+    cy.get("#save-button").should("be.disabled");
+    cy.get("#launch-button").should("be.disabled");
+    // no spaces
+    cy.get("#lesson-id").fill(" ");
+    cy.get("#save-button").should("be.disabled");
+    cy.get("#launch-button").should("be.disabled");
+    // must be a-z 0-9 -
+    cy.get("#lesson-id").fill("a-0");
+    cy.get("#save-button").should("not.be.disabled");
+    cy.get("#launch-button").should("not.be.disabled");
+  });
+
+  it("validates expectation features json", () => {
+    cy.visit("/lessons/edit?lessonId=test");
+    // invalid field type
+    cy.get("#expectation-0 #edit-expectation").fill("0");
+    cy.get("#save-button").should("be.disabled");
+    cy.get("#launch-button").should("be.disabled");
+    // valid
+    cy.get("#expectation-0 #edit-expectation").fill("string");
+    cy.get("#save-button").should("not.be.disabled");
+    cy.get("#launch-button").should("not.be.disabled");
   });
 
   it("opens image thumbnail", () => {

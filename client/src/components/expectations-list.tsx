@@ -4,8 +4,9 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
+import Ajv from "ajv";
 import clsx from "clsx";
-import React, { useCallback } from "react";
+import React from "react";
 import {
   DragDropContext,
   Droppable,
@@ -30,28 +31,70 @@ import ClearOutlinedIcon from "@material-ui/icons/ClearOutlined";
 import DragHandleIcon from "@material-ui/icons/DragHandle";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import HintsList from "components/hints-list";
+import { expectationFeatureSchema } from "schemas/validation";
 import { LessonExpectation, Hint } from "types";
 import "styles/layout.css";
+import "jsoneditor-react/es/editor.min.css";
 
 const ExpectationCard = (props: {
   classes: any;
+  loaded: boolean;
   expectation: LessonExpectation;
   expIdx: number;
   canDelete: boolean;
   handleExpectationChange: (val: string) => void;
   handleRemoveExpectation: () => void;
   handleHintChange: (val: Hint[]) => void;
+  handleFeaturesChange: (val: any) => void;
 }) => {
   const {
     classes,
+    loaded,
     expectation,
     expIdx,
     canDelete,
     handleExpectationChange,
     handleRemoveExpectation,
     handleHintChange,
+    handleFeaturesChange,
   } = props;
   const [expanded, setExpanded] = React.useState(true);
+  const editorRef = React.useRef<any>();
+
+  const ajv = new Ajv({ allErrors: true, verbose: true });
+  let features = {};
+  React.useEffect(() => {
+    if (!loaded) {
+      return;
+    }
+    features = expectation.features || { bad: [], good: [] };
+    if (editorRef && editorRef.current) {
+      editorRef?.current.jsonEditor.set(features);
+      editorRef?.current.jsonEditor.expandAll();
+      editorRef?.current.jsonEditor.focus();
+    }
+  }, [expanded, loaded]);
+
+  function JSONEditor(): any {
+    if (typeof window === "undefined") {
+      return <div></div>;
+    }
+    /* eslint-disable-next-line @typescript-eslint/no-var-requires */
+    const { JsonEditor } = require("jsoneditor-react");
+    return (
+      <JsonEditor
+        ref={editorRef}
+        value={features}
+        ajv={ajv}
+        schema={expectationFeatureSchema}
+        onChange={onEditJson}
+      />
+    );
+  }
+
+  function onEditJson(json: any): void {
+    handleFeaturesChange(json);
+  }
 
   return (
     <Card id={`expectation-${expIdx}`}>
@@ -112,6 +155,10 @@ const ExpectationCard = (props: {
             hints={expectation.hints}
             updateHints={handleHintChange}
           />
+          <Typography variant="body2" style={{ padding: 5 }}>
+            Additional Features
+          </Typography>
+          {JSONEditor()}
         </Collapse>
       </CardContent>
     </Card>
@@ -120,10 +167,17 @@ const ExpectationCard = (props: {
 
 const ExpectationsList = (props: {
   classes: any;
+  loaded: boolean;
   expectations: LessonExpectation[];
   updateExpectations: (val: LessonExpectation[]) => void;
 }) => {
-  const { classes, expectations, updateExpectations } = props;
+  const { classes, loaded, expectations, updateExpectations } = props;
+
+  function replaceItem<T>(a: Array<T>, index: number, item: T): Array<T> {
+    const newArr = [...a];
+    newArr[index] = item;
+    return newArr;
+  }
 
   const onDragEnd = (result: DropResult) => {
     if (!result.destination) {
@@ -137,30 +191,50 @@ const ExpectationsList = (props: {
   };
 
   const handleExpectationChange = (val: string, idx: number) => {
-    expectations[idx].expectation = val;
-    updateExpectations([...expectations]);
+    updateExpectations(
+      replaceItem(expectations, idx, {
+        ...expectations[idx],
+        expectation: val,
+      })
+    );
+  };
+
+  const handleFeaturesChange = (val: any, idx: number) => {
+    updateExpectations(
+      replaceItem(expectations, idx, {
+        ...expectations[idx],
+        features: val,
+      })
+    );
+  };
+
+  const handleHintChange = (val: Hint[], idx: number) => {
+    updateExpectations(
+      replaceItem(expectations, idx, {
+        ...expectations[idx],
+        hints: val,
+      })
+    );
   };
 
   const handleAddExpectation = () => {
-    expectations.push({
-      expectation: "Add a short ideal answer for an expectation, e.g. 'Red'",
-      hints: [
-        {
-          text:
-            "Add a hint to help for the expectation, e.g. 'One of them starts with R'",
-        },
-      ],
-    });
-    updateExpectations([...expectations]);
+    updateExpectations([
+      ...expectations,
+      {
+        expectation: "Add a short ideal answer for an expectation, e.g. 'Red'",
+        hints: [
+          {
+            text:
+              "Add a hint to help for the expectation, e.g. 'One of them starts with R'",
+          },
+        ],
+        features: null,
+      },
+    ]);
   };
 
   const handleRemoveExpectation = (idx: number) => {
     expectations.splice(idx, 1);
-    updateExpectations([...expectations]);
-  };
-
-  const handleHintChange = (val: Hint[], eIdx: number) => {
-    expectations[eIdx].hints = val;
     updateExpectations([...expectations]);
   };
 
@@ -194,6 +268,7 @@ const ExpectationsList = (props: {
                     >
                       <ExpectationCard
                         classes={classes}
+                        loaded={loaded}
                         expectation={exp}
                         expIdx={i}
                         canDelete={expectations.length > 1}
@@ -205,6 +280,9 @@ const ExpectationsList = (props: {
                         }}
                         handleHintChange={(val: Hint[]) => {
                           handleHintChange(val, i);
+                        }}
+                        handleFeaturesChange={(val: any) => {
+                          handleFeaturesChange(val, i);
                         }}
                       />
                     </ListItem>

@@ -28,9 +28,11 @@ import {
 import NavBar from "components/nav-bar";
 import ConclusionsList from "components/conclusions-list";
 import ExpectationsList from "components/expectations-list";
+import { validateExpectationFeatures } from "schemas/validation";
 import { Lesson, LessonExpectation, TrainStatus, TrainState } from "types";
 import withLocation from "wrap-with-location";
 import "styles/layout.css";
+import "jsoneditor-react/es/editor.min.css";
 import "react-toastify/dist/ReactToastify.css";
 
 const TRAIN_STATUS_POLL_INTERVAL_DEFAULT = 1000;
@@ -127,14 +129,22 @@ const LessonEdit = (props: {
               "Add a hint to help for the expectation, e.g. 'One of them starts with R'",
           },
         ],
+        features: null,
       },
     ],
+    features: null,
     isTrainable: false,
     lastTrainedAt: "",
   };
   const [lesson, setLesson] = React.useState(newLesson);
   const [loaded, setLoaded] = React.useState(false);
   const [savePopUp, setSavePopUp] = React.useState(false);
+  const [isTraining, setIsTraining] = React.useState(false);
+  const [trainPopUp, setTrainPopUp] = React.useState(false);
+  const [statusUrl, setStatusUrl] = React.useState("");
+  const [trainData, setTrainData] = React.useState<TrainStatus>({
+    state: TrainState.NONE,
+  });
 
   React.useEffect(() => {
     let mounted = true;
@@ -157,6 +167,22 @@ const LessonEdit = (props: {
 
   function isValidId(): boolean {
     return /^[a-z0-9-]+$/g.test(lesson.lessonId);
+  }
+
+  function isExpValid(exp: LessonExpectation): boolean {
+    if (!exp.features) {
+      return true;
+    }
+    return validateExpectationFeatures(exp.features);
+  }
+
+  function isLessonValid(): boolean {
+    return (
+      lesson &&
+      loaded &&
+      isValidId() &&
+      lesson.expectations.every((exp) => isExpValid(exp))
+    );
   }
 
   function handleLessonNameChange(name: string): void {
@@ -185,11 +211,15 @@ const LessonEdit = (props: {
   }
 
   function handleExpectationsChange(exp: LessonExpectation[]): void {
-    setChange(true);
-    setLesson({
-      ...lesson,
-      expectations: exp,
-    });
+    try {
+      setChange(true);
+      setLesson({
+        ...lesson,
+        expectations: exp,
+      });
+    } catch (e) {
+      console.error(e);
+    }
   }
 
   function handleConclusionsChange(conclusions: string[]): void {
@@ -204,6 +234,40 @@ const LessonEdit = (props: {
     setSavePopUp(true);
   }
 
+  function handleSavePopUp(): void {
+    setSavePopUp(false);
+  }
+
+  function handleSaveExit(): void {
+    saveChanges();
+    navigate(`/lessons`);
+  }
+
+  function handleSaveContinue(): void {
+    saveChanges();
+    handleSavePopUp();
+  }
+
+  function saveChanges(): void {
+    toast("Saving...");
+    const converted = encodeURI(JSON.stringify(lesson));
+    let origId = lessonId;
+    if (lessonId === "new") {
+      origId = lesson.lessonId;
+    }
+    updateLesson(origId, converted)
+      .then((lesson) => {
+        if (lesson) {
+          setLesson(lesson);
+        }
+        toast("Success!");
+      })
+      .catch((err) => {
+        toast("Failed to save lesson.");
+        console.error(err);
+      });
+  }
+
   function handleLaunch() {
     saveChanges();
     const host = process.env.TUTOR_ENDPOINT || location.origin;
@@ -215,13 +279,6 @@ const LessonEdit = (props: {
   function handleDiscard() {
     navigate(`/lessons`);
   }
-
-  const [isTraining, setIsTraining] = React.useState(false);
-  const [trainPopUp, setTrainPopUp] = React.useState(false);
-  const [statusUrl, setStatusUrl] = React.useState("");
-  const [trainData, setTrainData] = React.useState<TrainStatus>({
-    state: TrainState.NONE,
-  });
 
   function useInterval(callback: any, delay: number | null) {
     const savedCallback = React.useRef() as any;
@@ -304,40 +361,6 @@ const LessonEdit = (props: {
     setTrainPopUp(false);
   }
 
-  function handleSavePopUp(): void {
-    setSavePopUp(false);
-  }
-
-  function handleSaveExit(): void {
-    saveChanges();
-    navigate(`/lessons`);
-  }
-
-  function handleSaveContinue(): void {
-    saveChanges();
-    handleSavePopUp();
-  }
-
-  function saveChanges(): void {
-    toast("Saving...");
-    const converted = encodeURI(JSON.stringify(lesson));
-    let origId = lessonId;
-    if (lessonId === "new") {
-      origId = lesson.lessonId;
-    }
-    updateLesson(origId, converted)
-      .then((lesson) => {
-        if (lesson !== undefined) {
-          setLesson(lesson);
-        }
-        toast("Success!");
-      })
-      .catch((err) => {
-        toast("Failed to save lesson.");
-        console.error(err);
-      });
-  }
-
   return (
     <div style={{ paddingTop: "20px" }}>
       <form className={classes.root} noValidate autoComplete="off">
@@ -367,6 +390,7 @@ const LessonEdit = (props: {
             placeholder="Unique alias to the lesson"
             fullWidth
             error={!isValidId()}
+            helperText={isValidId() ? "" : "must be a-z 0-9"}
             InputLabelProps={{
               shrink: true,
             }}
@@ -460,6 +484,7 @@ const LessonEdit = (props: {
         <Divider style={{ marginTop: 20 }} />
         <ExpectationsList
           classes={classes}
+          loaded={loaded}
           expectations={lesson.expectations}
           updateExpectations={handleExpectationsChange}
         />
@@ -539,7 +564,7 @@ const LessonEdit = (props: {
           variant="contained"
           color="primary"
           size="large"
-          disabled={lessonId === "new" || !loaded || !isValidId()}
+          disabled={lessonId === "new" || !isLessonValid()}
           onClick={handleLaunch}
         >
           Launch
@@ -552,7 +577,7 @@ const LessonEdit = (props: {
             color="primary"
             size="large"
             onClick={handleSave}
-            disabled={!isValidId()}
+            disabled={!isLessonValid()}
           >
             Save
           </Button>
