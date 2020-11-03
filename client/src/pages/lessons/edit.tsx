@@ -260,6 +260,9 @@ const LessonEdit = (props: {
         if (lesson) {
           setLesson(lesson);
         }
+        if (lessonId === "new") {
+          navigate(`/lessons/edit/?lessonId=${lesson.lessonId}`);
+        }
         toast("Success!");
       })
       .catch((err) => {
