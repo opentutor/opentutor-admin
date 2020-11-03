@@ -126,11 +126,6 @@ describe("lesson screen", () => {
       "have.value",
       "https://cdn.jpegmini.com/user/images/slider_puffin_before_mobile.jpg"
     );
-    cy.get("#image-thumbnail").should(
-      "have.attr",
-      "src",
-      "https://cdn.jpegmini.com/user/images/slider_puffin_before_mobile.jpg"
-    );
     cy.get("#expectation-0 #edit-expectation").should(
       "have.value",
       "Current flows in the same direction as the arrow."
@@ -171,23 +166,6 @@ describe("lesson screen", () => {
     cy.get("#expectation-0 #edit-expectation").fill("string");
     cy.get("#save-button").should("not.be.disabled");
     cy.get("#launch-button").should("not.be.disabled");
-  });
-
-  it("opens image thumbnail", () => {
-    cy.visit("/lessons/edit?lessonId=new");
-    cy.get("#image").fill(
-      "https://cdn.jpegmini.com/user/images/slider_puffin_before_mobile.jpg"
-    );
-    cy.get("#image").should(
-      "have.value",
-      "https://cdn.jpegmini.com/user/images/slider_puffin_before_mobile.jpg"
-    );
-    cy.get("#image-thumbnail").should(
-      "have.attr",
-      "src",
-      "https://cdn.jpegmini.com/user/images/slider_puffin_before_mobile.jpg"
-    );
-    // cy.get("#image-thumbnail").click();
   });
 
   it("launches lesson", () => {

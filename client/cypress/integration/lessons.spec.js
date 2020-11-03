@@ -74,21 +74,21 @@ describe("lessons screen", () => {
   it("opens edit for a lesson", () => {
     cy.visit("/lessons");
     cy.get("#lesson-0 #name a").click();
-    cy.location("pathname").should("eq", "/lessons/edit");
+    cy.location("pathname").should("contain", "/lessons/edit");
     cy.location("search").should("eq", "?lessonId=lesson1");
   });
 
   it("opens grade for a lesson", () => {
     cy.visit("/lessons");
     cy.get("#lesson-0 #grade").click();
-    cy.location("pathname").should("eq", "/sessions");
+    cy.location("pathname").should("contain", "/sessions");
     cy.location("search").should("eq", "?lessonId=lesson1");
   });
 
   it("clicks on create lesson and opens to an edit page for new lesson", () => {
     cy.visit("/lessons");
     cy.get("#create-button").click();
-    cy.location("pathname").should("eq", "/lessons/edit");
+    cy.location("pathname").should("contain", "/lessons/edit");
     cy.location("search").should("eq", "?lessonId=new");
   });
 
@@ -96,7 +96,7 @@ describe("lessons screen", () => {
     cy.visit("/");
     cy.get("#login-menu #login-input").type("OpenTutor");
     cy.get("#login-menu #login").click();
-    cy.location("pathname").should("eq", "/lessons");
+    cy.location("pathname").should("contain", "/lessons");
     cy.get("#toggle-creator");
   });
 
@@ -108,20 +108,20 @@ describe("lessons screen", () => {
   it("launches a lesson as guest", () => {
     cy.visit("/lessons");
     cy.get("#lesson-0 #launch button").click();
-    cy.location("pathname").should("eq", "/tutor");
-    // cy.location("search").should("eq", "?lesson=lesson1&guest=guest");
+    cy.location("pathname").should("contain", "/tutor");
+    cy.location("search").should("contain", "lesson=lesson1");
+    cy.location("search").should("contain", "admin=true");
   });
 
   it("launches a lesson as logged in user", () => {
     cy.visit("/");
     cy.get("#login-menu #login-input").type("OpenTutor");
     cy.get("#login-menu #login").click();
-    cy.location("pathname").should("eq", "/lessons");
+    cy.location("pathname").should("contain", "/lessons");
     cy.get("#lesson-0 #launch button").click();
-    cy.location("pathname").should("eq", "/tutor");
-    // cy.location('search').should(
-    //   'eq',
-    //   '?lesson=lesson1&guest=OpenTutor'
-    // );
+    cy.location("pathname").should("contain", "/tutor");
+    cy.location("search").should("contain", "lesson=lesson1");
+    cy.location("search").should("contain", "guest=OpenTutor");
+    cy.location("search").should("contain", "admin=true");
   });
 });

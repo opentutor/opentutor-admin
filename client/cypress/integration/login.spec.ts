@@ -29,7 +29,7 @@ describe("Login", () => {
     cy.visit("/");
     cy.get("#login-menu #login-input").type("OpenTutor");
     cy.get("#login-menu #login").click();
-    cy.location("pathname").should("eq", "/lessons");
+    cy.location("pathname").should("contain", "/lessons");
   });
 
   it("logs out and redirects to home page", () => {
@@ -40,7 +40,7 @@ describe("Login", () => {
     cy.get("#nav-bar #login-button").click();
     cy.wait(500);
     cy.get("#logout").click();
-    cy.location("pathname").should("eq", "/");
+    cy.location("pathname").should("not.contain", "/lessons");
     cy.get("#nav-bar #login-button").contains("Login");
   });
 

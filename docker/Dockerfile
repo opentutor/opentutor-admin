@@ -1,5 +1,8 @@
 FROM node:12.18.3 as builder
 ARG NODE_ENV
+ARG OPENTUTOR_CLIENT_VERSION
+ENV OPENTUTOR_CLIENT_VERSION=${OPENTUTOR_CLIENT_VERSION}
+ENV CYPRESS_INSTALL_BINARY=0
 RUN apt-get update && \
     apt-get install -y \
         build-essential \
@@ -10,18 +13,17 @@ RUN apt-get update && \
         libtiff-dev \
         libxi-dev && \
     rm -rf /var/lib/apt/lists/*
-WORKDIR /
-COPY . .
-RUN cd /build/client && \
-    npm ci  && \
-    npx gatsby telemetry --disable && \
+WORKDIR /build
+COPY client ./client
+RUN cd client && \
+    npm ci && \
     npm run build
 FROM node:12.18.3-slim
 ENV TINI_VERSION=v0.16.1
 ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
 RUN chmod +x /tini 
 WORKDIR /app
-COPY . .
+COPY docker .
 RUN rm -rf build
 COPY --from=builder /build/client/public /app/public/admin
 RUN npm ci  --production 

@@ -92,15 +92,15 @@ describe("sessions screen", () => {
   it("opens edit for a session", () => {
     cy.visit("/sessions");
     cy.get("#session-0 #lesson a").click();
-    cy.location("pathname").should("eq", "/lessons/edit");
-    cy.location("search").should("eq", "?lessonId=lesson1");
+    cy.location("pathname").should("contain", "/lessons/edit");
+    cy.location("search").should("contain", "?lessonId=lesson1");
   });
 
   it("opens grade for a session", () => {
     cy.visit("/sessions");
     cy.get("#session-0 #grade").click();
-    cy.location("pathname").should("eq", "/sessions/session");
-    cy.location("search").should("eq", "?sessionId=session1");
+    cy.location("pathname").should("contain", "/sessions/session");
+    cy.location("search").should("contain", "?sessionId=session1");
   });
 
   it("displays an option to view already graded sessions", () => {
