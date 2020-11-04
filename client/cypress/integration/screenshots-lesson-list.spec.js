@@ -48,7 +48,6 @@ describe("screenshots - lesson list", () => {
         },
         errors: null,
       },
-      delay: 10,
       headers: {
         "Content-Type": "application/json",
       },

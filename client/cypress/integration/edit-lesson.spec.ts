@@ -40,7 +40,6 @@ describe("lesson screen", () => {
         },
         errors: null,
       },
-      delay: 10,
       headers: {
         "Content-Type": "application/json",
       },

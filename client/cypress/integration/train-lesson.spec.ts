@@ -34,7 +34,6 @@ function mockTrainLesson(
       },
       errors: null,
     },
-    delay: 10,
     headers: {
       "Content-Type": "application/json",
     },
@@ -68,7 +67,6 @@ function mockTrainStatus(
     response: {
       data: params.status,
     },
-    delay: 10,
     headers: {
       "Content-Type": "application/json",
     },
@@ -142,7 +140,6 @@ describe("lesson screen - training", () => {
         },
         errors: null,
       },
-      delay: 10,
       headers: {
         "Content-Type": "application/json",
       },
