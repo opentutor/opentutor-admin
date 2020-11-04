@@ -1,5 +1,4 @@
 DOCKER_IMAGE?=opentutor-admin
-OPENTUTOR_CLIENT_VERSION?=latest
 TEST_E2E_DOCKER_COMPOSE=docker-compose
 TEST_E2E_IMAGE_SNAPSHOTS_PATH?=cypress/snapshots
 TEST_E2E_DOCKER_IMAGE_SNAPSHOTS_PATH?=/app/$(TEST_E2E_IMAGE_SNAPSHOTS_PATH)
@@ -14,9 +13,12 @@ PHONY: develop
 develop:
 	cd client && $(MAKE) develop
 
-PHONY: docker-build
+.PHONY docker-build:
 docker-build:
-	cd docker && $(MAKE) docker-build
+	docker build \
+		--file docker/Dockerfile \
+		-t $(DOCKER_IMAGE) \
+	.
 
 PHONY: format
 format:
