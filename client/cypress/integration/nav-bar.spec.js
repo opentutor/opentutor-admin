@@ -30,6 +30,6 @@ describe("Navigation bar", () => {
     cy.get("#nav-bar").get("#menu-button").click();
     cy.get("#drawer a").eq(1).contains("Grading");
     cy.get("#drawer a").eq(1).click();
-    cy.location("pathname").should("eq", "/sessions");
+    cy.location("pathname").should("contain", "/sessions");
   });
 });

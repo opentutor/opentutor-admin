@@ -142,7 +142,7 @@ describe("lesson screen", () => {
   it("validates lessonId", () => {
     cy.visit("/lessons/edit?lessonId=test");
     // no capitals
-    cy.get("#lesson-id").fill("A");
+    cy.get("#lesson-id").clear().type("A");
     cy.get("#save-button").should("be.disabled");
     cy.get("#launch-button").should("be.disabled");
     // no spaces
@@ -151,18 +151,6 @@ describe("lesson screen", () => {
     cy.get("#launch-button").should("be.disabled");
     // must be a-z 0-9 -
     cy.get("#lesson-id").fill("a-0");
-    cy.get("#save-button").should("not.be.disabled");
-    cy.get("#launch-button").should("not.be.disabled");
-  });
-
-  it("validates expectation features json", () => {
-    cy.visit("/lessons/edit?lessonId=test");
-    // invalid field type
-    cy.get("#expectation-0 #edit-expectation").fill("0");
-    cy.get("#save-button").should("be.disabled");
-    cy.get("#launch-button").should("be.disabled");
-    // valid
-    cy.get("#expectation-0 #edit-expectation").fill("string");
     cy.get("#save-button").should("not.be.disabled");
     cy.get("#launch-button").should("not.be.disabled");
   });
@@ -238,14 +226,13 @@ describe("lesson screen", () => {
 
   it("making an edit toggles save button visable", () => {
     cy.visit("/lessons/edit?lessonId=lesson");
-    cy.get("#lesson-name").fill("{backspace}");
+    cy.get("#lesson-name").clear().type("{backspace}");
     cy.get("#save-button").should("be.visible");
   });
 
   it("makes an edit and clicks on save", () => {
     cy.visit("/lessons/edit?lessonId=lesson");
-    cy.get("#lesson-name").fill("{backspace}");
+    cy.get("#lesson-name").clear().type("{backspace}");
     cy.get("#save-button").click();
-    // TODO: there are no expectatons here, not a meaningful test
   });
 });
