@@ -14,11 +14,9 @@ services:
     build:
       context: client
       dockerfile: ./cypress.Dockerfile
-      shm_size: 2GB
     environment:
       - "CYPRESS_BASE_URL=http://opentutor:3000"
       - "CYPRESS_SNAPSHOT_DIFF_DIR=/app/cypress/snapshots/snapshot_failed_diffs"
-    shm_size: 2GB
     # make sure these are commented out before commit/push
     # volumes:
     #   - type: bind
