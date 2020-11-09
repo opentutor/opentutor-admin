@@ -44,7 +44,6 @@ describe("screenshots - grade session list", () => {
         },
         errors: null,
       },
-      delay: 10,
       headers: {
         "Content-Type": "application/json",
       },
@@ -99,7 +98,6 @@ describe("screenshots - grade session list", () => {
         },
         errors: null,
       },
-      delay: 10,
       headers: {
         "Content-Type": "application/json",
       },

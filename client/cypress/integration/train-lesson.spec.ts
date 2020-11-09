@@ -34,7 +34,6 @@ function mockTrainLesson(
       },
       errors: null,
     },
-    delay: 10,
     headers: {
       "Content-Type": "application/json",
     },
@@ -68,7 +67,6 @@ function mockTrainStatus(
     response: {
       data: params.status,
     },
-    delay: 10,
     headers: {
       "Content-Type": "application/json",
     },
@@ -142,7 +140,6 @@ describe("lesson screen - training", () => {
         },
         errors: null,
       },
-      delay: 10,
       headers: {
         "Content-Type": "application/json",
       },
@@ -199,7 +196,7 @@ describe("lesson screen - training", () => {
         },
       ]);
       cy.visit("/lessons/edit?lessonId=lesson&trainStatusPollInterval=10");
-      cy.get("#train-button").click();
+      cy.get("#train-button").trigger("mouseover").click();
       waitTrainLesson();
       waitComplete();
       for (let i = 0; i < ex.expectedAccuracies.length; i++) {
@@ -230,7 +227,7 @@ describe("lesson screen - training", () => {
         },
       },
     ]);
-    cy.get("#train-button").click();
+    cy.get("#train-button").trigger("mouseover").click();
     waitTrainLesson();
     waitComplete();
     cy.get("#train-failure").should("contain", "TRAINING FAILED");
@@ -239,7 +236,7 @@ describe("lesson screen - training", () => {
   it("train lesson fails for http error on start", () => {
     cy.visit("/lessons/edit?lessonId=lesson&trainStatusPollInterval=10");
     const waitTrainLesson = mockTrainLesson(cy, { responseStatus: 500 });
-    cy.get("#train-button").click();
+    cy.get("#train-button").trigger("mouseover").click();
     waitTrainLesson();
     cy.get("#train-failure").should("contain", "TRAINING FAILED");
   });
@@ -257,7 +254,7 @@ describe("lesson screen - training", () => {
         responseStatusCode: 500,
       },
     ]);
-    cy.get("#train-button").click();
+    cy.get("#train-button").trigger("mouseover").click();
     waitTrainLesson();
     waitComplete();
     cy.get("#train-failure").should("contain", "TRAINING FAILED");

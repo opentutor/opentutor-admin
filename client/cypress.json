@@ -1,5 +1,5 @@
 {
   "baseUrl": "http://localhost:8000",
   "video": false,
-  "defaultCommandTimeout": 10000
+  "$schema": "https://on.cypress.io/cypress.schema.json"
 }

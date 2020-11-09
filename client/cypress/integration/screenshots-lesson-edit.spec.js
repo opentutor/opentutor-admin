@@ -45,7 +45,6 @@ The full terms of this copyright and license should always be found in the root 
 //         },
 //         errors: null,
 //       },
-//       delay: 10,
 //       headers: {
 //         "Content-Type": "application/json",
 //       },
@@ -85,7 +84,6 @@ The full terms of this copyright and license should always be found in the root 
 //         },
 //         errors: null,
 //       },
-//       delay: 10,
 //       headers: {
 //         "Content-Type": "application/json",
 //       },
