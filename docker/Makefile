@@ -1,6 +1,6 @@
 SHELL:=/bin/bash
-DOCKER_IMAGE?=opentutor-grading-client
-DOCKER_CONTAINER=opentutor-grading-client
+DOCKER_IMAGE?=opentutor-admin
+DOCKER_CONTAINER=opentutor-admin
 DIR=$(shell pwd)
 PROJECT_ROOT?=$(shell git rev-parse --show-toplevel 2> /dev/null)
 PROJECT_NAME=$(shell v='$(PROJECT_ROOT)'; echo "$${v\#\#*/}")
@@ -12,12 +12,22 @@ BUILD=$(DIR)/build
 clean:
 	rm -rf build
 
-
 build/client:
 	mkdir -p build
-	rsync -rv --exclude=node_modules $(CLIENT) build
+	rsync -rv \
+		--exclude=.cache  \
+		--exclude=.cypress-*  \
+		--exclude=cypress  \
+		--exclude=.env.*  \
+		--exclude=node_modules  \
+		--exclude=public  \
+	$(CLIENT) build
 
 build: build/client
+
+.PHONY: dependencies-update
+dependencies-update:
+	npm run dependencies-update
 
 .PHONY docker-build:
 docker-build: clean build/client
@@ -31,10 +41,7 @@ docker-run:
 			-it \
 			--rm \
 			--name $(DOCKER_CONTAINER) \
-			-e CMI5_ENDPOINT="https://dev.mentorpal.org/lrs/xapi" \
-			-e CMI5_FETCH="https://dev.mentorpal.org/lrs/auth/guesttoken" \
-			-e MENTOR_API_URL="https://dev.mentorpal.org/mentor-api" \
-			-e MENTOR_VIDEO_URL="https://video.mentorpal.org/videos" \
+			-e GRAPHQL_ENDPOINT="https://dev-opentutor.pal3.org/graphql" \
 			-p 3000:3000 \
 		$(DOCKER_IMAGE) 
 
@@ -62,17 +69,17 @@ format:
 	npm run format
 
 node_modules/eslint:
-	npm install
+	npm ci
 
 node_modules/jest:
-	npm install
+	npm ci
 
 
 node_modules/prettier:
-	npm install
+	npm ci
 
 node_modules/typescript:
-	npm install
+	npm ci
 
 .PHONY: test
 test: node_modules/jest
@@ -83,7 +90,6 @@ test-all:
 	$(MAKE) test-audit
 	$(MAKE) test-format
 	$(MAKE) test-lint
-	$(MAKE) test-types
 	$(MAKE) test
 
 .PHONY: test-audit
@@ -97,7 +103,3 @@ test-format:
 .PHONY: test-lint
 test-lint:
 	npm run test:lint
-
-.PHONY: test-types
-test-types: node_modules/typescript
-	npm run test:types

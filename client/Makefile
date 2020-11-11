@@ -1,13 +1,46 @@
+CYPRESS_IMAGE?=cypress/base:12
+CYPRESS_DOCKER_ENTRYPOINT?=/bin/bash
+CYPRESS_DOCKER_CACHE=$(PWD)/.cypress-docker
+
 .env.development:
-	@echo "GRADER_GRAPHQL_ENDPOINT=https://dev-opentutor.pal3.org/grading/graphql" >> .env.development
+	@echo "GRAPHQL_ENDPOINT=https://dev-opentutor.pal3.org/graphql/" >> .env.development
 	@echo "Set up  a default .env.development file"
-	@echo "that configures GRADER_GRAPHQL_ENDPOINT=https://dev-opentutor.pal3.org/grading/graphql."
+	@echo "that configures GRAPHQL_ENDPOINT=https://dev-opentutor.pal3.org/graphql/"
+	@echo "and configures CLASSIFIER_ENTRYPOINT=https://dev-opentutor.pal3.org/classifier/."
 	@echo "This file should not be committed. "
 	@echo "Feel free to change to point to a local server if you're running one."
 
+.PHONY: clean-cypress-snapshot-cache
+clean-cypress-snapshot-cache:
+	rm -rf $(CYPRESS_DOCKER_CACHE)
+
 .PHONY: clean
-clean:
+clean: clean-cypress-snapshot-cache
 	rm -rf .cache public
+
+.PHONY: cypress-docker
+cypress-docker:
+	mkdir -p $(CYPRESS_DOCKER_CACHE)/.npm
+	mkdir -p $(CYPRESS_DOCKER_CACHE)/.gatsby.cache
+	mkdir -p $(CYPRESS_DOCKER_CACHE)/.root.cache
+	docker run \
+		--rm \
+		-it \
+		--entrypoint $(CYPRESS_DOCKER_ENTRYPOINT) \
+		-v $(PWD):/client \
+		-v /client/node_modules \
+		-v /client/public \
+		--mount type=bind,source="$(CYPRESS_DOCKER_CACHE)"/.gatsby.cache,destination=/client/.cache,consistency=delegated \
+		--workdir /client \
+	$(CYPRESS_IMAGE)
+
+.PHONY: cypress-update-snapshots
+cypress-update-snapshots:
+	CYPRESS_DOCKER_ENTRYPOINT=bin/cypress_update_snapshots.sh $(MAKE) cypress-docker
+
+.PHONY: dependencies-update
+dependencies-update:
+	npm run dependencies-update
 
 .PHONY: develop
 develop: .env.development node_modules/gatsby-cli
@@ -18,22 +51,26 @@ format: node_modules/prettier
 	npm run format
 
 node_modules/cypress:
-	npm install --frozen-lockfile
+	$(MAKE) install
 
 node_modules/eslint:
-	npm install --frozen-lockfile
+	$(MAKE) install
 
 node_modules/gatsby-cli:
-	npm install --frozen-lockfile
+	$(MAKE) install
 
 node_modules/jest:
-	npm install --frozen-lockfile
+	$(MAKE) install
 
 node_modules/prettier:
-	npm install --frozen-lockfile
+	$(MAKE) install
 
 node_modules/typescript:
-	npm install --frozen-lockfile
+	$(MAKE) install
+
+PHONY: install
+install:
+	npm ci 
 
 .PHONY: test
 test: node_modules/jest
@@ -45,8 +82,6 @@ test-all:
 	$(MAKE) test-format
 	$(MAKE) test-lint
 	$(MAKE) test-types
-	# $(MAKE) test-cypress
-	# $(MAKE) test
 
 .PHONY: test-audit
 test-audit:

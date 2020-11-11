@@ -1,10 +1,11 @@
 module.exports = {
-  pathPrefix: `/grading`,
+  pathPrefix: `/admin`,
   siteMetadata: {
     title: `Open Tutor Grading`,
     description: ``,
   },
   plugins: [
+    `gatsby-plugin-typescript`,
     {
       resolve: `gatsby-plugin-manifest`,
       options: {
@@ -19,10 +20,12 @@ module.exports = {
     {
       resolve: `gatsby-plugin-env-variables`,
       options: {
-        whitelist: ["GRADING_GRAPHQL_ENDPOINT"],
+        allowList: ["GRAPHQL_ENDPOINT", "CLASSIFIER_ENTRYPOINT"],
       },
     },
-    `gatsby-plugin-typescript`,
+    {
+      resolve: "gatsby-plugin-material-ui",
+    },
     {
       resolve: "gatsby-plugin-eslint",
       options: {
