@@ -1,4 +1,4 @@
-FROM node:12.18.3 as builder
+FROM node:14.15 as builder
 ARG NODE_ENV
 ENV CYPRESS_INSTALL_BINARY=0
 RUN apt-get update && \
@@ -16,7 +16,7 @@ COPY client ./client
 RUN cd client && \
     npm ci && \
     npm run build
-FROM node:12.18.3-slim
+FROM node:14.15-slim
 ENV TINI_VERSION=v0.16.1
 ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
 RUN chmod +x /tini 
