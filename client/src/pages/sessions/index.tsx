@@ -1,7 +1,6 @@
 import { withPrefix } from "gatsby";
 import React, { useContext } from "react";
 import { navigate } from "@reach/router";
-import { useCookies } from "react-cookie";
 import {
   AppBar,
   CircularProgress,
@@ -114,14 +113,13 @@ const TableFooter = (props: {
   onPrev: () => void;
 }) => {
   const { classes, hasNext, hasPrev, onNext, onPrev } = props;
-  const [cookies] = useCookies(["user"]);
-  const toggle = useContext(ToggleContext);
-  const { onlyCreator, showGraded, toggleCreator, toggleGraded } = toggle;
+  const context = useContext(ToggleContext);
+  const { onlyCreator, showGraded, toggleCreator, toggleGraded } = context;
 
   return (
     <AppBar position="sticky" color="default" className={classes.appBar}>
       <Toolbar>
-        {!cookies.user ? undefined : (
+        {!context.userid ? undefined : (
           <FormGroup>
             <FormControlLabel
               control={
@@ -222,8 +220,7 @@ const SessionsTable = (props: {
   search: { lessonId: string };
 }) => {
   const classes = useStyles();
-  const toggle = useContext(ToggleContext);
-  const [cookies] = useCookies(["user"]);
+  const context = useContext(ToggleContext);
   const [sessions, setSessions] = React.useState<Connection<Session>>();
   const [cursor, setCursor] = React.useState("");
   const [sortBy, setSortBy] = React.useState("createdAt");
@@ -242,14 +239,14 @@ const SessionsTable = (props: {
 
   React.useEffect(() => {
     setCursor("");
-  }, [toggle.onlyCreator, toggle.showGraded]);
+  }, [context.onlyCreator, context.showGraded]);
 
   React.useEffect(() => {
     const filter: any = {};
-    if (toggle.onlyCreator) {
-      filter["lessonCreatedBy"] = `${cookies.user}`;
+    if (context.onlyCreator) {
+      filter["lessonCreatedBy"] = `${context.userid}`;
     }
-    if (!toggle.showGraded) {
+    if (!context.showGraded) {
       filter["graderGrade"] = null;
     }
     if (lessonId) {
@@ -267,8 +264,8 @@ const SessionsTable = (props: {
       mounted = false;
     };
   }, [
-    toggle.onlyCreator,
-    toggle.showGraded,
+    context.onlyCreator,
+    context.showGraded,
     rowsPerPage,
     cursor,
     sortBy,

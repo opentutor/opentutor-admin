@@ -6,8 +6,14 @@ The full terms of this copyright and license should always be found in the root 
 */
 import React from "react";
 import { useCookies } from "react-cookie";
+import { fetchGoogleProfile } from "api";
+import { getClientID } from "config";
+import { Profile } from "types";
 
 const ToggleContext = React.createContext({
+  googleClientId: "",
+  userid: null,
+  username: null,
   showGraded: false,
   onlyCreator: false,
   // eslint-disable-next-line
@@ -17,11 +23,29 @@ const ToggleContext = React.createContext({
 });
 
 const ToggleProvider = (props: { children: any }) => {
-  const [cookies] = useCookies(["user"]);
+  const [cookies] = useCookies(["accessToken"]);
+  const [googleClientId, setClientId] = React.useState<string>("");
+  const [userid, setUserid] = React.useState();
+  const [username, setUsername] = React.useState();
   const [showGraded, setShowGraded] = React.useState(false);
   const [onlyCreator, setOnlyCreator] = React.useState(
-    cookies.user ? true : false
+    cookies.accessToken || cookies.user ? true : false
   );
+
+  React.useEffect(() => {
+    getClientID().then((id: string) => {
+      setClientId(id);
+    });
+  }, []);
+
+  React.useEffect(() => {
+    if (cookies.accessToken) {
+      fetchGoogleProfile(cookies.accessToken).then((profile: Profile) => {
+        setUserid(profile.id);
+        setUsername(profile.given_name);
+      });
+    }
+  }, [cookies]);
 
   const toggleGraded = () => {
     setShowGraded(!showGraded);
@@ -34,9 +58,12 @@ const ToggleProvider = (props: { children: any }) => {
   return (
     <ToggleContext.Provider
       value={{
+        googleClientId,
+        userid,
+        username,
         showGraded,
-        onlyCreator,
         toggleGraded,
+        onlyCreator,
         toggleCreator,
       }}
     >

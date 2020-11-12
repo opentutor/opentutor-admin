@@ -19,6 +19,8 @@ import {
   TrainJob,
   TrainStatus,
   Connection,
+  Profile,
+  FetchProfile,
 } from "types";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const urljoin = require("url-join");
@@ -307,4 +309,12 @@ export async function fetchTrainingStatus(
 ): Promise<TrainStatus> {
   const result = await axios.get<GQLResponse<TrainStatus>>(statusUrl);
   return result.data.data!;
+}
+
+export async function fetchGoogleProfile(
+  accessToken: string
+): Promise<Profile> {
+  const endpoint = `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${accessToken}`;
+  const result = await axios.get<FetchProfile>(endpoint);
+  return result.data.data;
 }

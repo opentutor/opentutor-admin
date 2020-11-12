@@ -5,7 +5,7 @@ Permission to use, copy, modify, and distribute this software and its documentat
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
 import { withPrefix, navigate } from "gatsby";
-import React from "react";
+import React, { useContext } from "react";
 import { useCookies } from "react-cookie";
 import {
   AppBar,
@@ -26,6 +26,7 @@ import AccountCircle from "@material-ui/icons/AccountCircle";
 import MenuIcon from "@material-ui/icons/Menu";
 import ListIcon from "@material-ui/icons/List";
 import { Link } from "@reach/router";
+import ToggleContext from "context/toggle";
 
 const useStyles = makeStyles((theme) => ({
   toolbar: theme.mixins.toolbar,
@@ -66,9 +67,10 @@ const NavMenu = () => {
 
 const LoginOption = (props: { classes: any }) => {
   const { classes } = props;
-  const [cookies, setCookie, removeCookie] = useCookies(["user"]);
+  const [cookies, setCookie, removeCookie] = useCookies(["accessToken"]);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
+  const context = useContext(ToggleContext);
 
   const handleMenu = (e: any) => {
     setAnchorEl(e.currentTarget);
@@ -79,11 +81,11 @@ const LoginOption = (props: { classes: any }) => {
   };
 
   const onLogout = () => {
-    removeCookie("user", { path: "/" });
+    removeCookie("accessToken", { path: "/" });
     navigate("/");
   };
 
-  if (cookies.user) {
+  if (cookies.accessToken) {
     return (
       <div id="login-option" className={classes.login}>
         <Button
@@ -92,7 +94,7 @@ const LoginOption = (props: { classes: any }) => {
           startIcon={<AccountCircle />}
           style={{ color: "white" }}
         >
-          {cookies.user}
+          {context.username}
         </Button>
         <Menu
           id="login-menu"

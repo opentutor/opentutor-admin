@@ -5,49 +5,67 @@ Permission to use, copy, modify, and distribute this software and its documentat
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
 describe("Login", () => {
-  it("loads home page", () => {
+  beforeEach(() => {
+    cy.server();
     cy.visit("/");
+  });
+
+  it("loads home page if logged out", () => {
     cy.contains("Welcome to OpenTutor");
-    cy.contains("Teacher Login");
+    cy.get("#login-menu #login-button");
   });
 
-  it("is logged out by default", () => {
-    cy.visit("/");
-    cy.get("#nav-bar #login-button").contains("Login");
-    cy.get("#login-menu #login").contains("Login");
+  it("login disabled if missing GOOGLE_CLIENT_ID", () => {
+    cy.get("#login-menu #login-button").should("be.disabled");
   });
 
-  it("disables login button if input is empty", () => {
-    cy.visit("/");
-    cy.get("#login-menu #login-input").clear();
-    cy.get("#login-menu #login").should("be.disabled");
-    cy.get("#login-menu #login-input").type("OpenTutor");
-    cy.get("#login-menu #login").should("not.be.disabled");
+  it("login enabled if GOOGLE_CLIENT_ID is set", () => {
+    cy.route("**/config", { GOOGLE_CLIENT_ID: "test" });
+    cy.get("#login-menu #login-button").should("not.be.disabled");
   });
 
-  it("logs in and redirects to lessons page", () => {
-    cy.visit("/");
-    cy.get("#login-menu #login-input").type("OpenTutor");
-    cy.get("#login-menu #login").click();
-    cy.location("pathname").should("contain", "/lessons");
+  it("redirects to lesson page if logged in", () => {
+    cy.setCookie("accessToken", "accessToken");
+    cy.route({
+      method: "GET",
+      url:
+        "https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=accessToken",
+      status: 200,
+      response: {
+        data: {
+          id: "kayla-google-id",
+          given_name: "Kayla",
+        },
+        errors: null,
+      },
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    cy.location("pathname").should("contain", "lessons");
+    cy.get("#nav-bar").contains("Kayla");
   });
 
-  it("logs out and redirects to home page", () => {
-    cy.visit("/");
-    cy.get("#login-menu #login-input").type("OpenTutor");
-    cy.get("#login-menu #login").click();
-    cy.get("#nav-bar #login-button").contains("OpenTutor");
-    cy.get("#nav-bar #login-button").click();
-    // cy.wait(500);
-    cy.get("#logout").click();
-    cy.location("pathname").should("not.contain", "/lessons");
-    cy.get("#nav-bar #login-button").contains("Login");
-  });
-
-  it("log in button redirects to home page if logged out", () => {
-    cy.visit("/lessons");
-    cy.get("#nav-bar #login-button").contains("Login");
-    cy.get("#nav-bar #login-button").click();
-    cy.location("pathname").should("eq", "/admin");
+  it("logs out and returns to home page", () => {
+    cy.setCookie("accessToken", "accessToken");
+    cy.route({
+      method: "GET",
+      url:
+        "https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=accessToken",
+      status: 200,
+      response: {
+        data: {
+          id: "kayla-google-id",
+          given_name: "Kayla",
+        },
+        errors: null,
+      },
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    cy.get("#login-option #login-button").click();
+    cy.get("#login-menu #logout").click();
+    cy.location("pathname").should("not.contain", "lessons");
   });
 });

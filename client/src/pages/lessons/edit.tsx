@@ -1,6 +1,5 @@
 import { navigate } from "gatsby";
-import React from "react";
-import { useCookies } from "react-cookie";
+import React, { useContext } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import { v4 as uuid } from "uuid";
 import {
@@ -34,6 +33,7 @@ import withLocation from "wrap-with-location";
 import "styles/layout.css";
 import "jsoneditor-react/es/editor.min.css";
 import "react-toastify/dist/ReactToastify.css";
+import ToggleContext from "context/toggle";
 
 const TRAIN_STATUS_POLL_INTERVAL_DEFAULT = 1000;
 
@@ -100,17 +100,17 @@ const LessonEdit = (props: {
   search: { lessonId: string; trainStatusPollInterval?: number };
 }) => {
   const { lessonId } = props.search;
+  const context = useContext(ToggleContext);
   const trainStatusPollInterval = !isNaN(
     Number(props.search.trainStatusPollInterval)
   )
     ? Number(props.search.trainStatusPollInterval)
     : TRAIN_STATUS_POLL_INTERVAL_DEFAULT;
   const classes = useStyles();
-  const [cookies] = useCookies(["user"]);
   const [change, setChange] = React.useState(false);
   const newLesson = {
     lessonId: uuid(),
-    createdBy: cookies.user || "",
+    createdBy: context.userid || "",
     name: "Display name for the lesson",
     intro:
       "Introduction to the lesson,  e.g. 'This is a lesson about RGB colors'",
@@ -274,7 +274,7 @@ const LessonEdit = (props: {
   function handleLaunch() {
     saveChanges();
     const host = process.env.TUTOR_ENDPOINT || location.origin;
-    const guest = cookies.user ? `&guest=${cookies.user}` : "";
+    const guest = context.username ? `&guest=${context.username}` : "";
     const path = `${host}/tutor?lesson=${lessonId}&admin=true${guest}`;
     window.location.href = path;
   }

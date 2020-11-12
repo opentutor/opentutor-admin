@@ -93,9 +93,23 @@ describe("lessons screen", () => {
 
   it("can toggle lessons by creator if logged in", () => {
     cy.visit("/");
-    cy.get("#login-menu #login-input").type("OpenTutor");
-    cy.get("#login-menu #login").click();
-    cy.location("pathname").should("contain", "/lessons");
+    cy.setCookie("accessToken", "accessToken");
+    cy.route({
+      method: "GET",
+      url:
+        "https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=accessToken",
+      status: 200,
+      response: {
+        data: {
+          id: "kayla-google-id",
+          given_name: "Kayla",
+        },
+        errors: null,
+      },
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
     cy.get("#toggle-creator");
   });
 
@@ -114,13 +128,27 @@ describe("lessons screen", () => {
 
   it("launches a lesson as logged in user", () => {
     cy.visit("/");
-    cy.get("#login-menu #login-input").type("OpenTutor");
-    cy.get("#login-menu #login").click();
-    cy.location("pathname").should("contain", "/lessons");
+    cy.setCookie("accessToken", "accessToken");
+    cy.route({
+      method: "GET",
+      url:
+        "https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=accessToken",
+      status: 200,
+      response: {
+        data: {
+          id: "kayla-google-id",
+          given_name: "Kayla",
+        },
+        errors: null,
+      },
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
     cy.get("#lesson-0 #launch button").click();
     cy.location("pathname").should("contain", "/tutor");
     cy.location("search").should("contain", "lesson=lesson1");
-    cy.location("search").should("contain", "guest=OpenTutor");
+    cy.location("search").should("contain", "guest=Kayla");
     cy.location("search").should("contain", "admin=true");
   });
 });

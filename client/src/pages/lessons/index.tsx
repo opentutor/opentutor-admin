@@ -1,6 +1,5 @@
 import { withPrefix } from "gatsby";
 import React, { useContext } from "react";
-import { useCookies } from "react-cookie";
 import { ToastContainer, toast } from "react-toastify";
 import {
   AppBar,
@@ -110,8 +109,7 @@ const TableFooter = (props: {
   onPrev: () => void;
 }) => {
   const { classes, hasNext, hasPrev, onNext, onPrev } = props;
-  const [cookies] = useCookies(["user"]);
-  const toggle = useContext(ToggleContext);
+  const context = useContext(ToggleContext);
 
   function onCreate() {
     navigate(withPrefix("/lessons/edit?lessonId=new"));
@@ -126,14 +124,14 @@ const TableFooter = (props: {
         <IconButton id="next-page" disabled={!hasNext} onClick={onNext}>
           <KeyboardArrowRightIcon />
         </IconButton>
-        {!cookies.user ? undefined : (
+        {!context.userid ? undefined : (
           <FormGroup>
             <FormControlLabel
               control={
                 <Switch
                   id="toggle-creator"
-                  checked={toggle.onlyCreator}
-                  onChange={toggle.toggleCreator}
+                  checked={context.onlyCreator}
+                  onChange={context.toggleCreator}
                   aria-label="switch"
                 />
               }
@@ -163,13 +161,13 @@ const LessonItem = (props: {
   onDeleted: (id: string) => void;
 }) => {
   const { location, row, i, onDeleted } = props;
-  const [cookies] = useCookies(["user"]);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const deleteMenuOpen = Boolean(anchorEl);
+  const context = useContext(ToggleContext);
 
   function launchLesson(id: string) {
     const host = process.env.TUTOR_ENDPOINT || location.origin;
-    const guest = cookies.user ? `&guest=${cookies.user}` : "";
+    const guest = context.username ? `&guest=${context.username}` : "";
     const path = `${host}/tutor?lesson=${id}&admin=true${guest}`;
     window.location.href = path;
   }
@@ -259,8 +257,7 @@ const LessonItem = (props: {
 
 const LessonsTable = (props: { location: any }) => {
   const classes = useStyles();
-  const toggle = useContext(ToggleContext);
-  const [cookies] = useCookies(["user"]);
+  const context = useContext(ToggleContext);
   const [lessons, setLessons] = React.useState<Connection<Lesson>>();
   const [cursor, setCursor] = React.useState("");
   const [sortBy, setSortBy] = React.useState("updatedAt");
@@ -283,12 +280,12 @@ const LessonsTable = (props: { location: any }) => {
 
   React.useEffect(() => {
     setCursor("");
-  }, [toggle.onlyCreator]);
+  }, [context.onlyCreator]);
 
   React.useEffect(() => {
     const filter: any = {};
-    if (toggle.onlyCreator) {
-      filter["createdBy"] = `${cookies.user}`;
+    if (context.onlyCreator) {
+      filter["createdBy"] = `${context.userid}`;
     }
     let mounted = true;
     fetchLessons(filter, rowsPerPage, cursor, sortBy, sortAsc)
@@ -301,7 +298,7 @@ const LessonsTable = (props: { location: any }) => {
     return () => {
       mounted = false;
     };
-  }, [toggle.onlyCreator, deleted, rowsPerPage, cursor, sortBy, sortAsc]);
+  }, [context.onlyCreator, deleted, rowsPerPage, cursor, sortBy, sortAsc]);
 
   if (!lessons) {
     return (

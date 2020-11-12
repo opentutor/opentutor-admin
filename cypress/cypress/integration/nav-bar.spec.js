@@ -7,6 +7,7 @@ The full terms of this copyright and license should always be found in the root 
 describe("Navigation bar", () => {
   it("shows page title", () => {
     cy.visit("/");
+    cy.wait(500);
     cy.get("#nav-bar").get("#title").contains("OpenTutor");
     cy.visit("/lessons");
     cy.get("#nav-bar").get("#title").contains("Lessons");
