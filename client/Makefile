@@ -59,9 +59,6 @@ node_modules/eslint:
 node_modules/gatsby-cli:
 	$(MAKE) install
 
-node_modules/jest:
-	$(MAKE) install
-
 node_modules/prettier:
 	$(MAKE) install
 
@@ -73,7 +70,7 @@ install:
 	npm ci 
 
 .PHONY: test
-test: node_modules/jest
+test:
 	npm run test
 
 PHONY: test-all
