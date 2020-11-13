@@ -74,7 +74,8 @@ jobs:
   debug2:
     name: debug2
     runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/release') || github.ref == 'refs/heads/main'
+    needs: publish-check
+    if: needs.publish-check.outputs.is_release || github.ref == 'refs/heads/main'
     steps:
       - run: echo RUNNING!
   build-and-publish:
