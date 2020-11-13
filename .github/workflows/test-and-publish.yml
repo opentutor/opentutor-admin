@@ -2,10 +2,10 @@ name: test and publish
 on:
   push:
     branches:
-    - main
+      - main
     tags:
-    - '[0-9]+.[0-9]+.[0-9]+'
-    - '[0-9]+.[0-9]+.[0-9]+-[a-z].[0-9]+'
+      - '[0-9]+.[0-9]+.[0-9]+'
+      - '[0-9]+.[0-9]+.[0-9]+-[a-z].[0-9]+'
   pull_request:
     branches: 
       - '*'
