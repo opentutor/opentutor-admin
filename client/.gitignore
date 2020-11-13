@@ -55,5 +55,3 @@ public
 
 .pnp/
 .pnp.js
-
-cypress/snapshots/**/__diff_output__

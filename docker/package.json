@@ -7,38 +7,29 @@
     "format": "prettier --write '**/*.{js,jsx,json,ts,tsx}'",
     "start": "node app",
     "start-dev": "node app dev",
-    "version": "git add -A",
-    "postversion": "git push",
     "serve": "gatsby serve",
     "test": "echo 'no tests defined yet'",
     "test:all": "npm run test:format && npm run test:lint && npm run test:audit && npm run test:types && yarn test",
     "test:audit": "npm audit --level=moderate",
     "test:format": "prettier --check '**/*.{js,jsx,json,ts,tsx}'",
     "test:lint": "eslint . --ext ts --ext tsx --ext js --ext jsx",
-    "test:types": "tsc --noEmit",
-    "test:watch": "jest --watch"
+    "test:types": "tsc --noEmit"
   },
   "dependencies": {
     "cors": "^2.8.5",
     "express": "~4.17.1",
-    "typescript": "^4.0.2"
+    "typescript": "^4.0.5"
   },
   "devDependencies": {
-    "@types/jest": "^26.0.10",
-    "@typescript-eslint/eslint-plugin": "^3.9.1",
-    "@typescript-eslint/eslint-plugin-tslint": "^3.9.1",
-    "@typescript-eslint/parser": "^3.9.1",
-    "eslint": "^7.7.0",
-    "eslint-config-airbnb": "^18.2.0",
-    "eslint-config-prettier": "^6.11.0",
+    "@typescript-eslint/eslint-plugin": "^4.7.0",
+    "@typescript-eslint/eslint-plugin-tslint": "^4.7.0",
+    "@typescript-eslint/parser": "^4.7.0",
+    "eslint": "^7.13.0",
+    "eslint-config-prettier": "^6.15.0",
     "eslint-loader": "^4.0.2",
-    "eslint-plugin-import": "^2.22.0",
-    "eslint-plugin-jest": "^23.20.0",
     "eslint-plugin-prettier": "^3.1.4",
-    "jest": "^26.4.1",
-    "npm-check-updates": "^7.1.1",
-    "prettier": "^2.0.5",
-    "ts-jest": "^26.2.0"
+    "npm-check-updates": "^10.0.0",
+    "prettier": "^2.1.2"
   },
   "main": "app.js",
   "author": "",
