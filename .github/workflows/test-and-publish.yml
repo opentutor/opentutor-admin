@@ -29,12 +29,8 @@ jobs:
         run: cd client && npm run test:types
       - name: Run license test
         run: cd client && npm run test:license
-      - name: Build the docker-compose stack
-        run: docker-compose up -d
-      - name: Check running containers
-        run: docker ps
   test-e2e:
-    name: Run e2e tests
+    name: test e2e
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
