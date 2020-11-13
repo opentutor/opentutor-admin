@@ -82,7 +82,7 @@ node_modules/typescript:
 	npm ci
 
 .PHONY: test
-test: node_modules/jest
+test:
 	npm run test
 
 .PHONY: test-all

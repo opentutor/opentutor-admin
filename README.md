@@ -52,11 +52,11 @@ cd client && make develop
 ...then you can run the full cypress test suite with
 
 ```
-cd client && make test-cypress
+cd cypress && make test-cypress
 ```
 
 ```
-cd client && npm run cy:open
+cd cypress && npm run cy:open
 ```
 
 ...then in the cypress browser window, click a spec to run it.

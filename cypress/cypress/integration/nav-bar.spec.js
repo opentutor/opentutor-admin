@@ -21,12 +21,14 @@ describe("Navigation bar", () => {
   it("opens drawer menu", () => {
     cy.visit("/");
     cy.get("#drawer").should("not.exist");
+    // cy.wait(500);
     cy.get("#nav-bar").get("#menu-button").click();
     cy.get("#drawer");
   });
 
   it("navigates with menu", () => {
     cy.visit("/");
+    // cy.wait(500);
     cy.get("#nav-bar").get("#menu-button").click();
     cy.get("#drawer a").eq(1).contains("Grading");
     cy.get("#drawer a").eq(1).click();

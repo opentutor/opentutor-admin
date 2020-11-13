@@ -196,6 +196,7 @@ describe("lesson screen - training", () => {
         },
       ]);
       cy.visit("/lessons/edit?lessonId=lesson&trainStatusPollInterval=10");
+      // cy.wait(500);
       cy.get("#train-button").trigger("mouseover").click();
       waitTrainLesson();
       waitComplete();
@@ -227,6 +228,7 @@ describe("lesson screen - training", () => {
         },
       },
     ]);
+    // cy.wait(500);
     cy.get("#train-button").trigger("mouseover").click();
     waitTrainLesson();
     waitComplete();
@@ -236,6 +238,7 @@ describe("lesson screen - training", () => {
   it("train lesson fails for http error on start", () => {
     cy.visit("/lessons/edit?lessonId=lesson&trainStatusPollInterval=10");
     const waitTrainLesson = mockTrainLesson(cy, { responseStatus: 500 });
+    // cy.wait(500);
     cy.get("#train-button").trigger("mouseover").click();
     waitTrainLesson();
     cy.get("#train-failure").should("contain", "TRAINING FAILED");
@@ -254,6 +257,7 @@ describe("lesson screen - training", () => {
         responseStatusCode: 500,
       },
     ]);
+    // cy.wait(500);
     cy.get("#train-button").trigger("mouseover").click();
     waitTrainLesson();
     waitComplete();

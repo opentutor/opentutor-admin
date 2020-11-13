@@ -38,7 +38,7 @@ describe("Login", () => {
     cy.get("#login-menu #login").click();
     cy.get("#nav-bar #login-button").contains("OpenTutor");
     cy.get("#nav-bar #login-button").click();
-    cy.wait(500);
+    // cy.wait(500);
     cy.get("#logout").click();
     cy.location("pathname").should("not.contain", "/lessons");
     cy.get("#nav-bar #login-button").contains("Login");
