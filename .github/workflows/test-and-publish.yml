@@ -49,6 +49,15 @@ jobs:
   #       with:
   #         name: snapshot_failed_diffs
   #         path: client/cypress/snapshots
+  debug:
+    name: debug
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: debug
+        run: |
+          echo "github.event_name=${github.event_name}"
+          echo "github.ref=${github.ref}"
   build-and-publish:
     if: github.event_name == 'release' || github.ref == 'refs/branches/main'
     # needs:
