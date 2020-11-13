@@ -2,9 +2,6 @@
   "name": "opentutor-admin",
   "description": "web ui for grading opentutor sessions",
   "version": "1.0.0",
-  "resolutions": {
-    "dot-prop": ">= 5.1.1"
-  },
   "dependencies": {
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",
