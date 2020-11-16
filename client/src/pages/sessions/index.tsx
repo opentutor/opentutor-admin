@@ -119,7 +119,7 @@ const TableFooter = (props: {
   return (
     <AppBar position="sticky" color="default" className={classes.appBar}>
       <Toolbar>
-        {!context.userid ? undefined : (
+        {!context.user ? undefined : (
           <FormGroup>
             <FormControlLabel
               control={
@@ -203,13 +203,13 @@ const SessionItem = (props: { row: Edge<Session>; i: number }) => {
         {row.node ? Math.trunc(row.node.classifierGrade * 100) : "?"}
       </TableCell>
       <TableCell id="date" align="center">
-        {row.node.createdAt ? row.node.createdAt : ""}
+        {row.node.createdAt || ""}
       </TableCell>
       <TableCell id="creator" align="center">
-        {row.node.lesson.createdBy ? row.node.lesson.createdBy : "Guest"}
+        {row.node.lessonCreatedBy || "Guest"}
       </TableCell>
       <TableCell id="username" align="center">
-        {row.node.username ? row.node.username : "Guest"}
+        {row.node.username || "Guest"}
       </TableCell>
     </TableRow>
   );
@@ -243,8 +243,8 @@ const SessionsTable = (props: {
 
   React.useEffect(() => {
     const filter: any = {};
-    if (context.onlyCreator) {
-      filter["lessonCreatedBy"] = `${context.userid}`;
+    if (context.onlyCreator && context.user) {
+      filter["lessonCreatedBy"] = context.user.name;
     }
     if (!context.showGraded) {
       filter["graderGrade"] = null;
@@ -319,6 +319,12 @@ const SessionsPage = (props: {
   search: { lessonId: string };
   children: any;
 }) => {
+  const context = useContext(ToggleContext);
+  if (!context.user) {
+    navigate("/");
+    return <div></div>;
+  }
+
   return (
     <div>
       <NavBar title="Grading" />

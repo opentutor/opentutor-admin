@@ -1,5 +1,5 @@
 import { withPrefix } from "gatsby";
-import React from "react";
+import React, { useContext } from "react";
 import { navigate } from "@reach/router";
 import { makeStyles } from "@material-ui/core/styles";
 import {
@@ -20,6 +20,7 @@ import EditIcon from "@material-ui/icons/Edit";
 import withLocation from "wrap-with-location";
 import { Session } from "types";
 import { fetchSession, setGrade } from "api";
+import ToggleContext from "context/toggle";
 import NavBar from "components/nav-bar";
 import "styles/layout.css";
 
@@ -108,7 +109,7 @@ const SessionTable = ({ search }: { search: any }) => {
               <TableCell align="center" style={{ width: 100 }}>
                 User Answer
               </TableCell>
-              {session?.question?.expectations.map((column, i) => (
+              {session?.question?.expectations.map((column, i: number) => (
                 <TableCell
                   key={`expectation-${i}`}
                   id={`expectation-${i}`}
@@ -131,7 +132,7 @@ const SessionTable = ({ search }: { search: any }) => {
                   tabIndex={-1}
                 >
                   <TableCell id="answer">{row.text}</TableCell>
-                  {session?.question?.expectations.map((column, j) => (
+                  {session?.question?.expectations.map((column, j: number) => (
                     <TableCell
                       style={{
                         backgroundColor:
@@ -224,6 +225,12 @@ const SessionTable = ({ search }: { search: any }) => {
 };
 
 const SessionPage = ({ path, search }: { path: string; search: any }) => {
+  const context = useContext(ToggleContext);
+  if (!context.user) {
+    navigate("/");
+    return <div></div>;
+  }
+
   return (
     <div>
       <NavBar title="Grade Session" />

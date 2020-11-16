@@ -181,39 +181,38 @@ describe("lesson screen - training", () => {
   ].forEach((ex) => {
     it(`train lesson displays ${
       ex.expectedFeedback
-    } feedback on success when expectation accuracies ${JSON.stringify(
-      ex.expectedAccuracies
-    )}`, () => {
-      const waitTrainLesson = mockTrainLesson(cy);
-      const waitComplete = mockTrainStatusSeq(cy, [
-        { status: { state: TrainState.PENDING }, repeat: ex.pendingCount },
-        { status: { state: TrainState.STARTED }, repeat: ex.progressCount },
-        {
-          status: {
-            state: TrainState.SUCCESS,
-            info: ex.info,
+      } feedback on success when expectation accuracies ${JSON.stringify(
+        ex.expectedAccuracies
+      )}`, () => {
+        const waitTrainLesson = mockTrainLesson(cy);
+        const waitComplete = mockTrainStatusSeq(cy, [
+          { status: { state: TrainState.PENDING }, repeat: ex.pendingCount },
+          { status: { state: TrainState.STARTED }, repeat: ex.progressCount },
+          {
+            status: {
+              state: TrainState.SUCCESS,
+              info: ex.info,
+            },
           },
-        },
-      ]);
-      cy.visit("/lessons/edit?lessonId=lesson&trainStatusPollInterval=10");
-      // cy.wait(500);
-      cy.get("#train-button").trigger("mouseover").click();
-      waitTrainLesson();
-      waitComplete();
-      for (let i = 0; i < ex.expectedAccuracies.length; i++) {
-        cy.get(`#train-success-accuracy-${i}`).should(
-          "contain",
-          ex.expectedAccuracies[i]
-        );
-      }
-      cy.get("#train-data").matchImageSnapshot(
-        snapname(
-          `train-success-displays-${
+        ]);
+        cy.visit("/lessons/edit?lessonId=lesson&trainStatusPollInterval=10");
+        cy.get("#train-button").trigger("mouseover").click();
+        waitTrainLesson();
+        waitComplete();
+        for (let i = 0; i < ex.expectedAccuracies.length; i++) {
+          cy.get(`#train-success-accuracy-${i}`).should(
+            "contain",
+            ex.expectedAccuracies[i]
+          );
+        }
+        cy.get("#train-data").matchImageSnapshot(
+          snapname(
+            `train-success-displays-${
             ex.expectedFeedback
-          }-for-expectation-accuracies-${ex.expectedAccuracies.join("-")}`
-        )
-      );
-    });
+            }-for-expectation-accuracies-${ex.expectedAccuracies.join("-")}`
+          )
+        );
+      });
   });
 
   it("train lesson fails for state FAILURE", () => {
@@ -228,7 +227,6 @@ describe("lesson screen - training", () => {
         },
       },
     ]);
-    // cy.wait(500);
     cy.get("#train-button").trigger("mouseover").click();
     waitTrainLesson();
     waitComplete();
@@ -238,7 +236,6 @@ describe("lesson screen - training", () => {
   it("train lesson fails for http error on start", () => {
     cy.visit("/lessons/edit?lessonId=lesson&trainStatusPollInterval=10");
     const waitTrainLesson = mockTrainLesson(cy, { responseStatus: 500 });
-    // cy.wait(500);
     cy.get("#train-button").trigger("mouseover").click();
     waitTrainLesson();
     cy.get("#train-failure").should("contain", "TRAINING FAILED");
@@ -257,7 +254,6 @@ describe("lesson screen - training", () => {
         responseStatusCode: 500,
       },
     ]);
-    // cy.wait(500);
     cy.get("#train-button").trigger("mouseover").click();
     waitTrainLesson();
     waitComplete();

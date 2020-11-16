@@ -1,5 +1,6 @@
 import { navigate } from "gatsby";
 import React, { useContext } from "react";
+import { useCookies } from "react-cookie";
 import { ToastContainer, toast } from "react-toastify";
 import { v4 as uuid } from "uuid";
 import {
@@ -24,6 +25,7 @@ import {
   fetchTrainingStatus,
   trainLesson,
 } from "api";
+import ToggleContext from "context/toggle";
 import NavBar from "components/nav-bar";
 import ConclusionsList from "components/conclusions-list";
 import ExpectationsList from "components/expectations-list";
@@ -33,7 +35,6 @@ import withLocation from "wrap-with-location";
 import "styles/layout.css";
 import "jsoneditor-react/es/editor.min.css";
 import "react-toastify/dist/ReactToastify.css";
-import ToggleContext from "context/toggle";
 
 const TRAIN_STATUS_POLL_INTERVAL_DEFAULT = 1000;
 
@@ -108,9 +109,9 @@ const LessonEdit = (props: {
     : TRAIN_STATUS_POLL_INTERVAL_DEFAULT;
   const classes = useStyles();
   const [change, setChange] = React.useState(false);
-  const newLesson = {
+  const newLesson: Lesson = {
     lessonId: uuid(),
-    createdBy: context.userid || "",
+    createdBy: context.user,
     name: "Display name for the lesson",
     intro:
       "Introduction to the lesson,  e.g. 'This is a lesson about RGB colors'",
@@ -181,7 +182,7 @@ const LessonEdit = (props: {
       lesson &&
       loaded &&
       isValidId() &&
-      lesson.expectations.every((exp) => isExpValid(exp))
+      lesson.expectations.every((exp: LessonExpectation) => isExpValid(exp))
     );
   }
 
@@ -248,14 +249,18 @@ const LessonEdit = (props: {
     handleSavePopUp();
   }
 
-  function saveChanges(): void {
+  function saveChanges(trained?: boolean): void {
     toast("Saving...");
-    const converted = encodeURI(JSON.stringify(lesson));
+    const convertedLesson: any = { ...lesson, createdBy: lesson.createdBy.id };
+    if (trained) {
+      convertedLesson.lastTrainedAt = new Date();
+    }
+    const encodedLesson = encodeURI(JSON.stringify(convertedLesson));
     let origId = lessonId;
     if (lessonId === "new") {
       origId = lesson.lessonId;
     }
-    updateLesson(origId, converted)
+    updateLesson(origId, encodedLesson)
       .then((lesson) => {
         if (lesson) {
           setLesson(lesson);
@@ -274,7 +279,7 @@ const LessonEdit = (props: {
   function handleLaunch() {
     saveChanges();
     const host = process.env.TUTOR_ENDPOINT || location.origin;
-    const guest = context.username ? `&guest=${context.username}` : "";
+    const guest = context.user ? `&guest=${context.user.name}` : "";
     const path = `${host}/tutor?lesson=${lessonId}&admin=true${guest}`;
     window.location.href = path;
   }
@@ -335,18 +340,7 @@ const LessonEdit = (props: {
             setTrainPopUp(true);
             setIsTraining(false);
             if (trainStatus.state === TrainState.SUCCESS) {
-              const converted = encodeURI(
-                JSON.stringify({ ...lesson, lastTrainedAt: new Date() })
-              );
-              updateLesson(lesson.lessonId, converted)
-                .then((lesson) => {
-                  if (lesson !== undefined) {
-                    setLesson(lesson);
-                  }
-                })
-                .catch((err) => {
-                  console.error(err);
-                });
+              saveChanges(true);
             }
           }
         })
@@ -412,7 +406,7 @@ const LessonEdit = (props: {
             InputLabelProps={{
               shrink: true,
             }}
-            value={lesson.createdBy}
+            value={lesson.createdBy ? lesson.createdBy.name : "Guest"}
             disabled={true}
             size="small"
           />
@@ -627,6 +621,16 @@ const LessonEdit = (props: {
 };
 
 const EditPage = (props: { path: string; search: any }) => {
+  const context = useContext(ToggleContext);
+  const [cookies] = useCookies(["accessToken"]);
+  if (!cookies.accessToken) {
+    navigate("/");
+    return <div></div>;
+  }
+  if (!context.user) {
+    return <CircularProgress />
+  }
+
   return (
     <div>
       <NavBar title="Edit Lesson" />

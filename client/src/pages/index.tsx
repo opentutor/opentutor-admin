@@ -19,7 +19,7 @@ const IndexPage: React.FC = (props: any) => {
     <Router>
       <LoginMenu path={withPrefix("/")}>
         <CreatePage path={withPrefix("lessons")} location={props.location}>
-          <EditPage path={withPrefix("/lessons/edit")} />
+          <EditPage path={withPrefix("lessons/edit")} />
         </CreatePage>
         <SessionsPage path={withPrefix("sessions")}>
           <SessionPage path={withPrefix("sessions/session")} />

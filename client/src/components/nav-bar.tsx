@@ -85,7 +85,7 @@ const LoginOption = (props: { classes: any }) => {
     navigate("/");
   };
 
-  if (cookies.accessToken) {
+  if (context.user) {
     return (
       <div id="login-option" className={classes.login}>
         <Button
@@ -94,7 +94,7 @@ const LoginOption = (props: { classes: any }) => {
           startIcon={<AccountCircle />}
           style={{ color: "white" }}
         >
-          {context.username}
+          {context.user.name}
         </Button>
         <Menu
           id="login-menu"

@@ -16,6 +16,7 @@ import { Button, CircularProgress, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import NavBar from "components/nav-bar";
 import ToggleContext from "context/toggle";
+import { getClientID } from "config";
 import "styles/layout.css";
 
 const useStyles = makeStyles((theme) => ({
@@ -47,12 +48,19 @@ export const LoginMenu = (props: { path: string; children: any }) => {
   const classes = useStyles();
   const [cookies, setCookie, removeCookie] = useCookies(["accessToken"]);
   const context = useContext(ToggleContext);
+  const [googleClientId, setClientId] = React.useState<string>("");
 
   React.useEffect(() => {
-    if (cookies.accessToken) {
+    getClientID().then((id: string) => {
+      setClientId(id);
+    });
+  }, []);
+
+  React.useEffect(() => {
+    if (context.user) {
       navigate("/lessons");
     }
-  }, [cookies]);
+  }, [context.user]);
 
   const onGoogleLogin = (
     response: GoogleLoginResponse | GoogleLoginResponseOffline
@@ -78,9 +86,9 @@ export const LoginMenu = (props: { path: string; children: any }) => {
       <Typography variant="h5" className={classes.title}>
         Welcome to OpenTutor
       </Typography>
-      {context.googleClientId ? (
+      {googleClientId ? (
         <GoogleLogin
-          clientId={context.googleClientId}
+          clientId={googleClientId}
           onSuccess={onGoogleLogin}
           cookiePolicy={"single_host_origin"}
           render={(renderProps) => (

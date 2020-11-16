@@ -10,7 +10,7 @@ describe("Login", () => {
     cy.visit("/");
   });
 
-  it("loads home page if logged out", () => {
+  it("loads home page", () => {
     cy.contains("Welcome to OpenTutor");
     cy.get("#login-menu #login-button");
   });
@@ -24,17 +24,17 @@ describe("Login", () => {
     cy.get("#login-menu #login-button").should("not.be.disabled");
   });
 
-  it("redirects to lesson page if logged in", () => {
-    cy.setCookie("accessToken", "accessToken");
+  it("redirects to lesson page after logging in", () => {
     cy.route({
-      method: "GET",
-      url:
-        "https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=accessToken",
+      method: "POST",
+      url: "**/graphql",
       status: 200,
       response: {
         data: {
-          id: "kayla-google-id",
-          given_name: "Kayla",
+          login: {
+            name: "Kayla",
+            email: "kayla@opentutor.com"
+          },
         },
         errors: null,
       },
@@ -42,21 +42,23 @@ describe("Login", () => {
         "Content-Type": "application/json",
       },
     });
+    cy.route("**/config", { GOOGLE_CLIENT_ID: "test" });
+    cy.setCookie("accessToken", "accessToken");
     cy.location("pathname").should("contain", "lessons");
     cy.get("#nav-bar").contains("Kayla");
   });
 
-  it("logs out and returns to home page", () => {
-    cy.setCookie("accessToken", "accessToken");
+  it("redirects to home page after logging out", () => {
     cy.route({
-      method: "GET",
-      url:
-        "https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=accessToken",
+      method: "POST",
+      url: "**/graphql",
       status: 200,
       response: {
         data: {
-          id: "kayla-google-id",
-          given_name: "Kayla",
+          login: {
+            name: "Kayla",
+            email: "kayla@opentutor.com"
+          },
         },
         errors: null,
       },
@@ -64,8 +66,25 @@ describe("Login", () => {
         "Content-Type": "application/json",
       },
     });
-    cy.get("#login-option #login-button").click();
-    cy.get("#login-menu #logout").click();
+    cy.route("**/config", { GOOGLE_CLIENT_ID: "test" });
+    cy.setCookie("accessToken", "accessToken");
+    cy.get("#login-option #login-button").trigger('mouseover').click();
+    cy.get("#logout").trigger('mouseover').click();
     cy.location("pathname").should("not.contain", "lessons");
   });
+
+  it("cannot view lessons if not logged in", () => {
+    cy.visit("/lessons");
+    cy.location("pathname").should("not.contain", "lessons");
+    cy.visit("/lessons/edit?lessonId=new");
+    cy.location("pathname").should("not.contain", "lessons/edit");
+  });
+
+  it("cannot view sessions until logged in", () => {
+    cy.visit("/sessions");
+    cy.location("pathname").should("not.contain", "sessions");
+    cy.visit("/sessions/session?sessionId=session1");
+    cy.location("pathname").should("not.contain", "sessions/session");
+  });
+  
 });

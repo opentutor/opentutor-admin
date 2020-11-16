@@ -7,6 +7,27 @@ The full terms of this copyright and license should always be found in the root 
 describe("lessons screen", () => {
   beforeEach(() => {
     cy.server();
+    cy.visit("/");
+    cy.route("**/config", { GOOGLE_CLIENT_ID: "test" });
+    cy.route({
+      method: "POST",
+      url: "**/graphql",
+      status: 200,
+      response: {
+        data: {
+          login: {
+            name: "Kayla",
+            email: "kayla@opentutor.com"
+          },
+        },
+        errors: null,
+      },
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }).as("login");
+    cy.setCookie("accessToken", "accessToken");
+    cy.wait("@login");
     cy.route({
       method: "POST",
       url: "**/graphql",
@@ -21,7 +42,7 @@ describe("lessons screen", () => {
                   lessonId: "lesson1",
                   name: "lesson 1",
                   updatedAt: "1/1/20000, 12:00:00 AM",
-                  createdBy: "teacher 1",
+                  createdBy: {name: "teacher 1"},
                 },
               },
               {
@@ -30,13 +51,13 @@ describe("lessons screen", () => {
                   lessonId: "lesson2",
                   name: "lesson 2",
                   updatedAt: "1/1/20000, 12:00:00 AM",
-                  createdBy: "teacher 2",
+                  createdBy: {name: "teacher 2"},
                 },
               },
             ],
             pageInfo: {
               hasNextPage: false,
-              endCursor: "cursor 2 ",
+              endCursor: "cursor 2",
             },
           },
         },
@@ -49,7 +70,6 @@ describe("lessons screen", () => {
   });
 
   it("displays lesson table with headers", () => {
-    cy.visit("/lessons");
     cy.get("#column-header");
     cy.get("#column-header #name").contains("Lesson");
     cy.get("#column-header #launch").contains("Launch");
@@ -60,7 +80,6 @@ describe("lessons screen", () => {
   });
 
   it("displays a list of lessons", () => {
-    cy.visit("/lessons");
     cy.get("#lessons").children().should("have.length", 2);
     cy.get("#lesson-0 #name").contains("lesson 1");
     cy.get("#lesson-0 #date").contains("1/1/20000, 12:00:00 AM");
@@ -71,81 +90,29 @@ describe("lessons screen", () => {
   });
 
   it("opens edit for a lesson", () => {
-    cy.visit("/lessons");
-    cy.get("#lesson-0 #name a").click();
+    cy.get("#lesson-0 #name a").trigger('mouseover').click();
     cy.location("pathname").should("contain", "/lessons/edit");
     cy.location("search").should("eq", "?lessonId=lesson1");
   });
 
   it("opens grade for a lesson", () => {
-    cy.visit("/lessons");
-    cy.get("#lesson-0 #grade").click();
+    cy.get("#lesson-0 #grade").trigger('mouseover').click();
     cy.location("pathname").should("contain", "/sessions");
     cy.location("search").should("eq", "?lessonId=lesson1");
   });
 
   it("clicks on create lesson and opens to an edit page for new lesson", () => {
-    cy.visit("/lessons");
-    cy.get("#create-button").click();
+    cy.get("#create-button").trigger('mouseover').click();
     cy.location("pathname").should("contain", "/lessons/edit");
     cy.location("search").should("eq", "?lessonId=new");
   });
 
-  it("can toggle lessons by creator if logged in", () => {
-    cy.visit("/");
-    cy.setCookie("accessToken", "accessToken");
-    cy.route({
-      method: "GET",
-      url:
-        "https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=accessToken",
-      status: 200,
-      response: {
-        data: {
-          id: "kayla-google-id",
-          given_name: "Kayla",
-        },
-        errors: null,
-      },
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+  it("can toggle lessons by creator", () => {
     cy.get("#toggle-creator");
   });
 
-  it("toggle is hidden if not logged in", () => {
-    cy.visit("/lessons");
-    cy.get("#toggle-creator").should("not.exist");
-  });
-
-  it("launches a lesson as guest", () => {
-    cy.visit("/lessons");
-    cy.get("#lesson-0 #launch button").click();
-    cy.location("pathname").should("contain", "/tutor");
-    cy.location("search").should("contain", "lesson=lesson1");
-    cy.location("search").should("contain", "admin=true");
-  });
-
   it("launches a lesson as logged in user", () => {
-    cy.visit("/");
-    cy.setCookie("accessToken", "accessToken");
-    cy.route({
-      method: "GET",
-      url:
-        "https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=accessToken",
-      status: 200,
-      response: {
-        data: {
-          id: "kayla-google-id",
-          given_name: "Kayla",
-        },
-        errors: null,
-      },
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    cy.get("#lesson-0 #launch button").click();
+    cy.get("#lesson-0 #launch button").trigger('mouseover').click();
     cy.location("pathname").should("contain", "/tutor");
     cy.location("search").should("contain", "lesson=lesson1");
     cy.location("search").should("contain", "guest=Kayla");

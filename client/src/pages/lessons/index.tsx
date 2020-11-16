@@ -1,5 +1,6 @@
 import { withPrefix } from "gatsby";
 import React, { useContext } from "react";
+import { useCookies } from "react-cookie";
 import { ToastContainer, toast } from "react-toastify";
 import {
   AppBar,
@@ -124,7 +125,7 @@ const TableFooter = (props: {
         <IconButton id="next-page" disabled={!hasNext} onClick={onNext}>
           <KeyboardArrowRightIcon />
         </IconButton>
-        {!context.userid ? undefined : (
+        {!context.user ? undefined : (
           <FormGroup>
             <FormControlLabel
               control={
@@ -167,7 +168,7 @@ const LessonItem = (props: {
 
   function launchLesson(id: string) {
     const host = process.env.TUTOR_ENDPOINT || location.origin;
-    const guest = context.username ? `&guest=${context.username}` : "";
+    const guest = context.user ? `&guest=${context.user.name}` : "";
     const path = `${host}/tutor?lesson=${id}&admin=true${guest}`;
     window.location.href = path;
   }
@@ -222,7 +223,7 @@ const LessonItem = (props: {
         {row.node.updatedAt ? row.node.updatedAt.toLocaleString() : ""}
       </TableCell>
       <TableCell id="creator" align="center">
-        {row.node.createdBy}
+        {row.node.createdBy?.name}
       </TableCell>
       <TableCell id="delete" align="center">
         <IconButton onClick={handleDelete}>
@@ -285,7 +286,7 @@ const LessonsTable = (props: { location: any }) => {
   React.useEffect(() => {
     const filter: any = {};
     if (context.onlyCreator) {
-      filter["createdBy"] = `${context.userid}`;
+      filter["createdBy"] = context.user ? `${context.user.id}` : "";
     }
     let mounted = true;
     fetchLessons(filter, rowsPerPage, cursor, sortBy, sortAsc)
@@ -350,6 +351,16 @@ const LessonsTable = (props: { location: any }) => {
 };
 
 const LessonsPage = (props: { location: any; path: string; children: any }) => {
+  const context = useContext(ToggleContext);
+  const [cookies] = useCookies(["accessToken"]);
+  if (!cookies.accessToken) {
+    navigate("/");
+    return <div></div>;
+  }
+  if (!context.user) {
+    return <CircularProgress />
+  }
+
   return (
     <div>
       <NavBar title="Lessons" />

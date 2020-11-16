@@ -5,34 +5,52 @@ Permission to use, copy, modify, and distribute this software and its documentat
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
 describe("Navigation bar", () => {
-  it("shows page title", () => {
-    cy.visit("/");
-    cy.wait(500);
-    cy.get("#nav-bar").get("#title").contains("OpenTutor");
-    cy.visit("/lessons");
-    cy.get("#nav-bar").get("#title").contains("Lessons");
-    cy.visit("/lessons/edit?lessonId=new");
-    cy.get("#nav-bar").get("#title").contains("Edit Lesson");
-    cy.visit("/sessions");
-    cy.get("#nav-bar").get("#title").contains("Grading");
-    cy.visit("/sessions/session");
-    cy.get("#nav-bar").get("#title").contains("Grade Session");
-  });
+    beforeEach(() => {
+        cy.server();
+        cy.visit("/");
+        cy.route({
+            method: "POST",
+            url: "**/graphql",
+            status: 200,
+            response: {
+                data: {
+                    login: {
+                        name: "Kayla",
+                        email: "kayla@opentutor.com"
+                    },
+                },
+                errors: null,
+            },
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+        cy.route("**/config", {
+            GOOGLE_CLIENT_ID: "test"
+        });
+        cy.setCookie("accessToken", "accessToken");
+    });
 
-  it("opens drawer menu", () => {
-    cy.visit("/");
-    cy.get("#drawer").should("not.exist");
-    // cy.wait(500);
-    cy.get("#nav-bar").get("#menu-button").click();
-    cy.get("#drawer");
-  });
+    it("shows page title", () => {
+        cy.get("#nav-bar").get("#title").contains("Lessons");
+        cy.visit("/lessons/edit?lessonId=new");
+        cy.get("#nav-bar").get("#title").contains("Edit Lesson");
+        cy.visit("/sessions");
+        cy.get("#nav-bar").get("#title").contains("Grading");
+        cy.visit("/sessions/session");
+        cy.get("#nav-bar").get("#title").contains("Grade Session");
+    });
 
-  it("navigates with menu", () => {
-    cy.visit("/");
-    // cy.wait(500);
-    cy.get("#nav-bar").get("#menu-button").click();
-    cy.get("#drawer a").eq(1).contains("Grading");
-    cy.get("#drawer a").eq(1).click();
-    cy.location("pathname").should("contain", "/sessions");
-  });
+    it("opens drawer menu", () => {
+        cy.get("#drawer").should("not.exist");
+        cy.get("#nav-bar").get("#menu-button").trigger('mouseover').click();
+        cy.get("#drawer");
+    });
+
+    it("navigates with menu", () => {
+        cy.get("#nav-bar").get("#menu-button").trigger('mouseover').click();
+        cy.get("#drawer a").eq(1).contains("Grading");
+        cy.get("#drawer a").eq(1).trigger('mouseover').click();
+        cy.location("pathname").should("contain", "/sessions");
+    });
 });

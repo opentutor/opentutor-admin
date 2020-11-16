@@ -19,8 +19,8 @@ import {
   TrainJob,
   TrainStatus,
   Connection,
-  Profile,
-  FetchProfile,
+  User,
+  Login,
 } from "types";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const urljoin = require("url-join");
@@ -64,8 +64,8 @@ export async function fetchSessions(
                 lesson {
                   name
                   lessonId
-                  createdBy
                 }
+                lessonCreatedBy
               }
             }
             pageInfo {
@@ -181,7 +181,10 @@ export async function fetchLessons(
               node {
                 lessonId
                 name
-                createdBy
+                createdBy {
+                  id
+                  name
+                }
                 updatedAt
               }
             }
@@ -221,7 +224,10 @@ export async function fetchLesson(lessonId: string): Promise<Lesson> {
             features
             lastTrainedAt
             isTrainable
-            createdBy
+            createdBy {
+              id
+              name
+            }
           }
         }
       `,
@@ -311,10 +317,18 @@ export async function fetchTrainingStatus(
   return result.data.data!;
 }
 
-export async function fetchGoogleProfile(
-  accessToken: string
-): Promise<Profile> {
-  const endpoint = `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${accessToken}`;
-  const result = await axios.get<FetchProfile>(endpoint);
-  return result.data.data;
+// TODO: login with username and password
+export async function login(accessToken: string): Promise<User> {
+  const result = await axios.post<GQLResponse<Login>>(GRAPHQL_ENDPOINT, {
+    query: `
+        mutation {
+          login(accessToken: "${accessToken}") {
+            id
+            name
+            email
+          }
+        }
+    `,
+  });
+  return result.data.data!.login;
 }

@@ -6,14 +6,19 @@ The full terms of this copyright and license should always be found in the root 
 */
 import React from "react";
 import { useCookies } from "react-cookie";
-import { fetchGoogleProfile } from "api";
-import { getClientID } from "config";
-import { Profile } from "types";
+import { login } from "api";
+import { User } from "types";
 
-const ToggleContext = React.createContext({
-  googleClientId: "",
-  userid: null,
-  username: null,
+type ContextType = {
+  user: User | undefined;
+  showGraded: boolean;
+  onlyCreator: boolean;
+  toggleGraded: () => void;
+  toggleCreator: () => void;
+};
+
+const ToggleContext = React.createContext<ContextType>({
+  user: undefined,
   showGraded: false,
   onlyCreator: false,
   // eslint-disable-next-line
@@ -24,26 +29,19 @@ const ToggleContext = React.createContext({
 
 const ToggleProvider = (props: { children: any }) => {
   const [cookies] = useCookies(["accessToken"]);
-  const [googleClientId, setClientId] = React.useState<string>("");
-  const [userid, setUserid] = React.useState();
-  const [username, setUsername] = React.useState();
+  const [user, setUser] = React.useState<User>();
   const [showGraded, setShowGraded] = React.useState(false);
   const [onlyCreator, setOnlyCreator] = React.useState(
     cookies.accessToken || cookies.user ? true : false
   );
 
   React.useEffect(() => {
-    getClientID().then((id: string) => {
-      setClientId(id);
-    });
-  }, []);
-
-  React.useEffect(() => {
     if (cookies.accessToken) {
-      fetchGoogleProfile(cookies.accessToken).then((profile: Profile) => {
-        setUserid(profile.id);
-        setUsername(profile.given_name);
+      login(cookies.accessToken).then((user: User) => {
+        setUser(user);
       });
+    } else {
+      setUser(undefined);
     }
   }, [cookies]);
 
@@ -58,9 +56,7 @@ const ToggleProvider = (props: { children: any }) => {
   return (
     <ToggleContext.Provider
       value={{
-        googleClientId,
-        userid,
-        username,
+        user,
         showGraded,
         toggleGraded,
         onlyCreator,

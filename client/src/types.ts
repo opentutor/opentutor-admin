@@ -77,14 +77,18 @@ export interface Lesson {
   intro: string;
   question: string;
   image: string;
-  conclusion: string[];
   expectations: LessonExpectation[];
-  createdBy: string;
+  conclusion: string[];
+  lastTrainedAt: string;
+  features: any;
+  isTrainable: boolean;
+  createdBy: User;
+  contentManagers: [User];
+  editors: [User];
+  isPrivate: boolean;
+  isTemplate: boolean;
   createdAt: string;
   updatedAt: string;
-  features: any;
-  lastTrainedAt: string;
-  isTrainable: boolean;
   deleted: boolean;
 }
 
@@ -149,16 +153,12 @@ export interface TrainingInfo {
   expectations?: TrainExpectionResult[];
 }
 
-export interface FetchProfile {
-  data: Profile;
-}
-
-export interface Profile {
+export interface User {
   id: string;
   name: string;
-  given_name: string;
-  family_name: string;
-  picture: string;
-  gender: string;
   email: string;
+}
+
+export interface Login {
+  login: User;
 }
