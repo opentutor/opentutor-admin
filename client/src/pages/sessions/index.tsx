@@ -1,5 +1,6 @@
 import { withPrefix } from "gatsby";
 import React, { useContext } from "react";
+import { useCookies } from "react-cookie";
 import { navigate } from "@reach/router";
 import {
   AppBar,
@@ -119,21 +120,19 @@ const TableFooter = (props: {
   return (
     <AppBar position="sticky" color="default" className={classes.appBar}>
       <Toolbar>
-        {!context.user ? undefined : (
-          <FormGroup>
-            <FormControlLabel
-              control={
-                <Switch
-                  id="toggle-creator"
-                  checked={onlyCreator}
-                  onChange={toggleCreator}
-                  aria-label="switch"
-                />
-              }
-              label={"Only Mine"}
-            />
-          </FormGroup>
-        )}
+        <FormGroup>
+          <FormControlLabel
+            control={
+              <Switch
+                id="toggle-creator"
+                checked={onlyCreator}
+                onChange={toggleCreator}
+                aria-label="switch"
+              />
+            }
+            label={"Only Mine"}
+          />
+        </FormGroup>
         <FormGroup>
           <FormControlLabel
             control={
@@ -181,16 +180,24 @@ const SessionItem = (props: { row: Edge<Session>; i: number }) => {
       }}
     >
       <TableCell id="lesson" align="left">
-        <Link
-          to={withPrefix(`/lessons/edit?lessonId=${row.node.lesson.lessonId}`)}
-        >
-          {row.node.lesson && row.node.lesson.name
-            ? row.node.lesson.name
-            : "No Lesson Name"}
-        </Link>
+        {row.node.lesson?.userPermissions?.edit ? (
+          <Link
+            to={withPrefix(
+              `/lessons/edit?lessonId=${row.node.lesson.lessonId}`
+            )}
+          >
+            {row.node.lesson?.name || "No Lesson Name"}
+          </Link>
+        ) : (
+          row.node.lesson?.name || "No Lesson Name"
+        )}
       </TableCell>
       <TableCell>
-        <IconButton id="grade" onClick={handleGrade}>
+        <IconButton
+          id="grade"
+          onClick={handleGrade}
+          disabled={!row.node.lesson?.userPermissions?.edit}
+        >
           <AssignmentIcon />
         </IconButton>
       </TableCell>
@@ -243,8 +250,8 @@ const SessionsTable = (props: {
 
   React.useEffect(() => {
     const filter: any = {};
-    if (context.onlyCreator && context.user) {
-      filter["lessonCreatedBy"] = context.user.name;
+    if (context.onlyCreator) {
+      filter["lessonCreatedBy"] = context.user?.name;
     }
     if (!context.showGraded) {
       filter["graderGrade"] = null;
@@ -320,9 +327,13 @@ const SessionsPage = (props: {
   children: any;
 }) => {
   const context = useContext(ToggleContext);
-  if (!context.user) {
+  const [cookies] = useCookies(["accessToken"]);
+  if (typeof window !== "undefined" && !cookies.accessToken) {
     navigate("/");
     return <div></div>;
+  }
+  if (!context.user) {
+    return <CircularProgress />;
   }
 
   return (

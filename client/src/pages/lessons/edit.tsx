@@ -97,6 +97,30 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const newLesson = {
+  lessonId: uuid(),
+  name: "Display name for the lesson",
+  intro:
+    "Introduction to the lesson,  e.g. 'This is a lesson about RGB colors'",
+  question:
+    "Question the student needs to answer, e.g. 'What are the colors in RGB?'",
+  conclusion: [
+    "Add a conclusion statement, e.g. 'In summary,  RGB colors are red, green, and blue'",
+  ],
+  expectations: [
+    {
+      expectation: "Add a short ideal answer for an expectation, e.g. 'Red'",
+      hints: [
+        {
+          text:
+            "Add a hint to help for the expectation, e.g. 'One of them starts with R'",
+        },
+      ],
+      features: null,
+    },
+  ],
+};
+
 const LessonEdit = (props: {
   search: { lessonId: string; trainStatusPollInterval?: number };
 }) => {
@@ -108,37 +132,8 @@ const LessonEdit = (props: {
     ? Number(props.search.trainStatusPollInterval)
     : TRAIN_STATUS_POLL_INTERVAL_DEFAULT;
   const classes = useStyles();
-  const [change, setChange] = React.useState(false);
-  const newLesson: Lesson = {
-    lessonId: uuid(),
-    createdBy: context.user,
-    name: "Display name for the lesson",
-    intro:
-      "Introduction to the lesson,  e.g. 'This is a lesson about RGB colors'",
-    question:
-      "Question the student needs to answer, e.g. 'What are the colors in RGB?'",
-    image: "",
-    conclusion: [
-      "Add a conclusion statement, e.g. 'In summary,  RGB colors are red, green, and blue'",
-    ],
-    expectations: [
-      {
-        expectation: "Add a short ideal answer for an expectation, e.g. 'Red'",
-        hints: [
-          {
-            text:
-              "Add a hint to help for the expectation, e.g. 'One of them starts with R'",
-          },
-        ],
-        features: null,
-      },
-    ],
-    features: null,
-    isTrainable: false,
-    lastTrainedAt: "",
-  };
-  const [lesson, setLesson] = React.useState(newLesson);
-  const [loaded, setLoaded] = React.useState(false);
+  const [lesson, setLesson] = React.useState<any>();
+  const [edited, setEdited] = React.useState(false);
   const [savePopUp, setSavePopUp] = React.useState(false);
   const [isTraining, setIsTraining] = React.useState(false);
   const [trainPopUp, setTrainPopUp] = React.useState(false);
@@ -148,23 +143,19 @@ const LessonEdit = (props: {
   });
 
   React.useEffect(() => {
-    let mounted = true;
-    if (lessonId !== "new") {
+    if (lessonId) {
       fetchLesson(lessonId)
         .then((lesson: Lesson) => {
-          if (mounted && lesson) {
-            setLesson(lesson);
-            setLoaded(true);
-          }
+          setLesson({ ...lesson });
         })
         .catch((err: string) => console.error(err));
-      return () => {
-        mounted = false;
-      };
     } else {
-      setLoaded(true);
+      setLesson({
+        ...newLesson,
+        createdByName: context.user?.name || "",
+      });
     }
-  }, []);
+  }, [context.user]);
 
   function isValidId(): boolean {
     return /^[a-z0-9-]+$/g.test(lesson.lessonId);
@@ -179,41 +170,39 @@ const LessonEdit = (props: {
 
   function isLessonValid(): boolean {
     return (
-      lesson &&
-      loaded &&
       isValidId() &&
       lesson.expectations.every((exp: LessonExpectation) => isExpValid(exp))
     );
   }
 
   function handleLessonNameChange(name: string): void {
-    setChange(true);
+    setEdited(true);
     setLesson({ ...lesson, name: name });
   }
 
   function handleLessonIdChange(lessonId: string): void {
-    setChange(true);
+    setEdited(true);
     setLesson({ ...lesson, lessonId: lessonId });
   }
 
   function handleIntroChange(intro: string): void {
-    setChange(true);
+    setEdited(true);
     setLesson({ ...lesson, intro: intro });
   }
 
   function handleQuestionChange(question: string): void {
-    setChange(true);
+    setEdited(true);
     setLesson({ ...lesson, question: question });
   }
 
   function handleImageChange(image: string): void {
-    setChange(true);
+    setEdited(true);
     setLesson({ ...lesson, image: image });
   }
 
   function handleExpectationsChange(exp: LessonExpectation[]): void {
     try {
-      setChange(true);
+      setEdited(true);
       setLesson({
         ...lesson,
         expectations: exp,
@@ -224,19 +213,15 @@ const LessonEdit = (props: {
   }
 
   function handleConclusionsChange(conclusions: string[]): void {
-    setChange(true);
+    setEdited(true);
     setLesson({
       ...lesson,
       conclusion: conclusions,
     });
   }
 
-  function handleSave() {
-    setSavePopUp(true);
-  }
-
-  function handleSavePopUp(): void {
-    setSavePopUp(false);
+  function handleSavePopUp(open: boolean): void {
+    setSavePopUp(open);
   }
 
   function handleSaveExit(): void {
@@ -246,20 +231,20 @@ const LessonEdit = (props: {
 
   function handleSaveContinue(): void {
     saveChanges();
-    handleSavePopUp();
+    handleSavePopUp(false);
   }
 
   function saveChanges(trained?: boolean): void {
     toast("Saving...");
-    const convertedLesson: any = { ...lesson, createdBy: lesson.createdBy.id };
+    const convertedLesson: any = { ...lesson };
+    if (!lessonId) {
+      convertedLesson.createdBy = context.user?.id;
+    }
     if (trained) {
       convertedLesson.lastTrainedAt = new Date();
     }
     const encodedLesson = encodeURI(JSON.stringify(convertedLesson));
-    let origId = lessonId;
-    if (lessonId === "new") {
-      origId = lesson.lessonId;
-    }
+    const origId = lessonId || lesson.lessonId;
     updateLesson(origId, encodedLesson)
       .then((lesson) => {
         if (lesson) {
@@ -279,7 +264,7 @@ const LessonEdit = (props: {
   function handleLaunch() {
     saveChanges();
     const host = process.env.TUTOR_ENDPOINT || location.origin;
-    const guest = context.user ? `&guest=${context.user.name}` : "";
+    const guest = `&guest=${context.user?.name}`;
     const path = `${host}/tutor?lesson=${lessonId}&admin=true${guest}`;
     window.location.href = path;
   }
@@ -308,6 +293,9 @@ const LessonEdit = (props: {
   }
 
   function handleTrain(): void {
+    if (!lesson) {
+      return;
+    }
     if (lesson.isTrainable) {
       trainLesson(lesson.lessonId)
         .then((trainJob) => {
@@ -358,6 +346,29 @@ const LessonEdit = (props: {
     setTrainPopUp(false);
   }
 
+  function canEdit() {
+    if (!lesson) {
+      return false;
+    }
+    if (!lessonId) {
+      return true;
+    }
+    if (!lesson.userPermissions) {
+      return false;
+    }
+    return lesson.userPermissions.edit;
+  }
+
+  if (!lesson) {
+    return <CircularProgress />;
+  }
+
+  if (!canEdit()) {
+    return (
+      <div>You do not have the permissions to edit or view this lesson</div>
+    );
+  }
+
   return (
     <div style={{ paddingTop: "20px" }}>
       <form className={classes.root} noValidate autoComplete="off">
@@ -406,7 +417,7 @@ const LessonEdit = (props: {
             InputLabelProps={{
               shrink: true,
             }}
-            value={lesson.createdBy ? lesson.createdBy.name : "Guest"}
+            value={lesson.createdByName || "Guest"}
             disabled={true}
             size="small"
           />
@@ -481,7 +492,6 @@ const LessonEdit = (props: {
         <Divider style={{ marginTop: 20 }} />
         <ExpectationsList
           classes={classes}
-          loaded={loaded}
           expectations={lesson.expectations}
           updateExpectations={handleExpectationsChange}
         />
@@ -561,19 +571,19 @@ const LessonEdit = (props: {
           variant="contained"
           color="primary"
           size="large"
-          disabled={lessonId === "new" || !isLessonValid()}
+          disabled={!lessonId || !isLessonValid()}
           onClick={handleLaunch}
         >
           Launch
         </Button>
-        {change ? (
+        {edited ? (
           <Button
             id="save-button"
             className={classes.button}
             variant="contained"
             color="primary"
             size="large"
-            onClick={handleSave}
+            onClick={() => handleSavePopUp(true)}
             disabled={!isLessonValid()}
           >
             Save
@@ -600,7 +610,7 @@ const LessonEdit = (props: {
           <DialogTitle> Training Failed</DialogTitle>
         ) : null}
       </Dialog>
-      <Dialog open={savePopUp} onClose={handleSavePopUp}>
+      <Dialog open={savePopUp} onClose={() => handleSavePopUp(false)}>
         <DialogTitle>Save</DialogTitle>
         <DialogActions>
           <Button
@@ -623,12 +633,12 @@ const LessonEdit = (props: {
 const EditPage = (props: { path: string; search: any }) => {
   const context = useContext(ToggleContext);
   const [cookies] = useCookies(["accessToken"]);
-  if (!cookies.accessToken) {
+  if (typeof window !== "undefined" && !cookies.accessToken) {
     navigate("/");
     return <div></div>;
   }
   if (!context.user) {
-    return <CircularProgress />
+    return <CircularProgress />;
   }
 
   return (

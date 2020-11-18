@@ -5,6 +5,7 @@ Permission to use, copy, modify, and distribute this software and its documentat
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
 import { TrainStatus, TrainState } from "../support/dtos";
+import { cySetup, cyLoginGoogle, cyMockGraphQL } from "../support/functions";
 
 const TRAIN_STATUS_URL = `/classifier/train/status/some-job-id`;
 
@@ -107,45 +108,37 @@ function mockTrainStatusSeq(
   };
 }
 
-describe("lesson screen - training", () => {
-  beforeEach(() => {
-    cy.server();
-    cy.route({
-      method: "POST",
-      url: "**/graphql",
-      status: 200,
-      response: {
-        data: {
-          lesson: {
-            lessonId: "lesson",
-            name: "lesson",
-            introduction: "introduction",
-            question: "question",
-            conclusion: ["conclusion"],
-            expectations: [
-              {
-                expectation: "expectation 1",
-                hints: [
-                  {
-                    text: "hint 1.1",
-                  },
-                ],
-                features: {},
-              },
-            ],
-            features: {},
-            isTrainable: true,
-            lastTrainedAt: "",
-          },
+function cyMockLesson(cy) {
+  cyMockGraphQL(cy, "lesson", {
+    lesson: {
+      lessonId: "lesson",
+      name: "lesson",
+      introduction: "introduction",
+      question: "question",
+      conclusion: ["conclusion"],
+      expectations: [
+        {
+          expectation: "expectation 1",
+          hints: [
+            {
+              text: "hint 1.1",
+            },
+          ],
+          features: {},
         },
-        errors: null,
+      ],
+      features: {},
+      isTrainable: true,
+      lastTrainedAt: "",
+      userPermissions: {
+        edit: true,
+        view: true,
       },
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    }
   });
+}
 
+describe("lesson screen - training", () => {
   [
     {
       pendingCount: 1,
@@ -184,6 +177,9 @@ describe("lesson screen - training", () => {
       } feedback on success when expectation accuracies ${JSON.stringify(
         ex.expectedAccuracies
       )}`, () => {
+        cySetup(cy);
+        cyLoginGoogle(cy);
+        cyMockLesson(cy);
         const waitTrainLesson = mockTrainLesson(cy);
         const waitComplete = mockTrainStatusSeq(cy, [
           { status: { state: TrainState.PENDING }, repeat: ex.pendingCount },
@@ -196,6 +192,8 @@ describe("lesson screen - training", () => {
           },
         ]);
         cy.visit("/lessons/edit?lessonId=lesson&trainStatusPollInterval=10");
+        cy.wait("@loginGoogle");
+        cy.wait("@lesson");
         cy.get("#train-button").trigger("mouseover").click();
         waitTrainLesson();
         waitComplete();
@@ -216,7 +214,12 @@ describe("lesson screen - training", () => {
   });
 
   it("train lesson fails for state FAILURE", () => {
+    cySetup(cy);
+    cyLoginGoogle(cy);
+    cyMockLesson(cy);
     cy.visit("/lessons/edit?lessonId=lesson&trainStatusPollInterval=10");
+    cy.wait("@loginGoogle");
+    cy.wait("@lesson");
     const waitTrainLesson = mockTrainLesson(cy);
     const waitComplete = mockTrainStatusSeq(cy, [
       { status: { state: TrainState.PENDING } },
@@ -234,7 +237,12 @@ describe("lesson screen - training", () => {
   });
 
   it("train lesson fails for http error on start", () => {
+    cySetup(cy);
+    cyLoginGoogle(cy);
+    cyMockLesson(cy);
     cy.visit("/lessons/edit?lessonId=lesson&trainStatusPollInterval=10");
+    cy.wait("@loginGoogle");
+    cy.wait("@lesson");
     const waitTrainLesson = mockTrainLesson(cy, { responseStatus: 500 });
     cy.get("#train-button").trigger("mouseover").click();
     waitTrainLesson();
@@ -242,7 +250,12 @@ describe("lesson screen - training", () => {
   });
 
   it("train lesson fails for http error on poll status", () => {
+    cySetup(cy);
+    cyLoginGoogle(cy);
+    cyMockLesson(cy);
     cy.visit("/lessons/edit?lessonId=lesson&trainStatusPollInterval=10");
+    cy.wait("@loginGoogle");
+    cy.wait("@lesson");
     const waitTrainLesson = mockTrainLesson(cy);
     const waitComplete = mockTrainStatusSeq(cy, [
       { status: { state: TrainState.PENDING } },

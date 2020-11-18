@@ -87,7 +87,7 @@ const columns: ColumnDef[] = [
     sortable: true,
   },
   {
-    id: "createdBy",
+    id: "createdByName",
     label: "Created By",
     minWidth: 200,
     align: "center",
@@ -113,7 +113,7 @@ const TableFooter = (props: {
   const context = useContext(ToggleContext);
 
   function onCreate() {
-    navigate(withPrefix("/lessons/edit?lessonId=new"));
+    navigate(withPrefix("/lessons/edit"));
   }
 
   return (
@@ -125,21 +125,19 @@ const TableFooter = (props: {
         <IconButton id="next-page" disabled={!hasNext} onClick={onNext}>
           <KeyboardArrowRightIcon />
         </IconButton>
-        {!context.user ? undefined : (
-          <FormGroup>
-            <FormControlLabel
-              control={
-                <Switch
-                  id="toggle-creator"
-                  checked={context.onlyCreator}
-                  onChange={context.toggleCreator}
-                  aria-label="switch"
-                />
-              }
-              label={"Only Mine"}
-            />
-          </FormGroup>
-        )}
+        <FormGroup>
+          <FormControlLabel
+            control={
+              <Switch
+                id="toggle-creator"
+                checked={context.onlyCreator}
+                onChange={context.toggleCreator}
+                aria-label="switch"
+              />
+            }
+            label={"Only Mine"}
+          />
+        </FormGroup>
         <Fab
           id="create-button"
           variant="extended"
@@ -166,9 +164,16 @@ const LessonItem = (props: {
   const deleteMenuOpen = Boolean(anchorEl);
   const context = useContext(ToggleContext);
 
+  function canEdit() {
+    if (!row.node.userPermissions) {
+      return false;
+    }
+    return row.node.userPermissions.edit;
+  }
+
   function launchLesson(id: string) {
     const host = process.env.TUTOR_ENDPOINT || location.origin;
-    const guest = context.user ? `&guest=${context.user.name}` : "";
+    const guest = `&guest=${context.user?.name}`;
     const path = `${host}/tutor?lesson=${id}&admin=true${guest}`;
     window.location.href = path;
   }
@@ -201,9 +206,13 @@ const LessonItem = (props: {
   return (
     <TableRow id={`lesson-${i}`} hover role="checkbox" tabIndex={-1}>
       <TableCell id="name" align="left">
-        <Link to={withPrefix(`/lessons/edit?lessonId=${row.node.lessonId}`)}>
-          {row.node.name ? row.node.name : "No Lesson Name"}
-        </Link>
+        {canEdit() ? (
+          <Link to={withPrefix(`/lessons/edit?lessonId=${row.node.lessonId}`)}>
+            {row.node.name || "No Lesson Name"}
+          </Link>
+        ) : (
+          row.node.name || "No Lesson Name"
+        )}
       </TableCell>
       <TableCell id="launch" align="left">
         <IconButton onClick={() => launchLesson(row.node.lessonId)}>
@@ -215,6 +224,7 @@ const LessonItem = (props: {
           onClick={() => {
             handleGrade();
           }}
+          disabled={!canEdit()}
         >
           <AssignmentIcon />
         </IconButton>
@@ -223,10 +233,10 @@ const LessonItem = (props: {
         {row.node.updatedAt ? row.node.updatedAt.toLocaleString() : ""}
       </TableCell>
       <TableCell id="creator" align="center">
-        {row.node.createdBy?.name}
+        {row.node.createdByName}
       </TableCell>
       <TableCell id="delete" align="center">
-        <IconButton onClick={handleDelete}>
+        <IconButton onClick={handleDelete} disabled={!canEdit()}>
           <DeleteIcon />
         </IconButton>
       </TableCell>
@@ -286,7 +296,7 @@ const LessonsTable = (props: { location: any }) => {
   React.useEffect(() => {
     const filter: any = {};
     if (context.onlyCreator) {
-      filter["createdBy"] = context.user ? `${context.user.id}` : "";
+      filter["createdBy"] = `${context.user?.id}`;
     }
     let mounted = true;
     fetchLessons(filter, rowsPerPage, cursor, sortBy, sortAsc)
@@ -353,12 +363,12 @@ const LessonsTable = (props: { location: any }) => {
 const LessonsPage = (props: { location: any; path: string; children: any }) => {
   const context = useContext(ToggleContext);
   const [cookies] = useCookies(["accessToken"]);
-  if (!cookies.accessToken) {
+  if (typeof window !== "undefined" && !cookies.accessToken) {
     navigate("/");
     return <div></div>;
   }
   if (!context.user) {
-    return <CircularProgress />
+    return <CircularProgress />;
   }
 
   return (

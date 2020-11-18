@@ -4,39 +4,45 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
+import { cySetup, cyLoginGoogle, cyMockGraphQL } from "../support/functions";
 
-describe("lesson screen", () => {
-  beforeEach(() => {
-    cy.server();
-    cy.route("**/config", { GOOGLE_CLIENT_ID: "test" });
-    cy.route({
-      method: "POST",
-      url: "**/graphql",
-      status: 200,
-      response: {
-        data: {
-          login: {
-            name: "Kayla",
-            email: "kayla@opentutor.com"
+function cyMockLesson(cy) {
+  cyMockGraphQL(cy, "lesson", {
+    lesson: {
+      lessonId: "q1",
+      name: "lesson",
+      intro: "introduction",
+      question: "question",
+      image: null,
+      conclusion: ["conclusion"],
+      expectations: [
+        {
+          expectation: "expectation 1",
+          hints: [
+            {
+              text: "hint 1.1",
+            },
+          ],
+          features: {
+            bad: ["bad1", "bad2"],
           },
         },
-        errors: null,
+      ],
+      createdByName: 'OpenTutor',
+      userPermissions: {
+        edit: true,
+        view: true,
       },
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }).as("login");
-    cy.route({
-      url:
-        "https://cdn.jpegmini.com/user/images/slider_puffin_before_mobile.jpg",
-      response: "fixtures:image.jpg,binary",
-    });
-    cy.visit("/lessons/edit?lessonId=new");
-    cy.setCookie("accessToken", "accessToken");
-    cy.wait("@login");
+    }
   });
+}
 
+describe("lesson screen", () => {
   it("new lesson has default values", () => {
+    cySetup(cy);
+    cyLoginGoogle(cy);
+    cy.visit("/lessons/edit");
+    cy.wait("@loginGoogle");
     cy.get("#lesson-name").should("have.value", "Display name for the lesson");
     cy.get("#lesson-creator").should("have.value", "Kayla");
     cy.get("#intro").should(
@@ -68,6 +74,10 @@ describe("lesson screen", () => {
   });
 
   it("edits a new lesson", () => {
+    cySetup(cy);
+    cyLoginGoogle(cy);
+    cy.visit("/lessons/edit");
+    cy.wait("@loginGoogle");
     cy.get("#lesson-name").fill("Review Diode Current Flow");
     cy.get("#lesson-id").fill("review-diode-current-flow");
     cy.get("#intro").fill(
@@ -117,46 +127,134 @@ describe("lesson screen", () => {
     );
   });
 
-  it("validates lessonId", () => {
-    cy.route({
-      method: "POST",
-      url: "**/graphql",
-      status: 200,
-      response: {
-        data: {
-          lesson: {
-            lessonId: "lesson",
-            name: "lesson",
-            introduction: "introduction",
-            question: "question",
-            image: null,
-            conclusion: ["conclusion"],
-            expectations: [
-              {
-                expectation: "expectation 1",
-                hints: [
-                  {
-                    text: "hint 1.1",
-                  },
-                ],
-                features: {
-                  bad: ["bad1", "bad2"],
-                },
-              },
-            ],
-            features: null,
-            isTrainable: true,
-            lastTrainedAt: "",
-          },
-        },
-        errors: null,
-      },
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    cy.visit("/lessons/edit?lessonId=q1");
+  it("launch lesson disabled if new lesson", () => {
+    cySetup(cy);
+    cyLoginGoogle(cy);
+    cy.visit("/lessons/edit");
+    cy.wait("@loginGoogle");
+    cy.get("#launch-button").should("be.disabled");
+  });
 
+  it("can expand and collapse an expectation", () => {
+    cySetup(cy);
+    cyLoginGoogle(cy);
+    cy.visit("/lessons/edit");
+    cy.wait("@loginGoogle");
+    // expectation is expanded by default
+    cy.get("#expectation-0 #edit-expectation");
+    cy.get("#expectation-0 #hints");
+    cy.get("#hint-0 #edit-hint");
+    // collapsing an expectation hides hints
+    cy.get("#expectation-0 #expand").trigger('mouseover').click();
+    cy.get("#expectation-0 #edit-expectation");
+    cy.get("#expectation-0 #hints").should("not.exist");
+    // expanding an expectation reveals hints
+    cy.get("#expectation-0 #expand").trigger('mouseover').click();
+    cy.get("#expectation-0 #edit-expectation");
+    cy.get("#expectation-0 #hints");
+    cy.get("#hint-0 #edit-hint");
+  });
+
+  it("adds and deletes an expectation", () => {
+    cySetup(cy);
+    cyLoginGoogle(cy);
+    cy.visit("/lessons/edit");
+    cy.wait("@loginGoogle");
+    // must have at least 1 expectation
+    cy.get("#expectations").children().should("have.length", 1);
+    cy.get("#expectation-0 #delete").should("not.exist");
+    // add and delete
+    cy.get("#add-expectation").trigger('mouseover').click();
+    cy.get("#expectations").children().should("have.length", 2);
+    cy.get("#expectation-0 #delete").trigger('mouseover').click();
+    cy.get("#expectations").children().should("have.length", 1);
+  });
+
+  it("adds and deletes a hint", () => {
+    cySetup(cy);
+    cyLoginGoogle(cy);
+    cy.visit("/lessons/edit");
+    cy.wait("@loginGoogle");
+    // must have at least 1 hint
+    cy.get("#hints").children().should("have.length", 1);
+    cy.get("#hint-0 #delete").should("not.exist");
+    // add and delete
+    cy.get("#add-hint").trigger('mouseover').click();
+    cy.get("#hints").children().should("have.length", 2);
+    cy.get("#hint-0 #delete").trigger('mouseover').click();
+    cy.get("#hints").children().should("have.length", 1);
+  });
+
+  it("adds and deletes a conclusion", () => {
+    cySetup(cy);
+    cyLoginGoogle(cy);
+    cy.visit("/lessons/edit");
+    cy.wait("@loginGoogle");
+    // must have at least 1 conclusion
+    cy.get("#conclusions").children().should("have.length", 1);
+    cy.get("#conclusion-0 #delete").should("not.exist");
+    // add and delete
+    cy.get("#add-conclusion").trigger('mouseover').click();
+    cy.get("#conclusions").children().should("have.length", 2);
+    cy.get("#conclusion-0 #delete").trigger('mouseover').click();
+    cy.get("#conclusions").children().should("have.length", 1);
+  });
+
+  it("loads a lesson", () => {
+    cySetup(cy);
+    cyLoginGoogle(cy);
+    cyMockLesson(cy);
+    cy.visit("/lessons/edit?lessonId=q1");
+    cy.wait("@loginGoogle");
+    cy.wait("@lesson");
+    cy.get("#lesson-id").should("have.value", "q1");
+    cy.get("#lesson-name").should("have.value", "lesson");
+    cy.get("#lesson-creator").should("have.value", "OpenTutor");
+    cy.get("#intro").should(
+      "have.value",
+      "introduction"
+    );
+    cy.get("#question").should(
+      "have.value",
+      "question"
+    );
+    cy.get("#image").should("have.value", "");
+    cy.get("#expectations").children().should("have.length", 1);
+    cy.get("#expectation-0 #edit-expectation").should(
+      "have.value",
+      "expectation 1"
+    );
+    cy.get("#expectation-0 .jsoneditor").contains("bad1");
+    cy.get("#expectation-0 .jsoneditor").contains("bad2");
+    cy.get("#expectation-0 #hints").children().should("have.length", 1);
+    cy.get("#hint-0 #edit-hint").should(
+      "have.value",
+      "hint 1.1"
+    );
+    cy.get("#conclusions").children().should("have.length", 1);
+    cy.get("#conclusion-0 #edit-conclusion").should(
+      "have.value",
+      "conclusion"
+    );
+  });
+
+  it("save button by default not visible", () => {
+    cySetup(cy);
+    cyLoginGoogle(cy);
+    cyMockLesson(cy);
+    cy.visit("/lessons/edit?lessonId=q1");
+    cy.wait("@loginGoogle");
+    cy.wait("@lesson");
+    cy.get("#save-button").should("not.visible");
+  });
+
+  it("validates lessonId", () => {
+    cySetup(cy);
+    cyLoginGoogle(cy);
+    cyMockLesson(cy);
+    cy.visit("/lessons/edit?lessonId=q1");
+    cy.wait("@loginGoogle");
+    cy.wait("@lesson");
     // no capitals
     cy.get("#lesson-id").clear().type("A");
     cy.get("#save-button").should("be.disabled");
@@ -171,124 +269,73 @@ describe("lesson screen", () => {
     cy.get("#launch-button").should("not.be.disabled");
   });
 
-  // it("launches lesson", () => {
-  //   cy.visit("/lessons/edit?lessonId=q1");
-  //   cy.setCookie("accessToken", "accessToken");
-  //   cy.wait("@login");
-  //   cy.route({
-  //     method: "POST",
-  //     url: "**/graphql",
-  //     status: 200,
-  //     response: {
-  //       data: {
-  //         lesson: {
-  //           lessonId: "lesson",
-  //           name: "lesson",
-  //           introduction: "introduction",
-  //           question: "question",
-  //           image: null,
-  //           conclusion: ["conclusion"],
-  //           expectations: [
-  //             {
-  //               expectation: "expectation 1",
-  //               hints: [
-  //                 {
-  //                   text: "hint 1.1",
-  //                 },
-  //               ],
-  //               features: {
-  //                 bad: ["bad1", "bad2"],
-  //               },
-  //             },
-  //           ],
-  //           features: null,
-  //           isTrainable: true,
-  //           lastTrainedAt: "",
-  //         },
-  //       },
-  //       errors: null,
-  //     },
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //     },
-  //   });
+  it("launches lesson", () => {
+    cySetup(cy);
+    cyLoginGoogle(cy);
+    cyMockLesson(cy);
+    cy.visit("/lessons/edit?lessonId=q1");
+    cy.wait("@loginGoogle");
+    cy.wait("@lesson");
+    cy.get("#launch-button").trigger('mouseover').click();
+    cy.location("pathname").should("eq", "/tutor");
+  });
 
-  //   cy.get("#launch-button").click();
-  //   cy.location("pathname").should("eq", "/tutor");
-  // });
+  it("making an edit toggles save button visible", () => {
+    cySetup(cy);
+    cyLoginGoogle(cy);
+    cyMockLesson(cy);
+    cy.visit("/lessons/edit?lessonId=q1");
+    cy.wait("@loginGoogle");
+    cy.wait("@lesson");
+    cy.get("#lesson-name").clear().type("{backspace}");
+    cy.get("#save-button").should("be.visible");
+  });
 
-  // it("launch lesson disabled if new lesson", () => {
-  //   cy.visit("/lessons/edit?lessonId=new");
-  //   cy.get("#launch-button").should("be.disabled");
-  // });
+  it("makes an edit and clicks on save", () => {
+    cySetup(cy);
+    cyLoginGoogle(cy);
+    cyMockLesson(cy);
+    cy.visit("/lessons/edit?lessonId=q1");
+    cy.wait("@loginGoogle");
+    cy.wait("@lesson");
+    cy.get("#lesson-name").clear().type("{backspace}");
+    cy.get("#save-button").trigger('mouseover').click();
+  });
 
-  // it("can expand and collapse an expectation", () => {
-  //   cy.visit("/lessons/edit?lessonId=new");
-  //   // expectation is expanded by default
-  //   cy.get("#expectation-0 #edit-expectation");
-  //   cy.get("#expectation-0 #hints");
-  //   cy.get("#hint-0 #edit-hint");
-  //   // collapsing an expectation hides hints
-  //   cy.get("#expectation-0 #expand").click();
-  //   cy.get("#expectation-0 #edit-expectation");
-  //   cy.get("#expectation-0 #hints").should("not.exist");
-  //   // expanding an expectation reveals hints
-  //   cy.get("#expectation-0 #expand").click();
-  //   cy.get("#expectation-0 #edit-expectation");
-  //   cy.get("#expectation-0 #hints");
-  //   cy.get("#hint-0 #edit-hint");
-  // });
-
-  // it("adds and deletes an expectation", () => {
-  //   cy.visit("/lessons/edit?lessonId=new");
-  //   // must have at least 1 expectation
-  //   cy.get("#expectations").children().should("have.length", 1);
-  //   cy.get("#expectation-0 #delete").should("not.exist");
-  //   // add and delete
-  //   cy.get("#add-expectation").click();
-  //   cy.get("#expectations").children().should("have.length", 2);
-  //   cy.get("#expectation-0 #delete").click();
-  //   cy.get("#expectations").children().should("have.length", 1);
-  // });
-
-  // it("adds and deletes a hint", () => {
-  //   cy.visit("/lessons/edit?lessonId=new");
-  //   // must have at least 1 hint
-  //   cy.get("#hints").children().should("have.length", 1);
-  //   cy.get("#hint-0 #delete").should("not.exist");
-  //   // add and delete
-  //   cy.get("#add-hint").click();
-  //   cy.get("#hints").children().should("have.length", 2);
-  //   cy.get("#hint-0 #delete").click();
-  //   cy.get("#hints").children().should("have.length", 1);
-  // });
-
-  // it("adds and deletes a conclusion", () => {
-  //   cy.visit("/lessons/edit?lessonId=new");
-  //   // must have at least 1 conclusion
-  //   cy.get("#conclusions").children().should("have.length", 1);
-  //   cy.get("#conclusion-0 #delete").should("not.exist");
-  //   // add and delete
-  //   cy.get("#add-conclusion").click();
-  //   cy.get("#conclusions").children().should("have.length", 2);
-  //   cy.get("#conclusion-0 #delete").click();
-  //   cy.get("#conclusions").children().should("have.length", 1);
-  // });
-
-  // it("save button by default not visible", () => {
-  //   cy.visit("/lessons/edit?lessonId=lesson");
-  //   cy.get("#save-button").should("not.visible");
-  // });
-
-  // it("making an edit toggles save button visable", () => {
-  //   cy.visit("/lessons/edit?lessonId=lesson");
-  //   cy.get("#lesson-name").clear().type("{backspace}");
-  //   cy.get("#save-button").should("be.visible");
-  // });
-
-  // it("makes an edit and clicks on save", () => {
-  //   cy.visit("/lessons/edit?lessonId=lesson");
-  //   cy.get("#lesson-name").clear().type("{backspace}");
-  //   cy.get("#save-button").click();
-  // });
+  it("hides if user does not have permission to edit", () => {
+    cySetup(cy);
+    cyLoginGoogle(cy);
+    cyMockGraphQL(cy, "lesson", {
+      lesson: {
+        lessonId: "q1",
+        name: "lesson",
+        introduction: "introduction",
+        question: "question",
+        image: null,
+        conclusion: ["conclusion"],
+        expectations: [
+          {
+            expectation: "expectation 1",
+            hints: [
+              {
+                text: "hint 1.1",
+              },
+            ],
+            features: {
+              bad: ["bad1", "bad2"],
+            },
+          },
+        ],
+        createdByName: 'Kayla',
+        userPermissions: {
+          edit: false,
+          view: false,
+        },
+      }
+    });
+    cy.visit("/lessons/edit?lessonId=q1");
+    cy.wait("@loginGoogle");
+    cy.wait("@lesson");
+    cy.contains("You do not have the permissions to edit or view this lesson");
+  });
 });

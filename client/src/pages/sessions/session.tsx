@@ -1,5 +1,6 @@
 import { withPrefix } from "gatsby";
 import React, { useContext } from "react";
+import { useCookies } from "react-cookie";
 import { navigate } from "@reach/router";
 import { makeStyles } from "@material-ui/core/styles";
 import {
@@ -15,6 +16,7 @@ import {
   Typography,
   Button,
   IconButton,
+  CircularProgress,
 } from "@material-ui/core";
 import EditIcon from "@material-ui/icons/Edit";
 import withLocation from "wrap-with-location";
@@ -42,8 +44,8 @@ const SessionTable = ({ search }: { search: any }) => {
   const handleGradeExpectationChange = (
     event: React.ChangeEvent<{ value: unknown; name?: unknown }>
   ): void => {
-    const indeces = event.target.name as string;
-    const indexSplit = indeces.split(" ");
+    const indices = event.target.name as string;
+    const indexSplit = indices.split(" ");
 
     setGrade(
       sessionId,
@@ -82,24 +84,31 @@ const SessionTable = ({ search }: { search: any }) => {
     };
   }, []);
 
+  function canEdit() {
+    if (!session || !session.lesson || !session.lesson.userPermissions) {
+      return false;
+    }
+    return session.lesson.userPermissions.edit;
+  }
+
+  if (!session) {
+    return <CircularProgress />;
+  }
+
+  if (!canEdit()) {
+    return <div>You do not have the permissions to grade this session</div>;
+  }
+
   return (
     <Paper className={classes.root}>
-      <div id="lesson">
-        {session && session.lesson && session.lesson.name
-          ? session.lesson.name
-          : "No Lesson Name"}
-      </div>
-      <div id="username">
-        {session && session.username ? session.username : "Guest"}
-      </div>
+      <div id="lesson">{session.lesson?.name || "No Lesson Name"}</div>
+      <div id="username">{session.username || "Guest"}</div>
       <div id="date">{date ? date : ""}</div>
-      <div id="question"> {session ? session.question.text : ""} </div>
+      <div id="question"> {session.question?.text || ""} </div>
       <div id="score">
         Score:{" "}
-        {session
-          ? session.graderGrade || session.graderGrade !== null
-            ? Math.trunc(session.graderGrade * 100)
-            : "?"
+        {session.graderGrade || session.graderGrade !== null
+          ? Math.trunc(session.graderGrade * 100)
           : "?"}
       </div>
       <TableContainer className={classes.container}>
@@ -109,7 +118,7 @@ const SessionTable = ({ search }: { search: any }) => {
               <TableCell align="center" style={{ width: 100 }}>
                 User Answer
               </TableCell>
-              {session?.question?.expectations.map((column, i: number) => (
+              {session.question?.expectations.map((column, i: number) => (
                 <TableCell
                   key={`expectation-${i}`}
                   id={`expectation-${i}`}
@@ -226,9 +235,13 @@ const SessionTable = ({ search }: { search: any }) => {
 
 const SessionPage = ({ path, search }: { path: string; search: any }) => {
   const context = useContext(ToggleContext);
-  if (!context.user) {
+  const [cookies] = useCookies(["accessToken"]);
+  if (typeof window !== "undefined" && !cookies.accessToken) {
     navigate("/");
     return <div></div>;
+  }
+  if (!context.user) {
+    return <CircularProgress />;
   }
 
   return (

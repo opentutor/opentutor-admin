@@ -6,7 +6,7 @@ The full terms of this copyright and license should always be found in the root 
 */
 import React from "react";
 import { useCookies } from "react-cookie";
-import { login } from "api";
+import { loginGoogle } from "api";
 import { User } from "types";
 
 type ContextType = {
@@ -37,7 +37,7 @@ const ToggleProvider = (props: { children: any }) => {
 
   React.useEffect(() => {
     if (cookies.accessToken) {
-      login(cookies.accessToken).then((user: User) => {
+      loginGoogle(cookies.accessToken).then((user: User) => {
         setUser(user);
       });
     } else {

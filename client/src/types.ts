@@ -71,7 +71,6 @@ export interface SetGrade {
 }
 
 export interface Lesson {
-  id: string;
   lessonId: string;
   name: string;
   intro: string;
@@ -82,14 +81,16 @@ export interface Lesson {
   lastTrainedAt: string;
   features: any;
   isTrainable: boolean;
-  createdBy: User;
-  contentManagers: [User];
-  editors: [User];
-  isPrivate: boolean;
-  isTemplate: boolean;
+  createdByName: string;
+  userPermissions: UserPermission;
   createdAt: string;
   updatedAt: string;
   deleted: boolean;
+}
+
+export interface UserPermission {
+  view: boolean;
+  edit: boolean;
 }
 
 export interface LessonExpectation {
@@ -156,9 +157,8 @@ export interface TrainingInfo {
 export interface User {
   id: string;
   name: string;
-  email: string;
 }
 
 export interface Login {
-  login: User;
+  loginGoogle: User;
 }

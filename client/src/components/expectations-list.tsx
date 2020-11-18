@@ -38,7 +38,6 @@ import "jsoneditor-react/es/editor.min.css";
 
 const ExpectationCard = (props: {
   classes: any;
-  loaded: boolean;
   expectation: LessonExpectation;
   expIdx: number;
   canDelete: boolean;
@@ -49,7 +48,6 @@ const ExpectationCard = (props: {
 }) => {
   const {
     classes,
-    loaded,
     expectation,
     expIdx,
     canDelete,
@@ -64,16 +62,13 @@ const ExpectationCard = (props: {
   const ajv = new Ajv({ allErrors: true, verbose: true });
   let features = {};
   React.useEffect(() => {
-    if (!loaded) {
-      return;
-    }
     features = expectation.features || { bad: [], good: [] };
     if (editorRef && editorRef.current) {
       editorRef?.current.jsonEditor.set(features);
       editorRef?.current.jsonEditor.expandAll();
       editorRef?.current.jsonEditor.focus();
     }
-  }, [expanded, loaded]);
+  }, [expanded]);
 
   function JSONEditor(): any {
     if (typeof window === "undefined") {
@@ -167,11 +162,10 @@ const ExpectationCard = (props: {
 
 const ExpectationsList = (props: {
   classes: any;
-  loaded: boolean;
   expectations: LessonExpectation[];
   updateExpectations: (val: LessonExpectation[]) => void;
 }) => {
-  const { classes, loaded, expectations, updateExpectations } = props;
+  const { classes, expectations, updateExpectations } = props;
 
   function replaceItem<T>(a: Array<T>, index: number, item: T): Array<T> {
     const newArr = [...a];
@@ -268,7 +262,6 @@ const ExpectationsList = (props: {
                     >
                       <ExpectationCard
                         classes={classes}
-                        loaded={loaded}
                         expectation={exp}
                         expIdx={i}
                         canDelete={expectations.length > 1}
