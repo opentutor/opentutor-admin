@@ -4,12 +4,14 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import { cySetup, cyLoginGoogle } from "../support/functions";
+import { cySetup, cyLoginGoogle, cyMockGraphQL } from "../support/functions";
 
 describe("Navigation bar", () => {
   it("shows page title", () => {
     cySetup(cy);
-    cyLoginGoogle(cy);
+    cyMockGraphQL(cy, {
+      mocks: [cyLoginGoogle(cy)],
+    });
     cy.visit("/");
     cy.wait("@loginGoogle");
     cy.get("#nav-bar").get("#title").contains("Lessons");
@@ -23,7 +25,9 @@ describe("Navigation bar", () => {
 
   it("opens drawer menu", () => {
     cySetup(cy);
-    cyLoginGoogle(cy);
+    cyMockGraphQL(cy, {
+      mocks: [cyLoginGoogle(cy)],
+    });
     cy.visit("/");
     cy.wait("@loginGoogle");
     cy.get("#drawer").should("not.exist");
@@ -33,7 +37,9 @@ describe("Navigation bar", () => {
 
   it("navigates with menu", () => {
     cySetup(cy);
-    cyLoginGoogle(cy);
+    cyMockGraphQL(cy, {
+      mocks: [cyLoginGoogle(cy)],
+    });
     cy.visit("/");
     cy.wait("@loginGoogle");
     cy.get("#nav-bar").get("#menu-button").trigger('mouseover').click();

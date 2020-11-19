@@ -3,30 +3,6 @@ export function cySetup(cy) {
   cy.viewport(1280, 720);
 }
 
-export function cyMockGraphQL(cy, query, data) {
-  cy.route2(
-    {
-      method: "POST",
-      url: "**/graphql",
-    },
-    (req) => {
-      const g = JSON.parse(req.body);
-      const q = g.query.replace(/\s+/g, " ").replace("\n", "").trim();
-      if (q.indexOf(`{ ${query}`) !== -1) {
-        req.reply({
-          body: {
-            data: data,
-            errors: null,
-          },
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-      }
-    }
-  ).as(query);
-}
-
 export interface MockGraphQLQuery {
   (req: any, grapqlBody: any): void;
 }
@@ -54,7 +30,7 @@ export function cyMockByQueryName(query: string, data: any): MockGraphQLQuery {
   };
 }
 
-export function cyMockGraphQL2(cy, args: MockGraphQLArgs): void {
+export function cyMockGraphQL(cy, args: MockGraphQLArgs): void {
   const r = cy.route2(
     {
       method: "POST",
@@ -72,22 +48,12 @@ export function cyMockGraphQL2(cy, args: MockGraphQLArgs): void {
   }
 }
 
-export function cyLoginGoogle(cy) {
-  cyMockGraphQL(cy, "loginGoogle", {
-    loginGoogle: {
-      name: "Kayla",
-      email: "kayla@opentutor.com",
-    },
-  });
-  cy.route("**/config", { GOOGLE_CLIENT_ID: "test" });
-  cy.setCookie("accessToken", "accessToken");
-}
-
-export function cyLoginGoogle2(cy): MockGraphQLQuery {
+export function cyLoginGoogle(cy): MockGraphQLQuery {
   cy.route("**/config", { GOOGLE_CLIENT_ID: "test" });
   cy.setCookie("accessToken", "accessToken");
   return cyMockByQueryName("loginGoogle", {
     loginGoogle: {
+      id: "kayla",
       name: "Kayla",
       email: "kayla@opentutor.com",
     },

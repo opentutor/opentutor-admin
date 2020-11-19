@@ -5,7 +5,7 @@ Permission to use, copy, modify, and distribute this software and its documentat
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
 import { TrainStatus, TrainState } from "../support/dtos";
-import { cySetup, cyLoginGoogle, cyMockGraphQL } from "../support/functions";
+import { cySetup, cyLoginGoogle, cyMockGraphQL, MockGraphQLQuery, cyMockByQueryName } from "../support/functions";
 
 const TRAIN_STATUS_URL = `/classifier/train/status/some-job-id`;
 
@@ -108,8 +108,8 @@ function mockTrainStatusSeq(
   };
 }
 
-function cyMockLesson(cy) {
-  cyMockGraphQL(cy, "lesson", {
+function cyMockLesson(): MockGraphQLQuery {
+  return cyMockByQueryName("lesson", {
     lesson: {
       lessonId: "lesson",
       name: "lesson",
@@ -178,8 +178,9 @@ describe("lesson screen - training", () => {
         ex.expectedAccuracies
       )}`, () => {
         cySetup(cy);
-        cyLoginGoogle(cy);
-        cyMockLesson(cy);
+        cyMockGraphQL(cy, {
+          mocks: [cyLoginGoogle(cy), cyMockLesson()],
+        });
         const waitTrainLesson = mockTrainLesson(cy);
         const waitComplete = mockTrainStatusSeq(cy, [
           { status: { state: TrainState.PENDING }, repeat: ex.pendingCount },
@@ -215,8 +216,9 @@ describe("lesson screen - training", () => {
 
   it("train lesson fails for state FAILURE", () => {
     cySetup(cy);
-    cyLoginGoogle(cy);
-    cyMockLesson(cy);
+    cyMockGraphQL(cy, {
+      mocks: [cyLoginGoogle(cy), cyMockLesson()],
+    });
     cy.visit("/lessons/edit?lessonId=lesson&trainStatusPollInterval=10");
     cy.wait("@loginGoogle");
     cy.wait("@lesson");
@@ -238,8 +240,9 @@ describe("lesson screen - training", () => {
 
   it("train lesson fails for http error on start", () => {
     cySetup(cy);
-    cyLoginGoogle(cy);
-    cyMockLesson(cy);
+    cyMockGraphQL(cy, {
+      mocks: [cyLoginGoogle(cy), cyMockLesson()],
+    });
     cy.visit("/lessons/edit?lessonId=lesson&trainStatusPollInterval=10");
     cy.wait("@loginGoogle");
     cy.wait("@lesson");
@@ -251,8 +254,9 @@ describe("lesson screen - training", () => {
 
   it("train lesson fails for http error on poll status", () => {
     cySetup(cy);
-    cyLoginGoogle(cy);
-    cyMockLesson(cy);
+    cyMockGraphQL(cy, {
+      mocks: [cyLoginGoogle(cy), cyMockLesson()],
+    });
     cy.visit("/lessons/edit?lessonId=lesson&trainStatusPollInterval=10");
     cy.wait("@loginGoogle");
     cy.wait("@lesson");

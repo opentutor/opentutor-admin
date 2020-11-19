@@ -4,14 +4,10 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import {
-  cySetup,
-  cyLoginGoogle,
-  cyMockGraphQL
-} from "../support/functions";
+import { cySetup, cyLoginGoogle, cyMockGraphQL, MockGraphQLQuery, cyMockByQueryName } from "../support/functions";
 
-function cyMockSessions(cy) {
-  cyMockGraphQL(cy, "sessions", {
+function cyMockSessions(): MockGraphQLQuery {
+  return cyMockByQueryName("sessions", {
     sessions: {
       edges: [
         {
@@ -61,12 +57,12 @@ function cyMockSessions(cy) {
   });
 }
 
-
 describe("sessions screen", () => {
   it("displays session table with headers", () => {
     cySetup(cy);
-    cyLoginGoogle(cy);
-    cyMockSessions(cy);
+    cyMockGraphQL(cy, {
+      mocks: [cyLoginGoogle(cy), cyMockSessions()],
+    });
     cy.visit("/sessions");
     cy.wait("@loginGoogle");
     cy.wait("@sessions");
@@ -82,8 +78,9 @@ describe("sessions screen", () => {
 
   it("displays a list of sessions", () => {
     cySetup(cy);
-    cyLoginGoogle(cy);
-    cyMockSessions(cy);
+    cyMockGraphQL(cy, {
+      mocks: [cyLoginGoogle(cy), cyMockSessions()],
+    });
     cy.visit("/sessions");
     cy.wait("@loginGoogle");
     cy.wait("@sessions");
@@ -103,8 +100,9 @@ describe("sessions screen", () => {
 
   it("opens edit for a session", () => {
     cySetup(cy);
-    cyLoginGoogle(cy);
-    cyMockSessions(cy);
+    cyMockGraphQL(cy, {
+      mocks: [cyLoginGoogle(cy), cyMockSessions()],
+    });
     cy.visit("/sessions");
     cy.wait("@loginGoogle");
     cy.wait("@sessions");
@@ -115,8 +113,9 @@ describe("sessions screen", () => {
 
   it("opens grade for a session", () => {
     cySetup(cy);
-    cyLoginGoogle(cy);
-    cyMockSessions(cy);
+    cyMockGraphQL(cy, {
+      mocks: [cyLoginGoogle(cy), cyMockSessions()],
+    });
     cy.visit("/sessions");
     cy.wait("@loginGoogle");
     cy.wait("@sessions");
@@ -127,8 +126,9 @@ describe("sessions screen", () => {
 
   it("displays an option to view already graded sessions", () => {
     cySetup(cy);
-    cyLoginGoogle(cy);
-    cyMockSessions(cy);
+    cyMockGraphQL(cy, {
+      mocks: [cyLoginGoogle(cy), cyMockSessions()],
+    });
     cy.visit("/sessions");
     cy.wait("@loginGoogle");
     cy.wait("@sessions");

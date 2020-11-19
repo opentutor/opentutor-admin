@@ -4,7 +4,7 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import { cySetup, cyLoginGoogle, cyMockGraphQL } from "../support/functions";
+import { cySetup, cyLoginGoogle, cyMockGraphQL, cyMockByQueryName } from "../support/functions";
 
 function snapname(n) {
   return `screenshots-lesson-list-${n}`;
@@ -13,32 +13,33 @@ function snapname(n) {
 describe("screenshots - lesson list", () => {
   it("displays a list of lessons", () => {
     cySetup(cy);
-    cyLoginGoogle(cy);
-    cyMockGraphQL(cy, "lessons", {
-      lessons: {
-        edges: [
-          {
-            cursor: "cursor 1",
-            node: {
-              lessonId: "lesson1",
-              name: "lesson 1",
-              updatedAt: "1/1/20000, 12:00:00 AM",
+    cyMockGraphQL(cy, {
+      mocks: [cyLoginGoogle(cy), cyMockByQueryName("lessons", {
+        lessons: {
+          edges: [
+            {
+              cursor: "cursor 1",
+              node: {
+                lessonId: "lesson1",
+                name: "lesson 1",
+                updatedAt: "1/1/20000, 12:00:00 AM",
+              },
             },
-          },
-          {
-            cursor: "cursor 2",
-            node: {
-              lessonId: "lesson2",
-              name: "lesson 2",
-              updatedAt: "1/1/20000, 12:00:00 AM",
+            {
+              cursor: "cursor 2",
+              node: {
+                lessonId: "lesson2",
+                name: "lesson 2",
+                updatedAt: "1/1/20000, 12:00:00 AM",
+              },
             },
+          ],
+          pageInfo: {
+            hasNextPage: false,
+            endCursor: "cursor 2 ",
           },
-        ],
-        pageInfo: {
-          hasNextPage: false,
-          endCursor: "cursor 2 ",
         },
-      },
+      })],
     });
     cy.visit("/lessons");
     cy.wait("@loginGoogle");

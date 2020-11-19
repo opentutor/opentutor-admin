@@ -4,7 +4,7 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import { cySetup, cyLoginGoogle } from "../support/functions";
+import { cySetup, cyLoginGoogle, cyMockGraphQL } from "../support/functions";
 
 describe("Login", () => {
   it("loads home page", () => {
@@ -29,16 +29,19 @@ describe("Login", () => {
 
   it("redirects to lesson page after logging in", () => {
     cySetup(cy);
-    cyLoginGoogle(cy);
+    cyMockGraphQL(cy, {
+      mocks: [cyLoginGoogle(cy)],
+    });
     cy.visit("/");
     cy.wait("@loginGoogle");
     cy.location("pathname").should("contain", "lessons");
-    cy.get("#nav-bar").contains("Kayla");
   });
 
   it("redirects to home page after logging out", () => {
     cySetup(cy);
-    cyLoginGoogle(cy);
+    cyMockGraphQL(cy, {
+      mocks: [cyLoginGoogle(cy)],
+    });
     cy.visit("/");
     cy.wait("@loginGoogle");
     cy.get("#login-option #login-button").trigger('mouseover').click();
