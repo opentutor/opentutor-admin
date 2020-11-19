@@ -4,10 +4,57 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import { cySetup, cyLoginGoogle, cyMockGraphQL } from "../support/functions";
+import {
+  cySetup,
+  cyLoginGoogle,
+  cyLoginGoogle2,
+  cyMockGraphQL,
+  cyMockGraphQL2,
+  cyMockByQueryName,
+  MockGraphQLQuery,
+} from "../support/functions";
 
-function cyMockLessons(cy) {
-  cyMockGraphQL(cy, "lessons", {
+// function cyMockLessons(cy) {
+//   cyMockGraphQL(cy, "lessons", {
+//     lessons: {
+//       edges: [
+//         {
+//           cursor: "cursor 1",
+//           node: {
+//             lessonId: "lesson1",
+//             name: "lesson 1",
+//             createdByName: "teacher 1",
+//             userPermissions: {
+//               edit: true,
+//               view: true,
+//             },
+//             updatedAt: "1/1/20000, 12:00:00 AM",
+//           },
+//         },
+//         {
+//           cursor: "cursor 2",
+//           node: {
+//             lessonId: "lesson2",
+//             name: "lesson 2",
+//             createdByName: "teacher 2",
+//             userPermissions: {
+//               edit: true,
+//               view: true,
+//             },
+//             updatedAt: "1/1/20000, 12:00:00 AM",
+//           },
+//         },
+//       ],
+//       pageInfo: {
+//         hasNextPage: false,
+//         endCursor: "cursor 2",
+//       },
+//     },
+//   });
+// }
+
+function cyMockLessons2(): MockGraphQLQuery {
+  return cyMockByQueryName("lessons", {
     lessons: {
       edges: [
         {
@@ -48,8 +95,11 @@ function cyMockLessons(cy) {
 describe("lessons screen", () => {
   it("displays lesson table with headers", () => {
     cySetup(cy);
-    cyLoginGoogle(cy);
-    cyMockLessons(cy);
+    // cyLoginGoogle(cy);
+    // cyMockLessons(cy);
+    cyMockGraphQL2(cy, {
+      mocks: [cyLoginGoogle2(cy), cyMockLessons2()],
+    });
     cy.visit("/lessons");
     cy.wait("@loginGoogle");
     cy.wait("@lessons");
@@ -64,8 +114,11 @@ describe("lessons screen", () => {
 
   it("displays a list of lessons", () => {
     cySetup(cy);
-    cyLoginGoogle(cy);
-    cyMockLessons(cy);
+    // cyLoginGoogle(cy);
+    // cyMockLessons(cy);
+    cyMockGraphQL2(cy, {
+      mocks: [cyLoginGoogle2(cy), cyMockLessons2()],
+    });
     cy.visit("/lessons");
     cy.wait("@loginGoogle");
     cy.wait("@lessons");
@@ -86,36 +139,45 @@ describe("lessons screen", () => {
 
   it("opens edit for a lesson", () => {
     cySetup(cy);
-    cyLoginGoogle(cy);
-    cyMockLessons(cy);
+    // cyLoginGoogle(cy);
+    // cyMockLessons(cy);
+    cyMockGraphQL2(cy, {
+      mocks: [cyLoginGoogle2(cy), cyMockLessons2()],
+    });
     cy.visit("/lessons");
     cy.wait("@loginGoogle");
     cy.wait("@lessons");
-    cy.get("#lesson-0 #name a").trigger('mouseover').click();
+    cy.get("#lesson-0 #name a").trigger("mouseover").click();
     cy.location("pathname").should("contain", "/lessons/edit");
     cy.location("search").should("eq", "?lessonId=lesson1");
   });
 
   it("opens grade for a lesson", () => {
     cySetup(cy);
-    cyLoginGoogle(cy);
-    cyMockLessons(cy);
+    // cyLoginGoogle(cy);
+    // cyMockLessons(cy);
+    cyMockGraphQL2(cy, {
+      mocks: [cyLoginGoogle2(cy), cyMockLessons2()],
+    });
     cy.visit("/lessons");
     cy.wait("@loginGoogle");
     cy.wait("@lessons");
-    cy.get("#lesson-0 #grade").trigger('mouseover').click();
+    cy.get("#lesson-0 #grade").trigger("mouseover").click();
     cy.location("pathname").should("contain", "/sessions");
     cy.location("search").should("eq", "?lessonId=lesson1");
   });
 
   it("launches a lesson", () => {
     cySetup(cy);
-    cyLoginGoogle(cy);
-    cyMockLessons(cy);
+    // cyLoginGoogle(cy);
+    // cyMockLessons(cy);
+    cyMockGraphQL2(cy, {
+      mocks: [cyLoginGoogle2(cy), cyMockLessons2()],
+    });
     cy.visit("/lessons");
     cy.wait("@loginGoogle");
     cy.wait("@lessons");
-    cy.get("#lesson-0 #launch button").trigger('mouseover').click();
+    cy.get("#lesson-0 #launch button").trigger("mouseover").click();
     cy.location("pathname").should("contain", "/tutor");
     cy.location("search").should("contain", "lesson=lesson1");
     cy.location("search").should("contain", "guest=Kayla");
@@ -124,40 +186,71 @@ describe("lessons screen", () => {
 
   it("clicks on create lesson and opens to an edit page for new lesson", () => {
     cySetup(cy);
-    cyLoginGoogle(cy);
-    cyMockLessons(cy);
+    // cyLoginGoogle(cy);
+    // cyMockLessons(cy);
+    cyMockGraphQL2(cy, {
+      mocks: [cyLoginGoogle2(cy), cyMockLessons2()],
+    });
     cy.visit("/lessons");
     cy.wait("@loginGoogle");
     cy.wait("@lessons");
-    cy.get("#create-button").trigger('mouseover').click();
+    cy.get("#create-button").trigger("mouseover").click();
     cy.location("pathname").should("contain", "/lessons/edit");
   });
 
   it("disables edit, grade, and delete if user does not have edit permissions", () => {
     cySetup(cy);
-    cyLoginGoogle(cy);
-    cyMockGraphQL(cy, "lessons", {
-      lessons: {
-        edges: [
-          {
-            cursor: "cursor 1",
-            node: {
-              lessonId: "lesson1",
-              name: "lesson 1",
-              updatedAt: "1/1/20000, 12:00:00 AM",
-              createdByName: "teacher 1",
-              userPermissions: {
-                edit: false,
-                view: true,
-              }
+    // cyLoginGoogle(cy);
+    // cyMockGraphQL(cy, "lessons", {
+    //   lessons: {
+    //     edges: [
+    //       {
+    //         cursor: "cursor 1",
+    //         node: {
+    //           lessonId: "lesson1",
+    //           name: "lesson 1",
+    //           updatedAt: "1/1/20000, 12:00:00 AM",
+    //           createdByName: "teacher 1",
+    //           userPermissions: {
+    //             edit: false,
+    //             view: true,
+    //           },
+    //         },
+    //       },
+    //     ],
+    //     pageInfo: {
+    //       hasNextPage: false,
+    //       endCursor: "cursor 2",
+    //     },
+    //   },
+    // });
+    cyMockGraphQL2(cy, {
+      mocks: [
+        cyLoginGoogle2(cy),
+        cyMockByQueryName("lessons", {
+          lessons: {
+            edges: [
+              {
+                cursor: "cursor 1",
+                node: {
+                  lessonId: "lesson1",
+                  name: "lesson 1",
+                  updatedAt: "1/1/20000, 12:00:00 AM",
+                  createdByName: "teacher 1",
+                  userPermissions: {
+                    edit: false,
+                    view: true,
+                  },
+                },
+              },
+            ],
+            pageInfo: {
+              hasNextPage: false,
+              endCursor: "cursor 2",
             },
           },
-        ],
-        pageInfo: {
-          hasNextPage: false,
-          endCursor: "cursor 2",
-        },
-      },
+        }),
+      ],
     });
     cy.visit("/lessons");
     cy.wait("@loginGoogle");
