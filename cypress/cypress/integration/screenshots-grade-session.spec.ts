@@ -4,7 +4,7 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import { cySetup, cyLoginGoogle, cyMockGraphQL } from "../support/functions";
+import { cySetup, cyLoginGoogle, cyMockGraphQL, cyMockByQueryName } from "../support/functions";
 
 function snapname(n) {
   return `screenshots-grade-session-${n}`;
@@ -13,81 +13,82 @@ function snapname(n) {
 describe("screenshots - grade session", () => {
   it("displays feedback after answer marked good", () => {
     cySetup(cy);
-    cyLoginGoogle(cy);
-    cyMockGraphQL(cy, "session", {
-      session: {
-        sessionId: "session1",
-        lesson: {
-          name: "lesson 1",
-          createdByName: "username1",
-          userPermissions: {
-            edit: true,
-            view: true,
+    cyMockGraphQL(cy, {
+      mocks: [cyLoginGoogle(cy), cyMockByQueryName("session", {
+        session: {
+          sessionId: "session1",
+          lesson: {
+            name: "lesson 1",
+            createdByName: "username1",
+            userPermissions: {
+              edit: true,
+              view: true,
+            },
           },
-        },
-        graderGrade: null,
-        question: {
-          text: "question?",
-          expectations: [
-            { text: "expected text 1" },
-            { text: "expected text 2" },
+          graderGrade: null,
+          question: {
+            text: "question?",
+            expectations: [
+              { text: "expected text 1" },
+              { text: "expected text 2" },
+            ],
+          },
+          userResponses: [
+            {
+              text: "answer 1",
+              expectationScores: [
+                {
+                  classifierGrade: "Good",
+                  graderGrade: "Good",
+                },
+                {
+                  classifierGrade: "Bad",
+                  graderGrade: "",
+                },
+              ],
+            },
+            {
+              text: "answer 2",
+              expectationScores: [
+                {
+                  classifierGrade: "Bad",
+                  graderGrade: "",
+                },
+                {
+                  classifierGrade: "Good",
+                  graderGrade: "",
+                },
+              ],
+            },
+            {
+              text: "answer 3",
+              expectationScores: [
+                {
+                  classifierGrade: "Bad",
+                  graderGrade: "",
+                },
+                {
+                  classifierGrade: "Bad",
+                  graderGrade: "Bad",
+                },
+              ],
+            },
+            {
+              text: "answer 4",
+              expectationScores: [
+                {
+                  classifierGrade: "Good",
+                  graderGrade: "Good",
+                },
+                {
+                  classifierGrade: "Bad",
+                  graderGrade: "Bad",
+                },
+              ],
+            },
           ],
-        },
-        userResponses: [
-          {
-            text: "answer 1",
-            expectationScores: [
-              {
-                classifierGrade: "Good",
-                graderGrade: "Good",
-              },
-              {
-                classifierGrade: "Bad",
-                graderGrade: "",
-              },
-            ],
-          },
-          {
-            text: "answer 2",
-            expectationScores: [
-              {
-                classifierGrade: "Bad",
-                graderGrade: "",
-              },
-              {
-                classifierGrade: "Good",
-                graderGrade: "",
-              },
-            ],
-          },
-          {
-            text: "answer 3",
-            expectationScores: [
-              {
-                classifierGrade: "Bad",
-                graderGrade: "",
-              },
-              {
-                classifierGrade: "Bad",
-                graderGrade: "Bad",
-              },
-            ],
-          },
-          {
-            text: "answer 4",
-            expectationScores: [
-              {
-                classifierGrade: "Good",
-                graderGrade: "Good",
-              },
-              {
-                classifierGrade: "Bad",
-                graderGrade: "Bad",
-              },
-            ],
-          },
-        ],
-      }
+        }
+      })],
     });
     cy.visit("/sessions/session?sessionId=session1");
     cy.wait("@loginGoogle");

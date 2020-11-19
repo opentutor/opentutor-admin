@@ -4,10 +4,10 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import { cySetup, cyLoginGoogle, cyMockGraphQL } from "../support/functions";
+import { cySetup, cyLoginGoogle, cyMockGraphQL, MockGraphQLQuery, cyMockByQueryName } from "../support/functions";
 
-function cyMockSession(cy) {
-  cyMockGraphQL(cy, "session", {
+function cyMockSession(): MockGraphQLQuery {
+  return cyMockByQueryName("session", {
     session: {
       username: "username1",
       sessionId: "session1",
@@ -62,8 +62,9 @@ function cyMockSession(cy) {
 describe("session screen", () => {
   it("shows lesson name", () => {
     cySetup(cy);
-    cyLoginGoogle(cy);
-    cyMockSession(cy);
+    cyMockGraphQL(cy, {
+      mocks: [cyLoginGoogle(cy), cyMockSession()],
+    });
     cy.visit("/sessions/session?sessionId=session1");
     cy.wait("@loginGoogle");
     cy.wait("@session");
@@ -72,8 +73,9 @@ describe("session screen", () => {
 
   it("shows session username", () => {
     cySetup(cy);
-    cyLoginGoogle(cy);
-    cyMockSession(cy);
+    cyMockGraphQL(cy, {
+      mocks: [cyLoginGoogle(cy), cyMockSession()],
+    });
     cy.visit("/sessions/session?sessionId=session1");
     cy.wait("@loginGoogle");
     cy.wait("@session");
@@ -82,8 +84,9 @@ describe("session screen", () => {
 
   it("shows session date", () => {
     cySetup(cy);
-    cyLoginGoogle(cy);
-    cyMockSession(cy);
+    cyMockGraphQL(cy, {
+      mocks: [cyLoginGoogle(cy), cyMockSession()],
+    });
     cy.visit("/sessions/session?sessionId=session1");
     cy.wait("@loginGoogle");
     cy.wait("@session");
@@ -92,8 +95,9 @@ describe("session screen", () => {
 
   it("shows lesson question", () => {
     cySetup(cy);
-    cyLoginGoogle(cy);
-    cyMockSession(cy);
+    cyMockGraphQL(cy, {
+      mocks: [cyLoginGoogle(cy), cyMockSession()],
+    });
     cy.visit("/sessions/session?sessionId=session1");
     cy.wait("@loginGoogle");
     cy.wait("@session");
@@ -102,8 +106,9 @@ describe("session screen", () => {
 
   it("shows session score", () => {
     cySetup(cy);
-    cyLoginGoogle(cy);
-    cyMockSession(cy);
+    cyMockGraphQL(cy, {
+      mocks: [cyLoginGoogle(cy), cyMockSession()],
+    });
     cy.visit("/sessions/session?sessionId=session1");
     cy.wait("@loginGoogle");
     cy.wait("@session");
@@ -112,8 +117,9 @@ describe("session screen", () => {
 
   it("shows user responses", () => {
     cySetup(cy);
-    cyLoginGoogle(cy);
-    cyMockSession(cy);
+    cyMockGraphQL(cy, {
+      mocks: [cyLoginGoogle(cy), cyMockSession()],
+    });
     cy.visit("/sessions/session?sessionId=session1");
     cy.wait("@loginGoogle");
     cy.wait("@session");
@@ -127,13 +133,35 @@ describe("session screen", () => {
 
   it("grades first response", () => {
     cySetup(cy);
-    cyLoginGoogle(cy);
-    cyMockSession(cy);
+    cyMockGraphQL(cy, {
+      mocks: [cyLoginGoogle(cy), cyMockSession()],
+    });
     cy.visit("/sessions/session?sessionId=session1");
     cy.wait("@loginGoogle");
     cy.wait("@session");
     cy.get("#response-0 #grade-0 #select-grade").should("have.value", "");
     cy.get("#response-0 #grade-0 #select-grade").trigger('mouseover').click();
     cy.get("#good").trigger('mouseover').click();
+  });
+
+  it("hides if user does not have permission to edit", () => {
+    cySetup(cy);
+    cyMockGraphQL(cy, {
+      mocks: [cyLoginGoogle(cy), cyMockByQueryName("session", {
+        session: {
+          lesson: {
+            name: "lesson 1",
+            userPermissions: {
+              edit: false,
+              view: true,
+            },
+          },
+        }
+      })],
+    });
+    cy.visit("/sessions/session?sessionId=session1");
+    cy.wait("@loginGoogle");
+    cy.wait("@session");
+    cy.contains("You do not have the permissions to grade this session");
   });
 });

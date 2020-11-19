@@ -7,7 +7,8 @@ The full terms of this copyright and license should always be found in the root 
 import {
   cySetup,
   cyLoginGoogle,
-  cyMockGraphQL
+  cyMockGraphQL,
+  cyMockByQueryName
 } from "../support/functions";
 
 function snapname(n) {
@@ -17,30 +18,31 @@ function snapname(n) {
 describe("screenshots - grade session list", () => {
   it("displays sessions with 'show graded' disabled by default'", () => {
     cySetup(cy);
-    cyLoginGoogle(cy);
-    cyMockGraphQL(cy, "sessions", {
-      sessions: {
-        edges: [{
-          cursor: "cursor 2",
-          node: {
-            lesson: {
-              name: "lesson 2",
-              userPermissions: {
-                edit: true,
-                view: true,
+    cyMockGraphQL(cy, {
+      mocks: [cyLoginGoogle(cy), cyMockByQueryName("sessions", {
+        sessions: {
+          edges: [{
+            cursor: "cursor 2",
+            node: {
+              lesson: {
+                name: "lesson 2",
+                userPermissions: {
+                  edit: true,
+                  view: true,
+                },
               },
+              sessionId: "session 2",
+              classifierGrade: 0.5,
+              graderGrade: null,
+              createdAt: "1/1/2000, 12:00:00 AM",
             },
-            sessionId: "session 2",
-            classifierGrade: 0.5,
-            graderGrade: null,
-            createdAt: "1/1/2000, 12:00:00 AM",
+          },],
+          pageInfo: {
+            hasNextPage: false,
+            endCursor: "cursor 2 ",
           },
-        },],
-        pageInfo: {
-          hasNextPage: false,
-          endCursor: "cursor 2 ",
         },
-      },
+      })],
     });
     cy.visit("/sessions");
     cy.wait("@loginGoogle");
@@ -52,45 +54,46 @@ describe("screenshots - grade session list", () => {
 
   it("displays ungraded sessions when 'show graded' enabled", () => {
     cySetup(cy);
-    cyLoginGoogle(cy);
-    cyMockGraphQL(cy, "sessions", {
-      sessions: {
-        edges: [{
-          cursor: "cursor 1",
-          node: {
-            lesson: {
-              name: "lesson 1",
-              userPermissions: {
-                edit: true,
-                view: true
-              }
+    cyMockGraphQL(cy, {
+      mocks: [cyLoginGoogle(cy), cyMockByQueryName("sessions", {
+        sessions: {
+          edges: [{
+            cursor: "cursor 1",
+            node: {
+              lesson: {
+                name: "lesson 1",
+                userPermissions: {
+                  edit: true,
+                  view: true
+                }
+              },
+              sessionId: "session 1",
+              classifierGrade: 1,
+              graderGrade: 1,
+              createdAt: "1/1/2000, 12:00:00 AM",
             },
-            sessionId: "session 1",
-            classifierGrade: 1,
-            graderGrade: 1,
-            createdAt: "1/1/2000, 12:00:00 AM",
-          },
-        }, {
-          cursor: "cursor 2",
-          node: {
-            lesson: {
-              name: "lesson 2",
-              userPermissions: {
-                edit: true,
-                view: true
-              }
+          }, {
+            cursor: "cursor 2",
+            node: {
+              lesson: {
+                name: "lesson 2",
+                userPermissions: {
+                  edit: true,
+                  view: true
+                }
+              },
+              sessionId: "session 2",
+              classifierGrade: 0.5,
+              graderGrade: null,
+              createdAt: "1/1/2000, 12:00:00 AM",
             },
-            sessionId: "session 2",
-            classifierGrade: 0.5,
-            graderGrade: null,
-            createdAt: "1/1/2000, 12:00:00 AM",
+          },],
+          pageInfo: {
+            hasNextPage: false,
+            endCursor: "cursor 2 ",
           },
-        },],
-        pageInfo: {
-          hasNextPage: false,
-          endCursor: "cursor 2 ",
         },
-      },
+      })],
     });
     cy.visit("/sessions");
     cy.wait("@loginGoogle");

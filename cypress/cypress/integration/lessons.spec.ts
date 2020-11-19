@@ -7,53 +7,12 @@ The full terms of this copyright and license should always be found in the root 
 import {
   cySetup,
   cyLoginGoogle,
-  cyLoginGoogle2,
   cyMockGraphQL,
-  cyMockGraphQL2,
   cyMockByQueryName,
   MockGraphQLQuery,
 } from "../support/functions";
 
-// function cyMockLessons(cy) {
-//   cyMockGraphQL(cy, "lessons", {
-//     lessons: {
-//       edges: [
-//         {
-//           cursor: "cursor 1",
-//           node: {
-//             lessonId: "lesson1",
-//             name: "lesson 1",
-//             createdByName: "teacher 1",
-//             userPermissions: {
-//               edit: true,
-//               view: true,
-//             },
-//             updatedAt: "1/1/20000, 12:00:00 AM",
-//           },
-//         },
-//         {
-//           cursor: "cursor 2",
-//           node: {
-//             lessonId: "lesson2",
-//             name: "lesson 2",
-//             createdByName: "teacher 2",
-//             userPermissions: {
-//               edit: true,
-//               view: true,
-//             },
-//             updatedAt: "1/1/20000, 12:00:00 AM",
-//           },
-//         },
-//       ],
-//       pageInfo: {
-//         hasNextPage: false,
-//         endCursor: "cursor 2",
-//       },
-//     },
-//   });
-// }
-
-function cyMockLessons2(): MockGraphQLQuery {
+function cyMockLessons(): MockGraphQLQuery {
   return cyMockByQueryName("lessons", {
     lessons: {
       edges: [
@@ -95,10 +54,8 @@ function cyMockLessons2(): MockGraphQLQuery {
 describe("lessons screen", () => {
   it("displays lesson table with headers", () => {
     cySetup(cy);
-    // cyLoginGoogle(cy);
-    // cyMockLessons(cy);
-    cyMockGraphQL2(cy, {
-      mocks: [cyLoginGoogle2(cy), cyMockLessons2()],
+    cyMockGraphQL(cy, {
+      mocks: [cyLoginGoogle(cy), cyMockLessons()],
     });
     cy.visit("/lessons");
     cy.wait("@loginGoogle");
@@ -114,10 +71,8 @@ describe("lessons screen", () => {
 
   it("displays a list of lessons", () => {
     cySetup(cy);
-    // cyLoginGoogle(cy);
-    // cyMockLessons(cy);
-    cyMockGraphQL2(cy, {
-      mocks: [cyLoginGoogle2(cy), cyMockLessons2()],
+    cyMockGraphQL(cy, {
+      mocks: [cyLoginGoogle(cy), cyMockLessons()],
     });
     cy.visit("/lessons");
     cy.wait("@loginGoogle");
@@ -139,10 +94,8 @@ describe("lessons screen", () => {
 
   it("opens edit for a lesson", () => {
     cySetup(cy);
-    // cyLoginGoogle(cy);
-    // cyMockLessons(cy);
-    cyMockGraphQL2(cy, {
-      mocks: [cyLoginGoogle2(cy), cyMockLessons2()],
+    cyMockGraphQL(cy, {
+      mocks: [cyLoginGoogle(cy), cyMockLessons()],
     });
     cy.visit("/lessons");
     cy.wait("@loginGoogle");
@@ -154,10 +107,8 @@ describe("lessons screen", () => {
 
   it("opens grade for a lesson", () => {
     cySetup(cy);
-    // cyLoginGoogle(cy);
-    // cyMockLessons(cy);
-    cyMockGraphQL2(cy, {
-      mocks: [cyLoginGoogle2(cy), cyMockLessons2()],
+    cyMockGraphQL(cy, {
+      mocks: [cyLoginGoogle(cy), cyMockLessons()],
     });
     cy.visit("/lessons");
     cy.wait("@loginGoogle");
@@ -169,10 +120,8 @@ describe("lessons screen", () => {
 
   it("launches a lesson", () => {
     cySetup(cy);
-    // cyLoginGoogle(cy);
-    // cyMockLessons(cy);
-    cyMockGraphQL2(cy, {
-      mocks: [cyLoginGoogle2(cy), cyMockLessons2()],
+    cyMockGraphQL(cy, {
+      mocks: [cyLoginGoogle(cy), cyMockLessons()],
     });
     cy.visit("/lessons");
     cy.wait("@loginGoogle");
@@ -186,10 +135,8 @@ describe("lessons screen", () => {
 
   it("clicks on create lesson and opens to an edit page for new lesson", () => {
     cySetup(cy);
-    // cyLoginGoogle(cy);
-    // cyMockLessons(cy);
-    cyMockGraphQL2(cy, {
-      mocks: [cyLoginGoogle2(cy), cyMockLessons2()],
+    cyMockGraphQL(cy, {
+      mocks: [cyLoginGoogle(cy), cyMockLessons()],
     });
     cy.visit("/lessons");
     cy.wait("@loginGoogle");
@@ -200,33 +147,9 @@ describe("lessons screen", () => {
 
   it("disables edit, grade, and delete if user does not have edit permissions", () => {
     cySetup(cy);
-    // cyLoginGoogle(cy);
-    // cyMockGraphQL(cy, "lessons", {
-    //   lessons: {
-    //     edges: [
-    //       {
-    //         cursor: "cursor 1",
-    //         node: {
-    //           lessonId: "lesson1",
-    //           name: "lesson 1",
-    //           updatedAt: "1/1/20000, 12:00:00 AM",
-    //           createdByName: "teacher 1",
-    //           userPermissions: {
-    //             edit: false,
-    //             view: true,
-    //           },
-    //         },
-    //       },
-    //     ],
-    //     pageInfo: {
-    //       hasNextPage: false,
-    //       endCursor: "cursor 2",
-    //     },
-    //   },
-    // });
-    cyMockGraphQL2(cy, {
+    cyMockGraphQL(cy, {
       mocks: [
-        cyLoginGoogle2(cy),
+        cyLoginGoogle(cy),
         cyMockByQueryName("lessons", {
           lessons: {
             edges: [
