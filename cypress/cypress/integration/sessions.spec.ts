@@ -119,7 +119,7 @@ describe("sessions screen", () => {
     cy.visit("/sessions");
     cy.wait("@loginGoogle");
     cy.wait("@sessions");
-    cy.get("#session-0 #grade").trigger('mouseover').click();
+    cy.get("#session-0 #grade button").trigger('mouseover').click();
     cy.location("pathname").should("contain", "/sessions/session");
     cy.location("search").should("contain", "?sessionId=session1");
   });
@@ -135,5 +135,123 @@ describe("sessions screen", () => {
     const option = cy.get("#show-graded-checkbox");
     option.should("not.have.attr", "checked");
     cy.get("#toggle-graded").trigger('mouseover').click();
+  });
+
+  it("disables edit and grade if user does not have edit permissions", () => {
+    cySetup(cy);
+    cyMockGraphQL(cy, {
+      mocks: [
+        cyLoginGoogle(cy),
+        cyMockByQueryName("sessions", {
+          sessions: {
+            edges: [
+              {
+                cursor: "cursor 1",
+                node: {
+                  lesson: {
+                    lessonId: "lesson1",
+                    name: "lesson 1",
+                    userPermissions: {
+                      edit: false,
+                      view: true,
+                    },
+                  },
+                  lessonCreatedBy: "teacher 1",
+                  sessionId: "session1",
+                  classifierGrade: 1,
+                  graderGrade: 1,
+                  createdAt: "1/1/20000, 12:00:00 AM",
+                  username: "user 1",
+                },
+              },
+              {
+                cursor: "cursor 2",
+                node: {
+                  lesson: {
+                    lessonId: "lesson2",
+                    name: "lesson 2",
+                  },
+                  lessonCreatedBy: "teacher 2",
+                  sessionId: "session2",
+                  classifierGrade: 0.5,
+                  graderGrade: null,
+                  createdAt: "1/1/20000, 12:00:00 AM",
+                  username: "user 2",
+                },
+              },
+            ],
+            pageInfo: {
+              hasNextPage: false,
+              endCursor: "cursor 2 ",
+            },
+          }
+        }),
+      ],
+    });
+    cy.visit("/sessions");
+    cy.wait("@loginGoogle");
+    cy.wait("@sessions");
+    cy.get("#session-0 #grade button").should("be.disabled");
+    cy.get("#session-1 #grade button").should("be.disabled");
+  });
+
+  it("enables edit if user created lesson", () => {
+    cySetup(cy);
+    cyMockGraphQL(cy, {
+      mocks: [
+        cyLoginGoogle(cy),
+        cyMockByQueryName("sessions", {
+          sessions: {
+            edges: [
+              {
+                cursor: "cursor 1",
+                node: {
+                  lesson: {
+                    lessonId: "lesson1",
+                    name: "lesson 1",
+                    createdBy: 'kayla',
+                    userPermissions: {
+                      edit: false,
+                      view: true,
+                    },
+                  },
+                  lessonCreatedBy: "teacher 1",
+                  sessionId: "session1",
+                  classifierGrade: 1,
+                  graderGrade: 1,
+                  createdAt: "1/1/20000, 12:00:00 AM",
+                  username: "user 1",
+                },
+              },
+              {
+                cursor: "cursor 2",
+                node: {
+                  lesson: {
+                    lessonId: "lesson2",
+                    name: "lesson 2",
+                    createdBy: 'kayla',
+                  },
+                  lessonCreatedBy: "teacher 2",
+                  sessionId: "session2",
+                  classifierGrade: 0.5,
+                  graderGrade: null,
+                  createdAt: "1/1/20000, 12:00:00 AM",
+                  username: "user 2",
+                },
+              },
+            ],
+            pageInfo: {
+              hasNextPage: false,
+              endCursor: "cursor 2 ",
+            },
+          }
+        }),
+      ],
+    });
+    cy.visit("/sessions");
+    cy.wait("@loginGoogle");
+    cy.wait("@sessions");
+    cy.get("#session-0 #grade button").should("not.be.disabled");
+    cy.get("#session-1 #grade button").should("not.be.disabled");
   });
 });

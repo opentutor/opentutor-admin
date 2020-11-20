@@ -1,3 +1,9 @@
+/*
+This software is Copyright ©️ 2020 The University of Southern California. All Rights Reserved. 
+Permission to use, copy, modify, and distribute this software and its documentation for educational, research and non-profit purposes, without fee, and without a written agreement is hereby granted, provided that the above copyright notice and subject to the full license file found in the root of this software deliverable. Permission to make commercial use of this software may be obtained by contacting:  USC Stevens Center for Innovation University of Southern California 1150 S. Olive Street, Suite 2300, Los Angeles, CA 90115, USA Email: accounting@stevens.usc.edu
+
+The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
+*/
 import { withPrefix } from "gatsby";
 import React, { useContext } from "react";
 import { useCookies } from "react-cookie";
@@ -38,6 +44,7 @@ const useStyles = makeStyles({
 const SessionTable = ({ search }: { search: any }) => {
   const { sessionId } = search;
   const classes = useStyles();
+  const context = useContext(ToggleContext);
   const [session, setSession] = React.useState<Session>();
   const [date, setDate] = React.useState<string>("");
 
@@ -85,10 +92,15 @@ const SessionTable = ({ search }: { search: any }) => {
   }, []);
 
   function canEdit() {
-    if (!session || !session.lesson || !session.lesson.userPermissions) {
+    if (!session || !session.lesson) {
       return false;
     }
-    return session.lesson.userPermissions.edit;
+    const lesson = session.lesson;
+    return (
+      lesson &&
+      (lesson.createdBy === `${context.user?.id}` ||
+        lesson.userPermissions?.edit)
+    );
   }
 
   if (!session) {
@@ -237,7 +249,7 @@ const SessionPage = ({ path, search }: { path: string; search: any }) => {
   const context = useContext(ToggleContext);
   const [cookies] = useCookies(["accessToken"]);
   if (typeof window !== "undefined" && !cookies.accessToken) {
-    navigate("/");
+    navigate(withPrefix(`/`));
     return <div></div>;
   }
   if (!context.user) {

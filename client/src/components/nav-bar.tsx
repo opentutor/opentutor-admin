@@ -82,7 +82,7 @@ const LoginOption = (props: { classes: any }) => {
 
   const onLogout = () => {
     removeCookie("accessToken", { path: "/" });
-    navigate("/");
+    navigate(withPrefix(`/`));
   };
 
   if (context.user) {

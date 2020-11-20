@@ -359,4 +359,43 @@ describe("lesson screen", () => {
     cy.wait("@lesson");
     cy.contains("You do not have the permissions to edit or view this lesson");
   });
+
+  it("shows if user created lesson", () => {
+    cySetup(cy);
+    cyMockGraphQL(cy, {
+      mocks: [cyLoginGoogle(cy), cyMockByQueryName("lesson", {
+        lesson: {
+          lessonId: "q1",
+          name: "lesson",
+          introduction: "introduction",
+          question: "question",
+          image: null,
+          conclusion: ["conclusion"],
+          expectations: [
+            {
+              expectation: "expectation 1",
+              hints: [
+                {
+                  text: "hint 1.1",
+                },
+              ],
+              features: {
+                bad: ["bad1", "bad2"],
+              },
+            },
+          ],
+          createdBy: 'kayla',
+          createdByName: 'Kayla',
+          userPermissions: {
+            edit: false,
+            view: false,
+          },
+        }
+      })],
+    });
+    cy.visit("/lessons/edit?lessonId=q1");
+    cy.wait("@loginGoogle");
+    cy.wait("@lesson");
+    cy.get("#lesson-name");
+  });
 });

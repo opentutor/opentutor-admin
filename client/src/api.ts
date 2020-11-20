@@ -20,6 +20,7 @@ import {
   TrainStatus,
   Connection,
   User,
+  LoginGoogle,
   Login,
 } from "types";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -64,6 +65,7 @@ export async function fetchSessions(
                 lesson {
                   name
                   lessonId
+                  createdBy
                   userPermissions {
                     view
                     edit
@@ -111,6 +113,7 @@ export async function fetchSession(sessionId: string): Promise<Session> {
           lesson {
             name
             lessonId
+            createdBy
             userPermissions {
               view
               edit
@@ -158,6 +161,7 @@ export async function setGrade(
           lesson {
             name
             lessonId
+            createdBy
             userPermissions {
               view
               edit
@@ -193,6 +197,7 @@ export async function fetchLessons(
             node {
               lessonId
               name
+              createdBy
               createdByName
               userPermissions {
                 view
@@ -237,6 +242,7 @@ export async function fetchLesson(lessonId: string): Promise<Lesson> {
             features
             lastTrainedAt
             isTrainable
+            createdBy
             createdByName
             userPermissions {
               view
@@ -274,6 +280,7 @@ export async function updateLesson(
             features
             lastTrainedAt
             isTrainable
+            createdBy
             createdByName
             userPermissions {
               view
@@ -335,9 +342,22 @@ export async function fetchTrainingStatus(
   return result.data.data!;
 }
 
-// TODO: login with username and password
-export async function loginGoogle(accessToken: string): Promise<User> {
+export async function login(accessToken: string): Promise<User> {
   const result = await axios.post<GQLResponse<Login>>(GRAPHQL_ENDPOINT, {
+    query: `
+      mutation {
+        login(accessToken: "${accessToken}") {
+          id
+          name
+        }
+      }
+    `,
+  });
+  return result.data.data!.login;
+}
+
+export async function loginGoogle(accessToken: string): Promise<User> {
+  const result = await axios.post<GQLResponse<LoginGoogle>>(GRAPHQL_ENDPOINT, {
     query: `
       mutation {
         loginGoogle(accessToken: "${accessToken}") {

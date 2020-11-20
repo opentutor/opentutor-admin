@@ -164,4 +164,64 @@ describe("session screen", () => {
     cy.wait("@session");
     cy.contains("You do not have the permissions to grade this session");
   });
-});
+
+  it("shows if user created lesson", () => {
+    cySetup(cy);
+    cyMockGraphQL(cy, {
+      mocks: [cyLoginGoogle(cy), cyMockByQueryName("session", {
+        session: {
+          username: "username1",
+          sessionId: "session1",
+          createdAt: "1/1/2001",
+          lesson: {
+            name: "lesson 1",
+            createdBy: 'kayla',
+            userPermissions: {
+              edit: false,
+              view: true,
+            },
+          },
+          graderGrade: null,
+          question: {
+            text: "question?",
+            expectations: [
+              { text: "expected text 1" },
+              { text: "expected text 2" },
+            ],
+          },
+          userResponses: [
+            {
+              text: "answer 1",
+              expectationScores: [
+                {
+                  classifierGrade: "Good",
+                  graderGrade: "",
+                },
+                {
+                  classifierGrade: "Bad",
+                  graderGrade: "",
+                },
+              ],
+            },
+            {
+              text: "answer 2",
+              expectationScores: [
+                {
+                  classifierGrade: "Bad",
+                  graderGrade: "",
+                },
+                {
+                  classifierGrade: "Good",
+                  graderGrade: "",
+                },
+              ],
+            },
+          ],
+        }
+      })],
+    });
+    cy.visit("/sessions/session?sessionId=session1");
+    cy.wait("@loginGoogle");
+    cy.wait("@session");
+    cy.get("#lesson");
+  });});

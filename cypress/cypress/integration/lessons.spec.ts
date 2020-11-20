@@ -166,6 +166,15 @@ describe("lessons screen", () => {
                   },
                 },
               },
+              {
+                cursor: "cursor 2",
+                node: {
+                  lessonId: "lesson2",
+                  name: "lesson 2",
+                  updatedAt: "1/1/20000, 12:00:00 AM",
+                  createdByName: "teacher 2",
+                },
+              },
             ],
             pageInfo: {
               hasNextPage: false,
@@ -181,5 +190,46 @@ describe("lessons screen", () => {
     cy.get("#lesson-0 #delete button").should("be.disabled");
     cy.get("#lesson-0 #grade button").should("be.disabled");
     cy.get("#lesson-0 #name").should("not.have.class", "a");
+    cy.get("#lesson-1 #delete button").should("be.disabled");
+    cy.get("#lesson-1 #grade button").should("be.disabled");
+    cy.get("#lesson-1 #name").should("not.have.class", "a");
+  });
+
+  it("enables edit if user created lesson", () => {
+    cySetup(cy);
+    cyMockGraphQL(cy, {
+      mocks: [
+        cyLoginGoogle(cy),
+        cyMockByQueryName("lessons", {
+          lessons: {
+            edges: [
+              {
+                cursor: "cursor 1",
+                node: {
+                  lessonId: "lesson1",
+                  name: "lesson 1",
+                  updatedAt: "1/1/20000, 12:00:00 AM",
+                  createdBy: "kayla",
+                  createdByName: "Kayla",
+                  userPermissions: {
+                    edit: false,
+                    view: false,
+                  },
+                },
+              },
+            ],
+            pageInfo: {
+              hasNextPage: false,
+              endCursor: "cursor 2",
+            },
+          },
+        }),
+      ],
+    });
+    cy.visit("/lessons");
+    cy.wait("@loginGoogle");
+    cy.wait("@lessons");
+    cy.get("#lesson-0 #delete button").should("not.be.disabled");
+    cy.get("#lesson-0 #grade button").should("not.be.disabled");
   });
 });

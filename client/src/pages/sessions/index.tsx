@@ -1,3 +1,9 @@
+/*
+This software is Copyright ©️ 2020 The University of Southern California. All Rights Reserved. 
+Permission to use, copy, modify, and distribute this software and its documentation for educational, research and non-profit purposes, without fee, and without a written agreement is hereby granted, provided that the above copyright notice and subject to the full license file found in the root of this software deliverable. Permission to make commercial use of this software may be obtained by contacting:  USC Stevens Center for Innovation University of Southern California 1150 S. Olive Street, Suite 2300, Los Angeles, CA 90115, USA Email: accounting@stevens.usc.edu
+
+The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
+*/
 import { withPrefix } from "gatsby";
 import React, { useContext } from "react";
 import { useCookies } from "react-cookie";
@@ -161,9 +167,19 @@ const TableFooter = (props: {
 
 const SessionItem = (props: { row: Edge<Session>; i: number }) => {
   const { row, i } = props;
+  const context = useContext(ToggleContext);
 
   function handleGrade(): void {
     navigate(withPrefix(`/sessions/session?sessionId=${row.node.sessionId}`));
+  }
+
+  function canEdit() {
+    const lesson = row.node.lesson;
+    return (
+      lesson &&
+      (lesson.createdBy === `${context.user?.id}` ||
+        lesson.userPermissions?.edit)
+    );
   }
 
   return (
@@ -180,7 +196,7 @@ const SessionItem = (props: { row: Edge<Session>; i: number }) => {
       }}
     >
       <TableCell id="lesson" align="left">
-        {row.node.lesson?.userPermissions?.edit ? (
+        {canEdit() ? (
           <Link
             to={withPrefix(
               `/lessons/edit?lessonId=${row.node.lesson.lessonId}`
@@ -192,12 +208,8 @@ const SessionItem = (props: { row: Edge<Session>; i: number }) => {
           row.node.lesson?.name || "No Lesson Name"
         )}
       </TableCell>
-      <TableCell>
-        <IconButton
-          id="grade"
-          onClick={handleGrade}
-          disabled={!row.node.lesson?.userPermissions?.edit}
-        >
+      <TableCell id="grade">
+        <IconButton onClick={handleGrade} disabled={!canEdit()}>
           <AssignmentIcon />
         </IconButton>
       </TableCell>
@@ -329,7 +341,7 @@ const SessionsPage = (props: {
   const context = useContext(ToggleContext);
   const [cookies] = useCookies(["accessToken"]);
   if (typeof window !== "undefined" && !cookies.accessToken) {
-    navigate("/");
+    navigate(withPrefix(`/`));
     return <div></div>;
   }
   if (!context.user) {

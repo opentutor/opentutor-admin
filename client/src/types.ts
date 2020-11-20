@@ -81,6 +81,7 @@ export interface Lesson {
   lastTrainedAt: string;
   features: any;
   isTrainable: boolean;
+  createdBy: string;
   createdByName: string;
   userPermissions: UserPermission;
   createdAt: string;
@@ -160,5 +161,9 @@ export interface User {
 }
 
 export interface Login {
+  login: User;
+}
+
+export interface LoginGoogle {
   loginGoogle: User;
 }
