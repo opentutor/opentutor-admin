@@ -19,9 +19,9 @@ import {
   TrainJob,
   TrainStatus,
   Connection,
-  User,
   LoginGoogle,
   Login,
+  UserAccessToken,
 } from "types";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const urljoin = require("url-join");
@@ -40,14 +40,177 @@ export async function fetchSessions(
   limit: number,
   cursor: string,
   sortBy: string,
-  sortAscending: boolean
+  sortAscending: boolean,
+  accessToken: string
 ): Promise<Connection<Session>> {
   const result = await axios.post<GQLResponse<FetchSessions>>(
     GRAPHQL_ENDPOINT,
     {
+      headers: {
+        Authorization: `bearer ${accessToken}`,
+      },
       query: `
         query {
-          sessions(
+          me {
+            sessions(
+              filter:"${encodeURI(JSON.stringify(filter))}"
+              limit:${limit},
+              cursor:"${cursor}",
+              sortBy:"${sortBy}",
+              sortAscending:${sortAscending}
+            ) {
+              edges {
+                cursor
+                node {
+                  username
+                  sessionId
+                  classifierGrade
+                  graderGrade
+                  createdAt
+                  lesson {
+                    name
+                    lessonId
+                    createdBy
+                    userPermissions {
+                      view
+                      edit
+                    }
+                  }
+                  lessonCreatedBy
+                }
+              }
+              pageInfo {
+                startCursor
+                endCursor
+                hasPreviousPage
+                hasNextPage
+              }
+            }
+          }
+        }
+      `,
+    }
+  );
+  // TODO: must handle errors including in tests
+  return result.data.data!.me.sessions;
+}
+
+export async function fetchSession(
+  sessionId: string,
+  accessToken: string
+): Promise<Session> {
+  const result = await axios.post<GQLResponse<FetchSession>>(GRAPHQL_ENDPOINT, {
+    headers: {
+      Authorization: `bearer ${accessToken}`,
+    },
+    query: `
+      query {
+        me {
+          session(sessionId: "${sessionId}") {
+            username
+            graderGrade
+            createdAt
+            question {
+              text
+              expectations {
+                text
+              }
+            }
+            userResponses {
+              text
+              expectationScores {
+                classifierGrade
+                graderGrade
+              }
+            }
+            lesson {
+              name
+              lessonId
+              createdBy
+              userPermissions {
+                view
+                edit
+              }
+            }
+          }
+        }
+      }
+    `,
+  });
+  // TODO: must handle errors including in tests
+  return result.data.data!.me.session;
+}
+
+export async function setGrade(
+  sessionId: string,
+  userAnswerIndex: number,
+  userExpectationIndex: number,
+  grade: string,
+  accessToken: string
+): Promise<Session> {
+  const result = await axios.post<GQLResponse<SetGrade>>(GRAPHQL_ENDPOINT, {
+    headers: {
+      Authorization: `bearer ${accessToken}`,
+    },
+    query: `
+      mutation {
+        me {
+          setGrade(
+            sessionId: "${sessionId}",
+            userAnswerIndex:${userAnswerIndex},
+            userExpectationIndex:${userExpectationIndex}
+            grade:"${grade}"
+          ) {
+            username
+            graderGrade
+            createdAt
+            question {
+              text
+              expectations {
+                text
+              }
+            }
+            userResponses {
+              text
+              expectationScores {
+                classifierGrade
+                graderGrade
+              }
+            }
+            lesson {
+              name
+              lessonId
+              createdBy
+              userPermissions {
+                view
+                edit
+              }
+            }
+          }
+        }
+      }
+    `,
+  });
+  // TODO: must handle errors including in tests
+  return result.data.data!.me.setGrade;
+}
+
+export async function fetchLessons(
+  filter: any,
+  limit: number,
+  cursor: string,
+  sortBy: string,
+  sortAscending: boolean,
+  accessToken: string
+): Promise<Connection<Lesson>> {
+  const result = await axios.post<GQLResponse<FetchLessons>>(GRAPHQL_ENDPOINT, {
+    headers: {
+      Authorization: `bearer ${accessToken}`,
+    },
+    query: `
+      query {
+        me {
+          lessons(
             filter:"${encodeURI(JSON.stringify(filter))}"
             limit:${limit},
             cursor:"${cursor}",
@@ -57,21 +220,15 @@ export async function fetchSessions(
             edges {
               cursor
               node {
-                username
-                sessionId
-                classifierGrade
-                graderGrade
-                createdAt
-                lesson {
-                  name
-                  lessonId
-                  createdBy
-                  userPermissions {
-                    view
-                    edit
-                  }
+                lessonId
+                name
+                createdBy
+                createdByName
+                userPermissions {
+                  view
+                  edit
                 }
-                lessonCreatedBy
+                updatedAt
               }
             }
             pageInfo {
@@ -82,149 +239,25 @@ export async function fetchSessions(
             }
           }
         }
-      `,
-    }
-  );
-  // TODO: must handle errors including in tests
-  return result.data.data!.sessions;
-}
-
-export async function fetchSession(sessionId: string): Promise<Session> {
-  const result = await axios.post<GQLResponse<FetchSession>>(GRAPHQL_ENDPOINT, {
-    query: `
-      query {
-        session(sessionId: "${sessionId}") {
-          username
-          graderGrade
-          createdAt
-          question {
-            text
-            expectations {
-              text
-            }
-          }
-          userResponses {
-            text
-            expectationScores {
-              classifierGrade
-              graderGrade
-            }
-          }
-          lesson {
-            name
-            lessonId
-            createdBy
-            userPermissions {
-              view
-              edit
-            }
-          }
-        }
-      }
-    `,
-  });
-  // TODO: must handle errors including in tests
-  return result.data.data!.session;
-}
-
-export async function setGrade(
-  sessionId: string,
-  userAnswerIndex: number,
-  userExpectationIndex: number,
-  grade: string
-): Promise<Session> {
-  const result = await axios.post<GQLResponse<SetGrade>>(GRAPHQL_ENDPOINT, {
-    query: `
-      mutation {
-        setGrade(
-          sessionId: "${sessionId}",
-          userAnswerIndex:${userAnswerIndex},
-          userExpectationIndex:${userExpectationIndex}
-          grade:"${grade}"
-        ) {
-          username
-          graderGrade
-          createdAt
-          question {
-            text
-            expectations {
-              text
-            }
-          }
-          userResponses {
-            text
-            expectationScores {
-              classifierGrade
-              graderGrade
-            }
-          }
-          lesson {
-            name
-            lessonId
-            createdBy
-            userPermissions {
-              view
-              edit
-            }
-          }
-        }
-      }
-    `,
-  });
-  // TODO: must handle errors including in tests
-  return result.data.data!.setGrade;
-}
-
-export async function fetchLessons(
-  filter: any,
-  limit: number,
-  cursor: string,
-  sortBy: string,
-  sortAscending: boolean
-): Promise<Connection<Lesson>> {
-  const result = await axios.post<GQLResponse<FetchLessons>>(GRAPHQL_ENDPOINT, {
-    query: `
-      query {
-        lessons(
-          filter:"${encodeURI(JSON.stringify(filter))}"
-          limit:${limit},
-          cursor:"${cursor}",
-          sortBy:"${sortBy}",
-          sortAscending:${sortAscending}
-        ) {
-          edges {
-            cursor
-            node {
-              lessonId
-              name
-              createdBy
-              createdByName
-              userPermissions {
-                view
-                edit
-              }
-              updatedAt
-            }
-          }
-          pageInfo {
-            startCursor
-            endCursor
-            hasPreviousPage
-            hasNextPage
-          }
-        }
       }
     `,
   });
 
   // TODO: must handle errors including in tests
-  return result.data.data!.lessons;
+  return result.data.data!.me.lessons;
 }
 
-export async function fetchLesson(lessonId: string): Promise<Lesson> {
+export async function fetchLesson(
+  lessonId: string,
+  accessToken: string
+): Promise<Lesson> {
   const result = await axios.post<GQLResponse<FetchLesson>>(GRAPHQL_ENDPOINT, {
+    headers: {
+      Authorization: `bearer ${accessToken}`,
+    },
     query: `
-        query {
+      query {
+        me {
           lesson(lessonId: "${lessonId}") {
             lessonId
             intro
@@ -250,19 +283,25 @@ export async function fetchLesson(lessonId: string): Promise<Lesson> {
             }
           }
         }
-      `,
+      }
+    `,
   });
   // TODO: must handle errors including in tests
-  return result.data.data!.lesson;
+  return result.data.data!.me.lesson;
 }
 
 export async function updateLesson(
   lessonId: string,
-  lesson: string
+  lesson: string,
+  accessToken: string
 ): Promise<Lesson> {
   const result = await axios.post<GQLResponse<UpdateLesson>>(GRAPHQL_ENDPOINT, {
+    headers: {
+      Authorization: `bearer ${accessToken}`,
+    },
     query: `
-        mutation {
+      mutation {
+        me {
           updateLesson(lessonId: "${lessonId}", lesson: "${lesson}"){
             lessonId
             intro
@@ -288,41 +327,58 @@ export async function updateLesson(
             }
           }
         }
-      `,
+      }
+    `,
   });
   // TODO: must handle errors including in tests
-  return result.data.data!.updateLesson;
+  return result.data.data!.me.updateLesson;
 }
 
-export async function deleteLesson(lessonId: string): Promise<Lesson> {
+export async function deleteLesson(
+  lessonId: string,
+  accessToken: string
+): Promise<Lesson> {
   const result = await axios.post<GQLResponse<DeleteLesson>>(GRAPHQL_ENDPOINT, {
+    headers: {
+      Authorization: `bearer ${accessToken}`,
+    },
     query: `
-        mutation {
+      mutation {
+        me {
           deleteLesson(lessonId: "${lessonId}"){
             deleted
-          }
+          }  
         }
-      `,
+      }
+    `,
   });
   // TODO: must handle errors including in tests
-  return result.data.data!.deleteLesson;
+  return result.data.data!.me.deleteLesson;
 }
 
-export async function deleteSession(sessionId: string): Promise<Session> {
+export async function deleteSession(
+  sessionId: string,
+  accessToken: string
+): Promise<Session> {
   const result = await axios.post<GQLResponse<DeleteSession>>(
     GRAPHQL_ENDPOINT,
     {
+      headers: {
+        Authorization: `bearer ${accessToken}`,
+      },
       query: `
         mutation {
-          deleteSession(sessionId: "${sessionId}"){
-            deleted
+          me {
+            deleteSession(sessionId: "${sessionId}"){
+              deleted
+            }  
           }
         }
       `,
     }
   );
   // TODO: must handle errors including in tests
-  return result.data.data!.deleteSession;
+  return result.data.data!.me.deleteSession;
 }
 
 export async function trainLesson(lessonId: string): Promise<TrainJob> {
@@ -342,13 +398,16 @@ export async function fetchTrainingStatus(
   return result.data.data!;
 }
 
-export async function login(accessToken: string): Promise<User> {
+export async function login(accessToken: string): Promise<UserAccessToken> {
   const result = await axios.post<GQLResponse<Login>>(GRAPHQL_ENDPOINT, {
     query: `
       mutation {
         login(accessToken: "${accessToken}") {
-          id
-          name
+          user {
+            id
+            name  
+          }
+          accessToken
         }
       }
     `,
@@ -356,13 +415,18 @@ export async function login(accessToken: string): Promise<User> {
   return result.data.data!.login;
 }
 
-export async function loginGoogle(accessToken: string): Promise<User> {
+export async function loginGoogle(
+  accessToken: string
+): Promise<UserAccessToken> {
   const result = await axios.post<GQLResponse<LoginGoogle>>(GRAPHQL_ENDPOINT, {
     query: `
       mutation {
         loginGoogle(accessToken: "${accessToken}") {
-          id
-          name
+          user {
+            id
+            name  
+          }
+          accessToken
         }
       }
     `,

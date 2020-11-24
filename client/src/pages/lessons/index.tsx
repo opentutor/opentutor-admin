@@ -169,6 +169,7 @@ const LessonItem = (props: {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const deleteMenuOpen = Boolean(anchorEl);
   const context = useContext(ToggleContext);
+  const [cookies] = useCookies(["accessToken"]);
 
   function canEdit() {
     const lesson = row.node;
@@ -200,7 +201,7 @@ const LessonItem = (props: {
 
   const confirmDelete = () => {
     toast("Deleting...");
-    deleteLesson(row.node.lessonId)
+    deleteLesson(row.node.lessonId, cookies.accessToken)
       .then(() => {
         onDeleted(row.node.lessonId);
         setAnchorEl(null);
@@ -277,6 +278,7 @@ const LessonItem = (props: {
 const LessonsTable = (props: { location: any }) => {
   const classes = useStyles();
   const context = useContext(ToggleContext);
+  const [cookies] = useCookies(["accessToken"]);
   const [lessons, setLessons] = React.useState<Connection<Lesson>>();
   const [cursor, setCursor] = React.useState("");
   const [sortBy, setSortBy] = React.useState("updatedAt");
@@ -307,7 +309,14 @@ const LessonsTable = (props: { location: any }) => {
       filter["createdBy"] = `${context.user?.id}`;
     }
     let mounted = true;
-    fetchLessons(filter, rowsPerPage, cursor, sortBy, sortAsc)
+    fetchLessons(
+      filter,
+      rowsPerPage,
+      cursor,
+      sortBy,
+      sortAsc,
+      cookies.accessToken
+    )
       .then((lessons) => {
         if (mounted && lessons) {
           setLessons(lessons);
@@ -371,6 +380,7 @@ const LessonsTable = (props: { location: any }) => {
 const LessonsPage = (props: { location: any; path: string; children: any }) => {
   const context = useContext(ToggleContext);
   const [cookies] = useCookies(["accessToken"]);
+
   if (typeof window !== "undefined" && !cookies.accessToken) {
     navigate(withPrefix(`/`));
     return <div></div>;

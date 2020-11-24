@@ -4,7 +4,7 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import { navigate, withPrefix } from "gatsby";
+import { navigate } from "gatsby";
 import React, { useContext } from "react";
 import { useCookies } from "react-cookie";
 import {
@@ -17,6 +17,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import NavBar from "components/nav-bar";
 import ToggleContext from "context/toggle";
 import { getClientID } from "config";
+import { loginGoogle } from "api";
+import { UserAccessToken } from "types";
 import "styles/layout.css";
 
 const useStyles = makeStyles((theme) => ({
@@ -69,8 +71,9 @@ export const LoginMenu = (props: { path: string; children: any }) => {
       return;
     }
     const loginResponse = response as GoogleLoginResponse;
-    // TODO: use google access token to get opentutor access token, which doesn't expire
-    setCookie("accessToken", loginResponse.accessToken, { path: "/" });
+    loginGoogle(loginResponse.accessToken).then((token: UserAccessToken) => {
+      setCookie("accessToken", token.accessToken, { path: "/" });
+    });
   };
 
   if (cookies.accessToken) {

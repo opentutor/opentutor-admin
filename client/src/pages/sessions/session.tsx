@@ -44,6 +44,7 @@ const useStyles = makeStyles({
 const SessionTable = ({ search }: { search: any }) => {
   const { sessionId } = search;
   const classes = useStyles();
+  const [cookies] = useCookies(["accessToken"]);
   const context = useContext(ToggleContext);
   const [session, setSession] = React.useState<Session>();
   const [date, setDate] = React.useState<string>("");
@@ -58,7 +59,8 @@ const SessionTable = ({ search }: { search: any }) => {
       sessionId,
       Number(indexSplit[0]),
       Number(indexSplit[1]),
-      event.target.value as string
+      event.target.value as string,
+      cookies.accessToken
     )
       .then((session: Session) => {
         if (session) {
@@ -78,7 +80,7 @@ const SessionTable = ({ search }: { search: any }) => {
 
   React.useEffect(() => {
     let mounted = true;
-    fetchSession(sessionId)
+    fetchSession(sessionId, cookies.accessToken)
       .then((session: Session) => {
         if (mounted && session) {
           setSession(session);

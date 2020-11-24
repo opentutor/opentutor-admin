@@ -48,14 +48,17 @@ export function cyMockGraphQL(cy, args: MockGraphQLArgs): void {
   }
 }
 
-export function cyLoginGoogle(cy): MockGraphQLQuery {
+export function cyLogin(cy): MockGraphQLQuery {
   cy.route("**/config", { GOOGLE_CLIENT_ID: "test" });
   cy.setCookie("accessToken", "accessToken");
-  return cyMockByQueryName("loginGoogle", {
-    loginGoogle: {
-      id: "kayla",
-      name: "Kayla",
-      email: "kayla@opentutor.com",
+  return cyMockByQueryName("login", {
+    login: {
+      user: {
+        id: "kayla",
+        name: "Kayla",
+        email: "kayla@opentutor.com",  
+      },
+      accessToken: 'accessToken'
     },
   });
 }

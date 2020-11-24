@@ -58,18 +58,6 @@ export interface ExpectationScore {
   graderGrade?: string;
 }
 
-export interface FetchSession {
-  session: Session;
-}
-
-export interface FetchSessions {
-  sessions: Connection<Session>;
-}
-
-export interface SetGrade {
-  setGrade: Session;
-}
-
 export interface Lesson {
   lessonId: string;
   name: string;
@@ -102,26 +90,6 @@ export interface LessonExpectation {
 
 export interface Hint {
   text: string;
-}
-
-export interface FetchLesson {
-  lesson: Lesson;
-}
-
-export interface FetchLessons {
-  lessons: Connection<Lesson>;
-}
-
-export interface UpdateLesson {
-  updateLesson: Lesson;
-}
-
-export interface DeleteLesson {
-  deleteLesson: Lesson;
-}
-
-export interface DeleteSession {
-  deleteSession: Session;
 }
 
 export interface TrainJob {
@@ -158,12 +126,67 @@ export interface TrainingInfo {
 export interface User {
   id: string;
   name: string;
+  email: string;
+}
+
+export interface UserAccessToken {
+  user: User;
+  accessToken: string;
+  expirationDate: string;
 }
 
 export interface Login {
-  login: User;
+  login: UserAccessToken;
 }
 
 export interface LoginGoogle {
-  loginGoogle: User;
+  loginGoogle: UserAccessToken;
+}
+
+export interface FetchSession {
+  me: {
+    session: Session;
+  };
+}
+
+export interface FetchSessions {
+  me: {
+    sessions: Connection<Session>;
+  };
+}
+
+export interface SetGrade {
+  me: {
+    setGrade: Session;
+  };
+}
+
+export interface FetchLesson {
+  me: {
+    lesson: Lesson;
+  };
+}
+
+export interface FetchLessons {
+  me: {
+    lessons: Connection<Lesson>;
+  };
+}
+
+export interface UpdateLesson {
+  me: {
+    updateLesson: Lesson;
+  };
+}
+
+export interface DeleteLesson {
+  me: {
+    deleteLesson: Lesson;
+  };
+}
+
+export interface DeleteSession {
+  me: {
+    deleteSession: Session;
+  };
 }
