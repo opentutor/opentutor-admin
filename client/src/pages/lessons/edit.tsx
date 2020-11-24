@@ -131,6 +131,7 @@ const LessonEdit = (props: {
   search: { lessonId: string; trainStatusPollInterval?: number };
 }) => {
   const { lessonId } = props.search;
+  const [cookies] = useCookies(["accessToken"]);
   const context = useContext(ToggleContext);
   const trainStatusPollInterval = !isNaN(
     Number(props.search.trainStatusPollInterval)
@@ -150,7 +151,7 @@ const LessonEdit = (props: {
 
   React.useEffect(() => {
     if (lessonId) {
-      fetchLesson(lessonId)
+      fetchLesson(lessonId, cookies.accessToken)
         .then((lesson: Lesson) => {
           setLesson({ ...lesson });
         })
@@ -251,7 +252,7 @@ const LessonEdit = (props: {
     }
     const encodedLesson = encodeURI(JSON.stringify(convertedLesson));
     const origId = lessonId || lesson.lessonId;
-    updateLesson(origId, encodedLesson)
+    updateLesson(origId, encodedLesson, cookies.accessToken)
       .then((lesson) => {
         if (lesson) {
           setLesson(lesson);

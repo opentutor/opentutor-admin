@@ -239,6 +239,7 @@ const SessionsTable = (props: {
   search: { lessonId: string };
 }) => {
   const classes = useStyles();
+  const [cookies] = useCookies(["accessToken"]);
   const context = useContext(ToggleContext);
   const [sessions, setSessions] = React.useState<Connection<Session>>();
   const [cursor, setCursor] = React.useState("");
@@ -272,7 +273,14 @@ const SessionsTable = (props: {
       filter["lessonId"] = lessonId;
     }
     let mounted = true;
-    fetchSessions(filter, rowsPerPage, cursor, sortBy, sortAsc)
+    fetchSessions(
+      filter,
+      rowsPerPage,
+      cursor,
+      sortBy,
+      sortAsc,
+      cookies.accessToken
+    )
       .then((sessions) => {
         if (mounted && sessions) {
           setSessions(sessions);

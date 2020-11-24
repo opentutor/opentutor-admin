@@ -4,35 +4,37 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import { cySetup, cyLoginGoogle, cyMockGraphQL, MockGraphQLQuery, cyMockByQueryName } from "../support/functions";
+import { cySetup, cyLogin, cyMockGraphQL, MockGraphQLQuery, cyMockByQueryName } from "../support/functions";
 
 function cyMockLesson(): MockGraphQLQuery {
   return cyMockByQueryName("lesson", {
-    lesson: {
-      lessonId: "q1",
-      name: "lesson",
-      intro: "introduction",
-      question: "question",
-      image: null,
-      conclusion: ["conclusion"],
-      expectations: [
-        {
-          expectation: "expectation 1",
-          hints: [
-            {
-              text: "hint 1.1",
+    me: {
+      lesson: {
+        lessonId: "q1",
+        name: "lesson",
+        intro: "introduction",
+        question: "question",
+        image: null,
+        conclusion: ["conclusion"],
+        expectations: [
+          {
+            expectation: "expectation 1",
+            hints: [
+              {
+                text: "hint 1.1",
+              },
+            ],
+            features: {
+              bad: ["bad1", "bad2"],
             },
-          ],
-          features: {
-            bad: ["bad1", "bad2"],
           },
+        ],
+        createdByName: 'OpenTutor',
+        userPermissions: {
+          edit: true,
+          view: true,
         },
-      ],
-      createdByName: 'OpenTutor',
-      userPermissions: {
-        edit: true,
-        view: true,
-      },
+      }
     }
   });
 }
@@ -41,10 +43,10 @@ describe("lesson screen", () => {
   it("new lesson has default values", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLoginGoogle(cy)],
+      mocks: [cyLogin(cy)],
     });
     cy.visit("/lessons/edit");
-    cy.wait("@loginGoogle");
+    cy.wait("@login");
     cy.get("#lesson-name").should("have.value", "Display name for the lesson");
     cy.get("#lesson-creator").should("have.value", "Kayla");
     cy.get("#intro").should(
@@ -78,10 +80,10 @@ describe("lesson screen", () => {
   it("edits a new lesson", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLoginGoogle(cy)],
+      mocks: [cyLogin(cy)],
     });
     cy.visit("/lessons/edit");
-    cy.wait("@loginGoogle");
+    cy.wait("@login");
     cy.get("#lesson-name").fill("Review Diode Current Flow");
     cy.get("#lesson-id").fill("review-diode-current-flow");
     cy.get("#intro").fill(
@@ -134,20 +136,20 @@ describe("lesson screen", () => {
   it("launch lesson disabled if new lesson", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLoginGoogle(cy)],
+      mocks: [cyLogin(cy)],
     });
     cy.visit("/lessons/edit");
-    cy.wait("@loginGoogle");
+    cy.wait("@login");
     cy.get("#launch-button").should("be.disabled");
   });
 
   it("can expand and collapse an expectation", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLoginGoogle(cy)],
+      mocks: [cyLogin(cy)],
     });
     cy.visit("/lessons/edit");
-    cy.wait("@loginGoogle");
+    cy.wait("@login");
     // expectation is expanded by default
     cy.get("#expectation-0 #edit-expectation");
     cy.get("#expectation-0 #hints");
@@ -166,10 +168,10 @@ describe("lesson screen", () => {
   it("adds and deletes an expectation", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLoginGoogle(cy)],
+      mocks: [cyLogin(cy)],
     });
     cy.visit("/lessons/edit");
-    cy.wait("@loginGoogle");
+    cy.wait("@login");
     // must have at least 1 expectation
     cy.get("#expectations").children().should("have.length", 1);
     cy.get("#expectation-0 #delete").should("not.exist");
@@ -183,10 +185,10 @@ describe("lesson screen", () => {
   it("adds and deletes a hint", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLoginGoogle(cy)],
+      mocks: [cyLogin(cy)],
     });
     cy.visit("/lessons/edit");
-    cy.wait("@loginGoogle");
+    cy.wait("@login");
     // must have at least 1 hint
     cy.get("#hints").children().should("have.length", 1);
     cy.get("#hint-0 #delete").should("not.exist");
@@ -200,10 +202,10 @@ describe("lesson screen", () => {
   it("adds and deletes a conclusion", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLoginGoogle(cy)],
+      mocks: [cyLogin(cy)],
     });
     cy.visit("/lessons/edit");
-    cy.wait("@loginGoogle");
+    cy.wait("@login");
     // must have at least 1 conclusion
     cy.get("#conclusions").children().should("have.length", 1);
     cy.get("#conclusion-0 #delete").should("not.exist");
@@ -217,10 +219,10 @@ describe("lesson screen", () => {
   it("loads a lesson", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLoginGoogle(cy), cyMockLesson()],
+      mocks: [cyLogin(cy), cyMockLesson()],
     });
     cy.visit("/lessons/edit?lessonId=q1");
-    cy.wait("@loginGoogle");
+    cy.wait("@login");
     cy.wait("@lesson");
     cy.get("#lesson-id").should("have.value", "q1");
     cy.get("#lesson-name").should("have.value", "lesson");
@@ -256,10 +258,10 @@ describe("lesson screen", () => {
   it("save button by default not visible", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLoginGoogle(cy), cyMockLesson()],
+      mocks: [cyLogin(cy), cyMockLesson()],
     });
     cy.visit("/lessons/edit?lessonId=q1");
-    cy.wait("@loginGoogle");
+    cy.wait("@login");
     cy.wait("@lesson");
     cy.get("#save-button").should("not.visible");
   });
@@ -267,10 +269,10 @@ describe("lesson screen", () => {
   it("validates lessonId", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLoginGoogle(cy), cyMockLesson()],
+      mocks: [cyLogin(cy), cyMockLesson()],
     });
     cy.visit("/lessons/edit?lessonId=q1");
-    cy.wait("@loginGoogle");
+    cy.wait("@login");
     cy.wait("@lesson");
     // no capitals
     cy.get("#lesson-id").clear().type("A");
@@ -289,10 +291,10 @@ describe("lesson screen", () => {
   it("launches lesson", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLoginGoogle(cy), cyMockLesson()],
+      mocks: [cyLogin(cy), cyMockLesson()],
     });
     cy.visit("/lessons/edit?lessonId=q1");
-    cy.wait("@loginGoogle");
+    cy.wait("@login");
     cy.wait("@lesson");
     cy.get("#launch-button").trigger('mouseover').click();
     cy.location("pathname").should("eq", "/tutor");
@@ -301,10 +303,10 @@ describe("lesson screen", () => {
   it("making an edit toggles save button visible", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLoginGoogle(cy), cyMockLesson()],
+      mocks: [cyLogin(cy), cyMockLesson()],
     });
     cy.visit("/lessons/edit?lessonId=q1");
-    cy.wait("@loginGoogle");
+    cy.wait("@login");
     cy.wait("@lesson");
     cy.get("#lesson-name").clear().type("{backspace}");
     cy.get("#save-button").should("be.visible");
@@ -313,10 +315,10 @@ describe("lesson screen", () => {
   it("makes an edit and clicks on save", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLoginGoogle(cy), cyMockLesson()],
+      mocks: [cyLogin(cy), cyMockLesson()],
     });
     cy.visit("/lessons/edit?lessonId=q1");
-    cy.wait("@loginGoogle");
+    cy.wait("@login");
     cy.wait("@lesson");
     cy.get("#lesson-name").clear().type("{backspace}");
     cy.get("#save-button").trigger('mouseover').click();
@@ -325,37 +327,39 @@ describe("lesson screen", () => {
   it("hides if user does not have permission to edit", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLoginGoogle(cy), cyMockByQueryName("lesson", {
-        lesson: {
-          lessonId: "q1",
-          name: "lesson",
-          introduction: "introduction",
-          question: "question",
-          image: null,
-          conclusion: ["conclusion"],
-          expectations: [
-            {
-              expectation: "expectation 1",
-              hints: [
-                {
-                  text: "hint 1.1",
+      mocks: [cyLogin(cy), cyMockByQueryName("lesson", {
+        me: {
+          lesson: {
+            lessonId: "q1",
+            name: "lesson",
+            introduction: "introduction",
+            question: "question",
+            image: null,
+            conclusion: ["conclusion"],
+            expectations: [
+              {
+                expectation: "expectation 1",
+                hints: [
+                  {
+                    text: "hint 1.1",
+                  },
+                ],
+                features: {
+                  bad: ["bad1", "bad2"],
                 },
-              ],
-              features: {
-                bad: ["bad1", "bad2"],
               },
+            ],
+            createdByName: 'Kayla',
+            userPermissions: {
+              edit: false,
+              view: false,
             },
-          ],
-          createdByName: 'Kayla',
-          userPermissions: {
-            edit: false,
-            view: false,
-          },
+          }
         }
       })],
     });
     cy.visit("/lessons/edit?lessonId=q1");
-    cy.wait("@loginGoogle");
+    cy.wait("@login");
     cy.wait("@lesson");
     cy.contains("You do not have the permissions to edit or view this lesson");
   });
@@ -363,38 +367,40 @@ describe("lesson screen", () => {
   it("shows if user created lesson", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLoginGoogle(cy), cyMockByQueryName("lesson", {
-        lesson: {
-          lessonId: "q1",
-          name: "lesson",
-          introduction: "introduction",
-          question: "question",
-          image: null,
-          conclusion: ["conclusion"],
-          expectations: [
-            {
-              expectation: "expectation 1",
-              hints: [
-                {
-                  text: "hint 1.1",
+      mocks: [cyLogin(cy), cyMockByQueryName("lesson", {
+        me: {
+          lesson: {
+            lessonId: "q1",
+            name: "lesson",
+            introduction: "introduction",
+            question: "question",
+            image: null,
+            conclusion: ["conclusion"],
+            expectations: [
+              {
+                expectation: "expectation 1",
+                hints: [
+                  {
+                    text: "hint 1.1",
+                  },
+                ],
+                features: {
+                  bad: ["bad1", "bad2"],
                 },
-              ],
-              features: {
-                bad: ["bad1", "bad2"],
               },
+            ],
+            createdBy: 'kayla',
+            createdByName: 'Kayla',
+            userPermissions: {
+              edit: false,
+              view: false,
             },
-          ],
-          createdBy: 'kayla',
-          createdByName: 'Kayla',
-          userPermissions: {
-            edit: false,
-            view: false,
-          },
+          }
         }
       })],
     });
     cy.visit("/lessons/edit?lessonId=q1");
-    cy.wait("@loginGoogle");
+    cy.wait("@login");
     cy.wait("@lesson");
     cy.get("#lesson-name");
   });

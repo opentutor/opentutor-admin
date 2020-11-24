@@ -4,57 +4,59 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import { cySetup, cyLoginGoogle, cyMockGraphQL, MockGraphQLQuery, cyMockByQueryName } from "../support/functions";
+import { cySetup, cyLogin, cyMockGraphQL, MockGraphQLQuery, cyMockByQueryName } from "../support/functions";
 
 function cyMockSession(): MockGraphQLQuery {
   return cyMockByQueryName("session", {
-    session: {
-      username: "username1",
-      sessionId: "session1",
-      createdAt: "1/1/2001",
-      lesson: {
-        name: "lesson 1",
-        userPermissions: {
-          edit: true,
-          view: true,
+    me: {
+      session: {
+        username: "username1",
+        sessionId: "session1",
+        createdAt: "1/1/2001",
+        lesson: {
+          name: "lesson 1",
+          userPermissions: {
+            edit: true,
+            view: true,
+          },
         },
-      },
-      graderGrade: null,
-      question: {
-        text: "question?",
-        expectations: [
-          { text: "expected text 1" },
-          { text: "expected text 2" },
+        graderGrade: null,
+        question: {
+          text: "question?",
+          expectations: [
+            { text: "expected text 1" },
+            { text: "expected text 2" },
+          ],
+        },
+        userResponses: [
+          {
+            text: "answer 1",
+            expectationScores: [
+              {
+                classifierGrade: "Good",
+                graderGrade: "",
+              },
+              {
+                classifierGrade: "Bad",
+                graderGrade: "",
+              },
+            ],
+          },
+          {
+            text: "answer 2",
+            expectationScores: [
+              {
+                classifierGrade: "Bad",
+                graderGrade: "",
+              },
+              {
+                classifierGrade: "Good",
+                graderGrade: "",
+              },
+            ],
+          },
         ],
-      },
-      userResponses: [
-        {
-          text: "answer 1",
-          expectationScores: [
-            {
-              classifierGrade: "Good",
-              graderGrade: "",
-            },
-            {
-              classifierGrade: "Bad",
-              graderGrade: "",
-            },
-          ],
-        },
-        {
-          text: "answer 2",
-          expectationScores: [
-            {
-              classifierGrade: "Bad",
-              graderGrade: "",
-            },
-            {
-              classifierGrade: "Good",
-              graderGrade: "",
-            },
-          ],
-        },
-      ],
+      }
     }
   });
 }
@@ -63,10 +65,10 @@ describe("session screen", () => {
   it("shows lesson name", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLoginGoogle(cy), cyMockSession()],
+      mocks: [cyLogin(cy), cyMockSession()],
     });
     cy.visit("/sessions/session?sessionId=session1");
-    cy.wait("@loginGoogle");
+    cy.wait("@login");
     cy.wait("@session");
     cy.get("#lesson").should("contain", "lesson 1");
   });
@@ -74,10 +76,10 @@ describe("session screen", () => {
   it("shows session username", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLoginGoogle(cy), cyMockSession()],
+      mocks: [cyLogin(cy), cyMockSession()],
     });
     cy.visit("/sessions/session?sessionId=session1");
-    cy.wait("@loginGoogle");
+    cy.wait("@login");
     cy.wait("@session");
     cy.get("#username").should("contain", "username1");
   });
@@ -85,10 +87,10 @@ describe("session screen", () => {
   it("shows session date", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLoginGoogle(cy), cyMockSession()],
+      mocks: [cyLogin(cy), cyMockSession()],
     });
     cy.visit("/sessions/session?sessionId=session1");
-    cy.wait("@loginGoogle");
+    cy.wait("@login");
     cy.wait("@session");
     cy.get("#date").should("contain", "1/1/2001");
   });
@@ -96,10 +98,10 @@ describe("session screen", () => {
   it("shows lesson question", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLoginGoogle(cy), cyMockSession()],
+      mocks: [cyLogin(cy), cyMockSession()],
     });
     cy.visit("/sessions/session?sessionId=session1");
-    cy.wait("@loginGoogle");
+    cy.wait("@login");
     cy.wait("@session");
     cy.get("#question").should("contain", "question?");
   });
@@ -107,10 +109,10 @@ describe("session screen", () => {
   it("shows session score", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLoginGoogle(cy), cyMockSession()],
+      mocks: [cyLogin(cy), cyMockSession()],
     });
     cy.visit("/sessions/session?sessionId=session1");
-    cy.wait("@loginGoogle");
+    cy.wait("@login");
     cy.wait("@session");
     cy.get("#score").should("contain", "Score: ?");
   });
@@ -118,10 +120,10 @@ describe("session screen", () => {
   it("shows user responses", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLoginGoogle(cy), cyMockSession()],
+      mocks: [cyLogin(cy), cyMockSession()],
     });
     cy.visit("/sessions/session?sessionId=session1");
-    cy.wait("@loginGoogle");
+    cy.wait("@login");
     cy.wait("@session");
     cy.get("#response-0 #answer").should("contain", "answer 1");
     cy.get("#response-0 #grade-0 #classifier-grade").should("contain", "Good");
@@ -134,10 +136,10 @@ describe("session screen", () => {
   it("grades first response", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLoginGoogle(cy), cyMockSession()],
+      mocks: [cyLogin(cy), cyMockSession()],
     });
     cy.visit("/sessions/session?sessionId=session1");
-    cy.wait("@loginGoogle");
+    cy.wait("@login");
     cy.wait("@session");
     cy.get("#response-0 #grade-0 #select-grade").should("have.value", "");
     cy.get("#response-0 #grade-0 #select-grade").trigger('mouseover').click();
@@ -147,20 +149,22 @@ describe("session screen", () => {
   it("hides if user does not have permission to edit", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLoginGoogle(cy), cyMockByQueryName("session", {
-        session: {
-          lesson: {
-            name: "lesson 1",
-            userPermissions: {
-              edit: false,
-              view: true,
+      mocks: [cyLogin(cy), cyMockByQueryName("session", {
+        me: {
+          session: {
+            lesson: {
+              name: "lesson 1",
+              userPermissions: {
+                edit: false,
+                view: true,
+              },
             },
-          },
+          }            
         }
       })],
     });
     cy.visit("/sessions/session?sessionId=session1");
-    cy.wait("@loginGoogle");
+    cy.wait("@login");
     cy.wait("@session");
     cy.contains("You do not have the permissions to grade this session");
   });
@@ -168,60 +172,62 @@ describe("session screen", () => {
   it("shows if user created lesson", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLoginGoogle(cy), cyMockByQueryName("session", {
-        session: {
-          username: "username1",
-          sessionId: "session1",
-          createdAt: "1/1/2001",
-          lesson: {
-            name: "lesson 1",
-            createdBy: 'kayla',
-            userPermissions: {
-              edit: false,
-              view: true,
+      mocks: [cyLogin(cy), cyMockByQueryName("session", {
+        me: {
+          session: {
+            username: "username1",
+            sessionId: "session1",
+            createdAt: "1/1/2001",
+            lesson: {
+              name: "lesson 1",
+              createdBy: 'kayla',
+              userPermissions: {
+                edit: false,
+                view: true,
+              },
             },
-          },
-          graderGrade: null,
-          question: {
-            text: "question?",
-            expectations: [
-              { text: "expected text 1" },
-              { text: "expected text 2" },
+            graderGrade: null,
+            question: {
+              text: "question?",
+              expectations: [
+                { text: "expected text 1" },
+                { text: "expected text 2" },
+              ],
+            },
+            userResponses: [
+              {
+                text: "answer 1",
+                expectationScores: [
+                  {
+                    classifierGrade: "Good",
+                    graderGrade: "",
+                  },
+                  {
+                    classifierGrade: "Bad",
+                    graderGrade: "",
+                  },
+                ],
+              },
+              {
+                text: "answer 2",
+                expectationScores: [
+                  {
+                    classifierGrade: "Bad",
+                    graderGrade: "",
+                  },
+                  {
+                    classifierGrade: "Good",
+                    graderGrade: "",
+                  },
+                ],
+              },
             ],
-          },
-          userResponses: [
-            {
-              text: "answer 1",
-              expectationScores: [
-                {
-                  classifierGrade: "Good",
-                  graderGrade: "",
-                },
-                {
-                  classifierGrade: "Bad",
-                  graderGrade: "",
-                },
-              ],
-            },
-            {
-              text: "answer 2",
-              expectationScores: [
-                {
-                  classifierGrade: "Bad",
-                  graderGrade: "",
-                },
-                {
-                  classifierGrade: "Good",
-                  graderGrade: "",
-                },
-              ],
-            },
-          ],
+          }
         }
       })],
     });
     cy.visit("/sessions/session?sessionId=session1");
-    cy.wait("@loginGoogle");
+    cy.wait("@login");
     cy.wait("@session");
     cy.get("#lesson");
   });});
