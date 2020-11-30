@@ -178,7 +178,8 @@ const SessionItem = (props: { row: Edge<Session>; i: number }) => {
     return (
       lesson &&
       (lesson.createdBy === `${context.user?.id}` ||
-        lesson.userPermissions?.edit)
+        context.user?.isAdmin ||
+        context.user?.isContentManager)
     );
   }
 

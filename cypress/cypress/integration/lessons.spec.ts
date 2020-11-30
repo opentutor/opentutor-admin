@@ -23,10 +23,6 @@ function cyMockLessons(): MockGraphQLQuery {
               lessonId: "lesson1",
               name: "lesson 1",
               createdByName: "teacher 1",
-              userPermissions: {
-                edit: true,
-                view: true,
-              },
               updatedAt: "1/1/20000, 12:00:00 AM",
             },
           },
@@ -36,10 +32,6 @@ function cyMockLessons(): MockGraphQLQuery {
               lessonId: "lesson2",
               name: "lesson 2",
               createdByName: "teacher 2",
-              userPermissions: {
-                edit: true,
-                view: true,
-              },
               updatedAt: "1/1/20000, 12:00:00 AM",
             },
           },
@@ -57,7 +49,7 @@ describe("lessons screen", () => {
   it("displays lesson table with headers", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLogin(cy), cyMockLessons()],
+      mocks: [cyLogin(cy, true), cyMockLessons()],
     });
     cy.visit("/lessons");
     cy.wait("@login");
@@ -74,7 +66,7 @@ describe("lessons screen", () => {
   it("displays a list of lessons", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLogin(cy), cyMockLessons()],
+      mocks: [cyLogin(cy, true), cyMockLessons()],
     });
     cy.visit("/lessons");
     cy.wait("@login");
@@ -97,7 +89,7 @@ describe("lessons screen", () => {
   it("opens edit for a lesson", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLogin(cy), cyMockLessons()],
+      mocks: [cyLogin(cy, true), cyMockLessons()],
     });
     cy.visit("/lessons");
     cy.wait("@login");
@@ -110,7 +102,7 @@ describe("lessons screen", () => {
   it("opens grade for a lesson", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLogin(cy), cyMockLessons()],
+      mocks: [cyLogin(cy, true), cyMockLessons()],
     });
     cy.visit("/lessons");
     cy.wait("@login");
@@ -123,7 +115,7 @@ describe("lessons screen", () => {
   it("launches a lesson", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLogin(cy), cyMockLessons()],
+      mocks: [cyLogin(cy, true), cyMockLessons()],
     });
     cy.visit("/lessons");
     cy.wait("@login");
@@ -138,7 +130,7 @@ describe("lessons screen", () => {
   it("clicks on create lesson and opens to an edit page for new lesson", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLogin(cy), cyMockLessons()],
+      mocks: [cyLogin(cy, true), cyMockLessons()],
     });
     cy.visit("/lessons");
     cy.wait("@login");
@@ -150,43 +142,7 @@ describe("lessons screen", () => {
   it("disables edit, grade, and delete if user does not have edit permissions", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [
-        cyLogin(cy),
-        cyMockByQueryName("lessons", {
-          me: {
-            lessons: {
-              edges: [
-                {
-                  cursor: "cursor 1",
-                  node: {
-                    lessonId: "lesson1",
-                    name: "lesson 1",
-                    updatedAt: "1/1/20000, 12:00:00 AM",
-                    createdByName: "teacher 1",
-                    userPermissions: {
-                      edit: false,
-                      view: true,
-                    },
-                  },
-                },
-                {
-                  cursor: "cursor 2",
-                  node: {
-                    lessonId: "lesson2",
-                    name: "lesson 2",
-                    updatedAt: "1/1/20000, 12:00:00 AM",
-                    createdByName: "teacher 2",
-                  },
-                },
-              ],
-              pageInfo: {
-                hasNextPage: false,
-                endCursor: "cursor 2",
-              },
-            },
-          }
-        }),
-      ],
+      mocks: [cyLogin(cy), cyMockLessons()],
     });
     cy.visit("/lessons");
     cy.wait("@login");

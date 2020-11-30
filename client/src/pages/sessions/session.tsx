@@ -101,7 +101,8 @@ const SessionTable = ({ search }: { search: any }) => {
     return (
       lesson &&
       (lesson.createdBy === `${context.user?.id}` ||
-        lesson.userPermissions?.edit)
+        context.user?.isAdmin ||
+        context.user?.isContentManager)
     );
   }
 

@@ -14,17 +14,13 @@ describe("screenshots - grade session", () => {
   it("displays feedback after answer marked good", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLogin(cy), cyMockByQueryName("session", {
+      mocks: [cyLogin(cy, true), cyMockByQueryName("session", {
         me: {
           session: {
             sessionId: "session1",
             lesson: {
               name: "lesson 1",
               createdByName: "username1",
-              userPermissions: {
-                edit: true,
-                view: true,
-              },
             },
             graderGrade: null,
             question: {

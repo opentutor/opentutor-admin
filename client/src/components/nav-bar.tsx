@@ -61,6 +61,12 @@ const NavMenu = () => {
         </ListItemIcon>
         <ListItemText primary="Grading" />
       </ListItem>
+      <ListItem button component={Link} to={withPrefix("/users")}>
+        <ListItemIcon>
+          <ListIcon />
+        </ListItemIcon>
+        <ListItemText primary="Users" />
+      </ListItem>
     </List>
   );
 };

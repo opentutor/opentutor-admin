@@ -14,7 +14,7 @@ describe("screenshots - lesson edit", () => {
   it("displays lesson form on load", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLogin(cy), cyMockByQueryName("lesson", {
+      mocks: [cyLogin(cy, true), cyMockByQueryName("lesson", {
         me: {
           lesson: {
             lessonId: "lesson",
@@ -32,10 +32,6 @@ describe("screenshots - lesson edit", () => {
             features: {},
             lastTrainedAt: "",
             isTrainable: true,
-            userPermissions: {
-              edit: true,
-              view: true,
-            }
           },
         }
       })],
@@ -49,7 +45,7 @@ describe("screenshots - lesson edit", () => {
   it("displays save button enabled after edits", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLogin(cy), cyMockByQueryName("lesson", {
+      mocks: [cyLogin(cy, true), cyMockByQueryName("lesson", {
         me: {
           lesson: {
             lessonId: "lesson",
@@ -65,10 +61,6 @@ describe("screenshots - lesson edit", () => {
             },],
             lastTrainedAt: "",
             isTrainable: true,
-            userPermissions: {
-              edit: true,
-              view: true,
-            }
           },
         }
       })],

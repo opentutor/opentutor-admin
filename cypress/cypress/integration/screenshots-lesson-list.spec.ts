@@ -14,7 +14,7 @@ describe("screenshots - lesson list", () => {
   it("displays a list of lessons", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLogin(cy), cyMockByQueryName("lessons", {
+      mocks: [cyLogin(cy, true), cyMockByQueryName("lessons", {
         me: {
           lessons: {
             edges: [

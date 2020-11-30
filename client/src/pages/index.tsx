@@ -12,6 +12,7 @@ import CreatePage from "pages/lessons/index";
 import EditPage from "pages/lessons/edit";
 import SessionsPage from "pages/sessions/index";
 import SessionPage from "pages/sessions/session";
+import UsersPage from "pages/users/index";
 import "styles/layout.css";
 
 const IndexPage: React.FC = (props: any) => {
@@ -24,6 +25,7 @@ const IndexPage: React.FC = (props: any) => {
         <SessionsPage path={withPrefix("sessions")}>
           <SessionPage path={withPrefix("sessions/session")} />
         </SessionsPage>
+        <UsersPage path={withPrefix("users")} />
       </LoginMenu>
     </Router>
   );

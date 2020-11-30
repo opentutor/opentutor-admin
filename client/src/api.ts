@@ -19,9 +19,12 @@ import {
   TrainJob,
   TrainStatus,
   Connection,
+  FetchUsers,
+  UpdateUserPermissions,
   LoginGoogle,
   Login,
   UserAccessToken,
+  User,
 } from "types";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const urljoin = require("url-join");
@@ -69,10 +72,6 @@ export async function fetchSessions(
                     name
                     lessonId
                     createdBy
-                    userPermissions {
-                      view
-                      edit
-                    }
                   }
                   lessonCreatedBy
                 }
@@ -126,10 +125,6 @@ export async function fetchSession(
               name
               lessonId
               createdBy
-              userPermissions {
-                view
-                edit
-              }
             }
           }
         }
@@ -182,10 +177,6 @@ export async function setGrade(
               name
               lessonId
               createdBy
-              userPermissions {
-                view
-                edit
-              }
             }
           }
         }
@@ -227,10 +218,6 @@ export async function fetchLessons(
                 name
                 createdBy
                 createdByName
-                userPermissions {
-                  view
-                  edit
-                }
                 updatedAt
               }
             }
@@ -281,10 +268,6 @@ export async function fetchLesson(
             isTrainable
             createdBy
             createdByName
-            userPermissions {
-              view
-              edit
-            }
           }
         }
       }
@@ -327,10 +310,6 @@ export async function updateLesson(
             isTrainable
             createdBy
             createdByName
-            userPermissions {
-              view
-              edit
-            }
           }
         }
       }
@@ -407,6 +386,87 @@ export async function fetchTrainingStatus(
   return result.data.data!;
 }
 
+export async function fetchUsers(
+  filter: any,
+  limit: number,
+  cursor: string,
+  sortBy: string,
+  sortAscending: boolean,
+  accessToken: string
+): Promise<Connection<User>> {
+  const headers = { Authorization: `bearer ${accessToken}` };
+  const result = await axios.post<GQLResponse<FetchUsers>>(
+    GRAPHQL_ENDPOINT,
+    {
+      query: `
+      query {
+        me {
+          users(
+            filter:"${encodeURI(JSON.stringify(filter))}"
+            limit:${limit},
+            cursor:"${cursor}",
+            sortBy:"${sortBy}",
+            sortAscending:${sortAscending}
+          ) {
+            edges {
+              cursor
+              node {
+                id
+                name
+                email
+                isAdmin
+                isContentManager
+              }
+            }
+            pageInfo {
+              startCursor
+              endCursor
+              hasPreviousPage
+              hasNextPage
+            }
+          }
+        }
+      }
+    `,
+    },
+    { headers: headers }
+  );
+  // TODO: must handle errors including in tests
+  return result.data.data!.me.users;
+}
+
+export async function updateUserPermissions(
+  userId: string,
+  permissionLevel: string,
+  accessToken: string
+): Promise<User> {
+  const headers = { Authorization: `bearer ${accessToken}` };
+  const result = await axios.post<GQLResponse<UpdateUserPermissions>>(
+    GRAPHQL_ENDPOINT,
+    {
+      query: `
+      mutation {
+        me {
+          updateUserPermissions(
+            userId:"${userId}",
+            permissionLevel:"${permissionLevel}"
+          ) {
+            id
+            name
+            email
+            isAdmin
+            isContentManager
+          }
+        }
+      }
+    `,
+    },
+    { headers: headers }
+  );
+  // TODO: must handle errors including in tests
+  return result.data.data!.me.updateUserPermissions;
+}
+
 export async function login(accessToken: string): Promise<UserAccessToken> {
   const result = await axios.post<GQLResponse<Login>>(GRAPHQL_ENDPOINT, {
     query: `
@@ -414,7 +474,9 @@ export async function login(accessToken: string): Promise<UserAccessToken> {
         login(accessToken: "${accessToken}") {
           user {
             id
-            name  
+            name
+            isAdmin
+            isContentManager
           }
           accessToken
         }
@@ -433,7 +495,9 @@ export async function loginGoogle(
         loginGoogle(accessToken: "${accessToken}") {
           user {
             id
-            name  
+            name
+            isAdmin
+            isContentManager
           }
           accessToken
         }

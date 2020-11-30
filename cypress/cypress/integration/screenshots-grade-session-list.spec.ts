@@ -19,7 +19,7 @@ describe("screenshots - grade session list", () => {
   it("displays sessions with 'show graded' disabled by default'", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLogin(cy), cyMockByQueryName("sessions", {
+      mocks: [cyLogin(cy, true), cyMockByQueryName("sessions", {
         me: {
           sessions: {
             edges: [{
@@ -27,10 +27,6 @@ describe("screenshots - grade session list", () => {
               node: {
                 lesson: {
                   name: "lesson 2",
-                  userPermissions: {
-                    edit: true,
-                    view: true,
-                  },
                 },
                 sessionId: "session 2",
                 classifierGrade: 0.5,
@@ -57,7 +53,7 @@ describe("screenshots - grade session list", () => {
   it("displays ungraded sessions when 'show graded' enabled", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLogin(cy), cyMockByQueryName("sessions", {
+      mocks: [cyLogin(cy, true), cyMockByQueryName("sessions", {
         me: {
           sessions: {
             edges: [{
@@ -65,10 +61,6 @@ describe("screenshots - grade session list", () => {
               node: {
                 lesson: {
                   name: "lesson 1",
-                  userPermissions: {
-                    edit: true,
-                    view: true
-                  }
                 },
                 sessionId: "session 1",
                 classifierGrade: 1,
@@ -80,10 +72,6 @@ describe("screenshots - grade session list", () => {
               node: {
                 lesson: {
                   name: "lesson 2",
-                  userPermissions: {
-                    edit: true,
-                    view: true
-                  }
                 },
                 sessionId: "session 2",
                 classifierGrade: 0.5,

@@ -71,15 +71,9 @@ export interface Lesson {
   isTrainable: boolean;
   createdBy: string;
   createdByName: string;
-  userPermissions: UserPermission;
   createdAt: string;
   updatedAt: string;
   deleted: boolean;
-}
-
-export interface UserPermission {
-  view: boolean;
-  edit: boolean;
 }
 
 export interface LessonExpectation {
@@ -127,6 +121,8 @@ export interface User {
   id: string;
   name: string;
   email: string;
+  isAdmin: boolean;
+  isContentManager: boolean;
 }
 
 export interface UserAccessToken {
@@ -155,12 +151,6 @@ export interface FetchSessions {
   };
 }
 
-export interface SetGrade {
-  me: {
-    setGrade: Session;
-  };
-}
-
 export interface FetchLesson {
   me: {
     lesson: Lesson;
@@ -170,6 +160,12 @@ export interface FetchLesson {
 export interface FetchLessons {
   me: {
     lessons: Connection<Lesson>;
+  };
+}
+
+export interface FetchUsers {
+  me: {
+    users: Connection<User>;
   };
 }
 
@@ -185,8 +181,20 @@ export interface DeleteLesson {
   };
 }
 
+export interface SetGrade {
+  me: {
+    setGrade: Session;
+  };
+}
+
 export interface DeleteSession {
   me: {
     deleteSession: Session;
+  };
+}
+
+export interface UpdateUserPermissions {
+  me: {
+    updateUserPermissions: User;
   };
 }

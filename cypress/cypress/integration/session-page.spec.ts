@@ -15,10 +15,6 @@ function cyMockSession(): MockGraphQLQuery {
         createdAt: "1/1/2001",
         lesson: {
           name: "lesson 1",
-          userPermissions: {
-            edit: true,
-            view: true,
-          },
         },
         graderGrade: null,
         question: {
@@ -65,7 +61,7 @@ describe("session screen", () => {
   it("shows lesson name", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLogin(cy), cyMockSession()],
+      mocks: [cyLogin(cy, true), cyMockSession()],
     });
     cy.visit("/sessions/session?sessionId=session1");
     cy.wait("@login");
@@ -76,7 +72,7 @@ describe("session screen", () => {
   it("shows session username", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLogin(cy), cyMockSession()],
+      mocks: [cyLogin(cy, true), cyMockSession()],
     });
     cy.visit("/sessions/session?sessionId=session1");
     cy.wait("@login");
@@ -87,7 +83,7 @@ describe("session screen", () => {
   it("shows session date", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLogin(cy), cyMockSession()],
+      mocks: [cyLogin(cy, true), cyMockSession()],
     });
     cy.visit("/sessions/session?sessionId=session1");
     cy.wait("@login");
@@ -98,7 +94,7 @@ describe("session screen", () => {
   it("shows lesson question", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLogin(cy), cyMockSession()],
+      mocks: [cyLogin(cy, true), cyMockSession()],
     });
     cy.visit("/sessions/session?sessionId=session1");
     cy.wait("@login");
@@ -109,7 +105,7 @@ describe("session screen", () => {
   it("shows session score", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLogin(cy), cyMockSession()],
+      mocks: [cyLogin(cy, true), cyMockSession()],
     });
     cy.visit("/sessions/session?sessionId=session1");
     cy.wait("@login");
@@ -120,7 +116,7 @@ describe("session screen", () => {
   it("shows user responses", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLogin(cy), cyMockSession()],
+      mocks: [cyLogin(cy, true), cyMockSession()],
     });
     cy.visit("/sessions/session?sessionId=session1");
     cy.wait("@login");
@@ -136,7 +132,7 @@ describe("session screen", () => {
   it("grades first response", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLogin(cy), cyMockSession()],
+      mocks: [cyLogin(cy, true), cyMockSession()],
     });
     cy.visit("/sessions/session?sessionId=session1");
     cy.wait("@login");
@@ -149,19 +145,7 @@ describe("session screen", () => {
   it("hides if user does not have permission to edit", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLogin(cy), cyMockByQueryName("session", {
-        me: {
-          session: {
-            lesson: {
-              name: "lesson 1",
-              userPermissions: {
-                edit: false,
-                view: true,
-              },
-            },
-          }            
-        }
-      })],
+      mocks: [cyLogin(cy), cyMockSession()],
     });
     cy.visit("/sessions/session?sessionId=session1");
     cy.wait("@login");
@@ -181,10 +165,6 @@ describe("session screen", () => {
             lesson: {
               name: "lesson 1",
               createdBy: 'kayla',
-              userPermissions: {
-                edit: false,
-                view: true,
-              },
             },
             graderGrade: null,
             question: {
@@ -230,4 +210,5 @@ describe("session screen", () => {
     cy.wait("@login");
     cy.wait("@session");
     cy.get("#lesson");
-  });});
+  });
+});
