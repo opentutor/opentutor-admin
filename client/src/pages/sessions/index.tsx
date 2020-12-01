@@ -28,7 +28,7 @@ import { Link } from "@reach/router";
 import KeyboardArrowLeftIcon from "@material-ui/icons/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
 import AssignmentIcon from "@material-ui/icons/Assignment";
-import { fetchSessions } from "api";
+import { fetchSessions, userCanEdit } from "api";
 import { Connection, Edge, Session } from "types";
 import NavBar from "components/nav-bar";
 import { ColumnDef, ColumnHeader } from "components/column-header";
@@ -173,16 +173,6 @@ const SessionItem = (props: { row: Edge<Session>; i: number }) => {
     navigate(withPrefix(`/sessions/session?sessionId=${row.node.sessionId}`));
   }
 
-  function canEdit() {
-    const lesson = row.node.lesson;
-    return (
-      lesson &&
-      (lesson.createdBy === `${context.user?.id}` ||
-        context.user?.isAdmin ||
-        context.user?.isContentManager)
-    );
-  }
-
   return (
     <TableRow
       id={`session-${i}`}
@@ -197,7 +187,7 @@ const SessionItem = (props: { row: Edge<Session>; i: number }) => {
       }}
     >
       <TableCell id="lesson" align="left">
-        {canEdit() ? (
+        {userCanEdit(row.node.lesson, context.user) ? (
           <Link
             to={withPrefix(
               `/lessons/edit?lessonId=${row.node.lesson.lessonId}`
@@ -210,7 +200,10 @@ const SessionItem = (props: { row: Edge<Session>; i: number }) => {
         )}
       </TableCell>
       <TableCell id="grade">
-        <IconButton onClick={handleGrade} disabled={!canEdit()}>
+        <IconButton
+          onClick={handleGrade}
+          disabled={!userCanEdit(row.node.lesson, context.user)}
+        >
           <AssignmentIcon />
         </IconButton>
       </TableCell>

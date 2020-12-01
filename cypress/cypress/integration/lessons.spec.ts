@@ -49,7 +49,7 @@ describe("lessons screen", () => {
   it("displays lesson table with headers", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLogin(cy, true), cyMockLessons()],
+      mocks: [cyLogin(cy, "admin"), cyMockLessons()],
     });
     cy.visit("/lessons");
     cy.wait("@login");
@@ -66,7 +66,7 @@ describe("lessons screen", () => {
   it("displays a list of lessons", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLogin(cy, true), cyMockLessons()],
+      mocks: [cyLogin(cy, "admin"), cyMockLessons()],
     });
     cy.visit("/lessons");
     cy.wait("@login");
@@ -89,7 +89,7 @@ describe("lessons screen", () => {
   it("opens edit for a lesson", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLogin(cy, true), cyMockLessons()],
+      mocks: [cyLogin(cy, "admin"), cyMockLessons()],
     });
     cy.visit("/lessons");
     cy.wait("@login");
@@ -102,7 +102,7 @@ describe("lessons screen", () => {
   it("opens grade for a lesson", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLogin(cy, true), cyMockLessons()],
+      mocks: [cyLogin(cy, "admin"), cyMockLessons()],
     });
     cy.visit("/lessons");
     cy.wait("@login");
@@ -115,7 +115,7 @@ describe("lessons screen", () => {
   it("launches a lesson", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLogin(cy, true), cyMockLessons()],
+      mocks: [cyLogin(cy, "admin"), cyMockLessons()],
     });
     cy.visit("/lessons");
     cy.wait("@login");
@@ -130,7 +130,7 @@ describe("lessons screen", () => {
   it("clicks on create lesson and opens to an edit page for new lesson", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLogin(cy, true), cyMockLessons()],
+      mocks: [cyLogin(cy, "admin"), cyMockLessons()],
     });
     cy.visit("/lessons");
     cy.wait("@login");

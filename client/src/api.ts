@@ -25,6 +25,7 @@ import {
   Login,
   UserAccessToken,
   User,
+  UserRole,
 } from "types";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const urljoin = require("url-join");
@@ -414,8 +415,7 @@ export async function fetchUsers(
                 id
                 name
                 email
-                isAdmin
-                isContentManager
+                userRole
               }
             }
             pageInfo {
@@ -454,8 +454,7 @@ export async function updateUserPermissions(
             id
             name
             email
-            isAdmin
-            isContentManager
+            userRole
           }
         }
       }
@@ -475,8 +474,7 @@ export async function login(accessToken: string): Promise<UserAccessToken> {
           user {
             id
             name
-            isAdmin
-            isContentManager
+            userRole
           }
           accessToken
         }
@@ -496,8 +494,7 @@ export async function loginGoogle(
           user {
             id
             name
-            isAdmin
-            isContentManager
+            userRole
           }
           accessToken
         }
@@ -505,4 +502,17 @@ export async function loginGoogle(
     `,
   });
   return result.data.data!.loginGoogle;
+}
+
+export function userCanEdit(
+  lesson: Lesson | undefined,
+  user: User | undefined
+) {
+  return (
+    lesson &&
+    user &&
+    (lesson.createdBy === `${user.id}` ||
+      user.userRole === UserRole.ADMIN ||
+      user.userRole === UserRole.CONTENT_MANAGER)
+  );
 }

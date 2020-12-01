@@ -30,6 +30,7 @@ import {
   updateLesson,
   fetchTrainingStatus,
   trainLesson,
+  userCanEdit,
 } from "api";
 import ToggleContext from "context/toggle";
 import NavBar from "components/nav-bar";
@@ -353,23 +354,11 @@ const LessonEdit = (props: {
     setTrainPopUp(false);
   }
 
-  function canEdit() {
-    if (!lessonId) {
-      return true;
-    }
-    return (
-      lesson &&
-      (lesson.createdBy === `${context.user?.id}` ||
-        context.user?.isAdmin ||
-        context.user?.isContentManager)
-    );
-  }
-
   if (!lesson) {
     return <CircularProgress />;
   }
 
-  if (!canEdit()) {
+  if (lessonId && !userCanEdit(lesson, context.user)) {
     return (
       <div>You do not have the permissions to edit or view this lesson</div>
     );

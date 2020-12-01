@@ -14,7 +14,7 @@ describe("screenshots - lesson edit", () => {
   it("displays lesson form on load", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLogin(cy, true), cyMockByQueryName("lesson", {
+      mocks: [cyLogin(cy, "admin"), cyMockByQueryName("lesson", {
         me: {
           lesson: {
             lessonId: "lesson",
@@ -45,7 +45,7 @@ describe("screenshots - lesson edit", () => {
   it("displays save button enabled after edits", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLogin(cy, true), cyMockByQueryName("lesson", {
+      mocks: [cyLogin(cy, "admin"), cyMockByQueryName("lesson", {
         me: {
           lesson: {
             lessonId: "lesson",

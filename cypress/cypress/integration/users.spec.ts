@@ -23,8 +23,7 @@ function cyMockUsers(): MockGraphQLQuery {
               id: "admin",
               name: "Admin",
               email: "admin@opentutor.org",
-              isAdmin: true,
-              isContentManager: false,
+              userRole: "admin",
             },
           },
           {
@@ -33,8 +32,7 @@ function cyMockUsers(): MockGraphQLQuery {
               id: "contentmanager",
               name: "Content Manager",
               email: "contentmanager@opentutor.org",
-              isAdmin: false,
-              isContentManager: true,
+              userRole: "contentManager"
             },
           },
           {
@@ -43,8 +41,7 @@ function cyMockUsers(): MockGraphQLQuery {
               id: "author",
               name: "Author",
               email: "author@opentutor.org",
-              isAdmin: false,
-              isContentManager: false,
+              userRole: "author"
             },
           },
         ],
@@ -61,7 +58,7 @@ describe("users screen", () => {
   it("displays a list of users to an admin", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLogin(cy, true), cyMockUsers()],
+      mocks: [cyLogin(cy, "admin"), cyMockUsers()],
     });
     cy.visit("/users");
     cy.wait("@login");
@@ -81,7 +78,7 @@ describe("users screen", () => {
   it("displays a list of users to a content manager", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLogin(cy, false, true), cyMockUsers()],
+      mocks: [cyLogin(cy, "contentManager"), cyMockUsers()],
     });
     cy.visit("/users");
     cy.wait("@login");

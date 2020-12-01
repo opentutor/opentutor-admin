@@ -26,7 +26,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import KeyboardArrowLeftIcon from "@material-ui/icons/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
 import { fetchUsers, updateUserPermissions } from "api";
-import { Connection, Edge, User } from "types";
+import { Connection, Edge, User, UserRole } from "types";
 import NavBar from "components/nav-bar";
 import { ColumnDef, ColumnHeader } from "components/column-header";
 import ToggleContext from "context/toggle";
@@ -134,13 +134,7 @@ const UserItem = (props: {
       <TableCell id="role" align="center">
         <Select
           id="select-role"
-          value={
-            row.node.isAdmin
-              ? "admin"
-              : row.node.isContentManager
-              ? "contentManager"
-              : "author"
-          }
+          value={row.node.userRole}
           onChange={(
             event: React.ChangeEvent<{ value: unknown; name?: unknown }>
           ) => {
@@ -153,7 +147,11 @@ const UserItem = (props: {
           <MenuItem id="contentManager" value="contentManager">
             Content Manager
           </MenuItem>
-          <MenuItem id="admin" value="admin" disabled={!context.user?.isAdmin}>
+          <MenuItem
+            id="admin"
+            value="admin"
+            disabled={context.user?.userRole !== UserRole.ADMIN}
+          >
             Admin
           </MenuItem>
         </Select>
@@ -254,7 +252,10 @@ const UsersPage = (props: { path: string }) => {
   if (!context.user) {
     return <CircularProgress />;
   }
-  if (!context.user.isAdmin && !context.user.isContentManager) {
+  if (
+    context.user.userRole !== UserRole.ADMIN &&
+    context.user.userRole !== UserRole.CONTENT_MANAGER
+  ) {
     return <div>Only Admins and Content Managers can view this page</div>;
   }
 

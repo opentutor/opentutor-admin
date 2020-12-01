@@ -34,7 +34,7 @@ import KeyboardArrowLeftIcon from "@material-ui/icons/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
 import LaunchIcon from "@material-ui/icons/Launch";
 import { Link, navigate } from "@reach/router";
-import { fetchLessons, deleteLesson } from "api";
+import { fetchLessons, deleteLesson, userCanEdit } from "api";
 import { Connection, Edge, Lesson } from "types";
 import { ColumnDef, ColumnHeader } from "components/column-header";
 import NavBar from "components/nav-bar";
@@ -171,16 +171,6 @@ const LessonItem = (props: {
   const context = useContext(ToggleContext);
   const [cookies] = useCookies(["accessToken"]);
 
-  function canEdit() {
-    const lesson = row.node;
-    return (
-      lesson &&
-      (lesson.createdBy === `${context.user?.id}` ||
-        context.user?.isAdmin ||
-        context.user?.isContentManager)
-    );
-  }
-
   function launchLesson(id: string) {
     const host = process.env.TUTOR_ENDPOINT || location.origin;
     const guest = `&guest=${context.user?.name}`;
@@ -216,7 +206,7 @@ const LessonItem = (props: {
   return (
     <TableRow id={`lesson-${i}`} hover role="checkbox" tabIndex={-1}>
       <TableCell id="name" align="left">
-        {canEdit() ? (
+        {userCanEdit(row.node, context.user) ? (
           <Link to={withPrefix(`/lessons/edit?lessonId=${row.node.lessonId}`)}>
             {row.node.name || "No Lesson Name"}
           </Link>
@@ -234,7 +224,7 @@ const LessonItem = (props: {
           onClick={() => {
             handleGrade();
           }}
-          disabled={!canEdit()}
+          disabled={!userCanEdit(row.node, context.user)}
         >
           <AssignmentIcon />
         </IconButton>
@@ -246,7 +236,10 @@ const LessonItem = (props: {
         {row.node.createdByName}
       </TableCell>
       <TableCell id="delete" align="center">
-        <IconButton onClick={handleDelete} disabled={!canEdit()}>
+        <IconButton
+          onClick={handleDelete}
+          disabled={!userCanEdit(row.node, context.user)}
+        >
           <DeleteIcon />
         </IconButton>
       </TableCell>

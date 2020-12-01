@@ -48,7 +48,7 @@ export function cyMockGraphQL(cy, args: MockGraphQLArgs): void {
   }
 }
 
-export function cyLogin(cy, isAdmin = false, isContentManager = false): MockGraphQLQuery {
+export function cyLogin(cy, userRole = "author"): MockGraphQLQuery {
   cy.route("**/config", { GOOGLE_CLIENT_ID: "test" });
   cy.setCookie("accessToken", "accessToken");
   return cyMockByQueryName("login", {
@@ -57,8 +57,7 @@ export function cyLogin(cy, isAdmin = false, isContentManager = false): MockGrap
         id: "kayla",
         name: "Kayla",
         email: "kayla@opentutor.com",
-        isAdmin: isAdmin,
-        isContentManager: isContentManager,
+        userRole
       },
       accessToken: 'accessToken'
     },

@@ -19,7 +19,7 @@ describe("screenshots - grade session list", () => {
   it("displays sessions with 'show graded' disabled by default'", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLogin(cy, true), cyMockByQueryName("sessions", {
+      mocks: [cyLogin(cy, "admin"), cyMockByQueryName("sessions", {
         me: {
           sessions: {
             edges: [{
@@ -53,7 +53,7 @@ describe("screenshots - grade session list", () => {
   it("displays ungraded sessions when 'show graded' enabled", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLogin(cy, true), cyMockByQueryName("sessions", {
+      mocks: [cyLogin(cy, "admin"), cyMockByQueryName("sessions", {
         me: {
           sessions: {
             edges: [{

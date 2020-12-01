@@ -216,7 +216,7 @@ describe("lesson screen", () => {
   it("loads a lesson", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLogin(cy, true), cyMockLesson()],
+      mocks: [cyLogin(cy, "admin"), cyMockLesson()],
     });
     cy.visit("/lessons/edit?lessonId=q1");
     cy.wait("@login");
@@ -255,7 +255,7 @@ describe("lesson screen", () => {
   it("save button by default not visible", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLogin(cy, true), cyMockLesson()],
+      mocks: [cyLogin(cy, "admin"), cyMockLesson()],
     });
     cy.visit("/lessons/edit?lessonId=q1");
     cy.wait("@login");
@@ -266,7 +266,7 @@ describe("lesson screen", () => {
   it("validates lessonId", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLogin(cy, true), cyMockLesson()],
+      mocks: [cyLogin(cy, "admin"), cyMockLesson()],
     });
     cy.visit("/lessons/edit?lessonId=q1");
     cy.wait("@login");
@@ -288,7 +288,7 @@ describe("lesson screen", () => {
   it("launches lesson", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLogin(cy, true), cyMockLesson()],
+      mocks: [cyLogin(cy, "admin"), cyMockLesson()],
     });
     cy.visit("/lessons/edit?lessonId=q1");
     cy.wait("@login");
@@ -300,7 +300,7 @@ describe("lesson screen", () => {
   it("making an edit toggles save button visible", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLogin(cy, true), cyMockLesson()],
+      mocks: [cyLogin(cy, "admin"), cyMockLesson()],
     });
     cy.visit("/lessons/edit?lessonId=q1");
     cy.wait("@login");
@@ -312,7 +312,7 @@ describe("lesson screen", () => {
   it("makes an edit and clicks on save", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLogin(cy, true), cyMockLesson()],
+      mocks: [cyLogin(cy, "admin"), cyMockLesson()],
     });
     cy.visit("/lessons/edit?lessonId=q1");
     cy.wait("@login");
@@ -335,7 +335,7 @@ describe("lesson screen", () => {
   it("shows if user created lesson", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLogin(cy, false, false), cyMockByQueryName("lesson", {
+      mocks: [cyLogin(cy), cyMockByQueryName("lesson", {
         me: {
           lesson: {
             lessonId: "q1",
@@ -372,7 +372,7 @@ describe("lesson screen", () => {
   it("shows if user is admin", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLogin(cy, true, false), cyMockLesson()],
+      mocks: [cyLogin(cy, "admin"), cyMockLesson()],
     });
     cy.visit("/lessons/edit?lessonId=q1");
     cy.wait("@login");
@@ -383,7 +383,7 @@ describe("lesson screen", () => {
   it("shows if user is content manager", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLogin(cy, false, true), cyMockLesson()],
+      mocks: [cyLogin(cy, "contentManager"), cyMockLesson()],
     });
     cy.visit("/lessons/edit?lessonId=q1");
     cy.wait("@login");

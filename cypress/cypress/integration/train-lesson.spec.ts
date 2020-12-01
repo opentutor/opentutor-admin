@@ -177,7 +177,7 @@ describe("lesson screen - training", () => {
       )}`, () => {
         cySetup(cy);
         cyMockGraphQL(cy, {
-          mocks: [cyLogin(cy, true), cyMockLesson()],
+          mocks: [cyLogin(cy, "admin"), cyMockLesson()],
         });
         const waitTrainLesson = mockTrainLesson(cy);
         const waitComplete = mockTrainStatusSeq(cy, [
@@ -215,7 +215,7 @@ describe("lesson screen - training", () => {
   it("train lesson fails for state FAILURE", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLogin(cy, true), cyMockLesson()],
+      mocks: [cyLogin(cy, "admin"), cyMockLesson()],
     });
     cy.visit("/lessons/edit?lessonId=lesson&trainStatusPollInterval=10");
     cy.wait("@login");
@@ -239,7 +239,7 @@ describe("lesson screen - training", () => {
   it("train lesson fails for http error on start", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLogin(cy, true), cyMockLesson()],
+      mocks: [cyLogin(cy, "admin"), cyMockLesson()],
     });
     cy.visit("/lessons/edit?lessonId=lesson&trainStatusPollInterval=10");
     cy.wait("@login");
@@ -253,7 +253,7 @@ describe("lesson screen - training", () => {
   it("train lesson fails for http error on poll status", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLogin(cy, true), cyMockLesson()],
+      mocks: [cyLogin(cy, "admin"), cyMockLesson()],
     });
     cy.visit("/lessons/edit?lessonId=lesson&trainStatusPollInterval=10");
     cy.wait("@login");

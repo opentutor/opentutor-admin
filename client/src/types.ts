@@ -121,9 +121,14 @@ export interface User {
   id: string;
   name: string;
   email: string;
-  isAdmin: boolean;
-  isContentManager: boolean;
+  userRole: string;
 }
+
+export const UserRole = {
+  AUTHOR: "author",
+  CONTENT_MANAGER: "contentManager",
+  ADMIN: "admin",
+};
 
 export interface UserAccessToken {
   user: User;

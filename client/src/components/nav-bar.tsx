@@ -91,51 +91,44 @@ const LoginOption = (props: { classes: any }) => {
     navigate(withPrefix(`/`));
   };
 
-  if (context.user) {
-    return (
-      <div id="login-option" className={classes.login}>
-        <Button
-          id="login-button"
-          onClick={handleMenu}
-          startIcon={<AccountCircle />}
-          style={{ color: "white" }}
-        >
-          {context.user.name}
-        </Button>
-        <Menu
-          id="login-menu"
-          anchorEl={anchorEl}
-          anchorOrigin={{
-            vertical: "top",
-            horizontal: "right",
-          }}
-          keepMounted
-          transformOrigin={{
-            vertical: "top",
-            horizontal: "right",
-          }}
-          open={open}
-          onClose={handleClose}
-        >
-          <MenuItem id="logout" onClick={onLogout}>
-            Logout
-          </MenuItem>
-        </Menu>
-      </div>
-    );
-  }
-
-  return (
+  return context.user ? (
     <div id="login-option" className={classes.login}>
-      <Button id="login-button" color="inherit" component={Link} to={"/admin"}>
-        Login
+      <Button
+        id="login-button"
+        onClick={handleMenu}
+        startIcon={<AccountCircle />}
+        style={{ color: "white" }}
+      >
+        {context.user.name}
       </Button>
+      <Menu
+        id="login-menu"
+        anchorEl={anchorEl}
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+        keepMounted
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+        open={open}
+        onClose={handleClose}
+      >
+        <MenuItem id="logout" onClick={onLogout}>
+          Logout
+        </MenuItem>
+      </Menu>
     </div>
+  ) : (
+    <div></div>
   );
 };
 
 export const NavBar = (props: { title: string }) => {
   const classes = useStyles();
+  const context = useContext(ToggleContext);
   const [isDrawerOpen, setIsDrawerOpen] = React.useState(false);
 
   const toggleDrawer = (tf: boolean) => {
@@ -146,16 +139,18 @@ export const NavBar = (props: { title: string }) => {
     <div id="nav-bar" className={classes.root}>
       <AppBar position="fixed">
         <Toolbar>
-          <IconButton
-            id="menu-button"
-            edge="start"
-            color="inherit"
-            aria-label="menu"
-            className={classes.menuButton}
-            onClick={() => toggleDrawer(true)}
-          >
-            <MenuIcon />
-          </IconButton>
+          {context.user ? (
+            <IconButton
+              id="menu-button"
+              edge="start"
+              color="inherit"
+              aria-label="menu"
+              className={classes.menuButton}
+              onClick={() => toggleDrawer(true)}
+            >
+              <MenuIcon />
+            </IconButton>
+          ) : undefined}
           <Typography id="title" variant="h6" className={classes.title}>
             {props.title}
           </Typography>

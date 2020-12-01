@@ -55,7 +55,7 @@ describe("sessions screen", () => {
   it("displays session table with headers", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLogin(cy, true), cyMockSessions()],
+      mocks: [cyLogin(cy, "admin"), cyMockSessions()],
     });
     cy.visit("/sessions");
     cy.wait("@login");
@@ -73,7 +73,7 @@ describe("sessions screen", () => {
   it("displays a list of sessions", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLogin(cy, true), cyMockSessions()],
+      mocks: [cyLogin(cy, "admin"), cyMockSessions()],
     });
     cy.visit("/sessions");
     cy.wait("@login");
@@ -95,7 +95,7 @@ describe("sessions screen", () => {
   it("opens edit for a session", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLogin(cy, true), cyMockSessions()],
+      mocks: [cyLogin(cy, "admin"), cyMockSessions()],
     });
     cy.visit("/sessions");
     cy.wait("@login");
@@ -108,7 +108,7 @@ describe("sessions screen", () => {
   it("opens grade for a session", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLogin(cy, true), cyMockSessions()],
+      mocks: [cyLogin(cy, "admin"), cyMockSessions()],
     });
     cy.visit("/sessions");
     cy.wait("@login");
@@ -121,7 +121,7 @@ describe("sessions screen", () => {
   it("displays an option to view already graded sessions", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLogin(cy, true), cyMockSessions()],
+      mocks: [cyLogin(cy, "admin"), cyMockSessions()],
     });
     cy.visit("/sessions");
     cy.wait("@login");

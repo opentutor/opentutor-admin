@@ -27,7 +27,7 @@ import {
 import EditIcon from "@material-ui/icons/Edit";
 import withLocation from "wrap-with-location";
 import { Session } from "types";
-import { fetchSession, setGrade } from "api";
+import { fetchSession, setGrade, userCanEdit } from "api";
 import ToggleContext from "context/toggle";
 import NavBar from "components/nav-bar";
 import "styles/layout.css";
@@ -93,24 +93,15 @@ const SessionTable = ({ search }: { search: any }) => {
     };
   }, []);
 
-  function canEdit() {
-    if (!session || !session.lesson) {
-      return false;
-    }
-    const lesson = session.lesson;
-    return (
-      lesson &&
-      (lesson.createdBy === `${context.user?.id}` ||
-        context.user?.isAdmin ||
-        context.user?.isContentManager)
-    );
-  }
-
   if (!session) {
     return <CircularProgress />;
   }
 
-  if (!canEdit()) {
+  if (
+    !session ||
+    !session.lesson ||
+    !userCanEdit(session.lesson, context.user)
+  ) {
     return <div>You do not have the permissions to grade this session</div>;
   }
 

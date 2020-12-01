@@ -61,7 +61,7 @@ describe("session screen", () => {
   it("shows lesson name", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLogin(cy, true), cyMockSession()],
+      mocks: [cyLogin(cy, "admin"), cyMockSession()],
     });
     cy.visit("/sessions/session?sessionId=session1");
     cy.wait("@login");
@@ -72,7 +72,7 @@ describe("session screen", () => {
   it("shows session username", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLogin(cy, true), cyMockSession()],
+      mocks: [cyLogin(cy, "admin"), cyMockSession()],
     });
     cy.visit("/sessions/session?sessionId=session1");
     cy.wait("@login");
@@ -83,7 +83,7 @@ describe("session screen", () => {
   it("shows session date", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLogin(cy, true), cyMockSession()],
+      mocks: [cyLogin(cy, "admin"), cyMockSession()],
     });
     cy.visit("/sessions/session?sessionId=session1");
     cy.wait("@login");
@@ -94,7 +94,7 @@ describe("session screen", () => {
   it("shows lesson question", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLogin(cy, true), cyMockSession()],
+      mocks: [cyLogin(cy, "admin"), cyMockSession()],
     });
     cy.visit("/sessions/session?sessionId=session1");
     cy.wait("@login");
@@ -105,7 +105,7 @@ describe("session screen", () => {
   it("shows session score", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLogin(cy, true), cyMockSession()],
+      mocks: [cyLogin(cy, "admin"), cyMockSession()],
     });
     cy.visit("/sessions/session?sessionId=session1");
     cy.wait("@login");
@@ -116,7 +116,7 @@ describe("session screen", () => {
   it("shows user responses", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLogin(cy, true), cyMockSession()],
+      mocks: [cyLogin(cy, "admin"), cyMockSession()],
     });
     cy.visit("/sessions/session?sessionId=session1");
     cy.wait("@login");
@@ -132,7 +132,7 @@ describe("session screen", () => {
   it("grades first response", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLogin(cy, true), cyMockSession()],
+      mocks: [cyLogin(cy, "admin"), cyMockSession()],
     });
     cy.visit("/sessions/session?sessionId=session1");
     cy.wait("@login");
