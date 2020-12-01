@@ -32,7 +32,7 @@ import { fetchSessions, userCanEdit } from "api";
 import { Connection, Edge, Session } from "types";
 import NavBar from "components/nav-bar";
 import { ColumnDef, ColumnHeader } from "components/column-header";
-import ToggleContext from "context/toggle";
+import SessionContext from "context/session";
 import withLocation from "wrap-with-location";
 import "styles/layout.css";
 
@@ -120,7 +120,7 @@ const TableFooter = (props: {
   onPrev: () => void;
 }) => {
   const { classes, hasNext, hasPrev, onNext, onPrev } = props;
-  const context = useContext(ToggleContext);
+  const context = useContext(SessionContext);
   const { onlyCreator, showGraded, toggleCreator, toggleGraded } = context;
 
   return (
@@ -167,7 +167,7 @@ const TableFooter = (props: {
 
 const SessionItem = (props: { row: Edge<Session>; i: number }) => {
   const { row, i } = props;
-  const context = useContext(ToggleContext);
+  const context = useContext(SessionContext);
 
   function handleGrade(): void {
     navigate(withPrefix(`/sessions/session?sessionId=${row.node.sessionId}`));
@@ -234,7 +234,7 @@ const SessionsTable = (props: {
 }) => {
   const classes = useStyles();
   const [cookies] = useCookies(["accessToken"]);
-  const context = useContext(ToggleContext);
+  const context = useContext(SessionContext);
   const [sessions, setSessions] = React.useState<Connection<Session>>();
   const [cursor, setCursor] = React.useState("");
   const [sortBy, setSortBy] = React.useState("createdAt");
@@ -340,7 +340,7 @@ const SessionsPage = (props: {
   search: { lessonId: string };
   children: any;
 }) => {
-  const context = useContext(ToggleContext);
+  const context = useContext(SessionContext);
   const [cookies] = useCookies(["accessToken"]);
   if (typeof window !== "undefined" && !cookies.accessToken) {
     navigate(withPrefix(`/`));

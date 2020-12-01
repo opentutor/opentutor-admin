@@ -28,7 +28,7 @@ import EditIcon from "@material-ui/icons/Edit";
 import withLocation from "wrap-with-location";
 import { Session } from "types";
 import { fetchSession, setGrade, userCanEdit } from "api";
-import ToggleContext from "context/toggle";
+import SessionContext from "context/session";
 import NavBar from "components/nav-bar";
 import "styles/layout.css";
 
@@ -45,15 +45,15 @@ const SessionTable = ({ search }: { search: any }) => {
   const { sessionId } = search;
   const classes = useStyles();
   const [cookies] = useCookies(["accessToken"]);
-  const context = useContext(ToggleContext);
+  const context = useContext(SessionContext);
   const [session, setSession] = React.useState<Session>();
   const [date, setDate] = React.useState<string>("");
 
   const handleGradeExpectationChange = (
     event: React.ChangeEvent<{ value: unknown; name?: unknown }>
   ): void => {
-    const indices = event.target.name as string;
-    const indexSplit = indices.split(" ");
+    const indexes = event.target.name as string;
+    const indexSplit = indexes.split(" ");
 
     setGrade(
       sessionId,
@@ -240,7 +240,7 @@ const SessionTable = ({ search }: { search: any }) => {
 };
 
 const SessionPage = ({ path, search }: { path: string; search: any }) => {
-  const context = useContext(ToggleContext);
+  const context = useContext(SessionContext);
   const [cookies] = useCookies(["accessToken"]);
   if (typeof window !== "undefined" && !cookies.accessToken) {
     navigate(withPrefix(`/`));

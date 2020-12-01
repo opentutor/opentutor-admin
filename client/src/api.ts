@@ -511,8 +511,14 @@ export function userCanEdit(
   return (
     lesson &&
     user &&
-    (lesson.createdBy === `${user.id}` ||
-      user.userRole === UserRole.ADMIN ||
+    (`${lesson.createdBy}` === `${user.id}` || userIsElevated(user))
+  );
+}
+
+export function userIsElevated(user: User | undefined) {
+  return (
+    user &&
+    (user.userRole === UserRole.ADMIN ||
       user.userRole === UserRole.CONTENT_MANAGER)
   );
 }

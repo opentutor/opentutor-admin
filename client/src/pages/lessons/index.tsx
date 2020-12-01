@@ -38,7 +38,7 @@ import { fetchLessons, deleteLesson, userCanEdit } from "api";
 import { Connection, Edge, Lesson } from "types";
 import { ColumnDef, ColumnHeader } from "components/column-header";
 import NavBar from "components/nav-bar";
-import ToggleContext from "context/toggle";
+import SessionContext from "context/session";
 import "styles/layout.css";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -116,7 +116,7 @@ const TableFooter = (props: {
   onPrev: () => void;
 }) => {
   const { classes, hasNext, hasPrev, onNext, onPrev } = props;
-  const context = useContext(ToggleContext);
+  const context = useContext(SessionContext);
 
   function onCreate() {
     navigate(withPrefix("/lessons/edit"));
@@ -168,7 +168,7 @@ const LessonItem = (props: {
   const { location, row, i, onDeleted } = props;
   const [anchorEl, setAnchorEl] = React.useState(null);
   const deleteMenuOpen = Boolean(anchorEl);
-  const context = useContext(ToggleContext);
+  const context = useContext(SessionContext);
   const [cookies] = useCookies(["accessToken"]);
 
   function launchLesson(id: string) {
@@ -190,18 +190,16 @@ const LessonItem = (props: {
     setAnchorEl(null);
   };
 
-  const confirmDelete = () => {
+  async function confirmDelete() {
     toast("Deleting...");
-    deleteLesson(row.node.lessonId, cookies.accessToken)
-      .then(() => {
-        onDeleted(row.node.lessonId);
-        setAnchorEl(null);
-      })
-      .catch((err) => {
-        toast("Failed to delete lesson.");
-        console.error(err);
-      });
-  };
+    try {
+      await deleteLesson(row.node.lessonId, cookies.accessToken);
+      onDeleted(row.node.lessonId);
+      setAnchorEl(null);
+    } catch (err) {
+      toast("Failed to delete lesson.");
+    }
+  }
 
   return (
     <TableRow id={`lesson-${i}`} hover role="checkbox" tabIndex={-1}>
@@ -271,7 +269,7 @@ const LessonItem = (props: {
 
 const LessonsTable = (props: { location: any }) => {
   const classes = useStyles();
-  const context = useContext(ToggleContext);
+  const context = useContext(SessionContext);
   const [cookies] = useCookies(["accessToken"]);
   const [lessons, setLessons] = React.useState<Connection<Lesson>>();
   const [cursor, setCursor] = React.useState("");
@@ -372,7 +370,7 @@ const LessonsTable = (props: { location: any }) => {
 };
 
 const LessonsPage = (props: { location: any; path: string; children: any }) => {
-  const context = useContext(ToggleContext);
+  const context = useContext(SessionContext);
   const [cookies] = useCookies(["accessToken"]);
 
   if (typeof window !== "undefined" && !cookies.accessToken) {

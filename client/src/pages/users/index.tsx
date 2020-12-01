@@ -7,6 +7,7 @@ The full terms of this copyright and license should always be found in the root 
 import { withPrefix } from "gatsby";
 import React, { useContext } from "react";
 import { useCookies } from "react-cookie";
+import { ToastContainer, toast } from "react-toastify";
 import { navigate } from "@reach/router";
 import {
   AppBar,
@@ -25,13 +26,13 @@ import {
 import { makeStyles } from "@material-ui/core/styles";
 import KeyboardArrowLeftIcon from "@material-ui/icons/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
-import { fetchUsers, updateUserPermissions } from "api";
+import { fetchUsers, updateUserPermissions, userIsElevated } from "api";
 import { Connection, Edge, User, UserRole } from "types";
 import NavBar from "components/nav-bar";
 import { ColumnDef, ColumnHeader } from "components/column-header";
-import ToggleContext from "context/toggle";
-import withLocation from "wrap-with-location";
+import SessionContext from "context/session";
 import "styles/layout.css";
+import "react-toastify/dist/ReactToastify.css";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -71,23 +72,22 @@ const columns: ColumnDef[] = [
     sortable: true,
   },
   {
-    id: "role",
+    id: "userRole",
     label: "Role",
     minWidth: 170,
     align: "center",
-    sortable: false,
+    sortable: true,
   },
 ];
 
-const TableFooter = (props: {
+function TableFooter(props: {
   classes: any;
   hasNext: boolean;
   hasPrev: boolean;
   onNext: () => void;
   onPrev: () => void;
-}) => {
+}): JSX.Element {
   const { classes, hasNext, hasPrev, onNext, onPrev } = props;
-
   return (
     <AppBar position="sticky" color="default" className={classes.appBar}>
       <Toolbar>
@@ -102,25 +102,28 @@ const TableFooter = (props: {
       </Toolbar>
     </AppBar>
   );
-};
+}
 
-const UserItem = (props: {
+function UserItem(props: {
   row: Edge<User>;
   i: number;
-  onUpdated: () => void;
-}) => {
+  onUpdated: (error?: string) => void;
+}): JSX.Element {
   const { row, i } = props;
   const [cookies] = useCookies(["accessToken"]);
-  const context = useContext(ToggleContext);
+  const context = useContext(SessionContext);
 
-  function handleRoleChange(user: string, permission: string): void {
-    updateUserPermissions(user, permission, cookies.accessToken)
-      .then((user: User) => {
-        if (user) {
-          props.onUpdated();
-        }
-      })
-      .catch((err: string) => console.error(err));
+  async function handleRoleChange(user: string, permission: string) {
+    try {
+      const val = await updateUserPermissions(
+        user,
+        permission,
+        cookies.accessToken
+      );
+      props.onUpdated();
+    } catch (err) {
+      props.onUpdated(err);
+    }
   }
 
   return (
@@ -141,15 +144,18 @@ const UserItem = (props: {
             handleRoleChange(row.node.id, event.target.value as string);
           }}
         >
-          <MenuItem id="author" value="author">
+          <MenuItem id={UserRole.AUTHOR} value={UserRole.AUTHOR}>
             Author
           </MenuItem>
-          <MenuItem id="contentManager" value="contentManager">
+          <MenuItem
+            id={UserRole.CONTENT_MANAGER}
+            value={UserRole.CONTENT_MANAGER}
+          >
             Content Manager
           </MenuItem>
           <MenuItem
-            id="admin"
-            value="admin"
+            id={UserRole.ADMIN}
+            value={UserRole.ADMIN}
             disabled={context.user?.userRole !== UserRole.ADMIN}
           >
             Admin
@@ -158,16 +164,46 @@ const UserItem = (props: {
       </TableCell>
     </TableRow>
   );
-};
+}
 
-const UsersTable = (props: { path: string }) => {
+function UsersTable(props: { path: string }): JSX.Element {
   const classes = useStyles();
   const [cookies] = useCookies(["accessToken"]);
   const [users, setUsers] = React.useState<Connection<User>>();
   const [cursor, setCursor] = React.useState("");
-  const [sortBy, setSortBy] = React.useState("createdAt");
+  const [sortBy, setSortBy] = React.useState("name");
   const [sortAsc, setSortAsc] = React.useState(false);
-  const rowsPerPage = 50;
+  const rowsPerPage = 20;
+
+  React.useEffect(() => {
+    updateUsers();
+  }, [rowsPerPage, cursor, sortBy, sortAsc]);
+
+  async function updateUsers() {
+    const filter: any = {};
+    try {
+      setUsers(
+        await fetchUsers(
+          filter,
+          rowsPerPage,
+          cursor,
+          sortBy,
+          sortAsc,
+          cookies.accessToken
+        )
+      );
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  function onUserUpdated(error?: string) {
+    if (error) {
+      toast(error);
+    } else {
+      updateUsers();
+    }
+  }
 
   function onSort(id: string): void {
     if (sortBy === id) {
@@ -177,28 +213,6 @@ const UsersTable = (props: { path: string }) => {
     }
     setCursor("");
   }
-
-  function fetch(): void {
-    const filter: any = {};
-    fetchUsers(
-      filter,
-      rowsPerPage,
-      cursor,
-      sortBy,
-      sortAsc,
-      cookies.accessToken
-    )
-      .then((users) => {
-        if (users) {
-          setUsers(users);
-        }
-      })
-      .catch((err) => console.error(err));
-  }
-
-  React.useEffect(() => {
-    fetch();
-  }, [rowsPerPage, cursor, sortBy, sortAsc]);
 
   if (!users) {
     return (
@@ -221,7 +235,12 @@ const UsersTable = (props: { path: string }) => {
             />
             <TableBody id="users">
               {users.edges.map((row, i) => (
-                <UserItem key={row.node.id} row={row} i={i} onUpdated={fetch} />
+                <UserItem
+                  key={row.node.id}
+                  row={row}
+                  i={i}
+                  onUpdated={onUserUpdated}
+                />
               ))}
             </TableBody>
           </Table>
@@ -238,25 +257,25 @@ const UsersTable = (props: { path: string }) => {
           setCursor("prev__" + users.pageInfo.startCursor);
         }}
       />
+      <ToastContainer />
     </div>
   );
-};
+}
 
-const UsersPage = (props: { path: string }) => {
-  const context = useContext(ToggleContext);
+function UsersPage(props: { path: string }): JSX.Element {
+  const context = useContext(SessionContext);
   const [cookies] = useCookies(["accessToken"]);
+
   if (typeof window !== "undefined" && !cookies.accessToken) {
-    navigate(withPrefix(`/`));
+    navigate(withPrefix("/"));
     return <div></div>;
   }
   if (!context.user) {
     return <CircularProgress />;
   }
-  if (
-    context.user.userRole !== UserRole.ADMIN &&
-    context.user.userRole !== UserRole.CONTENT_MANAGER
-  ) {
-    return <div>Only Admins and Content Managers can view this page</div>;
+  if (!userIsElevated(context.user)) {
+    navigate(withPrefix("/"));
+    return <div></div>;
   }
 
   return (
@@ -265,6 +284,6 @@ const UsersPage = (props: { path: string }) => {
       <UsersTable path={props.path} />
     </div>
   );
-};
+}
 
 export default UsersPage;

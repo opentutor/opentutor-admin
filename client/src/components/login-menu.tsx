@@ -15,7 +15,7 @@ import {
 import { Button, CircularProgress, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import NavBar from "components/nav-bar";
-import ToggleContext from "context/toggle";
+import SessionContext from "context/session";
 import { getClientID } from "config";
 import { loginGoogle } from "api";
 import { UserAccessToken } from "types";
@@ -49,7 +49,7 @@ const useStyles = makeStyles((theme) => ({
 export const LoginMenu = (props: { path: string; children: any }) => {
   const classes = useStyles();
   const [cookies, setCookie, removeCookie] = useCookies(["accessToken"]);
-  const context = useContext(ToggleContext);
+  const context = useContext(SessionContext);
   const [googleClientId, setClientId] = React.useState<string>("");
 
   React.useEffect(() => {

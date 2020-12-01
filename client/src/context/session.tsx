@@ -6,7 +6,7 @@ The full terms of this copyright and license should always be found in the root 
 */
 import React from "react";
 import { useCookies } from "react-cookie";
-import { loginGoogle, login } from "api";
+import { login } from "api";
 import { User, UserAccessToken } from "types";
 
 type ContextType = {
@@ -17,7 +17,7 @@ type ContextType = {
   toggleCreator: () => void;
 };
 
-const ToggleContext = React.createContext<ContextType>({
+const SessionContext = React.createContext<ContextType>({
   user: undefined,
   showGraded: false,
   onlyCreator: false,
@@ -27,7 +27,7 @@ const ToggleContext = React.createContext<ContextType>({
   toggleCreator: () => {},
 });
 
-const ToggleProvider = (props: { children: any }) => {
+function SessionProvider(props: { children: any }) {
   const [cookies, setCookie, removeCookie] = useCookies(["accessToken"]);
   const [user, setUser] = React.useState<User>();
   const [showGraded, setShowGraded] = React.useState(false);
@@ -36,7 +36,9 @@ const ToggleProvider = (props: { children: any }) => {
   );
 
   React.useEffect(() => {
-    if (cookies.accessToken && !user) {
+    if (!cookies.accessToken) {
+      setUser(undefined);
+    } else if (!user) {
       login(cookies.accessToken)
         .then((token: UserAccessToken) => {
           setUser(token.user);
@@ -44,22 +46,21 @@ const ToggleProvider = (props: { children: any }) => {
         })
         .catch((err) => {
           console.error(err);
-          setUser(undefined);
           removeCookie("accessToken", { path: "/" });
         });
     }
   }, [cookies]);
 
-  const toggleGraded = () => {
+  function toggleGraded(): void {
     setShowGraded(!showGraded);
-  };
+  }
 
-  const toggleCreator = () => {
+  function toggleCreator(): void {
     setOnlyCreator(!onlyCreator);
-  };
+  }
 
   return (
-    <ToggleContext.Provider
+    <SessionContext.Provider
       value={{
         user,
         showGraded,
@@ -69,9 +70,9 @@ const ToggleProvider = (props: { children: any }) => {
       }}
     >
       {props.children}
-    </ToggleContext.Provider>
+    </SessionContext.Provider>
   );
-};
+}
 
-export default ToggleContext;
-export { ToggleProvider };
+export default SessionContext;
+export { SessionProvider };

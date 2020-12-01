@@ -95,7 +95,6 @@ describe("users screen", () => {
     cy.get("#user-2 #role").contains("Author");
   });
 
-
   it("hides users if not admin or content manager", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
@@ -103,6 +102,6 @@ describe("users screen", () => {
     });
     cy.visit("/users");
     cy.wait("@login");
-    cy.contains("Only Admins and Content Managers can view this page");
-  });
+    cy.location("pathname").should("not.contain", "users");
+});
 });

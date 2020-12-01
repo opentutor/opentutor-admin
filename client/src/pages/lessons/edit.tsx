@@ -32,7 +32,7 @@ import {
   trainLesson,
   userCanEdit,
 } from "api";
-import ToggleContext from "context/toggle";
+import SessionContext from "context/session";
 import NavBar from "components/nav-bar";
 import ConclusionsList from "components/conclusions-list";
 import ExpectationsList from "components/expectations-list";
@@ -133,7 +133,7 @@ const LessonEdit = (props: {
 }) => {
   const { lessonId } = props.search;
   const [cookies] = useCookies(["accessToken"]);
-  const context = useContext(ToggleContext);
+  const context = useContext(SessionContext);
   const trainStatusPollInterval = !isNaN(
     Number(props.search.trainStatusPollInterval)
   )
@@ -154,7 +154,7 @@ const LessonEdit = (props: {
     if (lessonId) {
       fetchLesson(lessonId, cookies.accessToken)
         .then((lesson: Lesson) => {
-          setLesson({ ...lesson });
+          setLesson(lesson);
         })
         .catch((err: string) => console.error(err));
     } else {
@@ -626,7 +626,7 @@ const LessonEdit = (props: {
 };
 
 const EditPage = (props: { path: string; search: any }) => {
-  const context = useContext(ToggleContext);
+  const context = useContext(SessionContext);
   const [cookies] = useCookies(["accessToken"]);
   if (typeof window !== "undefined" && !cookies.accessToken) {
     navigate(withPrefix(`/`));

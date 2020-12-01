@@ -7,6 +7,7 @@ The full terms of this copyright and license should always be found in the root 
 import { withPrefix, navigate } from "gatsby";
 import React, { useContext } from "react";
 import { useCookies } from "react-cookie";
+import { Link } from "@reach/router";
 import {
   AppBar,
   Button,
@@ -25,8 +26,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import MenuIcon from "@material-ui/icons/Menu";
 import ListIcon from "@material-ui/icons/List";
-import { Link } from "@reach/router";
-import ToggleContext from "context/toggle";
+import { userIsElevated } from "api";
+import SessionContext from "context/session";
 
 const useStyles = makeStyles((theme) => ({
   toolbar: theme.mixins.toolbar,
@@ -46,7 +47,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const NavMenu = () => {
+function NavMenu(): JSX.Element {
+  const context = useContext(SessionContext);
   return (
     <List dense>
       <ListItem button component={Link} to={withPrefix("/lessons")}>
@@ -61,37 +63,39 @@ const NavMenu = () => {
         </ListItemIcon>
         <ListItemText primary="Grading" />
       </ListItem>
-      <ListItem button component={Link} to={withPrefix("/users")}>
-        <ListItemIcon>
-          <ListIcon />
-        </ListItemIcon>
-        <ListItemText primary="Users" />
-      </ListItem>
+      {userIsElevated(context.user) ? (
+        <ListItem button component={Link} to={withPrefix("/users")}>
+          <ListItemIcon>
+            <ListIcon />
+          </ListItemIcon>
+          <ListItemText primary="Users" />
+        </ListItem>
+      ) : undefined}
     </List>
   );
-};
+}
 
-const LoginOption = (props: { classes: any }) => {
+function LoginOption(props: { classes: any }): JSX.Element {
   const { classes } = props;
   const [cookies, setCookie, removeCookie] = useCookies(["accessToken"]);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
-  const context = useContext(ToggleContext);
+  const context = useContext(SessionContext);
 
-  const handleMenu = (e: any) => {
+  function handleMenu(e: any): void {
     setAnchorEl(e.currentTarget);
-  };
+  }
 
-  const handleClose = () => {
+  function handleClose(): void {
     setAnchorEl(null);
-  };
+  }
 
-  const onLogout = () => {
+  function onLogout(): void {
     removeCookie("accessToken", { path: "/" });
-    navigate(withPrefix(`/`));
-  };
+    navigate("/");
+  }
 
-  return context.user ? (
+  return (
     <div id="login-option" className={classes.login}>
       <Button
         id="login-button"
@@ -99,7 +103,7 @@ const LoginOption = (props: { classes: any }) => {
         startIcon={<AccountCircle />}
         style={{ color: "white" }}
       >
-        {context.user.name}
+        {context.user?.name}
       </Button>
       <Menu
         id="login-menu"
@@ -121,19 +125,17 @@ const LoginOption = (props: { classes: any }) => {
         </MenuItem>
       </Menu>
     </div>
-  ) : (
-    <div></div>
   );
-};
+}
 
-export const NavBar = (props: { title: string }) => {
+export function NavBar(props: { title: string }): JSX.Element {
   const classes = useStyles();
-  const context = useContext(ToggleContext);
+  const context = useContext(SessionContext);
   const [isDrawerOpen, setIsDrawerOpen] = React.useState(false);
 
-  const toggleDrawer = (tf: boolean) => {
+  function toggleDrawer(tf: boolean): void {
     setIsDrawerOpen(tf);
-  };
+  }
 
   return (
     <div id="nav-bar" className={classes.root}>
@@ -154,7 +156,7 @@ export const NavBar = (props: { title: string }) => {
           <Typography id="title" variant="h6" className={classes.title}>
             {props.title}
           </Typography>
-          <LoginOption classes={classes} />
+          {context.user ? <LoginOption classes={classes} /> : undefined}
         </Toolbar>
       </AppBar>
       <SwipeableDrawer
@@ -170,6 +172,6 @@ export const NavBar = (props: { title: string }) => {
       <div className={classes.toolbar} /> {/* create space below app bar */}
     </div>
   );
-};
+}
 
 export default NavBar;
