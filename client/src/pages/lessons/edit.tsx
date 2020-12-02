@@ -128,6 +128,11 @@ const newLesson = {
   ],
 };
 
+interface LessonUnderEdit {
+  lesson?: Lesson;
+  dirty?: boolean;
+}
+
 const LessonEdit = (props: {
   search: { lessonId: string; trainStatusPollInterval?: number };
 }) => {
@@ -140,8 +145,9 @@ const LessonEdit = (props: {
     ? Number(props.search.trainStatusPollInterval)
     : TRAIN_STATUS_POLL_INTERVAL_DEFAULT;
   const classes = useStyles();
-  const [lesson, setLesson] = React.useState<any>();
-  const [edited, setEdited] = React.useState(false);
+  const [lessonUnderEdit, setLessonUnderEdit] = React.useState<LessonUnderEdit>(
+    { lesson: undefined, dirty: false }
+  );
   const [savePopUp, setSavePopUp] = React.useState(false);
   const [isTraining, setIsTraining] = React.useState(false);
   const [trainPopUp, setTrainPopUp] = React.useState(false);
@@ -165,8 +171,12 @@ const LessonEdit = (props: {
     }
   }, [context.user]);
 
+  function setLesson(lesson?: any, dirty?: boolean) {
+    setLessonUnderEdit({ lesson: lesson, dirty: dirty });
+  }
+
   function isValidId(): boolean {
-    return /^[a-z0-9-]+$/g.test(lesson.lessonId);
+    return /^[a-z0-9-]+$/g.test(lessonUnderEdit.lesson?.lessonId || "");
   }
 
   function isExpValid(exp: LessonExpectation): boolean {
@@ -177,55 +187,15 @@ const LessonEdit = (props: {
   }
 
   function isLessonValid(): boolean {
+    if (!lessonUnderEdit.lesson) {
+      return false;
+    }
     return (
       isValidId() &&
-      lesson.expectations.every((exp: LessonExpectation) => isExpValid(exp))
+      lessonUnderEdit.lesson?.expectations.every((exp: LessonExpectation) =>
+        isExpValid(exp)
+      )
     );
-  }
-
-  function handleLessonNameChange(name: string): void {
-    setEdited(true);
-    setLesson({ ...lesson, name: name });
-  }
-
-  function handleLessonIdChange(lessonId: string): void {
-    setEdited(true);
-    setLesson({ ...lesson, lessonId: lessonId });
-  }
-
-  function handleIntroChange(intro: string): void {
-    setEdited(true);
-    setLesson({ ...lesson, intro: intro });
-  }
-
-  function handleQuestionChange(question: string): void {
-    setEdited(true);
-    setLesson({ ...lesson, question: question });
-  }
-
-  function handleImageChange(image: string): void {
-    setEdited(true);
-    setLesson({ ...lesson, image: image });
-  }
-
-  function handleExpectationsChange(exp: LessonExpectation[]): void {
-    try {
-      setEdited(true);
-      setLesson({
-        ...lesson,
-        expectations: exp,
-      });
-    } catch (e) {
-      console.error(e);
-    }
-  }
-
-  function handleConclusionsChange(conclusions: string[]): void {
-    setEdited(true);
-    setLesson({
-      ...lesson,
-      conclusion: conclusions,
-    });
   }
 
   function handleSavePopUp(open: boolean): void {
@@ -243,8 +213,11 @@ const LessonEdit = (props: {
   }
 
   function saveChanges(trained?: boolean): void {
+    if (!lessonUnderEdit.lesson) {
+      return;
+    }
     toast("Saving...");
-    const convertedLesson: any = { ...lesson };
+    const convertedLesson: any = { ...lessonUnderEdit.lesson };
     if (!lessonId) {
       convertedLesson.createdBy = context.user?.id;
     }
@@ -252,7 +225,7 @@ const LessonEdit = (props: {
       convertedLesson.lastTrainedAt = new Date();
     }
     const encodedLesson = encodeURI(JSON.stringify(convertedLesson));
-    const origId = lessonId || lesson.lessonId;
+    const origId = lessonId || lessonUnderEdit.lesson?.lessonId;
     updateLesson(origId, encodedLesson, cookies.accessToken)
       .then((lesson) => {
         if (lesson) {
@@ -301,11 +274,11 @@ const LessonEdit = (props: {
   }
 
   function handleTrain(): void {
-    if (!lesson) {
+    if (!lessonUnderEdit.lesson) {
       return;
     }
-    if (lesson.isTrainable) {
-      trainLesson(lesson.lessonId)
+    if (lessonUnderEdit.lesson?.isTrainable) {
+      trainLesson(lessonUnderEdit.lesson?.lessonId)
         .then((trainJob) => {
           setStatusUrl(trainJob.statusUrl);
           setIsTraining(true);
@@ -354,11 +327,11 @@ const LessonEdit = (props: {
     setTrainPopUp(false);
   }
 
-  if (!lesson) {
+  if (!lessonUnderEdit.lesson) {
     return <CircularProgress />;
   }
 
-  if (lessonId && !userCanEdit(lesson, context.user)) {
+  if (lessonId && !userCanEdit(lessonUnderEdit.lesson, context.user)) {
     return (
       <div>You do not have the permissions to edit or view this lesson</div>
     );
@@ -381,9 +354,12 @@ const LessonEdit = (props: {
             InputLabelProps={{
               shrink: true,
             }}
-            value={lesson.name || ""}
+            value={lessonUnderEdit.lesson?.name || ""}
             onChange={(e) => {
-              handleLessonNameChange(e.target.value);
+              setLesson(
+                { ...lessonUnderEdit.lesson, name: e.target.value },
+                true
+              );
             }}
             variant="outlined"
           />
@@ -397,9 +373,12 @@ const LessonEdit = (props: {
             InputLabelProps={{
               shrink: true,
             }}
-            value={lesson.lessonId || ""}
+            value={lessonUnderEdit.lesson?.lessonId || ""}
             onChange={(e) => {
-              handleLessonIdChange(e.target.value);
+              setLesson(
+                { ...lessonUnderEdit.lesson, lessonId: e.target.value },
+                true
+              );
             }}
             variant="outlined"
             size="small"
@@ -412,7 +391,7 @@ const LessonEdit = (props: {
             InputLabelProps={{
               shrink: true,
             }}
-            value={lesson.createdByName || "Guest"}
+            value={lessonUnderEdit.lesson?.createdByName || "Guest"}
             disabled={true}
             size="small"
           />
@@ -434,9 +413,12 @@ const LessonEdit = (props: {
             InputLabelProps={{
               shrink: true,
             }}
-            value={lesson.intro || ""}
+            value={lessonUnderEdit.lesson?.intro || ""}
             onChange={(e) => {
-              handleIntroChange(e.target.value);
+              setLesson(
+                { ...lessonUnderEdit.lesson, intro: e.target.value },
+                true
+              );
             }}
             variant="outlined"
           />
@@ -450,9 +432,12 @@ const LessonEdit = (props: {
             InputLabelProps={{
               shrink: true,
             }}
-            value={lesson.question || ""}
+            value={lessonUnderEdit.lesson?.question || ""}
             onChange={(e) => {
-              handleQuestionChange(e.target.value);
+              setLesson(
+                { ...lessonUnderEdit.lesson, question: e.target.value },
+                true
+              );
             }}
             variant="outlined"
           />
@@ -467,19 +452,22 @@ const LessonEdit = (props: {
               InputLabelProps={{
                 shrink: true,
               }}
-              value={lesson.image || ""}
+              value={lessonUnderEdit.lesson?.image || ""}
               onChange={(e) => {
-                handleImageChange(e.target.value);
+                setLesson(
+                  { ...lessonUnderEdit.lesson, image: e.target.value },
+                  true
+                );
               }}
               variant="outlined"
             />
             <img
               className={classes.thumbnail}
               id="image-thumbnail"
-              src={lesson.image}
+              src={lessonUnderEdit.lesson?.image}
               style={{ height: 50 }}
               onClick={() => {
-                window.open(lesson.image, "_blank");
+                window.open(lessonUnderEdit.lesson?.image, "_blank");
               }}
             />
           </div>
@@ -487,14 +475,30 @@ const LessonEdit = (props: {
         <Divider style={{ marginTop: 20 }} />
         <ExpectationsList
           classes={classes}
-          expectations={lesson.expectations}
-          updateExpectations={handleExpectationsChange}
+          expectations={lessonUnderEdit.lesson?.expectations}
+          updateExpectations={(exp: LessonExpectation[]) =>
+            setLesson(
+              {
+                ...lessonUnderEdit.lesson,
+                expectations: exp,
+              },
+              true
+            )
+          }
         />
         <Divider />
         <ConclusionsList
           classes={classes}
-          conclusions={lesson.conclusion}
-          updateConclusions={handleConclusionsChange}
+          conclusions={lessonUnderEdit.lesson?.conclusion}
+          updateConclusions={(conclusions: string[]) =>
+            setLesson(
+              {
+                ...lessonUnderEdit.lesson,
+                conclusion: conclusions,
+              },
+              true
+            )
+          }
         />
       </form>
       <Box
@@ -526,8 +530,8 @@ const LessonEdit = (props: {
       >
         <Typography variant="h5">Training Data</Typography>
         <Typography>
-          {lesson.lastTrainedAt
-            ? `Last Trained: ${lesson.lastTrainedAt}`
+          {lessonUnderEdit.lesson?.lastTrainedAt
+            ? `Last Trained: ${lessonUnderEdit.lesson?.lastTrainedAt}`
             : `Last Trained: Never Trained`}
         </Typography>
         {isTraining ? (
@@ -554,7 +558,11 @@ const LessonEdit = (props: {
           variant="contained"
           color="primary"
           size="large"
-          style={{ background: lesson.isTrainable ? "#1B6A9C" : "#808080" }}
+          style={{
+            background: lessonUnderEdit.lesson?.isTrainable
+              ? "#1B6A9C"
+              : "#808080",
+          }}
           disabled={isTraining}
           onClick={handleTrain}
         >
@@ -571,7 +579,7 @@ const LessonEdit = (props: {
         >
           Launch
         </Button>
-        {edited ? (
+        {lessonUnderEdit.dirty ? (
           <Button
             id="save-button"
             className={classes.button}
@@ -597,7 +605,7 @@ const LessonEdit = (props: {
         </Button>
       </div>
       <Dialog open={trainPopUp} onClose={handleTrainPopUp}>
-        {!lesson.isTrainable ? (
+        {!lessonUnderEdit.lesson?.isTrainable ? (
           <DialogTitle> NEEDS MORE GRADED DATA </DialogTitle>
         ) : trainData.state === TrainState.SUCCESS ? (
           <DialogTitle> Training Success </DialogTitle>
