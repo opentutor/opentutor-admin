@@ -46,6 +46,95 @@ function cyMockLessons(): MockGraphQLQuery {
 }
 
 describe("lessons screen", () => {
+
+  describe("permissions", () => {
+    it("cannot view lessons list if not logged in", () => {
+      cySetup(cy);
+      cy.visit("/lessons");
+      cy.contains("Please login to view lessons.");
+    });
+  
+    it("disables edit, grade, and delete if user does not have edit permissions", () => {
+      cySetup(cy);
+      cyMockGraphQL(cy, {
+        mocks: [cyLogin(cy), cyMockLessons()],
+      });
+      cy.visit("/lessons");
+      cy.wait("@login");
+      cy.wait("@lessons");
+      cy.get("#lesson-0 #delete button").should("be.disabled");
+      cy.get("#lesson-0 #grade button").should("be.disabled");
+      cy.get("#lesson-0 #name").should("not.have.class", "a");
+      cy.get("#lesson-1 #delete button").should("be.disabled");
+      cy.get("#lesson-1 #grade button").should("be.disabled");
+      cy.get("#lesson-1 #name").should("not.have.class", "a");
+    });
+  
+    it("enables edit, grade, and delete if user is an admin", () => {
+      cySetup(cy);
+      cyMockGraphQL(cy, {
+        mocks: [cyLogin(cy, "admin"), cyMockLessons()],
+      });
+      cy.visit("/lessons");
+      cy.wait("@login");
+      cy.wait("@lessons");
+      cy.get("#lesson-0 #delete button").should("not.be.disabled");
+      cy.get("#lesson-0 #grade button").should("not.be.disabled");
+    });
+  
+    it("enables edit, grade, and delete if user is a contentManager", () => {
+      cySetup(cy);
+      cyMockGraphQL(cy, {
+        mocks: [cyLogin(cy, "contentManager"), cyMockLessons()],
+      });
+      cy.visit("/lessons");
+      cy.wait("@login");
+      cy.wait("@lessons");
+      cy.get("#lesson-0 #delete button").should("not.be.disabled");
+      cy.get("#lesson-0 #grade button").should("not.be.disabled");
+    });
+  
+    it("enables edit, grade, and delete if user created lesson", () => {
+      cySetup(cy);
+      cyMockGraphQL(cy, {
+        mocks: [
+          cyLogin(cy),
+          cyMockByQueryName("lessons", {
+            me: {
+              lessons: {
+                edges: [
+                  {
+                    cursor: "cursor 1",
+                    node: {
+                      lessonId: "lesson1",
+                      name: "lesson 1",
+                      updatedAt: "1/1/20000, 12:00:00 AM",
+                      createdBy: "kayla",
+                      createdByName: "Kayla",
+                      userPermissions: {
+                        edit: false,
+                        view: false,
+                      },
+                    },
+                  },
+                ],
+                pageInfo: {
+                  hasNextPage: false,
+                  endCursor: "cursor 2",
+                },
+              },
+            }
+          }),
+        ],
+      });
+      cy.visit("/lessons");
+      cy.wait("@login");
+      cy.wait("@lessons");
+      cy.get("#lesson-0 #delete button").should("not.be.disabled");
+      cy.get("#lesson-0 #grade button").should("not.be.disabled");
+    });
+  });
+
   it("displays lesson table with headers", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
@@ -112,6 +201,19 @@ describe("lessons screen", () => {
     cy.location("search").should("eq", "?lessonId=lesson1");
   });
 
+  it("opens copy for a lesson", () => {
+    cySetup(cy);
+    cyMockGraphQL(cy, {
+      mocks: [cyLogin(cy, "admin"), cyMockLessons()],
+    });
+    cy.visit("/lessons");
+    cy.wait("@login");
+    cy.wait("@lessons");
+    cy.get("#lesson-0 #copy").trigger("mouseover").click();
+    cy.location("pathname").should("contain", "/lessons/edit");
+    cy.location("search").should("eq", "?copyLesson=lesson1");
+  });
+
   it("launches a lesson", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
@@ -133,65 +235,7 @@ describe("lessons screen", () => {
       mocks: [cyLogin(cy, "admin"), cyMockLessons()],
     });
     cy.visit("/lessons");
-    cy.wait("@login");
-    cy.wait("@lessons");
     cy.get("#create-button").trigger("mouseover").click();
     cy.location("pathname").should("contain", "/lessons/edit");
-  });
-
-  it("disables edit, grade, and delete if user does not have edit permissions", () => {
-    cySetup(cy);
-    cyMockGraphQL(cy, {
-      mocks: [cyLogin(cy), cyMockLessons()],
-    });
-    cy.visit("/lessons");
-    cy.wait("@login");
-    cy.wait("@lessons");
-    cy.get("#lesson-0 #delete button").should("be.disabled");
-    cy.get("#lesson-0 #grade button").should("be.disabled");
-    cy.get("#lesson-0 #name").should("not.have.class", "a");
-    cy.get("#lesson-1 #delete button").should("be.disabled");
-    cy.get("#lesson-1 #grade button").should("be.disabled");
-    cy.get("#lesson-1 #name").should("not.have.class", "a");
-  });
-
-  it("enables edit if user created lesson", () => {
-    cySetup(cy);
-    cyMockGraphQL(cy, {
-      mocks: [
-        cyLogin(cy),
-        cyMockByQueryName("lessons", {
-          me: {
-            lessons: {
-              edges: [
-                {
-                  cursor: "cursor 1",
-                  node: {
-                    lessonId: "lesson1",
-                    name: "lesson 1",
-                    updatedAt: "1/1/20000, 12:00:00 AM",
-                    createdBy: "kayla",
-                    createdByName: "Kayla",
-                    userPermissions: {
-                      edit: false,
-                      view: false,
-                    },
-                  },
-                },
-              ],
-              pageInfo: {
-                hasNextPage: false,
-                endCursor: "cursor 2",
-              },
-            },
-          }
-        }),
-      ],
-    });
-    cy.visit("/lessons");
-    cy.wait("@login");
-    cy.wait("@lessons");
-    cy.get("#lesson-0 #delete button").should("not.be.disabled");
-    cy.get("#lesson-0 #grade button").should("not.be.disabled");
   });
 });

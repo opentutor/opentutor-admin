@@ -95,6 +95,15 @@ describe("users screen", () => {
     cy.get("#user-2 #role").contains("Author");
   });
 
+  it("hides users if not logged in", () => {
+    cySetup(cy);
+    cyMockGraphQL(cy, {
+      mocks: [cyMockUsers()],
+    });
+    cy.visit("/users");
+    cy.contains("Please login to view users.")
+  });
+
   it("hides users if not admin or content manager", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
@@ -102,6 +111,6 @@ describe("users screen", () => {
     });
     cy.visit("/users");
     cy.wait("@login");
-    cy.location("pathname").should("not.contain", "users");
-});
+    cy.contains("You must be an admin or content manager to view this page.")
+  });
 });

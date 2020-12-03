@@ -90,6 +90,20 @@ const columns: ColumnDef[] = [
     sortable: true,
   },
   {
+    id: "lastGradedByName",
+    label: "Last Graded By",
+    minWidth: 170,
+    align: "center",
+    sortable: true,
+  },
+  {
+    id: "lastGradedAt",
+    label: "Last Graded At",
+    minWidth: 170,
+    align: "center",
+    sortable: true,
+  },
+  {
     id: "createdAt",
     label: "Date",
     minWidth: 170,
@@ -112,13 +126,13 @@ const columns: ColumnDef[] = [
   },
 ];
 
-const TableFooter = (props: {
+function TableFooter(props: {
   classes: any;
   hasNext: boolean;
   hasPrev: boolean;
   onNext: () => void;
   onPrev: () => void;
-}) => {
+}): JSX.Element {
   const { classes, hasNext, hasPrev, onNext, onPrev } = props;
   const context = useContext(SessionContext);
   const { onlyCreator, showGraded, toggleCreator, toggleGraded } = context;
@@ -163,9 +177,9 @@ const TableFooter = (props: {
       </Toolbar>
     </AppBar>
   );
-};
+}
 
-const SessionItem = (props: { row: Edge<Session>; i: number }) => {
+function SessionItem(props: { row: Edge<Session>; i: number }): JSX.Element {
   const { row, i } = props;
   const context = useContext(SessionContext);
 
@@ -215,6 +229,12 @@ const SessionItem = (props: { row: Edge<Session>; i: number }) => {
       <TableCell id="classifier-grade" align="center">
         {row.node ? Math.trunc(row.node.classifierGrade * 100) : "?"}
       </TableCell>
+      <TableCell id="last-graded-by" align="center">
+        {row.node.lastGradedByName || ""}
+      </TableCell>
+      <TableCell id="last-graded-at" align="center">
+        {row.node.lastGradedAt || ""}
+      </TableCell>
       <TableCell id="date" align="center">
         {row.node.createdAt || ""}
       </TableCell>
@@ -226,12 +246,12 @@ const SessionItem = (props: { row: Edge<Session>; i: number }) => {
       </TableCell>
     </TableRow>
   );
-};
+}
 
-const SessionsTable = (props: {
+function SessionsTable(props: {
   path: string;
   search: { lessonId: string };
-}) => {
+}): JSX.Element {
   const classes = useStyles();
   const [cookies] = useCookies(["accessToken"]);
   const context = useContext(SessionContext);
@@ -333,18 +353,18 @@ const SessionsTable = (props: {
       />
     </div>
   );
-};
+}
 
-const SessionsPage = (props: {
+function SessionsPage(props: {
   path: string;
   search: { lessonId: string };
   children: any;
-}) => {
+}): JSX.Element {
   const context = useContext(SessionContext);
   const [cookies] = useCookies(["accessToken"]);
+
   if (typeof window !== "undefined" && !cookies.accessToken) {
-    navigate(withPrefix(`/`));
-    return <div></div>;
+    return <div>Please login to view sessions.</div>;
   }
   if (!context.user) {
     return <CircularProgress />;
@@ -357,7 +377,7 @@ const SessionsPage = (props: {
       {props.children}
     </div>
   );
-};
+}
 
 export default withLocation(SessionsPage);
 export { SessionsTable };

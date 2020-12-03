@@ -24,6 +24,8 @@ function cyMockSessions(): MockGraphQLQuery {
               graderGrade: 1,
               createdAt: "1/1/20000, 12:00:00 AM",
               username: "user 1",
+              lastGradedByName: "Grader",
+              lastGradedAt: "1/2/20000, 12:00:00 AM",
             },
           },
           {
@@ -52,6 +54,109 @@ function cyMockSessions(): MockGraphQLQuery {
 }
 
 describe("sessions screen", () => {
+
+  describe("permissions", () => {
+    it("cannot view sessions list if not logged in", () => {
+      cySetup(cy);
+      cy.visit("/sessions");
+      cy.contains("Please login to view sessions.");
+    });
+
+    it("disables edit and grade if user does not have edit permissions", () => {
+      cySetup(cy);
+      cyMockGraphQL(cy, {
+        mocks: [cyLogin(cy), cyMockSessions()],
+      });
+      cy.visit("/sessions");
+      cy.wait("@login");
+      cy.wait("@sessions");
+      cy.get("#session-0 #grade button").should("be.disabled");
+      cy.get("#session-1 #grade button").should("be.disabled");
+    });
+
+    it("enables edit if user is admin", () => {
+      cySetup(cy);
+      cyMockGraphQL(cy, {
+        mocks: [cyLogin(cy, "admin"), cyMockSessions()],
+      });
+      cy.visit("/sessions");
+      cy.wait("@login");
+      cy.wait("@sessions");
+      cy.get("#session-0 #grade button").should("not.be.disabled");
+      cy.get("#session-1 #grade button").should("not.be.disabled");
+    });
+
+    it("enables edit if user is contentManager", () => {
+      cySetup(cy);
+      cyMockGraphQL(cy, {
+        mocks: [cyLogin(cy, "contentManager"), cyMockSessions()],
+      });
+      cy.visit("/sessions");
+      cy.wait("@login");
+      cy.wait("@sessions");
+      cy.get("#session-0 #grade button").should("not.be.disabled");
+      cy.get("#session-1 #grade button").should("not.be.disabled");
+    });
+
+    it("enables edit if user created lesson", () => {
+      cySetup(cy);
+      cyMockGraphQL(cy, {
+        mocks: [
+          cyLogin(cy),
+          cyMockByQueryName("sessions", {
+            me: {
+              sessions: {
+                edges: [
+                  {
+                    cursor: "cursor 1",
+                    node: {
+                      lesson: {
+                        lessonId: "lesson1",
+                        name: "lesson 1",
+                        createdBy: 'kayla',
+                      },
+                      lessonCreatedBy: "teacher 1",
+                      sessionId: "session1",
+                      classifierGrade: 1,
+                      graderGrade: 1,
+                      createdAt: "1/1/20000, 12:00:00 AM",
+                      username: "user 1",
+                    },
+                  },
+                  {
+                    cursor: "cursor 2",
+                    node: {
+                      lesson: {
+                        lessonId: "lesson2",
+                        name: "lesson 2",
+                        createdBy: 'kayla',
+                      },
+                      lessonCreatedBy: "teacher 2",
+                      sessionId: "session2",
+                      classifierGrade: 0.5,
+                      graderGrade: null,
+                      createdAt: "1/1/20000, 12:00:00 AM",
+                      username: "user 2",
+                    },
+                  },
+                ],
+                pageInfo: {
+                  hasNextPage: false,
+                  endCursor: "cursor 2 ",
+                },
+              }
+            }
+          }),
+        ],
+      });
+      cy.visit("/sessions");
+      cy.wait("@login");
+      cy.wait("@sessions");
+      cy.get("#session-0 #grade button").should("not.be.disabled");
+      cy.get("#session-1 #grade button").should("not.be.disabled");
+    });  
+  });
+
   it("displays session table with headers", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
@@ -65,7 +170,9 @@ describe("sessions screen", () => {
     cy.get("#column-header #grade-link").contains("Grade");
     cy.get("#column-header #graderGrade").contains("Instructor Grade");
     cy.get("#column-header #classifierGrade").contains("Classifier Grade");
-    cy.get("#column-header #createdAt").contains("Date");
+    cy.get("#column-header #lastGradedByName").contains("Last Graded By");
+    cy.get("#column-header #lastGradedAt").contains("Last Graded At");
+    cy.get("#column-header #username").contains("Username");
     cy.get("#column-header #lessonCreatedBy").contains("Created By");
     cy.get("#column-header #username").contains("Username");
   });
@@ -85,6 +192,8 @@ describe("sessions screen", () => {
     cy.get("#session-0 #date").contains("1/1/20000, 12:00:00 AM");
     cy.get("#session-0 #creator").contains("teacher 1");
     cy.get("#session-0 #username").contains("user 1");
+    cy.get("#session-0 #last-graded-by").contains("Grader");
+    cy.get("#session-0 #last-graded-at").contains("1/2/20000, 12:00:00 AM");
     cy.get("#session-1 #lesson").contains("lesson 2");
     cy.get("#session-1 #instructor-grade").contains("?");
     cy.get("#session-1 #classifier-grade").contains("50");
@@ -129,75 +238,5 @@ describe("sessions screen", () => {
     const option = cy.get("#show-graded-checkbox");
     option.should("not.have.attr", "checked");
     cy.get("#toggle-graded").trigger('mouseover').click();
-  });
-
-  it("disables edit and grade if user does not have edit permissions", () => {
-    cySetup(cy);
-    cyMockGraphQL(cy, {
-      mocks: [cyLogin(cy), cyMockSessions()],
-    });
-    cy.visit("/sessions");
-    cy.wait("@login");
-    cy.wait("@sessions");
-    cy.get("#session-0 #grade button").should("be.disabled");
-    cy.get("#session-1 #grade button").should("be.disabled");
-  });
-
-  it("enables edit if user created lesson", () => {
-    cySetup(cy);
-    cyMockGraphQL(cy, {
-      mocks: [
-        cyLogin(cy),
-        cyMockByQueryName("sessions", {
-          me: {
-            sessions: {
-              edges: [
-                {
-                  cursor: "cursor 1",
-                  node: {
-                    lesson: {
-                      lessonId: "lesson1",
-                      name: "lesson 1",
-                      createdBy: 'kayla',
-                    },
-                    lessonCreatedBy: "teacher 1",
-                    sessionId: "session1",
-                    classifierGrade: 1,
-                    graderGrade: 1,
-                    createdAt: "1/1/20000, 12:00:00 AM",
-                    username: "user 1",
-                  },
-                },
-                {
-                  cursor: "cursor 2",
-                  node: {
-                    lesson: {
-                      lessonId: "lesson2",
-                      name: "lesson 2",
-                      createdBy: 'kayla',
-                    },
-                    lessonCreatedBy: "teacher 2",
-                    sessionId: "session2",
-                    classifierGrade: 0.5,
-                    graderGrade: null,
-                    createdAt: "1/1/20000, 12:00:00 AM",
-                    username: "user 2",
-                  },
-                },
-              ],
-              pageInfo: {
-                hasNextPage: false,
-                endCursor: "cursor 2 ",
-              },
-            }
-          }
-        }),
-      ],
-    });
-    cy.visit("/sessions");
-    cy.wait("@login");
-    cy.wait("@sessions");
-    cy.get("#session-0 #grade button").should("not.be.disabled");
-    cy.get("#session-1 #grade button").should("not.be.disabled");
   });
 });

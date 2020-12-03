@@ -30,6 +30,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import AddIcon from "@material-ui/icons/Add";
 import AssignmentIcon from "@material-ui/icons/Assignment";
 import DeleteIcon from "@material-ui/icons/Delete";
+import FileCopyIcon from "@material-ui/icons/FileCopy";
 import KeyboardArrowLeftIcon from "@material-ui/icons/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
 import LaunchIcon from "@material-ui/icons/Launch";
@@ -106,6 +107,13 @@ const columns: ColumnDef[] = [
     align: "center",
     sortable: false,
   },
+  {
+    id: "copy",
+    label: "Copy",
+    minWidth: 0,
+    align: "center",
+    sortable: false,
+  },
 ];
 
 const TableFooter = (props: {
@@ -178,6 +186,10 @@ const LessonItem = (props: {
     window.location.href = path;
   }
 
+  function handleCopy(): void {
+    navigate(withPrefix(`/lessons/edit?copyLesson=${row.node.lessonId}`));
+  }
+
   function handleGrade(): void {
     navigate(withPrefix(`/sessions?lessonId=${row.node.lessonId}`));
   }
@@ -239,6 +251,11 @@ const LessonItem = (props: {
           disabled={!userCanEdit(row.node, context.user)}
         >
           <DeleteIcon />
+        </IconButton>
+      </TableCell>
+      <TableCell id="copy" align="center">
+        <IconButton onClick={handleCopy}>
+          <FileCopyIcon />
         </IconButton>
       </TableCell>
       <Menu
@@ -374,8 +391,7 @@ const LessonsPage = (props: { location: any; path: string; children: any }) => {
   const [cookies] = useCookies(["accessToken"]);
 
   if (typeof window !== "undefined" && !cookies.accessToken) {
-    navigate(withPrefix(`/`));
-    return <div></div>;
+    return <div>Please login to view lessons.</div>;
   }
   if (!context.user) {
     return <CircularProgress />;

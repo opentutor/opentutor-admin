@@ -36,6 +36,8 @@ export interface Session {
   lesson: Lesson;
   lessonName: string;
   lessonCreatedBy: string;
+  lastGradedByName: string;
+  lastGradedAt: string;
   deleted: boolean;
 }
 

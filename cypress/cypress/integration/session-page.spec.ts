@@ -58,6 +58,106 @@ function cyMockSession(): MockGraphQLQuery {
 }
 
 describe("session screen", () => {
+  describe("permissions", () => {
+    it("cannot view session page if not logged in", () => {
+      cySetup(cy);
+      cy.visit("/sessions/session?sessionId=session1");
+      cy.contains("Please login to view session.");
+    });
+  
+    it("cannot view session if user does not have permission to edit", () => {
+      cySetup(cy);
+      cyMockGraphQL(cy, {
+        mocks: [cyLogin(cy), cyMockSession()],
+      });
+      cy.visit("/sessions/session?sessionId=session1");
+      cy.wait("@login");
+      cy.wait("@session");
+      cy.contains("You do not have permission to grade this session.");
+    });
+
+    it("can view session if user is admin", () => {
+      cySetup(cy);
+      cyMockGraphQL(cy, {
+        mocks: [cyLogin(cy, "admin"), cyMockSession()],
+      });
+      cy.visit("/sessions/session?sessionId=session1");
+      cy.wait("@login");
+      cy.wait("@session");
+      cy.get("#lesson");
+    });
+
+    it("can view session if user is contentManager", () => {
+      cySetup(cy);
+      cyMockGraphQL(cy, {
+        mocks: [cyLogin(cy, "contentManager"), cyMockSession()],
+      });
+      cy.visit("/sessions/session?sessionId=session1");
+      cy.wait("@login");
+      cy.wait("@session");
+      cy.get("#lesson");
+    });
+
+    it("can view session if user created lesson", () => {
+      cySetup(cy);
+      cyMockGraphQL(cy, {
+        mocks: [cyLogin(cy), cyMockByQueryName("session", {
+          me: {
+            session: {
+              username: "username1",
+              sessionId: "session1",
+              createdAt: "1/1/2001",
+              lesson: {
+                name: "lesson 1",
+                createdBy: 'kayla',
+              },
+              graderGrade: null,
+              question: {
+                text: "question?",
+                expectations: [
+                  { text: "expected text 1" },
+                  { text: "expected text 2" },
+                ],
+              },
+              userResponses: [
+                {
+                  text: "answer 1",
+                  expectationScores: [
+                    {
+                      classifierGrade: "Good",
+                      graderGrade: "",
+                    },
+                    {
+                      classifierGrade: "Bad",
+                      graderGrade: "",
+                    },
+                  ],
+                },
+                {
+                  text: "answer 2",
+                  expectationScores: [
+                    {
+                      classifierGrade: "Bad",
+                      graderGrade: "",
+                    },
+                    {
+                      classifierGrade: "Good",
+                      graderGrade: "",
+                    },
+                  ],
+                },
+              ],
+            }
+          }
+        })],
+      });
+      cy.visit("/sessions/session?sessionId=session1");
+      cy.wait("@login");
+      cy.wait("@session");
+      cy.get("#lesson");
+    });
+  })
+
   it("shows lesson name", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
@@ -140,75 +240,5 @@ describe("session screen", () => {
     cy.get("#response-0 #grade-0 #select-grade").should("have.value", "");
     cy.get("#response-0 #grade-0 #select-grade").trigger('mouseover').click();
     cy.get("#good").trigger('mouseover').click();
-  });
-
-  it("hides if user does not have permission to edit", () => {
-    cySetup(cy);
-    cyMockGraphQL(cy, {
-      mocks: [cyLogin(cy), cyMockSession()],
-    });
-    cy.visit("/sessions/session?sessionId=session1");
-    cy.wait("@login");
-    cy.wait("@session");
-    cy.contains("You do not have the permissions to grade this session");
-  });
-
-  it("shows if user created lesson", () => {
-    cySetup(cy);
-    cyMockGraphQL(cy, {
-      mocks: [cyLogin(cy), cyMockByQueryName("session", {
-        me: {
-          session: {
-            username: "username1",
-            sessionId: "session1",
-            createdAt: "1/1/2001",
-            lesson: {
-              name: "lesson 1",
-              createdBy: 'kayla',
-            },
-            graderGrade: null,
-            question: {
-              text: "question?",
-              expectations: [
-                { text: "expected text 1" },
-                { text: "expected text 2" },
-              ],
-            },
-            userResponses: [
-              {
-                text: "answer 1",
-                expectationScores: [
-                  {
-                    classifierGrade: "Good",
-                    graderGrade: "",
-                  },
-                  {
-                    classifierGrade: "Bad",
-                    graderGrade: "",
-                  },
-                ],
-              },
-              {
-                text: "answer 2",
-                expectationScores: [
-                  {
-                    classifierGrade: "Bad",
-                    graderGrade: "",
-                  },
-                  {
-                    classifierGrade: "Good",
-                    graderGrade: "",
-                  },
-                ],
-              },
-            ],
-          }
-        }
-      })],
-    });
-    cy.visit("/sessions/session?sessionId=session1");
-    cy.wait("@login");
-    cy.wait("@session");
-    cy.get("#lesson");
   });
 });

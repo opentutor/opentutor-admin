@@ -4,7 +4,7 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import { navigate, withPrefix } from "gatsby";
+import { navigate } from "gatsby";
 import React, { useContext } from "react";
 import { useCookies } from "react-cookie";
 import { ToastContainer, toast } from "react-toastify";
@@ -31,6 +31,7 @@ import {
   fetchTrainingStatus,
   trainLesson,
   userCanEdit,
+  fetchLessons,
 } from "api";
 import SessionContext from "context/session";
 import NavBar from "components/nav-bar";
@@ -134,9 +135,14 @@ interface LessonUnderEdit {
 }
 
 const LessonEdit = (props: {
-  search: { lessonId: string; trainStatusPollInterval?: number };
+  search: {
+    lessonId: string;
+    trainStatusPollInterval?: number;
+    copyLesson?: string;
+  };
 }) => {
-  const { lessonId } = props.search;
+  const { lessonId, copyLesson } = props.search;
+  const classes = useStyles();
   const [cookies] = useCookies(["accessToken"]);
   const context = useContext(SessionContext);
   const trainStatusPollInterval = !isNaN(
@@ -144,10 +150,10 @@ const LessonEdit = (props: {
   )
     ? Number(props.search.trainStatusPollInterval)
     : TRAIN_STATUS_POLL_INTERVAL_DEFAULT;
-  const classes = useStyles();
   const [lessonUnderEdit, setLessonUnderEdit] = React.useState<LessonUnderEdit>(
     { lesson: undefined, dirty: false }
   );
+  const [error, setError] = React.useState("");
   const [savePopUp, setSavePopUp] = React.useState(false);
   const [isTraining, setIsTraining] = React.useState(false);
   const [trainPopUp, setTrainPopUp] = React.useState(false);
@@ -163,6 +169,20 @@ const LessonEdit = (props: {
           setLesson(lesson);
         })
         .catch((err: string) => console.error(err));
+    } else if (copyLesson) {
+      fetchLesson(copyLesson, cookies.accessToken)
+        .then((lesson: Lesson) => {
+          setLessonUnderEdit({
+            lesson: {
+              ...lesson,
+              lessonId: uuid(),
+              name: `Copy of ${lesson.name}`,
+              createdByName: context.user?.name || "",
+            },
+            dirty: true,
+          });
+        })
+        .catch((err: string) => console.error(err));
     } else {
       setLesson({
         ...newLesson,
@@ -171,12 +191,34 @@ const LessonEdit = (props: {
     }
   }, [context.user]);
 
-  function setLesson(lesson?: any, dirty?: boolean) {
-    setLessonUnderEdit({ lesson: lesson, dirty: dirty });
-  }
+  React.useEffect(() => {
+    if (!lessonUnderEdit.lesson) {
+      return;
+    }
+    const id = lessonUnderEdit.lesson.lessonId;
+    if (!/^[a-z0-9-]+$/g.test(id)) {
+      setError("id must be lower-case and alpha-numeric.");
+    } else if (lessonId !== id) {
+      const filter: any = { lessonId: id };
+      fetchLessons(filter, 1, "", "", true, cookies.accessToken)
+        .then((lessons) => {
+          if (lessons && lessons.edges.length > 0) {
+            setError("id is already being used for another lesson.");
+          } else {
+            setError("");
+          }
+        })
+        .catch((err) => console.error(err));
+    } else {
+      setError("");
+    }
+  }, [lessonUnderEdit.lesson]);
 
-  function isValidId(): boolean {
-    return /^[a-z0-9-]+$/g.test(lessonUnderEdit.lesson?.lessonId || "");
+  function setLesson(lesson?: any, dirty?: boolean) {
+    if (lessonUnderEdit.lesson?.lessonId !== lesson?.lessonId) {
+      setError("verifying lesson id...");
+    }
+    setLessonUnderEdit({ lesson: lesson, dirty: dirty });
   }
 
   function isExpValid(exp: LessonExpectation): boolean {
@@ -191,7 +233,7 @@ const LessonEdit = (props: {
       return false;
     }
     return (
-      isValidId() &&
+      !error &&
       lessonUnderEdit.lesson?.expectations.every((exp: LessonExpectation) =>
         isExpValid(exp)
       )
@@ -332,9 +374,7 @@ const LessonEdit = (props: {
   }
 
   if (lessonId && !userCanEdit(lessonUnderEdit.lesson, context.user)) {
-    return (
-      <div>You do not have the permissions to edit or view this lesson</div>
-    );
+    return <div>You do not have permission to view this lesson.</div>;
   }
 
   return (
@@ -368,8 +408,8 @@ const LessonEdit = (props: {
             label="Lesson ID"
             placeholder="Unique alias to the lesson"
             fullWidth
-            error={!isValidId()}
-            helperText={isValidId() ? "" : "must be a-z 0-9"}
+            error={error !== ""}
+            helperText={error}
             InputLabelProps={{
               shrink: true,
             }}
@@ -633,23 +673,22 @@ const LessonEdit = (props: {
   );
 };
 
-const EditPage = (props: { path: string; search: any }) => {
+function EditPage(props: { path: string; search: any }): JSX.Element {
   const context = useContext(SessionContext);
   const [cookies] = useCookies(["accessToken"]);
+
   if (typeof window !== "undefined" && !cookies.accessToken) {
-    navigate(withPrefix(`/`));
-    return <div></div>;
+    return <div>Please login to view lesson.</div>;
   }
   if (!context.user) {
     return <CircularProgress />;
   }
-
   return (
     <div>
       <NavBar title="Edit Lesson" />
       <LessonEdit search={props.search} />
     </div>
   );
-};
+}
 
 export default withLocation(EditPage);

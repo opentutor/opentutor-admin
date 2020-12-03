@@ -60,7 +60,8 @@ const SessionTable = ({ search }: { search: any }) => {
       Number(indexSplit[0]),
       Number(indexSplit[1]),
       event.target.value as string,
-      cookies.accessToken
+      cookies.accessToken,
+      context.user?.id || ""
     )
       .then((session: Session) => {
         if (session) {
@@ -102,7 +103,7 @@ const SessionTable = ({ search }: { search: any }) => {
     !session.lesson ||
     !userCanEdit(session.lesson, context.user)
   ) {
-    return <div>You do not have the permissions to grade this session</div>;
+    return <div>You do not have permission to grade this session.</div>;
   }
 
   return (
@@ -243,8 +244,7 @@ const SessionPage = ({ path, search }: { path: string; search: any }) => {
   const context = useContext(SessionContext);
   const [cookies] = useCookies(["accessToken"]);
   if (typeof window !== "undefined" && !cookies.accessToken) {
-    navigate(withPrefix(`/`));
-    return <div></div>;
+    return <div>Please login to view session.</div>;
   }
   if (!context.user) {
     return <CircularProgress />;
@@ -252,7 +252,7 @@ const SessionPage = ({ path, search }: { path: string; search: any }) => {
 
   return (
     <div>
-      <NavBar title="Grade Session" />
+      <NavBar title="Grade Session" disableMenu={true} />
       <SessionTable search={search} />
     </div>
   );

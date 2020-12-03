@@ -75,6 +75,8 @@ export async function fetchSessions(
                     createdBy
                   }
                   lessonCreatedBy
+                  lastGradedByName
+                  lastGradedAt
                 }
               }
               pageInfo {
@@ -143,7 +145,8 @@ export async function setGrade(
   userAnswerIndex: number,
   userExpectationIndex: number,
   grade: string,
-  accessToken: string
+  accessToken: string,
+  grader: string
 ): Promise<Session> {
   const headers = { Authorization: `bearer ${accessToken}` };
   const result = await axios.post<GQLResponse<SetGrade>>(

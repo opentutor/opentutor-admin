@@ -24,6 +24,7 @@ import {
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import AccountCircle from "@material-ui/icons/AccountCircle";
+import CloseIcon from "@material-ui/icons/Close";
 import MenuIcon from "@material-ui/icons/Menu";
 import ListIcon from "@material-ui/icons/List";
 import { userIsElevated } from "api";
@@ -128,7 +129,10 @@ function LoginOption(props: { classes: any }): JSX.Element {
   );
 }
 
-export function NavBar(props: { title: string }): JSX.Element {
+export function NavBar(props: {
+  title: string;
+  disableMenu?: boolean;
+}): JSX.Element {
   const classes = useStyles();
   const context = useContext(SessionContext);
   const [isDrawerOpen, setIsDrawerOpen] = React.useState(false);
@@ -143,14 +147,20 @@ export function NavBar(props: { title: string }): JSX.Element {
         <Toolbar>
           {context.user ? (
             <IconButton
-              id="menu-button"
+              id={props.disableMenu ? "back-button" : "menu-button"}
               edge="start"
               color="inherit"
               aria-label="menu"
               className={classes.menuButton}
-              onClick={() => toggleDrawer(true)}
+              onClick={() => {
+                if (props.disableMenu) {
+                  window.history.back();
+                } else {
+                  toggleDrawer(true);
+                }
+              }}
             >
-              <MenuIcon />
+              {props.disableMenu ? <CloseIcon /> : <MenuIcon />}
             </IconButton>
           ) : undefined}
           <Typography id="title" variant="h6" className={classes.title}>

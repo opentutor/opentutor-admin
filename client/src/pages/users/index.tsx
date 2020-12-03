@@ -4,11 +4,9 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import { withPrefix } from "gatsby";
 import React, { useContext } from "react";
 import { useCookies } from "react-cookie";
 import { ToastContainer, toast } from "react-toastify";
-import { navigate } from "@reach/router";
 import {
   AppBar,
   CircularProgress,
@@ -267,20 +265,20 @@ function UsersPage(props: { path: string }): JSX.Element {
   const [cookies] = useCookies(["accessToken"]);
 
   if (typeof window !== "undefined" && !cookies.accessToken) {
-    navigate(withPrefix("/"));
-    return <div></div>;
+    return <div>Please login to view users.</div>;
   }
   if (!context.user) {
     return <CircularProgress />;
   }
   if (!userIsElevated(context.user)) {
-    navigate(withPrefix("/"));
-    return <div></div>;
+    return (
+      <div>You must be an admin or content manager to view this page.</div>
+    );
   }
 
   return (
     <div>
-      <NavBar title="Users" />
+      <NavBar title="Manage Users" />
       <UsersTable path={props.path} />
     </div>
   );

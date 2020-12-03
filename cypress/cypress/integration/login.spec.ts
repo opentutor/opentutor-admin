@@ -4,64 +4,72 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-// import { cySetup, cyLogin, cyMockGraphQL } from "../support/functions";
+import { cySetup, cyLogin, cyMockGraphQL } from "../support/functions";
 
-// describe("Login", () => {
-//   it("loads home page", () => {
-//     cySetup(cy);
-//     cy.visit("/");
-//     cy.contains("Welcome to OpenTutor");
-//     cy.get("#login-menu #login-button");
-//   });
+describe("Login", () => {
+  it("loads home page", () => {
+    cySetup(cy);
+    cy.visit("/");
+    cy.contains("Welcome to OpenTutor");
+    cy.get("#login-menu #login-button");
+  });
 
-//   it("login disabled if missing GOOGLE_CLIENT_ID", () => {
-//     cySetup(cy);
-//     cy.visit("/");
-//     cy.get("#login-menu #login-button").should("be.disabled");
-//   });
+  it("login disabled if missing GOOGLE_CLIENT_ID", () => {
+    cySetup(cy);
+    cy.visit("/");
+    cy.get("#login-menu #login-button").should("be.disabled");
+  });
 
-//   it("login enabled if GOOGLE_CLIENT_ID is set", () => {
-//     cySetup(cy);
-//     cy.visit("/");
-//     cy.route("**/config", { GOOGLE_CLIENT_ID: "test" });
-//     cy.get("#login-menu #login-button").should("not.be.disabled");
-//   });
+  it("login enabled if GOOGLE_CLIENT_ID is set", () => {
+    cySetup(cy);
+    cy.visit("/");
+    cy.route("**/config", { GOOGLE_CLIENT_ID: "test" });
+    cy.get("#login-menu #login-button").should("not.be.disabled");
+  });
 
-//   it("redirects to lesson page after logging in", () => {
-//     cySetup(cy);
-//     cyMockGraphQL(cy, {
-//       mocks: [cyLogin(cy)],
-//     });
-//     cy.visit("/");
-//     cy.wait("@login");
-//     cy.location("pathname").should("contain", "lessons");
-//   });
+  // it("redirects to lesson page after logging in", () => {
+  //   cySetup(cy);
+  //   cyMockGraphQL(cy, {
+  //     mocks: [cyLogin(cy)],
+  //   });
+  //   cy.visit("/");
+  //   cy.wait("@login");
+  //   cy.location("pathname").should("contain", "lessons");
+  // });
 
-//   it("redirects to home page after logging out", () => {
-//     cySetup(cy);
-//     cyMockGraphQL(cy, {
-//       mocks: [cyLogin(cy)],
-//     });
-//     cy.visit("/");
-//     cy.get("#login-option #login-button").trigger('mouseover').click();
-//     cy.get("#logout").trigger('mouseover').click();
-//     cy.location("pathname").should("not.contain", "lessons");
-//   });
+  // it("redirects to home page after logging out", () => {
+  //   cySetup(cy);
+  //   cyMockGraphQL(cy, {
+  //     mocks: [cyLogin(cy)],
+  //   });
+  //   cy.visit("/");
+  //   cy.get("#login-option #login-button").trigger('mouseover').click();
+  //   cy.get("#logout").trigger('mouseover').click();
+  //   cy.location("pathname").should("not.contain", "lessons");
+  // });
 
-//   it("cannot view lessons page if not logged in", () => {
-//     cySetup(cy);
-//     cy.visit("/lessons");
-//     cy.location("pathname").should("not.contain", "lessons");
-//     cy.visit("/lessons/edit");
-//     cy.location("pathname").should("not.contain", "lessons/edit");
-//   });
+  it("cannot view lessons list if not logged in", () => {
+    cySetup(cy);
+    cy.visit("/lessons");
+    cy.contains("Please login to view lessons.");
+  });
 
-//   it("cannot view sessions page if not logged in", () => {
-//     cySetup(cy);
-//     cy.visit("/sessions");
-//     cy.location("pathname").should("not.contain", "sessions");
-//     cy.visit("/sessions/session?sessionId=session1");
-//     cy.location("pathname").should("not.contain", "sessions/session");
-//   });
+  it("cannot view lesson page if not logged in", () => {
+    cySetup(cy);
+    cy.visit("/lessons/edit?lessonId=q1");
+    cy.contains("Please login to view lesson.");
+  });
 
-// });
+  it("cannot view sessions list if not logged in", () => {
+    cySetup(cy);
+    cy.visit("/sessions");
+    cy.contains("Please login to view sessions.");
+  });
+
+  it("cannot view session page if not logged in", () => {
+    cySetup(cy);
+    cy.visit("/sessions/session?sessionId=session1");
+    cy.contains("Please login to view session.");
+  });
+
+});
