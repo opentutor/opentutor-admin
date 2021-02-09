@@ -17,6 +17,11 @@ In order to function properly the client generally requires these environment va
 
 ## Development
 
+### Running in WSL
+
+Please see the following for setting up Cypress in the wsl
+[https://nickymeuleman.netlify.app/blog/gui-on-wsl2-cypress](https://nickymeuleman.netlify.app/blog/gui-on-wsl2-cypress)
+
 ### Required Software
 
 - unix system (osx or linux)
