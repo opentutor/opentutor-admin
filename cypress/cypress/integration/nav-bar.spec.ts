@@ -59,7 +59,7 @@ describe("Navigation bar", () => {
       cy.get("#nav-bar").get("#menu-button").trigger('mouseover').click();
       cy.get("#drawer a").eq(0).contains("Lessons");
       cy.get("#drawer a").eq(1).contains("Grading");
-      cy.get("#drawer a").eq(2).should("not.contain", "Users")
+      cy.get("#drawer a").should("have.length", 2)
     });
 
     it("shows /users if user is an admin", () => {

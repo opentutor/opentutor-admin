@@ -23,7 +23,7 @@ describe("Login", () => {
   it("login enabled if GOOGLE_CLIENT_ID is set", () => {
     cySetup(cy);
     cy.visit("/");
-    cy.route("**/config", { GOOGLE_CLIENT_ID: "test" });
+    cy.intercept("**/config", { GOOGLE_CLIENT_ID: "test" });
     cy.get("#login-menu #login-button").should("not.be.disabled");
   });
 

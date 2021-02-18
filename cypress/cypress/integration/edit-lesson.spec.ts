@@ -489,7 +489,7 @@ describe("edit lesson screen", () => {
     cy.visit("/lessons/edit?lessonId=q1");
     cy.wait("@login");
     cy.wait("@lesson");
-    cy.get("#save-button").should("not.visible");
+    cy.get("#save-button").should("not.exist");
   });
 
   it("save button is visible after making an edit", () => {

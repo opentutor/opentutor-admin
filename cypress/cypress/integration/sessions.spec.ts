@@ -235,8 +235,7 @@ describe("sessions screen", () => {
     cy.visit("/sessions");
     cy.wait("@login");
     cy.wait("@sessions");
-    const option = cy.get("#show-graded-checkbox");
-    option.should("not.have.attr", "checked");
+    cy.get("#toggle-graded").should("not.be.checked");
     cy.get("#toggle-graded").trigger('mouseover').click();
   });
 });
