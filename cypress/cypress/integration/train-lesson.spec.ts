@@ -5,7 +5,7 @@ Permission to use, copy, modify, and distribute this software and its documentat
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
 import { TrainStatus, TrainState } from "../support/dtos";
-import { cySetup, cyLogin, cyMockGraphQL, MockGraphQLQuery, cyMockByQueryName } from "../support/functions";
+import { cySetup, cyLogin, cyMockGraphQL, MockGraphQLQuery, cyMockByQueryName, staticResponse } from "../support/functions";
 
 const TRAIN_STATUS_URL = `/classifier/train/status/some-job-id`;
 
@@ -25,18 +25,14 @@ function mockTrainLesson(
   } = {}
 ): WaitFunc {
   params = params || {};
-  cy.route({
-    method: "POST",
-    url: "**/train",
-    status: params.responseStatus || 200,
-    response: {
+  cy.intercept('POST', "**/train", 
+  {
+    statusCode: params.responseStatus || 200,
+    body: {
       data: {
         statusUrl: params.statusUrl || TRAIN_STATUS_URL,
       },
       errors: null,
-    },
-    headers: {
-      "Content-Type": "application/json",
     },
   }).as("trainLesson");
   return () => cy.wait("@trainLesson");
@@ -61,17 +57,14 @@ function mockTrainStatus(
   const alias = params.status
     ? `trainStatus${params.status.state}${params.seq}`
     : "";
-  cy.route({
-    method: "GET",
-    url: `**/${params.statusUrl || TRAIN_STATUS_URL}`,
-    status: params.responseStatusCode || 200,
-    response: {
-      data: params.status,
-    },
-    headers: {
-      "Content-Type": "application/json",
-    },
-  }).as(alias);
+  cy.intercept("GET", `**/${params.statusUrl || TRAIN_STATUS_URL}`,
+    {
+      statusCode: params.responseStatusCode || 200,
+      body: {
+        data: params.status,
+      },
+    }
+  ).as(alias);
   return `@${alias}`;
 }
 
