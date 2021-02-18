@@ -5,8 +5,9 @@ Permission to use, copy, modify, and distribute this software and its documentat
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
 import { withPrefix, navigate } from "gatsby";
-import React from "react";
+import React, { useContext } from "react";
 import { useCookies } from "react-cookie";
+import { Link } from "@reach/router";
 import {
   AppBar,
   Button,
@@ -23,9 +24,11 @@ import {
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import AccountCircle from "@material-ui/icons/AccountCircle";
+import CloseIcon from "@material-ui/icons/Close";
 import MenuIcon from "@material-ui/icons/Menu";
 import ListIcon from "@material-ui/icons/List";
-import { Link } from "@reach/router";
+import { userIsElevated } from "api";
+import SessionContext from "context/session";
 
 const useStyles = makeStyles((theme) => ({
   toolbar: theme.mixins.toolbar,
@@ -45,7 +48,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const NavMenu = () => {
+function NavMenu(): JSX.Element {
+  const context = useContext(SessionContext);
   return (
     <List dense>
       <ListItem button component={Link} to={withPrefix("/lessons")}>
@@ -60,98 +64,109 @@ const NavMenu = () => {
         </ListItemIcon>
         <ListItemText primary="Grading" />
       </ListItem>
+      {userIsElevated(context.user) ? (
+        <ListItem button component={Link} to={withPrefix("/users")}>
+          <ListItemIcon>
+            <ListIcon />
+          </ListItemIcon>
+          <ListItemText primary="Users" />
+        </ListItem>
+      ) : undefined}
     </List>
   );
-};
+}
 
-const LoginOption = (props: { classes: any }) => {
+function LoginOption(props: { classes: any }): JSX.Element {
   const { classes } = props;
-  const [cookies, setCookie, removeCookie] = useCookies(["user"]);
+  const [cookies, setCookie, removeCookie] = useCookies(["accessToken"]);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
+  const context = useContext(SessionContext);
 
-  const handleMenu = (e: any) => {
+  function handleMenu(e: any): void {
     setAnchorEl(e.currentTarget);
-  };
+  }
 
-  const handleClose = () => {
+  function handleClose(): void {
     setAnchorEl(null);
-  };
+  }
 
-  const onLogout = () => {
-    removeCookie("user", { path: "/" });
+  function onLogout(): void {
+    removeCookie("accessToken", { path: "/" });
     navigate("/");
-  };
-
-  if (cookies.user) {
-    return (
-      <div id="login-option" className={classes.login}>
-        <Button
-          id="login-button"
-          onClick={handleMenu}
-          startIcon={<AccountCircle />}
-          style={{ color: "white" }}
-        >
-          {cookies.user}
-        </Button>
-        <Menu
-          id="login-menu"
-          anchorEl={anchorEl}
-          anchorOrigin={{
-            vertical: "top",
-            horizontal: "right",
-          }}
-          keepMounted
-          transformOrigin={{
-            vertical: "top",
-            horizontal: "right",
-          }}
-          open={open}
-          onClose={handleClose}
-        >
-          <MenuItem id="logout" onClick={onLogout}>
-            Logout
-          </MenuItem>
-        </Menu>
-      </div>
-    );
   }
 
   return (
     <div id="login-option" className={classes.login}>
-      <Button id="login-button" color="inherit" component={Link} to={"/admin"}>
-        Login
+      <Button
+        id="login-button"
+        onClick={handleMenu}
+        startIcon={<AccountCircle />}
+        style={{ color: "white" }}
+      >
+        {context.user?.name}
       </Button>
+      <Menu
+        id="login-menu"
+        anchorEl={anchorEl}
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+        keepMounted
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+        open={open}
+        onClose={handleClose}
+      >
+        <MenuItem id="logout" onClick={onLogout}>
+          Logout
+        </MenuItem>
+      </Menu>
     </div>
   );
-};
+}
 
-export const NavBar = (props: { title: string }) => {
+export function NavBar(props: {
+  title: string;
+  disableMenu?: boolean;
+}): JSX.Element {
   const classes = useStyles();
+  const context = useContext(SessionContext);
   const [isDrawerOpen, setIsDrawerOpen] = React.useState(false);
 
-  const toggleDrawer = (tf: boolean) => {
+  function toggleDrawer(tf: boolean): void {
     setIsDrawerOpen(tf);
-  };
+  }
 
   return (
     <div id="nav-bar" className={classes.root}>
       <AppBar position="fixed">
         <Toolbar>
-          <IconButton
-            id="menu-button"
-            edge="start"
-            color="inherit"
-            aria-label="menu"
-            className={classes.menuButton}
-            onClick={() => toggleDrawer(true)}
-          >
-            <MenuIcon />
-          </IconButton>
+          {context.user ? (
+            <IconButton
+              id={props.disableMenu ? "back-button" : "menu-button"}
+              edge="start"
+              color="inherit"
+              aria-label="menu"
+              className={classes.menuButton}
+              onClick={() => {
+                if (props.disableMenu) {
+                  window.history.back();
+                } else {
+                  toggleDrawer(true);
+                }
+              }}
+            >
+              {props.disableMenu ? <CloseIcon /> : <MenuIcon />}
+            </IconButton>
+          ) : undefined}
           <Typography id="title" variant="h6" className={classes.title}>
             {props.title}
           </Typography>
-          <LoginOption classes={classes} />
+          {context.user ? <LoginOption classes={classes} /> : undefined}
         </Toolbar>
       </AppBar>
       <SwipeableDrawer
@@ -167,6 +182,6 @@ export const NavBar = (props: { title: string }) => {
       <div className={classes.toolbar} /> {/* create space below app bar */}
     </div>
   );
-};
+}
 
 export default NavBar;

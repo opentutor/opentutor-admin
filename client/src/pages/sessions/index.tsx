@@ -1,7 +1,13 @@
+/*
+This software is Copyright ©️ 2020 The University of Southern California. All Rights Reserved. 
+Permission to use, copy, modify, and distribute this software and its documentation for educational, research and non-profit purposes, without fee, and without a written agreement is hereby granted, provided that the above copyright notice and subject to the full license file found in the root of this software deliverable. Permission to make commercial use of this software may be obtained by contacting:  USC Stevens Center for Innovation University of Southern California 1150 S. Olive Street, Suite 2300, Los Angeles, CA 90115, USA Email: accounting@stevens.usc.edu
+
+The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
+*/
 import { withPrefix } from "gatsby";
 import React, { useContext } from "react";
-import { navigate } from "@reach/router";
 import { useCookies } from "react-cookie";
+import { navigate } from "@reach/router";
 import {
   AppBar,
   CircularProgress,
@@ -22,11 +28,11 @@ import { Link } from "@reach/router";
 import KeyboardArrowLeftIcon from "@material-ui/icons/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
 import AssignmentIcon from "@material-ui/icons/Assignment";
-import { fetchSessions } from "api";
+import { fetchSessions, userCanEdit } from "api";
 import { Connection, Edge, Session } from "types";
 import NavBar from "components/nav-bar";
 import { ColumnDef, ColumnHeader } from "components/column-header";
-import ToggleContext from "context/toggle";
+import SessionContext from "context/session";
 import withLocation from "wrap-with-location";
 import "styles/layout.css";
 
@@ -84,6 +90,20 @@ const columns: ColumnDef[] = [
     sortable: true,
   },
   {
+    id: "lastGradedByName",
+    label: "Last Graded By",
+    minWidth: 170,
+    align: "center",
+    sortable: true,
+  },
+  {
+    id: "lastGradedAt",
+    label: "Last Graded At",
+    minWidth: 170,
+    align: "center",
+    sortable: true,
+  },
+  {
     id: "createdAt",
     label: "Date",
     minWidth: 170,
@@ -106,36 +126,33 @@ const columns: ColumnDef[] = [
   },
 ];
 
-const TableFooter = (props: {
+function TableFooter(props: {
   classes: any;
   hasNext: boolean;
   hasPrev: boolean;
   onNext: () => void;
   onPrev: () => void;
-}) => {
+}): JSX.Element {
   const { classes, hasNext, hasPrev, onNext, onPrev } = props;
-  const [cookies] = useCookies(["user"]);
-  const toggle = useContext(ToggleContext);
-  const { onlyCreator, showGraded, toggleCreator, toggleGraded } = toggle;
+  const context = useContext(SessionContext);
+  const { onlyCreator, showGraded, toggleCreator, toggleGraded } = context;
 
   return (
     <AppBar position="sticky" color="default" className={classes.appBar}>
       <Toolbar>
-        {!cookies.user ? undefined : (
-          <FormGroup>
-            <FormControlLabel
-              control={
-                <Switch
-                  id="toggle-creator"
-                  checked={onlyCreator}
-                  onChange={toggleCreator}
-                  aria-label="switch"
-                />
-              }
-              label={"Only Mine"}
-            />
-          </FormGroup>
-        )}
+        <FormGroup>
+          <FormControlLabel
+            control={
+              <Switch
+                id="toggle-creator"
+                checked={onlyCreator}
+                onChange={toggleCreator}
+                aria-label="switch"
+              />
+            }
+            label={"Only Mine"}
+          />
+        </FormGroup>
         <FormGroup>
           <FormControlLabel
             control={
@@ -160,10 +177,11 @@ const TableFooter = (props: {
       </Toolbar>
     </AppBar>
   );
-};
+}
 
-const SessionItem = (props: { row: Edge<Session>; i: number }) => {
+function SessionItem(props: { row: Edge<Session>; i: number }): JSX.Element {
   const { row, i } = props;
+  const context = useContext(SessionContext);
 
   function handleGrade(): void {
     navigate(withPrefix(`/sessions/session?sessionId=${row.node.sessionId}`));
@@ -183,16 +201,23 @@ const SessionItem = (props: { row: Edge<Session>; i: number }) => {
       }}
     >
       <TableCell id="lesson" align="left">
-        <Link
-          to={withPrefix(`/lessons/edit?lessonId=${row.node.lesson.lessonId}`)}
-        >
-          {row.node.lesson && row.node.lesson.name
-            ? row.node.lesson.name
-            : "No Lesson Name"}
-        </Link>
+        {userCanEdit(row.node.lesson, context.user) ? (
+          <Link
+            to={withPrefix(
+              `/lessons/edit?lessonId=${row.node.lesson.lessonId}`
+            )}
+          >
+            {row.node.lesson?.name || "No Lesson Name"}
+          </Link>
+        ) : (
+          row.node.lesson?.name || "No Lesson Name"
+        )}
       </TableCell>
-      <TableCell>
-        <IconButton id="grade" onClick={handleGrade}>
+      <TableCell id="grade">
+        <IconButton
+          onClick={handleGrade}
+          disabled={!userCanEdit(row.node.lesson, context.user)}
+        >
           <AssignmentIcon />
         </IconButton>
       </TableCell>
@@ -204,26 +229,32 @@ const SessionItem = (props: { row: Edge<Session>; i: number }) => {
       <TableCell id="classifier-grade" align="center">
         {row.node ? Math.trunc(row.node.classifierGrade * 100) : "?"}
       </TableCell>
+      <TableCell id="last-graded-by" align="center">
+        {row.node.lastGradedByName || ""}
+      </TableCell>
+      <TableCell id="last-graded-at" align="center">
+        {row.node.lastGradedAt || ""}
+      </TableCell>
       <TableCell id="date" align="center">
-        {row.node.createdAt ? row.node.createdAt : ""}
+        {row.node.createdAt || ""}
       </TableCell>
       <TableCell id="creator" align="center">
-        {row.node.lesson.createdBy ? row.node.lesson.createdBy : "Guest"}
+        {row.node.lessonCreatedBy || "Guest"}
       </TableCell>
       <TableCell id="username" align="center">
-        {row.node.username ? row.node.username : "Guest"}
+        {row.node.username || "Guest"}
       </TableCell>
     </TableRow>
   );
-};
+}
 
-const SessionsTable = (props: {
+function SessionsTable(props: {
   path: string;
   search: { lessonId: string };
-}) => {
+}): JSX.Element {
   const classes = useStyles();
-  const toggle = useContext(ToggleContext);
-  const [cookies] = useCookies(["user"]);
+  const [cookies] = useCookies(["accessToken"]);
+  const context = useContext(SessionContext);
   const [sessions, setSessions] = React.useState<Connection<Session>>();
   const [cursor, setCursor] = React.useState("");
   const [sortBy, setSortBy] = React.useState("createdAt");
@@ -242,21 +273,28 @@ const SessionsTable = (props: {
 
   React.useEffect(() => {
     setCursor("");
-  }, [toggle.onlyCreator, toggle.showGraded]);
+  }, [context.onlyCreator, context.showGraded]);
 
   React.useEffect(() => {
     const filter: any = {};
-    if (toggle.onlyCreator) {
-      filter["lessonCreatedBy"] = `${cookies.user}`;
+    if (context.onlyCreator) {
+      filter["lessonCreatedBy"] = context.user?.name;
     }
-    if (!toggle.showGraded) {
+    if (!context.showGraded) {
       filter["graderGrade"] = null;
     }
     if (lessonId) {
       filter["lessonId"] = lessonId;
     }
     let mounted = true;
-    fetchSessions(filter, rowsPerPage, cursor, sortBy, sortAsc)
+    fetchSessions(
+      filter,
+      rowsPerPage,
+      cursor,
+      sortBy,
+      sortAsc,
+      cookies.accessToken
+    )
       .then((sessions) => {
         if (mounted && sessions) {
           setSessions(sessions);
@@ -267,8 +305,8 @@ const SessionsTable = (props: {
       mounted = false;
     };
   }, [
-    toggle.onlyCreator,
-    toggle.showGraded,
+    context.onlyCreator,
+    context.showGraded,
     rowsPerPage,
     cursor,
     sortBy,
@@ -315,13 +353,23 @@ const SessionsTable = (props: {
       />
     </div>
   );
-};
+}
 
-const SessionsPage = (props: {
+function SessionsPage(props: {
   path: string;
   search: { lessonId: string };
   children: any;
-}) => {
+}): JSX.Element {
+  const context = useContext(SessionContext);
+  const [cookies] = useCookies(["accessToken"]);
+
+  if (typeof window !== "undefined" && !cookies.accessToken) {
+    return <div>Please login to view sessions.</div>;
+  }
+  if (!context.user) {
+    return <CircularProgress />;
+  }
+
   return (
     <div>
       <NavBar title="Grading" />
@@ -329,7 +377,7 @@ const SessionsPage = (props: {
       {props.children}
     </div>
   );
-};
+}
 
 export default withLocation(SessionsPage);
 export { SessionsTable };

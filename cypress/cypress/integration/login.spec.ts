@@ -4,50 +4,72 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
+import { cySetup, cyLogin, cyMockGraphQL } from "../support/functions";
+
 describe("Login", () => {
   it("loads home page", () => {
+    cySetup(cy);
     cy.visit("/");
     cy.contains("Welcome to OpenTutor");
-    cy.contains("Teacher Login");
+    cy.get("#login-menu #login-button");
   });
 
-  it("is logged out by default", () => {
+  it("login disabled if missing GOOGLE_CLIENT_ID", () => {
+    cySetup(cy);
     cy.visit("/");
-    cy.get("#nav-bar #login-button").contains("Login");
-    cy.get("#login-menu #login").contains("Login");
+    cy.get("#login-menu #login-button").should("be.disabled");
   });
 
-  it("disables login button if input is empty", () => {
+  it("login enabled if GOOGLE_CLIENT_ID is set", () => {
+    cySetup(cy);
     cy.visit("/");
-    cy.get("#login-menu #login-input").clear();
-    cy.get("#login-menu #login").should("be.disabled");
-    cy.get("#login-menu #login-input").type("OpenTutor");
-    cy.get("#login-menu #login").should("not.be.disabled");
+    cy.intercept("**/config", { GOOGLE_CLIENT_ID: "test" });
+    cy.get("#login-menu #login-button").should("not.be.disabled");
   });
 
-  it("logs in and redirects to lessons page", () => {
-    cy.visit("/");
-    cy.get("#login-menu #login-input").type("OpenTutor");
-    cy.get("#login-menu #login").click();
-    cy.location("pathname").should("contain", "/lessons");
-  });
+  // it("redirects to lesson page after logging in", () => {
+  //   cySetup(cy);
+  //   cyMockGraphQL(cy, {
+  //     mocks: [cyLogin(cy)],
+  //   });
+  //   cy.visit("/");
+  //   cy.wait("@login");
+  //   cy.location("pathname").should("contain", "lessons");
+  // });
 
-  it("logs out and redirects to home page", () => {
-    cy.visit("/");
-    cy.get("#login-menu #login-input").type("OpenTutor");
-    cy.get("#login-menu #login").click();
-    cy.get("#nav-bar #login-button").contains("OpenTutor");
-    cy.get("#nav-bar #login-button").click();
-    // cy.wait(500);
-    cy.get("#logout").click();
-    cy.location("pathname").should("not.contain", "/lessons");
-    cy.get("#nav-bar #login-button").contains("Login");
-  });
+  // it("redirects to home page after logging out", () => {
+  //   cySetup(cy);
+  //   cyMockGraphQL(cy, {
+  //     mocks: [cyLogin(cy)],
+  //   });
+  //   cy.visit("/");
+  //   cy.get("#login-option #login-button").trigger('mouseover').click();
+  //   cy.get("#logout").trigger('mouseover').click();
+  //   cy.location("pathname").should("not.contain", "lessons");
+  // });
 
-  it("log in button redirects to home page if logged out", () => {
+  it("cannot view lessons list if not logged in", () => {
+    cySetup(cy);
     cy.visit("/lessons");
-    cy.get("#nav-bar #login-button").contains("Login");
-    cy.get("#nav-bar #login-button").click();
-    cy.location("pathname").should("eq", "/admin");
+    cy.contains("Please login to view lessons.");
   });
+
+  it("cannot view lesson page if not logged in", () => {
+    cySetup(cy);
+    cy.visit("/lessons/edit?lessonId=q1");
+    cy.contains("Please login to view lesson.");
+  });
+
+  it("cannot view sessions list if not logged in", () => {
+    cySetup(cy);
+    cy.visit("/sessions");
+    cy.contains("Please login to view sessions.");
+  });
+
+  it("cannot view session page if not logged in", () => {
+    cySetup(cy);
+    cy.visit("/sessions/session?sessionId=session1");
+    cy.contains("Please login to view session.");
+  });
+
 });

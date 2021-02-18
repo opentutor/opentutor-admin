@@ -1,5 +1,12 @@
+/*
+This software is Copyright ©️ 2020 The University of Southern California. All Rights Reserved. 
+Permission to use, copy, modify, and distribute this software and its documentation for educational, research and non-profit purposes, without fee, and without a written agreement is hereby granted, provided that the above copyright notice and subject to the full license file found in the root of this software deliverable. Permission to make commercial use of this software may be obtained by contacting:  USC Stevens Center for Innovation University of Southern California 1150 S. Olive Street, Suite 2300, Los Angeles, CA 90115, USA Email: accounting@stevens.usc.edu
+
+The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
+*/
 import { withPrefix } from "gatsby";
-import React from "react";
+import React, { useContext } from "react";
+import { useCookies } from "react-cookie";
 import { navigate } from "@reach/router";
 import { makeStyles } from "@material-ui/core/styles";
 import {
@@ -15,11 +22,13 @@ import {
   Typography,
   Button,
   IconButton,
+  CircularProgress,
 } from "@material-ui/core";
 import EditIcon from "@material-ui/icons/Edit";
 import withLocation from "wrap-with-location";
 import { Session } from "types";
-import { fetchSession, setGrade } from "api";
+import { fetchSession, setGrade, userCanEdit } from "api";
+import SessionContext from "context/session";
 import NavBar from "components/nav-bar";
 import "styles/layout.css";
 
@@ -35,20 +44,24 @@ const useStyles = makeStyles({
 const SessionTable = ({ search }: { search: any }) => {
   const { sessionId } = search;
   const classes = useStyles();
+  const [cookies] = useCookies(["accessToken"]);
+  const context = useContext(SessionContext);
   const [session, setSession] = React.useState<Session>();
   const [date, setDate] = React.useState<string>("");
 
   const handleGradeExpectationChange = (
     event: React.ChangeEvent<{ value: unknown; name?: unknown }>
   ): void => {
-    const indeces = event.target.name as string;
-    const indexSplit = indeces.split(" ");
+    const indexes = event.target.name as string;
+    const indexSplit = indexes.split(" ");
 
     setGrade(
       sessionId,
       Number(indexSplit[0]),
       Number(indexSplit[1]),
-      event.target.value as string
+      event.target.value as string,
+      cookies.accessToken,
+      context.user?.id || ""
     )
       .then((session: Session) => {
         if (session) {
@@ -68,7 +81,7 @@ const SessionTable = ({ search }: { search: any }) => {
 
   React.useEffect(() => {
     let mounted = true;
-    fetchSession(sessionId)
+    fetchSession(sessionId, cookies.accessToken)
       .then((session: Session) => {
         if (mounted && session) {
           setSession(session);
@@ -81,24 +94,28 @@ const SessionTable = ({ search }: { search: any }) => {
     };
   }, []);
 
+  if (!session) {
+    return <CircularProgress />;
+  }
+
+  if (
+    !session ||
+    !session.lesson ||
+    !userCanEdit(session.lesson, context.user)
+  ) {
+    return <div>You do not have permission to grade this session.</div>;
+  }
+
   return (
     <Paper className={classes.root}>
-      <div id="lesson">
-        {session && session.lesson && session.lesson.name
-          ? session.lesson.name
-          : "No Lesson Name"}
-      </div>
-      <div id="username">
-        {session && session.username ? session.username : "Guest"}
-      </div>
+      <div id="lesson">{session.lesson?.name || "No Lesson Name"}</div>
+      <div id="username">{session.username || "Guest"}</div>
       <div id="date">{date ? date : ""}</div>
-      <div id="question"> {session ? session.question.text : ""} </div>
+      <div id="question"> {session.question?.text || ""} </div>
       <div id="score">
         Score:{" "}
-        {session
-          ? session.graderGrade || session.graderGrade !== null
-            ? Math.trunc(session.graderGrade * 100)
-            : "?"
+        {session.graderGrade || session.graderGrade !== null
+          ? Math.trunc(session.graderGrade * 100)
           : "?"}
       </div>
       <TableContainer className={classes.container}>
@@ -108,7 +125,7 @@ const SessionTable = ({ search }: { search: any }) => {
               <TableCell align="center" style={{ width: 100 }}>
                 User Answer
               </TableCell>
-              {session?.question?.expectations.map((column, i) => (
+              {session.question?.expectations.map((column, i: number) => (
                 <TableCell
                   key={`expectation-${i}`}
                   id={`expectation-${i}`}
@@ -131,7 +148,7 @@ const SessionTable = ({ search }: { search: any }) => {
                   tabIndex={-1}
                 >
                   <TableCell id="answer">{row.text}</TableCell>
-                  {session?.question?.expectations.map((column, j) => (
+                  {session?.question?.expectations.map((column, j: number) => (
                     <TableCell
                       style={{
                         backgroundColor:
@@ -224,9 +241,18 @@ const SessionTable = ({ search }: { search: any }) => {
 };
 
 const SessionPage = ({ path, search }: { path: string; search: any }) => {
+  const context = useContext(SessionContext);
+  const [cookies] = useCookies(["accessToken"]);
+  if (typeof window !== "undefined" && !cookies.accessToken) {
+    return <div>Please login to view session.</div>;
+  }
+  if (!context.user) {
+    return <CircularProgress />;
+  }
+
   return (
     <div>
-      <NavBar title="Grade Session" />
+      <NavBar title="Grade Session" disableMenu={true} />
       <SessionTable search={search} />
     </div>
   );

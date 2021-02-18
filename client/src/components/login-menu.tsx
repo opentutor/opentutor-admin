@@ -5,18 +5,20 @@ Permission to use, copy, modify, and distribute this software and its documentat
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
 import { navigate } from "gatsby";
-import React from "react";
+import React, { useContext } from "react";
 import { useCookies } from "react-cookie";
 import {
-  Button,
-  CircularProgress,
-  InputAdornment,
-  Typography,
-  TextField,
-} from "@material-ui/core";
+  GoogleLogin,
+  GoogleLoginResponse,
+  GoogleLoginResponseOffline,
+} from "react-google-login";
+import { Button, CircularProgress, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import AccountCircle from "@material-ui/icons/AccountCircle";
 import NavBar from "components/nav-bar";
+import SessionContext from "context/session";
+import { getClientID } from "config";
+import { loginGoogle } from "api";
+import { UserAccessToken } from "types";
 import "styles/layout.css";
 
 const useStyles = makeStyles((theme) => ({
@@ -46,43 +48,35 @@ const useStyles = makeStyles((theme) => ({
 
 export const LoginMenu = (props: { path: string; children: any }) => {
   const classes = useStyles();
-  const [cookies, setCookie, removeCookie] = useCookies(["user"]);
-  const [input, setInput] = React.useState(cookies.user);
+  const [cookies, setCookie, removeCookie] = useCookies(["accessToken"]);
+  const context = useContext(SessionContext);
+  const [googleClientId, setClientId] = React.useState<string>("");
 
   React.useEffect(() => {
-    if (cookies.user) {
+    getClientID().then((id: string) => {
+      setClientId(id);
+    });
+  }, []);
+
+  React.useEffect(() => {
+    if (context.user) {
       navigate("/lessons");
     }
-  }, [cookies]);
+  }, [context.user]);
 
-  function onInput(text: string) {
-    setInput(text);
-  }
-
-  function onLogin() {
-    if (cookies.user) {
-      removeCookie("user", { path: "/" });
-    } else {
-      setCookie("user", input, { path: "/" });
+  const onGoogleLogin = (
+    response: GoogleLoginResponse | GoogleLoginResponseOffline
+  ): void => {
+    if ((response as GoogleLoginResponseOffline).code !== undefined) {
+      return;
     }
-  }
-
-  const LoginButton = () => {
-    return (
-      <Button
-        id="login"
-        variant="contained"
-        color="primary"
-        onClick={onLogin}
-        className={classes.button}
-        disabled={!input}
-      >
-        {cookies.user ? "Logout" : "Login"}
-      </Button>
-    );
+    const loginResponse = response as GoogleLoginResponse;
+    loginGoogle(loginResponse.accessToken).then((token: UserAccessToken) => {
+      setCookie("accessToken", token.accessToken, { path: "/" });
+    });
   };
 
-  if (cookies.user) {
+  if (cookies.accessToken) {
     return (
       <div className={classes.root}>
         <CircularProgress className={classes.progress} />
@@ -94,30 +88,37 @@ export const LoginMenu = (props: { path: string; children: any }) => {
     <div id="login-menu" className={classes.root}>
       <NavBar title="OpenTutor" />
       <Typography variant="h5" className={classes.title}>
-        {cookies.user
-          ? `Welcome to OpenTutor, ${cookies.user}!`
-          : `Welcome to OpenTutor`}
+        Welcome to OpenTutor
       </Typography>
-      Teacher Login
-      <TextField
-        id="login-input"
-        variant="filled"
-        label="username"
-        value={input || ""}
-        disabled={cookies.user ? true : false}
-        onChange={(e: any) => {
-          onInput(e.target.value);
-        }}
-        className={classes.input}
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              <AccountCircle />
-            </InputAdornment>
-          ),
-        }}
-      />
-      <LoginButton />
+      {googleClientId ? (
+        <GoogleLogin
+          clientId={googleClientId}
+          onSuccess={onGoogleLogin}
+          cookiePolicy={"single_host_origin"}
+          render={(renderProps) => (
+            <Button
+              id="login-button"
+              variant="contained"
+              color="primary"
+              onClick={renderProps.onClick}
+              className={classes.button}
+              disabled={renderProps.disabled}
+            >
+              Sign in with Google
+            </Button>
+          )}
+        />
+      ) : (
+        <Button
+          id="login-button"
+          variant="contained"
+          color="primary"
+          disabled={true}
+          className={classes.button}
+        >
+          Sign in with Google
+        </Button>
+      )}
       {props.children}
     </div>
   );

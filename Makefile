@@ -70,6 +70,7 @@ test-types:
 .PHONY: test-license
 test-license: LICENSE LICENSE_HEADER
 	cd client && npm run test:license
+	cd docker && npm run test:license
 
 .PHONY: test-e2e
 test-e2e:

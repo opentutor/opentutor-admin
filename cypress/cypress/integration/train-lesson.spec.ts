@@ -5,6 +5,13 @@ Permission to use, copy, modify, and distribute this software and its documentat
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
 import { TrainStatus, TrainState } from "../support/dtos";
+import {
+  cySetup,
+  cyLogin,
+  cyMockGraphQL,
+  MockGraphQLQuery,
+  cyMockByQueryName,
+} from "../support/functions";
 
 const TRAIN_STATUS_URL = `/classifier/train/status/some-job-id`;
 
@@ -24,18 +31,13 @@ function mockTrainLesson(
   } = {}
 ): WaitFunc {
   params = params || {};
-  cy.route({
-    method: "POST",
-    url: "**/train",
-    status: params.responseStatus || 200,
-    response: {
+  cy.intercept("POST", "**/train", {
+    statusCode: params.responseStatus || 200,
+    body: {
       data: {
         statusUrl: params.statusUrl || TRAIN_STATUS_URL,
       },
       errors: null,
-    },
-    headers: {
-      "Content-Type": "application/json",
     },
   }).as("trainLesson");
   return () => cy.wait("@trainLesson");
@@ -47,105 +49,91 @@ interface StatusResponse {
   responseStatusCode?: number;
 }
 
-function mockTrainStatus(
-  cy: Cypress.cy,
-  params: {
-    status?: TrainStatus;
-    seq?: number;
-    statusUrl?: string;
-    responseStatusCode?: number;
-  } = {}
-): string {
-  params = params || {};
-  const alias = params.status
-    ? `trainStatus${params.status.state}${params.seq}`
-    : "";
-  cy.route({
-    method: "GET",
-    url: `**/${params.statusUrl || TRAIN_STATUS_URL}`,
-    status: params.responseStatusCode || 200,
-    response: {
-      data: params.status,
-    },
-    headers: {
-      "Content-Type": "application/json",
-    },
-  }).as(alias);
-  return `@${alias}`;
-}
-
 function mockTrainStatusSeq(
   cy: Cypress.cy,
   responses: StatusResponse[],
   statusUrl = TRAIN_STATUS_URL
 ): WaitFunc {
+  /**
+   * What is this crazy complicated test setup?
+   * 
+   * The model-training sequence is that the admin client
+   * triggers a training job, and then polls a status url
+   * until that training job completes with SUCCESS or FAILURE.
+   * 
+   * Until the training job is done, the status url 
+   * will be returning other statuses, 
+   * like PENDING or IN_PROGRESS.
+   * 
+   * So the purpose of this function 
+   * is to set up the training-status url
+   * to mock a series of responses, 
+   * e.g. PENDING, IN_PROGRESS, IN_PROGESS, SUCCESS
+   */
   let responseIndex = 0;
-  let seq = 0;
-  let curAlias = mockTrainStatus(cy, {
-    status: responses[0].status,
-    seq: ++seq,
-  });
-  return () => {
-    cy.wait(curAlias);
-    for (let i = responseIndex; i < responses.length; i++) {
-      const repeatCount = !isNaN(Number(responses[i].repeat))
-        ? Number(responses[i].repeat)
-        : 1;
-      for (let j = 0; j < repeatCount; j++) {
-        cy.wait(
-          mockTrainStatus(cy, {
-            status: responses[i].status,
-            seq: ++seq,
-            statusUrl: statusUrl,
-            responseStatusCode: !isNaN(Number(responses[i].responseStatusCode))
-              ? Number(responses[i].responseStatusCode)
-              : 200,
-          })
-        );
-      }
-    }
-  };
-}
-
-describe("lesson screen - training", () => {
-  beforeEach(() => {
-    cy.server();
-    cy.route({
-      method: "POST",
-      url: "**/graphql",
-      status: 200,
-      response: {
-        data: {
-          lesson: {
-            lessonId: "lesson",
-            name: "lesson",
-            introduction: "introduction",
-            question: "question",
-            conclusion: ["conclusion"],
-            expectations: [
-              {
-                expectation: "expectation 1",
-                hints: [
-                  {
-                    text: "hint 1.1",
-                  },
-                ],
-                features: {},
-              },
-            ],
-            features: {},
-            isTrainable: true,
-            lastTrainedAt: "",
-          },
-        },
-        errors: null,
+  let repeatCount = 0;
+  let totalResponses = 0;
+  const alias = "polling";
+  cy.intercept("GET", `**/${statusUrl || TRAIN_STATUS_URL}`, (req) => {
+    const nextResponse = responses[responseIndex];
+    req.reply({
+      statusCode: nextResponse.responseStatusCode || 200,
+      body: {
+        data: nextResponse.status,
       },
       headers: {
         "Content-Type": "application/json",
       },
     });
-  });
+    totalResponses++;
+    const responseRepeatCount = !isNaN(Number(nextResponse.repeat))
+      ? Number(nextResponse.repeat)
+      : 1;
+    repeatCount++;
+    if (
+      repeatCount >= responseRepeatCount &&
+      responseIndex + 1 < responses.length
+    ) {
+      responseIndex++;
+      repeatCount = 0;
+    }
+  }).as(alias);
+  return () => {
+    for (const i = 0; i < totalResponses; i++) {
+      cy.wait(alias);
+    }
+  };
+}
 
+function cyMockLesson(): MockGraphQLQuery {
+  return cyMockByQueryName("lesson", {
+    me: {
+      lesson: {
+        lessonId: "lesson",
+        name: "lesson",
+        introduction: "introduction",
+        question: "question",
+        conclusion: ["conclusion"],
+        expectations: [
+          {
+            expectation: "expectation 1",
+            hints: [
+              {
+                text: "hint 1.1",
+              },
+            ],
+            features: {},
+          },
+        ],
+        features: {},
+        isTrainable: true,
+        lastTrainedAt: "",
+      },
+    },
+  });
+}
+
+describe("lesson screen - training", () => {
   [
     {
       pendingCount: 1,
@@ -184,6 +172,10 @@ describe("lesson screen - training", () => {
     } feedback on success when expectation accuracies ${JSON.stringify(
       ex.expectedAccuracies
     )}`, () => {
+      cySetup(cy);
+      cyMockGraphQL(cy, {
+        mocks: [cyLogin(cy, "admin"), cyMockLesson()],
+      });
       const waitTrainLesson = mockTrainLesson(cy);
       const waitComplete = mockTrainStatusSeq(cy, [
         { status: { state: TrainState.PENDING }, repeat: ex.pendingCount },
@@ -196,7 +188,8 @@ describe("lesson screen - training", () => {
         },
       ]);
       cy.visit("/lessons/edit?lessonId=lesson&trainStatusPollInterval=10");
-      // cy.wait(500);
+      cy.wait("@login");
+      cy.wait("@lesson");
       cy.get("#train-button").trigger("mouseover").click();
       waitTrainLesson();
       waitComplete();
@@ -217,7 +210,13 @@ describe("lesson screen - training", () => {
   });
 
   it("train lesson fails for state FAILURE", () => {
+    cySetup(cy);
+    cyMockGraphQL(cy, {
+      mocks: [cyLogin(cy, "admin"), cyMockLesson()],
+    });
     cy.visit("/lessons/edit?lessonId=lesson&trainStatusPollInterval=10");
+    cy.wait("@login");
+    cy.wait("@lesson");
     const waitTrainLesson = mockTrainLesson(cy);
     const waitComplete = mockTrainStatusSeq(cy, [
       { status: { state: TrainState.PENDING } },
@@ -228,7 +227,6 @@ describe("lesson screen - training", () => {
         },
       },
     ]);
-    // cy.wait(500);
     cy.get("#train-button").trigger("mouseover").click();
     waitTrainLesson();
     waitComplete();
@@ -236,16 +234,27 @@ describe("lesson screen - training", () => {
   });
 
   it("train lesson fails for http error on start", () => {
+    cySetup(cy);
+    cyMockGraphQL(cy, {
+      mocks: [cyLogin(cy, "admin"), cyMockLesson()],
+    });
     cy.visit("/lessons/edit?lessonId=lesson&trainStatusPollInterval=10");
+    cy.wait("@login");
+    cy.wait("@lesson");
     const waitTrainLesson = mockTrainLesson(cy, { responseStatus: 500 });
-    // cy.wait(500);
     cy.get("#train-button").trigger("mouseover").click();
     waitTrainLesson();
     cy.get("#train-failure").should("contain", "TRAINING FAILED");
   });
 
   it("train lesson fails for http error on poll status", () => {
+    cySetup(cy);
+    cyMockGraphQL(cy, {
+      mocks: [cyLogin(cy, "admin"), cyMockLesson()],
+    });
     cy.visit("/lessons/edit?lessonId=lesson&trainStatusPollInterval=10");
+    cy.wait("@login");
+    cy.wait("@lesson");
     const waitTrainLesson = mockTrainLesson(cy);
     const waitComplete = mockTrainStatusSeq(cy, [
       { status: { state: TrainState.PENDING } },
@@ -257,7 +266,6 @@ describe("lesson screen - training", () => {
         responseStatusCode: 500,
       },
     ]);
-    // cy.wait(500);
     cy.get("#train-button").trigger("mouseover").click();
     waitTrainLesson();
     waitComplete();

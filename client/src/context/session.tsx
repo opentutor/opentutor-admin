@@ -6,8 +6,19 @@ The full terms of this copyright and license should always be found in the root 
 */
 import React from "react";
 import { useCookies } from "react-cookie";
+import { login } from "api";
+import { User, UserAccessToken } from "types";
 
-const ToggleContext = React.createContext({
+type ContextType = {
+  user: User | undefined;
+  showGraded: boolean;
+  onlyCreator: boolean;
+  toggleGraded: () => void;
+  toggleCreator: () => void;
+};
+
+const SessionContext = React.createContext<ContextType>({
+  user: undefined,
   showGraded: false,
   onlyCreator: false,
   // eslint-disable-next-line
@@ -16,34 +27,52 @@ const ToggleContext = React.createContext({
   toggleCreator: () => {},
 });
 
-const ToggleProvider = (props: { children: any }) => {
-  const [cookies] = useCookies(["user"]);
+function SessionProvider(props: { children: any }) {
+  const [cookies, setCookie, removeCookie] = useCookies(["accessToken"]);
+  const [user, setUser] = React.useState<User>();
   const [showGraded, setShowGraded] = React.useState(false);
   const [onlyCreator, setOnlyCreator] = React.useState(
-    cookies.user ? true : false
+    cookies.accessToken || cookies.user ? true : false
   );
 
-  const toggleGraded = () => {
-    setShowGraded(!showGraded);
-  };
+  React.useEffect(() => {
+    if (!cookies.accessToken) {
+      setUser(undefined);
+    } else if (!user) {
+      login(cookies.accessToken)
+        .then((token: UserAccessToken) => {
+          setUser(token.user);
+          setCookie("accessToken", token.accessToken, { path: "/" });
+        })
+        .catch((err) => {
+          console.error(err);
+          removeCookie("accessToken", { path: "/" });
+        });
+    }
+  }, [cookies]);
 
-  const toggleCreator = () => {
+  function toggleGraded(): void {
+    setShowGraded(!showGraded);
+  }
+
+  function toggleCreator(): void {
     setOnlyCreator(!onlyCreator);
-  };
+  }
 
   return (
-    <ToggleContext.Provider
+    <SessionContext.Provider
       value={{
+        user,
         showGraded,
-        onlyCreator,
         toggleGraded,
+        onlyCreator,
         toggleCreator,
       }}
     >
       {props.children}
-    </ToggleContext.Provider>
+    </SessionContext.Provider>
   );
-};
+}
 
-export default ToggleContext;
-export { ToggleProvider };
+export default SessionContext;
+export { SessionProvider };

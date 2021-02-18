@@ -1,3 +1,9 @@
+/*
+This software is Copyright ©️ 2020 The University of Southern California. All Rights Reserved. 
+Permission to use, copy, modify, and distribute this software and its documentation for educational, research and non-profit purposes, without fee, and without a written agreement is hereby granted, provided that the above copyright notice and subject to the full license file found in the root of this software deliverable. Permission to make commercial use of this software may be obtained by contacting:  USC Stevens Center for Innovation University of Southern California 1150 S. Olive Street, Suite 2300, Los Angeles, CA 90115, USA Email: accounting@stevens.usc.edu
+
+The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
+*/
 import { withPrefix } from "gatsby";
 import React, { useContext } from "react";
 import { useCookies } from "react-cookie";
@@ -24,15 +30,16 @@ import { makeStyles } from "@material-ui/core/styles";
 import AddIcon from "@material-ui/icons/Add";
 import AssignmentIcon from "@material-ui/icons/Assignment";
 import DeleteIcon from "@material-ui/icons/Delete";
+import FileCopyIcon from "@material-ui/icons/FileCopy";
 import KeyboardArrowLeftIcon from "@material-ui/icons/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
 import LaunchIcon from "@material-ui/icons/Launch";
 import { Link, navigate } from "@reach/router";
-import { fetchLessons, deleteLesson } from "api";
+import { fetchLessons, deleteLesson, userCanEdit } from "api";
 import { Connection, Edge, Lesson } from "types";
 import { ColumnDef, ColumnHeader } from "components/column-header";
 import NavBar from "components/nav-bar";
-import ToggleContext from "context/toggle";
+import SessionContext from "context/session";
 import "styles/layout.css";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -87,7 +94,7 @@ const columns: ColumnDef[] = [
     sortable: true,
   },
   {
-    id: "createdBy",
+    id: "createdByName",
     label: "Created By",
     minWidth: 200,
     align: "center",
@@ -96,6 +103,13 @@ const columns: ColumnDef[] = [
   {
     id: "delete",
     label: "Delete",
+    minWidth: 0,
+    align: "center",
+    sortable: false,
+  },
+  {
+    id: "copy",
+    label: "Copy",
     minWidth: 0,
     align: "center",
     sortable: false,
@@ -110,11 +124,10 @@ const TableFooter = (props: {
   onPrev: () => void;
 }) => {
   const { classes, hasNext, hasPrev, onNext, onPrev } = props;
-  const [cookies] = useCookies(["user"]);
-  const toggle = useContext(ToggleContext);
+  const context = useContext(SessionContext);
 
   function onCreate() {
-    navigate(withPrefix("/lessons/edit?lessonId=new"));
+    navigate(withPrefix("/lessons/edit"));
   }
 
   return (
@@ -126,21 +139,19 @@ const TableFooter = (props: {
         <IconButton id="next-page" disabled={!hasNext} onClick={onNext}>
           <KeyboardArrowRightIcon />
         </IconButton>
-        {!cookies.user ? undefined : (
-          <FormGroup>
-            <FormControlLabel
-              control={
-                <Switch
-                  id="toggle-creator"
-                  checked={toggle.onlyCreator}
-                  onChange={toggle.toggleCreator}
-                  aria-label="switch"
-                />
-              }
-              label={"Only Mine"}
-            />
-          </FormGroup>
-        )}
+        <FormGroup>
+          <FormControlLabel
+            control={
+              <Switch
+                id="toggle-creator"
+                checked={context.onlyCreator}
+                onChange={context.toggleCreator}
+                aria-label="switch"
+              />
+            }
+            label={"Only Mine"}
+          />
+        </FormGroup>
         <Fab
           id="create-button"
           variant="extended"
@@ -163,15 +174,20 @@ const LessonItem = (props: {
   onDeleted: (id: string) => void;
 }) => {
   const { location, row, i, onDeleted } = props;
-  const [cookies] = useCookies(["user"]);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const deleteMenuOpen = Boolean(anchorEl);
+  const context = useContext(SessionContext);
+  const [cookies] = useCookies(["accessToken"]);
 
   function launchLesson(id: string) {
     const host = process.env.TUTOR_ENDPOINT || location.origin;
-    const guest = cookies.user ? `&guest=${cookies.user}` : "";
+    const guest = `&guest=${context.user?.name}`;
     const path = `${host}/tutor?lesson=${id}&admin=true${guest}`;
     window.location.href = path;
+  }
+
+  function handleCopy(): void {
+    navigate(withPrefix(`/lessons/edit?copyLesson=${row.node.lessonId}`));
   }
 
   function handleGrade(): void {
@@ -186,25 +202,27 @@ const LessonItem = (props: {
     setAnchorEl(null);
   };
 
-  const confirmDelete = () => {
+  async function confirmDelete() {
     toast("Deleting...");
-    deleteLesson(row.node.lessonId)
-      .then(() => {
-        onDeleted(row.node.lessonId);
-        setAnchorEl(null);
-      })
-      .catch((err) => {
-        toast("Failed to delete lesson.");
-        console.error(err);
-      });
-  };
+    try {
+      await deleteLesson(row.node.lessonId, cookies.accessToken);
+      onDeleted(row.node.lessonId);
+      setAnchorEl(null);
+    } catch (err) {
+      toast("Failed to delete lesson.");
+    }
+  }
 
   return (
     <TableRow id={`lesson-${i}`} hover role="checkbox" tabIndex={-1}>
       <TableCell id="name" align="left">
-        <Link to={withPrefix(`/lessons/edit?lessonId=${row.node.lessonId}`)}>
-          {row.node.name ? row.node.name : "No Lesson Name"}
-        </Link>
+        {userCanEdit(row.node, context.user) ? (
+          <Link to={withPrefix(`/lessons/edit?lessonId=${row.node.lessonId}`)}>
+            {row.node.name || "No Lesson Name"}
+          </Link>
+        ) : (
+          row.node.name || "No Lesson Name"
+        )}
       </TableCell>
       <TableCell id="launch" align="left">
         <IconButton onClick={() => launchLesson(row.node.lessonId)}>
@@ -216,6 +234,7 @@ const LessonItem = (props: {
           onClick={() => {
             handleGrade();
           }}
+          disabled={!userCanEdit(row.node, context.user)}
         >
           <AssignmentIcon />
         </IconButton>
@@ -224,11 +243,19 @@ const LessonItem = (props: {
         {row.node.updatedAt ? row.node.updatedAt.toLocaleString() : ""}
       </TableCell>
       <TableCell id="creator" align="center">
-        {row.node.createdBy}
+        {row.node.createdByName}
       </TableCell>
       <TableCell id="delete" align="center">
-        <IconButton onClick={handleDelete}>
+        <IconButton
+          onClick={handleDelete}
+          disabled={!userCanEdit(row.node, context.user)}
+        >
           <DeleteIcon />
+        </IconButton>
+      </TableCell>
+      <TableCell id="copy" align="center">
+        <IconButton onClick={handleCopy}>
+          <FileCopyIcon />
         </IconButton>
       </TableCell>
       <Menu
@@ -259,8 +286,8 @@ const LessonItem = (props: {
 
 const LessonsTable = (props: { location: any }) => {
   const classes = useStyles();
-  const toggle = useContext(ToggleContext);
-  const [cookies] = useCookies(["user"]);
+  const context = useContext(SessionContext);
+  const [cookies] = useCookies(["accessToken"]);
   const [lessons, setLessons] = React.useState<Connection<Lesson>>();
   const [cursor, setCursor] = React.useState("");
   const [sortBy, setSortBy] = React.useState("updatedAt");
@@ -283,15 +310,22 @@ const LessonsTable = (props: { location: any }) => {
 
   React.useEffect(() => {
     setCursor("");
-  }, [toggle.onlyCreator]);
+  }, [context.onlyCreator]);
 
   React.useEffect(() => {
     const filter: any = {};
-    if (toggle.onlyCreator) {
-      filter["createdBy"] = `${cookies.user}`;
+    if (context.onlyCreator) {
+      filter["createdByName"] = `${context.user?.name}`;
     }
     let mounted = true;
-    fetchLessons(filter, rowsPerPage, cursor, sortBy, sortAsc)
+    fetchLessons(
+      filter,
+      rowsPerPage,
+      cursor,
+      sortBy,
+      sortAsc,
+      cookies.accessToken
+    )
       .then((lessons) => {
         if (mounted && lessons) {
           setLessons(lessons);
@@ -301,7 +335,7 @@ const LessonsTable = (props: { location: any }) => {
     return () => {
       mounted = false;
     };
-  }, [toggle.onlyCreator, deleted, rowsPerPage, cursor, sortBy, sortAsc]);
+  }, [context.onlyCreator, deleted, rowsPerPage, cursor, sortBy, sortAsc]);
 
   if (!lessons) {
     return (
@@ -353,6 +387,16 @@ const LessonsTable = (props: { location: any }) => {
 };
 
 const LessonsPage = (props: { location: any; path: string; children: any }) => {
+  const context = useContext(SessionContext);
+  const [cookies] = useCookies(["accessToken"]);
+
+  if (typeof window !== "undefined" && !cookies.accessToken) {
+    return <div>Please login to view lessons.</div>;
+  }
+  if (!context.user) {
+    return <CircularProgress />;
+  }
+
   return (
     <div>
       <NavBar title="Lessons" />

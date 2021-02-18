@@ -4,23 +4,18 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
+import { cySetup, cyLogin, cyMockGraphQL, cyMockByQueryName } from "../support/functions";
+
 function snapname(n) {
   return `screenshots-lesson-list-${n}`;
 }
 
 describe("screenshots - lesson list", () => {
-  beforeEach(() => {
-    cy.viewport(1280, 720);
-  });
-
   it("displays a list of lessons", () => {
-    cy.server();
-    cy.route({
-      method: "POST",
-      url: "**/graphql",
-      status: 200,
-      response: {
-        data: {
+    cySetup(cy);
+    cyMockGraphQL(cy, {
+      mocks: [cyLogin(cy, "admin"), cyMockByQueryName("lessons", {
+        me: {
           lessons: {
             edges: [
               {
@@ -45,15 +40,12 @@ describe("screenshots - lesson list", () => {
               endCursor: "cursor 2 ",
             },
           },
-        },
-        errors: null,
-      },
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }).as("lessonsList");
+        }
+      })],
+    });
     cy.visit("/lessons");
-    cy.wait("@lessonsList");
+    cy.wait("@login");
+    cy.wait("@lessons");
     cy.matchImageSnapshot(snapname("displays-a-list-of-lessons"));
   });
 });

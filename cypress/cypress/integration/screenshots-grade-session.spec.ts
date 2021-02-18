@@ -4,28 +4,23 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
+import { cySetup, cyLogin, cyMockGraphQL, cyMockByQueryName } from "../support/functions";
+
 function snapname(n) {
   return `screenshots-grade-session-${n}`;
 }
 
 describe("screenshots - grade session", () => {
-  beforeEach(() => {
-    cy.viewport(1280, 720);
-  });
-
   it("displays feedback after answer marked good", () => {
-    cy.server();
-    cy.route({
-      method: "POST",
-      url: "**/graphql",
-      status: 200,
-      response: {
-        data: {
+    cySetup(cy);
+    cyMockGraphQL(cy, {
+      mocks: [cyLogin(cy, "admin"), cyMockByQueryName("session", {
+        me: {
           session: {
             sessionId: "session1",
             lesson: {
               name: "lesson 1",
-              createdBy: "username1",
+              createdByName: "username1",
             },
             graderGrade: null,
             question: {
@@ -89,16 +84,13 @@ describe("screenshots - grade session", () => {
                 ],
               },
             ],
-          },
-        },
-        errors: null,
-      },
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }).as("getSession");
+          }
+        }
+      })],
+    });
     cy.visit("/sessions/session?sessionId=session1");
-    cy.wait("@getSession");
+    cy.wait("@login");
+    cy.wait("@session");
     cy.matchImageSnapshot(
       snapname("displays-feedback-after-answer-marked-good")
     );
