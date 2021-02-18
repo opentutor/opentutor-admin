@@ -49,33 +49,27 @@ interface StatusResponse {
   responseStatusCode?: number;
 }
 
-function mockTrainStatus(
-  cy: Cypress.cy,
-  params: {
-    status?: TrainStatus;
-    seq?: number;
-    statusUrl?: string;
-    responseStatusCode?: number;
-  } = {}
-): string {
-  params = params || {};
-  const alias = params.status
-    ? `trainStatus${params.status.state}${params.seq}`
-    : "";
-  cy.intercept("GET", `**/${params.statusUrl || TRAIN_STATUS_URL}`, {
-    statusCode: params.responseStatusCode || 200,
-    body: {
-      data: params.status,
-    },
-  }).as(alias);
-  return `@${alias}`;
-}
-
 function mockTrainStatusSeq(
   cy: Cypress.cy,
   responses: StatusResponse[],
   statusUrl = TRAIN_STATUS_URL
 ): WaitFunc {
+  /**
+   * What is this crazy complicated test setup?
+   * 
+   * The model-training sequence is that the admin client
+   * triggers a training job, and then polls a status url
+   * until that training job completes with SUCCESS or FAILURE.
+   * 
+   * Until the training job is done, the status url 
+   * will be returning other statuses, 
+   * like PENDING or IN_PROGRESS.
+   * 
+   * So the purpose of this function 
+   * is to set up the training-status url
+   * to mock a series of responses, 
+   * e.g. PENDING, IN_PROGRESS, IN_PROGESS, SUCCESS
+   */
   let responseIndex = 0;
   let repeatCount = 0;
   let totalResponses = 0;
