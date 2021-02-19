@@ -1,0 +1,25 @@
+{
+  "name": "opentutor-admin",
+  "version": "1.0.0",
+  "description": "Top level package list for opentutor-admin",
+  "main": "index.js",
+  "dependencies": {},
+  "devDependencies": {
+    "license-check-and-add": "^4.0.2"
+  },
+  "scripts": {
+    "test": "run",
+	  "license:fix": "license-check-and-add remove -f license-config.json && license-check-and-add add -f license-config.json",
+    "test:license": "license-check-and-add check -f license-config.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/opentutor/opentutor-admin.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/opentutor/opentutor-admin/issues"
+  },
+  "homepage": "https://github.com/opentutor/opentutor-admin#readme"
+}
