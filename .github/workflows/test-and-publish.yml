@@ -8,6 +8,8 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: "14.15"
+      - name: install
+        run:  npm ci
       - name: Client - install
         run: cd client && npm ci
       - name: Client - audit
@@ -18,16 +20,14 @@ jobs:
         run: cd client && npm run test:lint
       - name: Client - types test
         run: cd client && npm run test:types
-      - name: Client - license test
-        run: cd client && npm run test:license
       - name: Node - install
         run: cd docker && npm ci
       - name: Node - audit
         run: cd docker && npm run test:audit
       - name: Node - lint test
         run: cd docker && npm run test:lint
-      - name: Node - license test
-        run: cd docker && npm run test:license
+      - name: license test
+        run: npm run test:license
   test-e2e:
     name: test e2e
     runs-on: ubuntu-latest
