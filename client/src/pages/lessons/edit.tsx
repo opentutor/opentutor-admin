@@ -266,9 +266,8 @@ const LessonEdit = (props: {
     if (trained) {
       convertedLesson.lastTrainedAt = new Date();
     }
-    const encodedLesson = encodeURI(JSON.stringify(convertedLesson));
     const origId = lessonId || lessonUnderEdit.lesson?.lessonId;
-    updateLesson(origId, encodedLesson, cookies.accessToken)
+    updateLesson(origId, convertedLesson, cookies.accessToken)
       .then((lesson) => {
         if (lesson) {
           setLesson(lesson);

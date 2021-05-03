@@ -39,6 +39,11 @@ interface GQLResponse<T> {
   data?: T;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function stringifyObject(value: any) {
+  return JSON.stringify(value).replace(/"([^"]+)":/g, "$1:");
+}
+
 export async function fetchSessions(
   filter: any,
   limit: number,
@@ -285,9 +290,22 @@ export async function fetchLesson(
 
 export async function updateLesson(
   lessonId: string,
-  lesson: string,
+  lesson: Lesson,
   accessToken: string
 ): Promise<Lesson> {
+  const convertedLesson = {
+    lessonId: lesson.lessonId,
+    name: lesson.name,
+    intro: lesson.intro,
+    question: lesson.question,
+    image: lesson.image,
+    expectations: lesson.expectations,
+    conclusion: lesson.conclusion,
+    lastTrainedAt: lesson.lastTrainedAt,
+    features: lesson.features,
+    createdBy: lesson.createdBy,
+    deleted: lesson.deleted,
+  };
   const headers = { Authorization: `bearer ${accessToken}` };
   const result = await axios.post<GQLResponse<UpdateLesson>>(
     GRAPHQL_ENDPOINT,
@@ -295,7 +313,9 @@ export async function updateLesson(
       query: `
       mutation {
         me {
-          updateLesson(lessonId: "${lessonId}", lesson: "${lesson}"){
+          updateLesson(lessonId: "${lessonId}", lesson: ${stringifyObject(
+        convertedLesson
+      )}){
             lessonId
             intro
             name
