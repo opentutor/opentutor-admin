@@ -34,7 +34,7 @@ LICENSE_HEADER:
 
 .PHONY: license
 license: LICENSE LICENSE_HEADER
-	cd client && npm run license:fix
+	npm run license:fix
 
 PHONY: test
 test:

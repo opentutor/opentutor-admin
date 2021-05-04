@@ -3,7 +3,6 @@
   "version": "1.0.19",
   "private": true,
   "scripts": {
-    "dependencies-update": "npx ncu -u",
     "format": "prettier --write '**/*.{js,jsx,json,ts,tsx}'",
     "start": "node app",
     "start-dev": "node app dev",
@@ -13,9 +12,7 @@
     "test:audit": "npm audit --level=moderate",
     "test:format": "prettier --check '**/*.{js,jsx,json,ts,tsx}'",
     "test:lint": "eslint . --ext ts --ext tsx --ext js --ext jsx",
-    "test:types": "tsc --noEmit",
-    "license:fix": "license-check-and-add remove -f license-config.json && license-check-and-add add -f license-config.json",
-    "test:license": "license-check-and-add check -f license-config.json"
+    "test:types": "tsc --noEmit"
   },
   "dependencies": {
     "cors": "^2.8.5",
@@ -30,7 +27,6 @@
     "eslint-config-prettier": "^6.15.0",
     "eslint-loader": "^4.0.2",
     "eslint-plugin-prettier": "^3.1.4",
-    "npm-check-updates": "^10.0.0",
     "prettier": "^2.1.2"
   },
   "main": "app.js",

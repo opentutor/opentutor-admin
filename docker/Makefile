@@ -25,10 +25,6 @@ build/client:
 
 build: build/client
 
-.PHONY: dependencies-update
-dependencies-update:
-	npm run dependencies-update
-
 .PHONY docker-build:
 docker-build: clean build/client
 	docker build \
