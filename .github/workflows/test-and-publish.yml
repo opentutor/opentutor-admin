@@ -12,8 +12,8 @@ jobs:
         run:  npm ci
       - name: Client - install
         run: cd client && npm ci
-      - name: Client - audit
-        run: cd client && npm run test:audit
+      # - name: Client - audit
+      #   run: cd client && npm run test:audit
       - name: Client - format test
         run: cd client && npm run test:format
       - name: Client - lint test
