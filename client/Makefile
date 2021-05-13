@@ -43,7 +43,7 @@ dependencies-update:
 	npm run dependencies-update
 
 .PHONY: develop
-develop: .env.development node_modules/gatsby-cli
+develop: .env.development node_modules/gatsby
 	npx gatsby develop
 
 .PHONY: format
@@ -56,7 +56,7 @@ node_modules/cypress:
 node_modules/eslint:
 	$(MAKE) install
 
-node_modules/gatsby-cli:
+node_modules/gatsby:
 	$(MAKE) install
 
 node_modules/prettier:
