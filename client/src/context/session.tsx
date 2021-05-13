@@ -27,7 +27,7 @@ const SessionContext = React.createContext<ContextType>({
   toggleCreator: () => {},
 });
 
-function SessionProvider(props: { children: any }) {
+function SessionProvider(props: { children?: React.ReactNode }): JSX.Element {
   const [cookies, setCookie, removeCookie] = useCookies(["accessToken"]);
   const [user, setUser] = React.useState<User>();
   const [showGraded, setShowGraded] = React.useState(false);

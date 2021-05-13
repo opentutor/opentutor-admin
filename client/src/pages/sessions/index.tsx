@@ -127,7 +127,7 @@ const columns: ColumnDef[] = [
 ];
 
 function TableFooter(props: {
-  classes: any;
+  classes: { appBar: string; paging: string };
   hasNext: boolean;
   hasPrev: boolean;
   onNext: () => void;
@@ -276,15 +276,19 @@ function SessionsTable(props: {
   }, [context.onlyCreator, context.showGraded]);
 
   React.useEffect(() => {
-    const filter: any = {};
+    const filter: {
+      lessonCreatedBy?: string;
+      lessonId?: string;
+      // graderGrade?: string | null;
+    } = {};
     if (context.onlyCreator) {
-      filter["lessonCreatedBy"] = context.user?.name;
+      filter.lessonCreatedBy = context.user?.name;
     }
-    if (!context.showGraded) {
-      filter["graderGrade"] = null;
-    }
+    // if (!context.showGraded) {
+    //   filter.graderGrade = null;
+    // }
     if (lessonId) {
-      filter["lessonId"] = lessonId;
+      filter.lessonId = lessonId;
     }
     let mounted = true;
     fetchSessions(
@@ -358,7 +362,7 @@ function SessionsTable(props: {
 function SessionsPage(props: {
   path: string;
   search: { lessonId: string };
-  children: any;
+  children?: React.ReactNode;
 }): JSX.Element {
   const context = useContext(SessionContext);
   const [cookies] = useCookies(["accessToken"]);

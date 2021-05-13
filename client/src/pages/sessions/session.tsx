@@ -41,7 +41,7 @@ const useStyles = makeStyles({
   },
 });
 
-const SessionTable = ({ search }: { search: any }) => {
+const SessionTable = ({ search }: { search: { sessionId: string } }) => {
   const { sessionId } = search;
   const classes = useStyles();
   const [cookies] = useCookies(["accessToken"]);
@@ -60,8 +60,7 @@ const SessionTable = ({ search }: { search: any }) => {
       Number(indexSplit[0]),
       Number(indexSplit[1]),
       event.target.value as string,
-      cookies.accessToken,
-      context.user?.id || ""
+      cookies.accessToken
     )
       .then((session: Session) => {
         if (session) {
@@ -240,7 +239,7 @@ const SessionTable = ({ search }: { search: any }) => {
   );
 };
 
-const SessionPage = ({ path, search }: { path: string; search: any }) => {
+const SessionPage = ({ search }: { search: { sessionId: string } }) => {
   const context = useContext(SessionContext);
   const [cookies] = useCookies(["accessToken"]);
   if (typeof window !== "undefined" && !cookies.accessToken) {

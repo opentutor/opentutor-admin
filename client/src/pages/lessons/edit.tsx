@@ -105,7 +105,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const newLesson = {
+const newLesson: Lesson = {
   lessonId: uuid(),
   name: "Display name for the lesson",
   intro:
@@ -120,13 +120,19 @@ const newLesson = {
       expectation: "Add a short ideal answer for an expectation, e.g. 'Red'",
       hints: [
         {
-          text:
-            "Add a hint to help for the expectation, e.g. 'One of them starts with R'",
+          text: "Add a hint to help for the expectation, e.g. 'One of them starts with R'",
         },
       ],
-      features: null,
+      features: {},
     },
   ],
+  createdAt: "",
+  createdBy: "",
+  createdByName: "",
+  image: "",
+  features: {},
+  lastTrainedAt: "",
+  updatedAt: "",
 };
 
 interface LessonUnderEdit {
@@ -134,13 +140,13 @@ interface LessonUnderEdit {
   dirty?: boolean;
 }
 
-const LessonEdit = (props: {
-  search: {
-    lessonId: string;
-    trainStatusPollInterval?: number;
-    copyLesson?: string;
-  };
-}) => {
+export interface LessonEditSearch {
+  lessonId: string;
+  trainStatusPollInterval?: number;
+  copyLesson?: string;
+}
+
+const LessonEdit = (props: { search: LessonEditSearch }) => {
   const { lessonId, copyLesson } = props.search;
   const classes = useStyles();
   const [cookies] = useCookies(["accessToken"]);
@@ -199,8 +205,7 @@ const LessonEdit = (props: {
     if (!/^[a-z0-9-]+$/g.test(id)) {
       setError("id must be lower-case and alpha-numeric.");
     } else if (lessonId !== id) {
-      const filter: any = { lessonId: id };
-      fetchLessons(filter, 1, "", "", true, cookies.accessToken)
+      fetchLessons({ lessonId: id }, 1, "", "", true, cookies.accessToken)
         .then((lessons) => {
           if (lessons && lessons.edges.length > 0) {
             setError("id is already being used for another lesson.");
@@ -214,11 +219,11 @@ const LessonEdit = (props: {
     }
   }, [lessonUnderEdit.lesson]);
 
-  function setLesson(lesson?: any, dirty?: boolean) {
+  function setLesson(lesson?: Lesson, dirty?: boolean) {
     if (lessonUnderEdit.lesson?.lessonId !== lesson?.lessonId) {
       setError("verifying lesson id...");
     }
-    setLessonUnderEdit({ lesson: lesson, dirty: dirty });
+    setLessonUnderEdit({ lesson, dirty });
   }
 
   function isExpValid(exp: LessonExpectation): boolean {
@@ -259,12 +264,12 @@ const LessonEdit = (props: {
       return;
     }
     toast("Saving...");
-    const convertedLesson: any = { ...lessonUnderEdit.lesson };
+    const convertedLesson: Lesson = { ...lessonUnderEdit.lesson };
     if (!lessonId) {
-      convertedLesson.createdBy = context.user?.id;
+      convertedLesson.createdBy = context.user?.id || "";
     }
     if (trained) {
-      convertedLesson.lastTrainedAt = new Date();
+      convertedLesson.lastTrainedAt = `${new Date()}`;
     }
     const origId = lessonId || lessonUnderEdit.lesson?.lessonId;
     updateLesson(origId, convertedLesson, cookies.accessToken)
@@ -295,8 +300,8 @@ const LessonEdit = (props: {
     navigate(`/lessons`);
   }
 
-  function useInterval(callback: any, delay: number | null) {
-    const savedCallback = React.useRef() as any;
+  function useInterval(callback: () => void, delay: number | null) {
+    const savedCallback = React.useRef<() => void>();
 
     React.useEffect(() => {
       savedCallback.current = callback;
@@ -304,7 +309,9 @@ const LessonEdit = (props: {
 
     React.useEffect(() => {
       function tick() {
-        savedCallback.current();
+        if (savedCallback.current) {
+          savedCallback.current();
+        }
       }
 
       if (delay) {
@@ -324,7 +331,7 @@ const LessonEdit = (props: {
           setStatusUrl(trainJob.statusUrl);
           setIsTraining(true);
         })
-        .catch((err: any) => {
+        .catch((err: Error) => {
           console.error(err);
           setTrainData({
             state: TrainState.FAILURE,
@@ -396,7 +403,10 @@ const LessonEdit = (props: {
             value={lessonUnderEdit.lesson?.name || ""}
             onChange={(e) => {
               setLesson(
-                { ...lessonUnderEdit.lesson, name: e.target.value },
+                {
+                  ...(lessonUnderEdit.lesson || newLesson),
+                  name: e.target.value || "",
+                },
                 true
               );
             }}
@@ -415,7 +425,10 @@ const LessonEdit = (props: {
             value={lessonUnderEdit.lesson?.lessonId || ""}
             onChange={(e) => {
               setLesson(
-                { ...lessonUnderEdit.lesson, lessonId: e.target.value },
+                {
+                  ...(lessonUnderEdit.lesson || newLesson),
+                  lessonId: e.target.value || "",
+                },
                 true
               );
             }}
@@ -455,7 +468,10 @@ const LessonEdit = (props: {
             value={lessonUnderEdit.lesson?.intro || ""}
             onChange={(e) => {
               setLesson(
-                { ...lessonUnderEdit.lesson, intro: e.target.value },
+                {
+                  ...(lessonUnderEdit.lesson || newLesson),
+                  intro: e.target.value || "",
+                },
                 true
               );
             }}
@@ -474,7 +490,10 @@ const LessonEdit = (props: {
             value={lessonUnderEdit.lesson?.question || ""}
             onChange={(e) => {
               setLesson(
-                { ...lessonUnderEdit.lesson, question: e.target.value },
+                {
+                  ...(lessonUnderEdit.lesson || newLesson),
+                  question: e.target.value || "",
+                },
                 true
               );
             }}
@@ -494,7 +513,10 @@ const LessonEdit = (props: {
               value={lessonUnderEdit.lesson?.image || ""}
               onChange={(e) => {
                 setLesson(
-                  { ...lessonUnderEdit.lesson, image: e.target.value },
+                  {
+                    ...(lessonUnderEdit.lesson || newLesson),
+                    image: e.target.value || "",
+                  },
                   true
                 );
               }}
@@ -518,7 +540,7 @@ const LessonEdit = (props: {
           updateExpectations={(exp: LessonExpectation[]) =>
             setLesson(
               {
-                ...lessonUnderEdit.lesson,
+                ...(lessonUnderEdit.lesson || newLesson),
                 expectations: exp,
               },
               true
@@ -532,7 +554,7 @@ const LessonEdit = (props: {
           updateConclusions={(conclusions: string[]) =>
             setLesson(
               {
-                ...lessonUnderEdit.lesson,
+                ...(lessonUnderEdit.lesson || newLesson),
                 conclusion: conclusions,
               },
               true
@@ -551,17 +573,17 @@ const LessonEdit = (props: {
             ? "#FF0000"
             : !(
                 trainData.info &&
-                trainData.info!.expectations &&
-                Array.isArray(trainData.info!.expectations) &&
-                trainData.info!.expectations!.length > 0
+                trainData.info?.expectations &&
+                Array.isArray(trainData.info?.expectations) &&
+                trainData.info.expectations.length > 0
               )
             ? "#FF0000"
             : Math.min(
-                ...trainData.info!.expectations!.map((x) => x.accuracy)
+                ...trainData.info?.expectations.map((x) => x.accuracy)
               ) >= 0.6
             ? "#008000"
             : Math.min(
-                ...trainData.info!.expectations!.map((x) => x.accuracy)
+                ...trainData.info?.expectations.map((x) => x.accuracy)
               ) >= 0.4
             ? "#FFFF00"
             : "#FF0000"
@@ -577,7 +599,7 @@ const LessonEdit = (props: {
           <CircularProgress />
         ) : trainData.state === TrainState.SUCCESS ? (
           <List>
-            {trainData.info!.expectations!.map((x, i) => (
+            {trainData.info?.expectations?.map((x, i) => (
               <ListItem key={`train-success-accuracy-${i}`}>
                 <ListItemText
                   style={{ textAlign: "center" }}
@@ -672,7 +694,10 @@ const LessonEdit = (props: {
   );
 };
 
-function EditPage(props: { path: string; search: any }): JSX.Element {
+function EditPage(props: {
+  path: string;
+  search: LessonEditSearch;
+}): JSX.Element {
   const context = useContext(SessionContext);
   const [cookies] = useCookies(["accessToken"]);
 

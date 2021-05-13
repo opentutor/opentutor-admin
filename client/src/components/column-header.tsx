@@ -22,12 +22,12 @@ export interface ColumnDef {
   format?: (v: number) => string;
 }
 
-export const ColumnHeader = (props: {
+export function ColumnHeader(props: {
   columns: ColumnDef[];
   sortBy: string;
   sortAsc: boolean;
   onSort: (id: string) => void;
-}) => {
+}): JSX.Element {
   const { columns, sortBy, sortAsc, onSort } = props;
 
   return (
@@ -59,4 +59,4 @@ export const ColumnHeader = (props: {
       </TableRow>
     </TableHead>
   );
-};
+}

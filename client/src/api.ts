@@ -4,7 +4,7 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import {
   DeleteLesson,
   DeleteSession,
@@ -44,7 +44,15 @@ function stringifyObject(value: any) {
   return JSON.stringify(value).replace(/"([^"]+)":/g, "$1:");
 }
 
+function findOrThrow<T>(res: AxiosResponse<GQLResponse<T>>): T {
+  if (!res.data.data) {
+    throw new Error(`invalid result body: ${JSON.stringify(res.data)}`);
+  }
+  return res.data.data;
+}
+
 export async function fetchSessions(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
   filter: any,
   limit: number,
   cursor: string,
@@ -97,8 +105,7 @@ export async function fetchSessions(
     },
     { headers: headers }
   );
-  // TODO: must handle errors including in tests
-  return result.data.data!.me.sessions;
+  return findOrThrow<FetchSessions>(result).me.sessions;
 }
 
 export async function fetchSession(
@@ -141,8 +148,7 @@ export async function fetchSession(
     },
     { headers: headers }
   );
-  // TODO: must handle errors including in tests
-  return result.data.data!.me.session;
+  return findOrThrow<FetchSession>(result).me.session;
 }
 
 export async function setGrade(
@@ -150,8 +156,7 @@ export async function setGrade(
   userAnswerIndex: number,
   userExpectationIndex: number,
   grade: string,
-  accessToken: string,
-  grader: string
+  accessToken: string
 ): Promise<Session> {
   const headers = { Authorization: `bearer ${accessToken}` };
   const result = await axios.post<GQLResponse<SetGrade>>(
@@ -194,11 +199,11 @@ export async function setGrade(
     },
     { headers: headers }
   );
-  // TODO: must handle errors including in tests
-  return result.data.data!.me.setGrade;
+  return findOrThrow<SetGrade>(result).me.setGrade;
 }
 
 export async function fetchLessons(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
   filter: any,
   limit: number,
   cursor: string,
@@ -243,8 +248,7 @@ export async function fetchLessons(
     },
     { headers: headers }
   );
-  // TODO: must handle errors including in tests
-  return result.data.data!.me.lessons;
+  return findOrThrow<FetchLessons>(result).me.lessons;
 }
 
 export async function fetchLesson(
@@ -284,8 +288,7 @@ export async function fetchLesson(
     },
     { headers: headers }
   );
-  // TODO: must handle errors including in tests
-  return result.data.data!.me.lesson;
+  return findOrThrow<FetchLesson>(result).me.lesson;
 }
 
 export async function updateLesson(
@@ -341,8 +344,7 @@ export async function updateLesson(
     },
     { headers: headers }
   );
-  // TODO: must handle errors including in tests
-  return result.data.data!.me.updateLesson;
+  return findOrThrow<UpdateLesson>(result).me.updateLesson;
 }
 
 export async function deleteLesson(
@@ -365,8 +367,7 @@ export async function deleteLesson(
     },
     { headers: headers }
   );
-  // TODO: must handle errors including in tests
-  return result.data.data!.me.deleteLesson;
+  return findOrThrow<DeleteLesson>(result).me.deleteLesson;
 }
 
 export async function deleteSession(
@@ -389,28 +390,28 @@ export async function deleteSession(
     },
     { headers: headers }
   );
-  // TODO: must handle errors including in tests
-  return result.data.data!.me.deleteSession;
+  return findOrThrow<DeleteSession>(result).me.deleteSession;
 }
 
 export async function trainLesson(lessonId: string): Promise<TrainJob> {
-  const res = await axios.post<GQLResponse<TrainJob>>(
+  const result = await axios.post<GQLResponse<TrainJob>>(
     urljoin(CLASSIFIER_ENTRYPOINT, "train"),
     {
       lesson: lessonId,
     }
   );
-  return res.data.data!;
+  return findOrThrow<TrainJob>(result);
 }
 
 export async function fetchTrainingStatus(
   statusUrl: string
 ): Promise<TrainStatus> {
   const result = await axios.get<GQLResponse<TrainStatus>>(statusUrl);
-  return result.data.data!;
+  return findOrThrow<TrainStatus>(result);
 }
 
 export async function fetchUsers(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
   filter: any,
   limit: number,
   cursor: string,
@@ -454,8 +455,7 @@ export async function fetchUsers(
     },
     { headers: headers }
   );
-  // TODO: must handle errors including in tests
-  return result.data.data!.me.users;
+  return findOrThrow<FetchUsers>(result).me.users;
 }
 
 export async function updateUserPermissions(
@@ -485,8 +485,7 @@ export async function updateUserPermissions(
     },
     { headers: headers }
   );
-  // TODO: must handle errors including in tests
-  return result.data.data!.me.updateUserPermissions;
+  return findOrThrow<UpdateUserPermissions>(result).me.updateUserPermissions;
 }
 
 export async function login(accessToken: string): Promise<UserAccessToken> {
@@ -504,7 +503,7 @@ export async function login(accessToken: string): Promise<UserAccessToken> {
       }
     `,
   });
-  return result.data.data!.login;
+  return findOrThrow<Login>(result).login;
 }
 
 export async function loginGoogle(
@@ -524,24 +523,24 @@ export async function loginGoogle(
       }
     `,
   });
-  return result.data.data!.loginGoogle;
+  return findOrThrow<LoginGoogle>(result).loginGoogle;
 }
 
 export function userCanEdit(
   lesson: Lesson | undefined,
   user: User | undefined
-) {
-  return (
+): boolean {
+  return Boolean(
     lesson &&
-    user &&
-    (`${lesson.createdBy}` === `${user.id}` || userIsElevated(user))
+      user &&
+      (`${lesson.createdBy}` === `${user.id}` || userIsElevated(user))
   );
 }
 
-export function userIsElevated(user: User | undefined) {
-  return (
+export function userIsElevated(user: User | undefined): boolean {
+  return Boolean(
     user &&
-    (user.userRole === UserRole.ADMIN ||
-      user.userRole === UserRole.CONTENT_MANAGER)
+      (user.userRole === UserRole.ADMIN ||
+        user.userRole === UserRole.CONTENT_MANAGER)
   );
 }

@@ -32,19 +32,36 @@ import DragHandleIcon from "@material-ui/icons/DragHandle";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import HintsList from "components/hints-list";
 import { expectationFeatureSchema } from "schemas/validation";
-import { LessonExpectation, Hint } from "types";
+import { LessonExpectation, Hint, Features } from "types";
 import "styles/layout.css";
 import "jsoneditor-react/es/editor.min.css";
 
+interface IJSONEditor extends JSX.Element {
+  expandAll: () => void;
+  focus: () => void;
+  set: (f: Features) => void;
+}
+interface HasJsonEditor {
+  jsonEditor?: IJSONEditor;
+}
+
+interface ExpectationClasses {
+  expand: string;
+  expandOpen: string;
+  list: string;
+  listDragging: string;
+  button: string;
+}
+
 const ExpectationCard = (props: {
-  classes: any;
+  classes: ExpectationClasses;
   expectation: LessonExpectation;
   expIdx: number;
   canDelete: boolean;
   handleExpectationChange: (val: string) => void;
   handleRemoveExpectation: () => void;
   handleHintChange: (val: Hint[]) => void;
-  handleFeaturesChange: (val: any) => void;
+  handleFeaturesChange: (val: Features) => void;
 }) => {
   const {
     classes,
@@ -57,22 +74,23 @@ const ExpectationCard = (props: {
     handleFeaturesChange,
   } = props;
   const [expanded, setExpanded] = React.useState(true);
-  const editorRef = React.useRef<any>();
+  const editorRef = React.useRef<HasJsonEditor>();
 
   const ajv = new Ajv({ allErrors: true, verbose: true });
-  let features = {};
+  let features: Features = {};
   React.useEffect(() => {
     features = expectation.features || { bad: [], good: [] };
-    if (editorRef && editorRef.current) {
-      editorRef?.current.jsonEditor.set(features);
-      editorRef?.current.jsonEditor.expandAll();
-      editorRef?.current.jsonEditor.focus();
+    const jse = editorRef?.current?.jsonEditor as IJSONEditor;
+    if (jse) {
+      jse.set(features);
+      jse.expandAll();
+      jse.focus();
     }
   }, [expanded]);
 
-  function JSONEditor(): any {
+  function JSONEditor(): JSX.Element {
     if (typeof window === "undefined") {
-      return <div></div>;
+      return <></>;
     }
     /* eslint-disable-next-line @typescript-eslint/no-var-requires */
     const { JsonEditor } = require("jsoneditor-react");
@@ -87,7 +105,7 @@ const ExpectationCard = (props: {
     );
   }
 
-  function onEditJson(json: any): void {
+  function onEditJson(json: Features): void {
     handleFeaturesChange(json);
   }
 
@@ -160,11 +178,11 @@ const ExpectationCard = (props: {
   );
 };
 
-const ExpectationsList = (props: {
-  classes: any;
+function ExpectationsList(props: {
+  classes: ExpectationClasses;
   expectations: LessonExpectation[];
   updateExpectations: (val: LessonExpectation[]) => void;
-}) => {
+}): JSX.Element {
   const { classes, expectations, updateExpectations } = props;
 
   function replaceItem<T>(a: Array<T>, index: number, item: T): Array<T> {
@@ -193,7 +211,7 @@ const ExpectationsList = (props: {
     );
   };
 
-  const handleFeaturesChange = (val: any, idx: number) => {
+  const handleFeaturesChange = (val: Features, idx: number) => {
     updateExpectations(
       replaceItem(expectations, idx, {
         ...expectations[idx],
@@ -218,11 +236,10 @@ const ExpectationsList = (props: {
         expectation: "Add a short ideal answer for an expectation, e.g. 'Red'",
         hints: [
           {
-            text:
-              "Add a hint to help for the expectation, e.g. 'One of them starts with R'",
+            text: "Add a hint to help for the expectation, e.g. 'One of them starts with R'",
           },
         ],
-        features: null,
+        features: {},
       },
     ]);
   };
@@ -254,7 +271,7 @@ const ExpectationsList = (props: {
                   draggableId={`expectation-${i}`}
                   index={i}
                 >
-                  {(provided, snapshot) => (
+                  {(provided) => (
                     <ListItem
                       ref={provided.innerRef}
                       {...provided.draggableProps}
@@ -274,7 +291,7 @@ const ExpectationsList = (props: {
                         handleHintChange={(val: Hint[]) => {
                           handleHintChange(val, i);
                         }}
-                        handleFeaturesChange={(val: any) => {
+                        handleFeaturesChange={(val: Features) => {
                           handleFeaturesChange(val, i);
                         }}
                       />
@@ -297,6 +314,6 @@ const ExpectationsList = (props: {
       </Button>
     </Paper>
   );
-};
+}
 
 export default ExpectationsList;

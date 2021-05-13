@@ -117,7 +117,7 @@ const columns: ColumnDef[] = [
 ];
 
 const TableFooter = (props: {
-  classes: any;
+  classes: { appBar: string; fab: string };
   hasNext: boolean;
   hasPrev: boolean;
   onNext: () => void;
@@ -168,13 +168,13 @@ const TableFooter = (props: {
 };
 
 const LessonItem = (props: {
-  location: any;
+  location: Location;
   row: Edge<Lesson>;
   i: number;
   onDeleted: (id: string) => void;
 }) => {
   const { location, row, i, onDeleted } = props;
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
   const deleteMenuOpen = Boolean(anchorEl);
   const context = useContext(SessionContext);
   const [cookies] = useCookies(["accessToken"]);
@@ -194,7 +194,7 @@ const LessonItem = (props: {
     navigate(withPrefix(`/sessions?lessonId=${row.node.lessonId}`));
   }
 
-  const handleDelete = (e: any) => {
+  const handleDelete = (e: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(e.currentTarget);
   };
 
@@ -284,7 +284,7 @@ const LessonItem = (props: {
   );
 };
 
-const LessonsTable = (props: { location: any }) => {
+const LessonsTable = (props: { location: Location }) => {
   const classes = useStyles();
   const context = useContext(SessionContext);
   const [cookies] = useCookies(["accessToken"]);
@@ -313,13 +313,9 @@ const LessonsTable = (props: { location: any }) => {
   }, [context.onlyCreator]);
 
   React.useEffect(() => {
-    const filter: any = {};
-    if (context.onlyCreator) {
-      filter["createdByName"] = `${context.user?.name}`;
-    }
     let mounted = true;
     fetchLessons(
-      filter,
+      context.onlyCreator ? { createdByName: `${context.user?.name}` } : {},
       rowsPerPage,
       cursor,
       sortBy,
@@ -386,7 +382,11 @@ const LessonsTable = (props: { location: any }) => {
   );
 };
 
-const LessonsPage = (props: { location: any; path: string; children: any }) => {
+const LessonsPage = (props: {
+  location: Location;
+  path: string;
+  children?: React.ReactNode;
+}): JSX.Element => {
   const context = useContext(SessionContext);
   const [cookies] = useCookies(["accessToken"]);
 

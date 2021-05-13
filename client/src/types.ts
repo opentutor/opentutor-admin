@@ -60,6 +60,9 @@ export interface ExpectationScore {
   graderGrade?: string;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type Features = Record<string, any>;
+
 export interface Lesson {
   lessonId: string;
   name: string;
@@ -69,18 +72,18 @@ export interface Lesson {
   expectations: LessonExpectation[];
   conclusion: string[];
   lastTrainedAt: string;
-  features: any;
-  isTrainable: boolean;
+  features: Features;
+  isTrainable?: boolean;
   createdBy: string;
   createdByName: string;
   createdAt: string;
   updatedAt: string;
-  deleted: boolean;
+  deleted?: boolean;
 }
 
 export interface LessonExpectation {
   expectation: string;
-  features: any;
+  features: Features;
   hints: Hint[];
 }
 
