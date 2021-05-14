@@ -76,14 +76,14 @@ function NavMenu(): JSX.Element {
   );
 }
 
-function LoginOption(props: { classes: any }): JSX.Element {
+function LoginOption(props: { classes: { login: string } }): JSX.Element {
   const { classes } = props;
-  const [cookies, setCookie, removeCookie] = useCookies(["accessToken"]);
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  const removeCookie = useCookies(["accessToken"])[2];
+  const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
   const open = Boolean(anchorEl);
   const context = useContext(SessionContext);
 
-  function handleMenu(e: any): void {
+  function handleMenu(e: React.MouseEvent<HTMLElement>): void {
     setAnchorEl(e.currentTarget);
   }
 

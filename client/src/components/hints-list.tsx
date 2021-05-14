@@ -4,7 +4,7 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import React, { useCallback } from "react";
+import React from "react";
 import {
   DragDropContext,
   Droppable,
@@ -36,13 +36,8 @@ const HintCard = (props: {
   handleHintChange: (val: string) => void;
   handleRemoveHint: () => void;
 }) => {
-  const {
-    hint,
-    hintIdx,
-    canDelete,
-    handleHintChange,
-    handleRemoveHint,
-  } = props;
+  const { hint, hintIdx, canDelete, handleHintChange, handleRemoveHint } =
+    props;
 
   return (
     <Card id={`hint-${hintIdx}`} variant="outlined">
@@ -84,11 +79,11 @@ const HintCard = (props: {
   );
 };
 
-const HintsList = (props: {
-  classes: any;
+export default function HintsList(props: {
+  classes: { listDragging: string; button: string };
   hints: Hint[];
   updateHints: (val: Hint[]) => void;
-}) => {
+}): JSX.Element {
   const { classes, hints, updateHints } = props;
 
   const onDragEnd = (result: DropResult) => {
@@ -109,8 +104,7 @@ const HintsList = (props: {
 
   const handleAddHint = () => {
     const newItem = {
-      text:
-        "Add a hint to help for the expectation, e.g. 'One of them starts with R'",
+      text: "Add a hint to help for the expectation, e.g. 'One of them starts with R'",
     };
     hints.push(newItem);
     updateHints([...hints]);
@@ -145,7 +139,7 @@ const HintsList = (props: {
                   draggableId={`hint-${i}`}
                   index={i}
                 >
-                  {(provided, snapshot) => (
+                  {(provided) => (
                     <ListItem
                       ref={provided.innerRef}
                       {...provided.draggableProps}
@@ -181,6 +175,4 @@ const HintsList = (props: {
       </Button>
     </Paper>
   );
-};
-
-export default HintsList;
+}

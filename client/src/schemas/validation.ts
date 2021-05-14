@@ -5,6 +5,7 @@ Permission to use, copy, modify, and distribute this software and its documentat
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
 import Ajv from "ajv";
+import { Features } from "types";
 
 /* eslint-disable-next-line @typescript-eslint/no-var-requires */
 export const expectationFeatureSchema = require("schemas/expectation-feature-schema.json");
@@ -23,6 +24,6 @@ function getExpectationFeaturesValidator(): Ajv.ValidateFunction {
   return _expectationFeaturesValidator;
 }
 
-export function validateExpectationFeatures(json: any): boolean {
+export function validateExpectationFeatures(json: Features): boolean {
   return getExpectationFeaturesValidator()(json) === true;
 }

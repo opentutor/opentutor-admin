@@ -181,8 +181,6 @@ describe("edit lesson screen", () => {
         "have.value",
         "Add a short ideal answer for an expectation, e.g. 'Red'"
       );
-      cy.get("#expectation-0 .jsoneditor").contains("bad");
-      cy.get("#expectation-0 .jsoneditor").contains("good");
       cy.get("#expectation-0 #hints").children().should("have.length", 1);
       cy.get("#hint-0 #edit-hint").should(
         "have.value",

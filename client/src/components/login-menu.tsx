@@ -46,9 +46,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const LoginMenu = (props: { path: string; children: any }) => {
+export function LoginMenu(props: {
+  path: string;
+  children?: React.ReactNode;
+}): JSX.Element {
   const classes = useStyles();
-  const [cookies, setCookie, removeCookie] = useCookies(["accessToken"]);
+  const [cookies, setCookie] = useCookies(["accessToken"]);
   const context = useContext(SessionContext);
   const [googleClientId, setClientId] = React.useState<string>("");
 
@@ -122,6 +125,6 @@ export const LoginMenu = (props: { path: string; children: any }) => {
       {props.children}
     </div>
   );
-};
+}
 
 export default LoginMenu;

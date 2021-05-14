@@ -79,6 +79,7 @@ const columns: ColumnDef[] = [
 ];
 
 function TableFooter(props: {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   classes: any;
   hasNext: boolean;
   hasPrev: boolean;
@@ -113,11 +114,7 @@ function UserItem(props: {
 
   async function handleRoleChange(user: string, permission: string) {
     try {
-      const val = await updateUserPermissions(
-        user,
-        permission,
-        cookies.accessToken
-      );
+      await updateUserPermissions(user, permission, cookies.accessToken);
       props.onUpdated();
     } catch (err) {
       props.onUpdated(err);
@@ -163,7 +160,7 @@ function UserItem(props: {
     </TableRow>
   );
 }
-
+// eslint-disable-next-line  @typescript-eslint/no-unused-vars
 function UsersTable(props: { path: string }): JSX.Element {
   const classes = useStyles();
   const [cookies] = useCookies(["accessToken"]);
@@ -178,11 +175,10 @@ function UsersTable(props: { path: string }): JSX.Element {
   }, [rowsPerPage, cursor, sortBy, sortAsc]);
 
   async function updateUsers() {
-    const filter: any = {};
     try {
       setUsers(
         await fetchUsers(
-          filter,
+          {},
           rowsPerPage,
           cursor,
           sortBy,

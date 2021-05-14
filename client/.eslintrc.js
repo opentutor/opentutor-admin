@@ -4,7 +4,7 @@ module.exports = {
     "eslint:recommended",
     "plugin:react/recommended",
     "plugin:@typescript-eslint/recommended",
-    "prettier/@typescript-eslint", // Uses eslint-config-prettier to disable ESLint rules from @typescript-eslint/eslint-plugin that would conflict with prettier
+    "prettier",
   ],
   settings: {
     react: {
@@ -28,8 +28,6 @@ module.exports = {
     "no-prototype-builtins": "off",
     "react/display-name": "off",
     "react/prop-types": "off", // Disable prop-types as we use TypeScript for type checking
-    "@typescript-eslint/ban-ts-ignore": "off",
-    "@typescript-eslint/no-non-null-assertion": "off",
   },
   settings: {
     react: {

@@ -4,7 +4,7 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import React, { useCallback } from "react";
+import React from "react";
 import {
   DragDropContext,
   Droppable,
@@ -27,6 +27,12 @@ import AddIcon from "@material-ui/icons/Add";
 import ClearOutlinedIcon from "@material-ui/icons/ClearOutlined";
 import DragHandleIcon from "@material-ui/icons/DragHandle";
 import "styles/layout.css";
+
+interface ConclusionClasses {
+  button: string;
+  list: string;
+  listDragging: string;
+}
 
 const ConclusionCard = (props: {
   conclusion: string;
@@ -83,11 +89,11 @@ const ConclusionCard = (props: {
   );
 };
 
-const ConclusionsList = (props: {
-  classes: any;
+function ConclusionsList(props: {
+  classes: ConclusionClasses;
   conclusions: string[];
   updateConclusions: (val: string[]) => void;
-}) => {
+}): JSX.Element {
   const { classes, conclusions, updateConclusions } = props;
 
   const onDragEnd = (result: DropResult) => {
@@ -140,7 +146,7 @@ const ConclusionsList = (props: {
                   draggableId={`conclusion-${i}`}
                   index={i}
                 >
-                  {(provided, snapshot) => (
+                  {(provided) => (
                     <ListItem
                       ref={provided.innerRef}
                       {...provided.draggableProps}
@@ -176,6 +182,6 @@ const ConclusionsList = (props: {
       </Button>
     </Paper>
   );
-};
+}
 
 export default ConclusionsList;
