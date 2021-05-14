@@ -259,7 +259,7 @@ const LessonEdit = (props: { search: LessonEditSearch }) => {
     handleSavePopUp(false);
   }
 
-  function saveChanges(trained?: boolean): void {
+  function saveChanges(): void {
     if (!lessonUnderEdit.lesson) {
       return;
     }
@@ -267,9 +267,6 @@ const LessonEdit = (props: { search: LessonEditSearch }) => {
     const convertedLesson: Lesson = { ...lessonUnderEdit.lesson };
     if (!lessonId) {
       convertedLesson.createdBy = context.user?.id || "";
-    }
-    if (trained) {
-      convertedLesson.lastTrainedAt = `${new Date()}`;
     }
     const origId = lessonId || lessonUnderEdit.lesson?.lessonId;
     updateLesson(origId, convertedLesson, cookies.accessToken)
@@ -357,7 +354,11 @@ const LessonEdit = (props: { search: LessonEditSearch }) => {
             setTrainPopUp(true);
             setIsTraining(false);
             if (trainStatus.state === TrainState.SUCCESS) {
-              saveChanges(true);
+              fetchLesson(lessonId, cookies.accessToken)
+                .then((lesson) => {
+                  setLesson(lesson);
+                })
+                .catch((err) => console.error(err));
             }
           }
         })
