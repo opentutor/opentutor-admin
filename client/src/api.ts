@@ -39,11 +39,6 @@ interface GQLResponse<T> {
   data?: T;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function stringifyObject(value: any) {
-  return JSON.stringify(value).replace(/"([^"]+)":/g, "$1:");
-}
-
 function findOrThrow<T>(res: AxiosResponse<GQLResponse<T>>): T {
   if (!res.data.data) {
     throw new Error(`invalid result body: ${JSON.stringify(res.data)}`);
@@ -65,43 +60,50 @@ export async function fetchSessions(
     GRAPHQL_ENDPOINT,
     {
       query: `
-        query {
-          me {
-            sessions(
-              filter:"${encodeURI(JSON.stringify(filter))}"
-              limit:${limit},
-              cursor:"${cursor}",
-              sortBy:"${sortBy}",
-              sortAscending:${sortAscending}
-            ) {
-              edges {
-                cursor
-                node {
-                  username
-                  sessionId
-                  classifierGrade
-                  graderGrade
-                  createdAt
-                  lesson {
-                    name
-                    lessonId
-                    createdBy
-                  }
-                  lessonCreatedBy
-                  lastGradedByName
-                  lastGradedAt
+      query FetchSessions($filter: String!, $limit: Int!, $cursor: String!, $sortBy: String!, $sortAscending: Boolean!) {
+        me {
+          sessions(
+            filter: $filter,
+            limit: $limit,
+            cursor: $cursor,
+            sortBy: $sortBy,
+            sortAscending: $sortAscending
+          ) {
+            edges {
+              cursor
+              node {
+                username
+                sessionId
+                classifierGrade
+                graderGrade
+                createdAt
+                lesson {
+                  name
+                  lessonId
+                  createdBy
                 }
+                lessonCreatedBy
+                lastGradedByName
+                lastGradedAt
               }
-              pageInfo {
-                startCursor
-                endCursor
-                hasPreviousPage
-                hasNextPage
-              }
+            }
+            pageInfo {
+              startCursor
+              endCursor
+              hasPreviousPage
+              hasNextPage
             }
           }
         }
+      }
       `,
+      variables: {
+        filter: JSON.stringify(filter),
+        limit,
+        cursor,
+        sortBy,
+        sortAscending,
+      },
     },
     { headers: headers }
   );
@@ -117,9 +119,9 @@ export async function fetchSession(
     GRAPHQL_ENDPOINT,
     {
       query: `
-      query {
+      query FetchSession($sessionId: String!) {
         me {
-          session(sessionId: "${sessionId}") {
+          session(sessionId: $sessionId) {
             username
             graderGrade
             createdAt
@@ -145,6 +147,7 @@ export async function fetchSession(
         }
       }
     `,
+      variables: { sessionId },
     },
     { headers: headers }
   );
@@ -163,13 +166,13 @@ export async function setGrade(
     GRAPHQL_ENDPOINT,
     {
       query: `
-      mutation {
+      mutation SetGrade($sessionId: String!, $userAnswerIndex: Int!, $userExpectationIndex: Int!, $grade: String!){
         me {
           setGrade(
-            sessionId: "${sessionId}",
-            userAnswerIndex:${userAnswerIndex},
-            userExpectationIndex:${userExpectationIndex}
-            grade:"${grade}"
+            sessionId: $sessionId,
+            userAnswerIndex: $userAnswerIndex,
+            userExpectationIndex: $userExpectationIndex
+            grade: $grade
           ) {
             username
             graderGrade
@@ -196,6 +199,7 @@ export async function setGrade(
         }
       }
     `,
+      variables: { sessionId, userAnswerIndex, userExpectationIndex, grade },
     },
     { headers: headers }
   );
@@ -216,14 +220,20 @@ export async function fetchLessons(
     GRAPHQL_ENDPOINT,
     {
       query: `
-      query {
+      query FetchLessons(
+        $filter: String!
+        $limit: Int!,
+        $cursor: String!,
+        $sortBy: Boolean!,
+        $sortAscending: Boolean!
+      ){
         me {
           lessons(
-            filter:"${encodeURI(JSON.stringify(filter))}"
-            limit:${limit},
-            cursor:"${cursor}",
-            sortBy:"${sortBy}",
-            sortAscending:${sortAscending}
+            filter: $filter,
+            limit: $limit,
+            cursor: $cursor,
+            sortBy: $sortBy,
+            sortAscending: $sortAscending
           ) {
             edges {
               cursor
@@ -244,7 +254,14 @@ export async function fetchLessons(
           }
         }
       }
-    `,
+      `,
+      variables: {
+        filter: JSON.stringify(filter),
+        limit: limit,
+        cursor: cursor,
+        sortBy: sortBy,
+        sortAscending: sortAscending,
+      },
     },
     { headers: headers }
   );
@@ -260,9 +277,9 @@ export async function fetchLesson(
     GRAPHQL_ENDPOINT,
     {
       query: `
-      query {
+      query FetchLesson($lessonId: String!){
         me {
-          lesson(lessonId: "${lessonId}") {
+          lesson(lessonId: $lessonId) {
             lessonId
             intro
             name
@@ -285,6 +302,7 @@ export async function fetchLesson(
         }
       }
     `,
+      variables: { lessonId },
     },
     { headers: headers }
   );
@@ -296,29 +314,14 @@ export async function updateLesson(
   lesson: Lesson,
   accessToken: string
 ): Promise<Lesson> {
-  const convertedLesson = {
-    lessonId: lesson.lessonId,
-    name: lesson.name,
-    intro: lesson.intro,
-    question: lesson.question,
-    image: lesson.image,
-    expectations: lesson.expectations,
-    conclusion: lesson.conclusion,
-    lastTrainedAt: lesson.lastTrainedAt,
-    features: lesson.features,
-    createdBy: lesson.createdBy,
-    deleted: lesson.deleted,
-  };
   const headers = { Authorization: `bearer ${accessToken}` };
   const result = await axios.post<GQLResponse<UpdateLesson>>(
     GRAPHQL_ENDPOINT,
     {
       query: `
-      mutation {
+      mutation UpdateLesson($lessonId: String!, $lesson: UpdateLessonInputType!) {
         me {
-          updateLesson(lessonId: "${lessonId}", lesson: ${stringifyObject(
-        convertedLesson
-      )}){
+          updateLesson(lessonId: $lessonId, lesson: $lesson){
             lessonId
             intro
             name
@@ -340,7 +343,23 @@ export async function updateLesson(
           }
         }
       }
-    `,
+      `,
+      variables: {
+        lessonId,
+        lesson: {
+          lessonId: lesson.lessonId,
+          name: lesson.name,
+          intro: lesson.intro,
+          question: lesson.question,
+          image: lesson.image,
+          expectations: lesson.expectations,
+          conclusion: lesson.conclusion,
+          lastTrainedAt: lesson.lastTrainedAt,
+          features: lesson.features,
+          createdBy: lesson.createdBy,
+          deleted: lesson.deleted,
+        },
+      },
     },
     { headers: headers }
   );
@@ -356,14 +375,17 @@ export async function deleteLesson(
     GRAPHQL_ENDPOINT,
     {
       query: `
-      mutation {
+      mutation DeleteLesson($lessonId: String!) {
         me {
-          deleteLesson(lessonId: "${lessonId}"){
+          deleteLesson(lessonId: $lessonId){
             deleted
           }  
         }
       }
-    `,
+      `,
+      variables: {
+        lessonId,
+      },
     },
     { headers: headers }
   );
@@ -379,14 +401,15 @@ export async function deleteSession(
     GRAPHQL_ENDPOINT,
     {
       query: `
-        mutation {
-          me {
-            deleteSession(sessionId: "${sessionId}"){
-              deleted
-            }  
-          }
+      mutation DeleteSession {
+        me {
+          deleteSession(sessionId: $sessionId){
+            deleted
+          }  
         }
+      }
       `,
+      variables: { sessionId },
     },
     { headers: headers }
   );
@@ -424,14 +447,14 @@ export async function fetchUsers(
     GRAPHQL_ENDPOINT,
     {
       query: `
-      query {
+      query FetchUsers ($filter: String!, $limit: Int!, $cursor: String!, $sortBy: String!, $sortAscending: Boolean!) {
         me {
           users(
-            filter:"${encodeURI(JSON.stringify(filter))}"
-            limit:${limit},
-            cursor:"${cursor}",
-            sortBy:"${sortBy}",
-            sortAscending:${sortAscending}
+            filter: $filter,
+            limit: $limit,
+            cursor: $cursor,
+            sortBy: $sortBy,
+            sortAscending: $sortAscending
           ) {
             edges {
               cursor
@@ -452,8 +475,15 @@ export async function fetchUsers(
         }
       }
     `,
+      variables: {
+        filter: JSON.stringify(filter),
+        limit,
+        cursor,
+        sortBy,
+        sortAscending,
+      },
     },
-    { headers: headers }
+    { headers }
   );
   return findOrThrow<FetchUsers>(result).me.users;
 }
@@ -491,8 +521,8 @@ export async function updateUserPermissions(
 export async function login(accessToken: string): Promise<UserAccessToken> {
   const result = await axios.post<GQLResponse<Login>>(GRAPHQL_ENDPOINT, {
     query: `
-      mutation {
-        login(accessToken: "${accessToken}") {
+      mutation Login($accessToken: String!) {
+        login(accessToken: $accessToken) {
           user {
             id
             name
@@ -502,6 +532,7 @@ export async function login(accessToken: string): Promise<UserAccessToken> {
         }
       }
     `,
+    variables: { accessToken },
   });
   return findOrThrow<Login>(result).login;
 }
@@ -511,8 +542,8 @@ export async function loginGoogle(
 ): Promise<UserAccessToken> {
   const result = await axios.post<GQLResponse<LoginGoogle>>(GRAPHQL_ENDPOINT, {
     query: `
-      mutation {
-        loginGoogle(accessToken: "${accessToken}") {
+      mutation LoginGoogle($accessToken: String!) {
+        loginGoogle(accessToken: $accessToken) {
           user {
             id
             name
@@ -522,6 +553,7 @@ export async function loginGoogle(
         }
       }
     `,
+    variables: { accessToken },
   });
   return findOrThrow<LoginGoogle>(result).loginGoogle;
 }
