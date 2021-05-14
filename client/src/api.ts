@@ -224,7 +224,7 @@ export async function fetchLessons(
         $filter: String!
         $limit: Int!,
         $cursor: String!,
-        $sortBy: Boolean!,
+        $sortBy: String!,
         $sortAscending: Boolean!
       ){
         me {
