@@ -4,17 +4,16 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import { cySetup, cyLogin, cyMockGraphQL, cyMockByQueryName } from "../support/functions";
+import { cySetup, cyMockDefault, mockGQL } from "../support/functions";
 
 describe("Navigation bar", () => {
   describe("navigation", () => {
     it("navigates to /lessons", () => {
       cySetup(cy);
-      cyMockGraphQL(cy, {
-        mocks: [cyLogin(cy, "admin")],
-      });
+      cyMockDefault(cy, {
+        userRole: "admin"
+      })
       cy.visit("/");
-      cy.wait("@login");
       cy.get("#nav-bar").get("#menu-button").trigger('mouseover').click();
       cy.get("#drawer a").eq(0).contains("Lessons");
       cy.get("#drawer a").eq(0).trigger('mouseover').click();
@@ -23,11 +22,10 @@ describe("Navigation bar", () => {
 
     it("navigates to /sessions", () => {
       cySetup(cy);
-      cyMockGraphQL(cy, {
-        mocks: [cyLogin(cy, "admin")],
-      });
+      cyMockDefault(cy, {
+        userRole: "admin"
+      })
       cy.visit("/");
-      cy.wait("@login");
       cy.get("#nav-bar").get("#menu-button").trigger('mouseover').click();
       cy.get("#drawer a").eq(1).contains("Grading");
       cy.get("#drawer a").eq(1).trigger('mouseover').click();
@@ -36,11 +34,10 @@ describe("Navigation bar", () => {
 
     it("navigates to /users", () => {
       cySetup(cy);
-      cyMockGraphQL(cy, {
-        mocks: [cyLogin(cy, "admin")],
-      });
+      cyMockDefault(cy, {
+        userRole: "admin"
+      })
       cy.visit("/");
-      cy.wait("@login");
       cy.get("#nav-bar").get("#menu-button").trigger('mouseover').click();
       cy.get("#drawer a").eq(2).contains("Users");
       cy.get("#drawer a").eq(2).trigger('mouseover').click();
@@ -51,11 +48,8 @@ describe("Navigation bar", () => {
   describe("permissions", () => {
     it("hides /users if user does not have elevated permissions", () => {
       cySetup(cy);
-      cyMockGraphQL(cy, {
-        mocks: [cyLogin(cy)],
-      });
+      cyMockDefault(cy)
       cy.visit("/");
-      cy.wait("@login");
       cy.get("#nav-bar").get("#menu-button").trigger('mouseover').click();
       cy.get("#drawer a").eq(0).contains("Lessons");
       cy.get("#drawer a").eq(1).contains("Grading");
@@ -64,22 +58,20 @@ describe("Navigation bar", () => {
 
     it("shows /users if user is an admin", () => {
       cySetup(cy);
-      cyMockGraphQL(cy, {
-        mocks: [cyLogin(cy, "admin")],
-      });
+      cyMockDefault(cy, {
+        userRole: "admin"
+      })
       cy.visit("/");
-      cy.wait("@login");
       cy.get("#nav-bar").get("#menu-button").trigger('mouseover').click();
       cy.get("#drawer a").eq(2).contains("Users");
     });
 
     it("shows /users if user is a content manager", () => {
       cySetup(cy);
-      cyMockGraphQL(cy, {
-        mocks: [cyLogin(cy, "contentManager")],
-      });
+      cyMockDefault(cy, {
+        userRole: "contentManager"
+      })
       cy.visit("/");
-      cy.wait("@login");
       cy.get("#nav-bar").get("#menu-button").trigger('mouseover').click();
       cy.get("#drawer a").eq(2).contains("Users");
     });
@@ -87,11 +79,10 @@ describe("Navigation bar", () => {
 
   it("shows page title", () => {
     cySetup(cy);
-    cyMockGraphQL(cy, {
-      mocks: [cyLogin(cy, "admin")],
-    });
+    cyMockDefault(cy, {
+      userRole: "admin"
+    })
     cy.visit("/");
-    cy.wait("@login");
     cy.get("#nav-bar").get("#title").contains("Lessons");
     cy.visit("/lessons/edit");
     cy.get("#nav-bar").get("#title").contains("Edit Lesson");
@@ -105,11 +96,10 @@ describe("Navigation bar", () => {
 
   it("opens drawer menu", () => {
     cySetup(cy);
-    cyMockGraphQL(cy, {
-      mocks: [cyLogin(cy, "admin")],
-    });
+    cyMockDefault(cy, {
+      userRole: "admin"
+    })
     cy.visit("/");
-    cy.wait("@login");
     cy.get("#drawer").should("not.exist");
     cy.get("#nav-bar").get("#menu-button").trigger('mouseover').click();
     cy.get("#drawer");
@@ -120,41 +110,36 @@ describe("Navigation bar", () => {
 
   it("shows back button on session page instead of menu button", () => {
     cySetup(cy);
-    cyMockGraphQL(cy, {
-      mocks: [cyLogin(cy, "admin"), cyMockByQueryName("session", {
-        me: {
-          session: {
-            username: "username1",
-            sessionId: "session1",
-            createdAt: "1/1/2001",
-            lesson: {
-              name: "lesson 1",
-            },
-            graderGrade: null,
-            question: {
-              text: "question?",
-              expectations: [
-                { text: "expected text 1" },
-              ],
-            },
-            userResponses: [
+    cyMockDefault(cy, {
+      gqlQueries: [mockGQL("session", {
+        username: "username1",
+        sessionId: "session1",
+        createdAt: "1/1/2001",
+        lesson: {
+          name: "lesson 1",
+        },
+        graderGrade: null,
+        question: {
+          text: "question?",
+          expectations: [
+            { text: "expected text 1" },
+          ],
+        },
+        userResponses: [
+          {
+            text: "answer 1",
+            expectationScores: [
               {
-                text: "answer 1",
-                expectationScores: [
-                  {
-                    classifierGrade: "Good",
-                    graderGrade: "",
-                  },
-                ],
+                classifierGrade: "Good",
+                graderGrade: "",
               },
             ],
-          }
-        }
-      })],
-    });
+          },
+        ],
+      }, true)],
+      userRole: "admin"
+    })
     cy.visit("/sessions/session?sessionId=session1");
-    cy.wait("@login");
-    cy.wait("@session");
     cy.get("#nav-bar").get("#back-button");
   });
 });

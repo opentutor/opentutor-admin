@@ -56,9 +56,18 @@ export function LoginMenu(props: {
   const [googleClientId, setClientId] = React.useState<string>("");
 
   React.useEffect(() => {
-    getClientID().then((id: string) => {
-      setClientId(id);
-    });
+    let mounted = true;
+    getClientID()
+      .then((id: string) => {
+        if (!mounted) {
+          return;
+        }
+        setClientId(id);
+      })
+      .catch((err) => console.error(err));
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   React.useEffect(() => {

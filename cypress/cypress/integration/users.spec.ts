@@ -6,63 +6,54 @@ The full terms of this copyright and license should always be found in the root 
 */
 import {
   cySetup,
-  cyLogin,
-  cyMockGraphQL,
-  cyMockByQueryName,
-  MockGraphQLQuery,
+  cyMockDefault,
+  mockGQL
 } from "../support/functions";
 
-function cyMockUsers(): MockGraphQLQuery {
-  return cyMockByQueryName("users", {
-    me: {
-      users: {
-        edges: [
-          {
-            cursor: "cursor 1",
-            node: {
-              id: "admin",
-              name: "Admin",
-              email: "admin@opentutor.org",
-              userRole: "admin",
-            },
-          },
-          {
-            cursor: "cursor 2",
-            node: {
-              id: "contentmanager",
-              name: "Content Manager",
-              email: "contentmanager@opentutor.org",
-              userRole: "contentManager"
-            },
-          },
-          {
-            cursor: "cursor 2",
-            node: {
-              id: "author",
-              name: "Author",
-              email: "author@opentutor.org",
-              userRole: "author"
-            },
-          },
-        ],
-        pageInfo: {
-          hasNextPage: false,
-          endCursor: "cursor 2",
-        },
+const users = {
+  edges: [
+    {
+      cursor: "cursor 1",
+      node: {
+        id: "admin",
+        name: "Admin",
+        email: "admin@opentutor.org",
+        userRole: "admin",
       },
-    }
-  });
+    },
+    {
+      cursor: "cursor 2",
+      node: {
+        id: "contentmanager",
+        name: "Content Manager",
+        email: "contentmanager@opentutor.org",
+        userRole: "contentManager"
+      },
+    },
+    {
+      cursor: "cursor 2",
+      node: {
+        id: "author",
+        name: "Author",
+        email: "author@opentutor.org",
+        userRole: "author"
+      },
+    },
+  ],
+  pageInfo: {
+    hasNextPage: false,
+    endCursor: "cursor 2",
+  },
 }
 
 describe("users screen", () => {
   it("displays a list of users to an admin", () => {
     cySetup(cy);
-    cyMockGraphQL(cy, {
-      mocks: [cyLogin(cy, "admin"), cyMockUsers()],
-    });
+    cyMockDefault(cy, {
+      gqlQueries: [mockGQL("users", users, true)],
+      userRole: "admin"
+    })
     cy.visit("/users");
-    cy.wait("@login");
-    cy.wait("@users");
     cy.get("#users").children().should("have.length", 3);
     cy.get("#user-0 #name").contains("Admin");
     cy.get("#user-0 #email").contains("admin@opentutor.org");
@@ -77,12 +68,11 @@ describe("users screen", () => {
 
   it("displays a list of users to a content manager", () => {
     cySetup(cy);
-    cyMockGraphQL(cy, {
-      mocks: [cyLogin(cy, "contentManager"), cyMockUsers()],
-    });
+    cyMockDefault(cy, {
+      gqlQueries: [mockGQL("users", users, true)],
+      userRole: "contentManager"
+    })
     cy.visit("/users");
-    cy.wait("@login");
-    cy.wait("@users");
     cy.get("#users").children().should("have.length", 3);
     cy.get("#user-0 #name").contains("Admin");
     cy.get("#user-0 #email").contains("admin@opentutor.org");
@@ -97,20 +87,20 @@ describe("users screen", () => {
 
   it("hides users if not logged in", () => {
     cySetup(cy);
-    cyMockGraphQL(cy, {
-      mocks: [cyMockUsers()],
-    });
+    cyMockDefault(cy, {
+      noLogin: true,
+      gqlQueries: [mockGQL("users", users, true)],
+    })
     cy.visit("/users");
     cy.contains("Please login to view users.")
   });
 
   it("hides users if not admin or content manager", () => {
     cySetup(cy);
-    cyMockGraphQL(cy, {
-      mocks: [cyLogin(cy), cyMockUsers()],
-    });
+    cyMockDefault(cy, {
+      gqlQueries: [mockGQL("users", users, true)],
+    })
     cy.visit("/users");
-    cy.wait("@login");
     cy.contains("You must be an admin or content manager to view this page.")
   });
 });

@@ -4,7 +4,8 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import { cySetup, cyLogin, cyMockGraphQL } from "../support/functions";
+import { lessons } from "../fixtures/lesson";
+import { cySetup, cyMockDefault, mockGQL } from "../support/functions";
 
 describe("Login", () => {
   it("loads home page", () => {
@@ -27,26 +28,29 @@ describe("Login", () => {
     cy.get("#login-menu #login-button").should("not.be.disabled");
   });
 
-  // it("redirects to lesson page after logging in", () => {
-  //   cySetup(cy);
-  //   cyMockGraphQL(cy, {
-  //     mocks: [cyLogin(cy)],
-  //   });
-  //   cy.visit("/");
-  //   cy.wait("@login");
-  //   cy.location("pathname").should("contain", "lessons");
-  // });
+  it("redirects to lesson page after logging in", () => {
+    cySetup(cy);
+    cyMockDefault(cy, {
+      gqlQueries: [mockGQL("lessons", lessons, true)],
+    })
+    cy.visit("/");
+    cy.location("pathname").should("contain", "lessons");
+    cy.get("#lessons").children().should("have.length", 2);
+});
 
-  // it("redirects to home page after logging out", () => {
-  //   cySetup(cy);
-  //   cyMockGraphQL(cy, {
-  //     mocks: [cyLogin(cy)],
-  //   });
-  //   cy.visit("/");
-  //   cy.get("#login-option #login-button").trigger('mouseover').click();
-  //   cy.get("#logout").trigger('mouseover').click();
-  //   cy.location("pathname").should("not.contain", "lessons");
-  // });
+  it("redirects to home page after logging out", () => {
+    cySetup(cy);
+    cyMockDefault(cy, {
+      gqlQueries: [mockGQL("lessons", lessons, true)],
+    })
+    cy.visit("/");
+    cy.location("pathname").should("contain", "lessons");
+    cy.get("#lessons").children().should("have.length", 2);
+    cy.get("#login-option #login-button").trigger('mouseover').click();
+    cy.get("#logout").trigger('mouseover').click();
+    cy.location("pathname").should("not.contain", "lessons");
+    cy.contains("Welcome to OpenTutor")
+  });
 
   it("cannot view lessons list if not logged in", () => {
     cySetup(cy);
