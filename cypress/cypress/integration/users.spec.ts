@@ -9,42 +9,7 @@ import {
   cyMockDefault,
   mockGQL
 } from "../support/functions";
-
-const users = {
-  edges: [
-    {
-      cursor: "cursor 1",
-      node: {
-        id: "admin",
-        name: "Admin",
-        email: "admin@opentutor.org",
-        userRole: "admin",
-      },
-    },
-    {
-      cursor: "cursor 2",
-      node: {
-        id: "contentmanager",
-        name: "Content Manager",
-        email: "contentmanager@opentutor.org",
-        userRole: "contentManager"
-      },
-    },
-    {
-      cursor: "cursor 2",
-      node: {
-        id: "author",
-        name: "Author",
-        email: "author@opentutor.org",
-        userRole: "author"
-      },
-    },
-  ],
-  pageInfo: {
-    hasNextPage: false,
-    endCursor: "cursor 2",
-  },
-}
+import { users } from "../fixtures/users";
 
 describe("users screen", () => {
   it("displays a list of users to an admin", () => {

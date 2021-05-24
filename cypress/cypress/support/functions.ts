@@ -63,14 +63,14 @@ export function cySetup(cy) {
   cy.viewport(1280, 720);
 }
 
-export interface Config {
+export interface AppConfig {
   googleClientId: string;
 }
-export const CONFIG_DEFAULT: Config = {
+export const CONFIG_DEFAULT: AppConfig = {
   googleClientId: "fake-google-client-id",
 };
-export function mockGQLConfig(config: Partial<Config>): MockGraphQLQuery {
-  return mockGQL("config", { ...CONFIG_DEFAULT, ...(config || {}) }, false);
+export function mockGQLConfig(appConfig: Partial<AppConfig>): MockGraphQLQuery {
+  return mockGQL("appConfig", { ...CONFIG_DEFAULT, ...(appConfig || {}) }, false);
 }
 
 export function cyInterceptGraphQL(cy, mocks: MockGraphQLQuery[]): void {
@@ -137,19 +137,19 @@ export function cyMockLogin(cy): void {
 export function cyMockDefault(
   cy,
   args: {
-    config?: Partial<Config>;
+    appConfig?: Partial<AppConfig>;
     gqlQueries?: MockGraphQLQuery[];
     noLogin?: boolean;
     userRole?: string;
   } = {}
 ) {
-  const config = args?.config || {};
+  const appConfig = args?.appConfig || {};
   const gqlQueries = args?.gqlQueries || [];
   if (!args.noLogin) {
     cy.setCookie("accessToken", "accessToken");
   }
   cyInterceptGraphQL(cy, [
-    mockGQLConfig(config),
+    mockGQLConfig(appConfig),
     mockGQL("login", {
       user: {
         id: "kayla",

@@ -5,6 +5,8 @@ Permission to use, copy, modify, and distribute this software and its documentat
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
 import { lessons } from "../fixtures/lesson";
+import { sessions } from "../fixtures/session";
+import { users } from "../fixtures/users";
 import { cySetup, cyMockDefault, mockGQL } from "../support/functions";
 
 describe("Navigation bar", () => {
@@ -82,9 +84,13 @@ describe("Navigation bar", () => {
     cySetup(cy);
     cyMockDefault(cy, {
       userRole: "admin",
-      gqlQueries: [mockGQL("lessons", lessons, true)],
+      gqlQueries: [
+        mockGQL("lessons", lessons, true),
+        mockGQL("sessions", sessions, true),
+        mockGQL("users", users, true)
+      ],
     })
-    cy.visit("/");
+    cy.visit("/lessons");
     cy.get("#nav-bar").get("#title").contains("Lessons");
     cy.visit("/lessons/edit");
     cy.get("#nav-bar").get("#title").contains("Edit Lesson");
