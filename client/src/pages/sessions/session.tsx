@@ -7,7 +7,7 @@ The full terms of this copyright and license should always be found in the root 
 import { withPrefix } from "gatsby";
 import React, { useContext } from "react";
 import { useCookies } from "react-cookie";
-import { navigate } from "@reach/router";
+import { navigate } from "gatsby";
 import { makeStyles } from "@material-ui/core/styles";
 import {
   Paper,

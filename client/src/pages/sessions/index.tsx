@@ -4,10 +4,9 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import { withPrefix } from "gatsby";
+import { withPrefix, navigate, Link } from "gatsby";
 import React, { useContext } from "react";
 import { useCookies } from "react-cookie";
-import { navigate } from "@reach/router";
 import {
   AppBar,
   CircularProgress,
@@ -24,7 +23,6 @@ import {
   Toolbar,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { Link } from "@reach/router";
 import KeyboardArrowLeftIcon from "@material-ui/icons/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
 import AssignmentIcon from "@material-ui/icons/Assignment";
