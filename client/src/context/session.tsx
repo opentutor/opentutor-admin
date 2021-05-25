@@ -41,7 +41,6 @@ function SessionProvider(props: { children?: React.ReactNode }): JSX.Element {
     } else if (!user) {
       login(cookies.accessToken)
         .then((token: UserAccessToken) => {
-          console.log(token);
           setUser(token.user);
           setCookie("accessToken", token.accessToken, { path: "/" });
         })
