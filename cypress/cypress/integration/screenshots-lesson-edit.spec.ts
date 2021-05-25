@@ -4,7 +4,7 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import { cySetup, cyLogin, cyMockGraphQL, cyMockByQueryName } from "../support/functions";
+import { cySetup, cyMockDefault, mockGQL } from "../support/functions";
 
 function snapname(n) {
   return `screenshots-lesson-edit-${n}`;
@@ -13,61 +13,51 @@ function snapname(n) {
 describe("screenshots - lesson edit", () => {
   it("displays lesson form on load", () => {
     cySetup(cy);
-    cyMockGraphQL(cy, {
-      mocks: [cyLogin(cy, "admin"), cyMockByQueryName("lesson", {
-        me: {
-          lesson: {
-            lessonId: "lesson",
-            name: "lesson",
-            intro: "intro",
-            question: "question",
-            conclusion: ["conclusion"],
-            expectations: [{
-              expectation: "expectation 1",
-              hints: [{
-                text: "hint 1.1",
-              }],
-              features: {},
-            }],
-            features: {},
-            lastTrainedAt: "",
-            isTrainable: true,
-          },
-        }
-      })],
-    });
+    cyMockDefault(cy, {
+      gqlQueries: [mockGQL("lesson", {
+        lessonId: "lesson",
+        name: "lesson",
+        intro: "intro",
+        question: "question",
+        conclusion: ["conclusion"],
+        expectations: [{
+          expectation: "expectation 1",
+          hints: [{
+            text: "hint 1.1",
+          }],
+          features: {},
+        }],
+        features: {},
+        lastTrainedAt: "",
+        isTrainable: true,
+      }, true)],
+      userRole: "admin"
+    })
     cy.visit("/lessons/edit?lessonId=lesson");
-    cy.wait("@login");
-    cy.wait("@lesson");
     cy.matchImageSnapshot(snapname("displays-lesson-form-on-load"));
   });
 
   it("displays save button enabled after edits", () => {
     cySetup(cy);
-    cyMockGraphQL(cy, {
-      mocks: [cyLogin(cy, "admin"), cyMockByQueryName("lesson", {
-        me: {
-          lesson: {
-            lessonId: "lesson",
-            name: "lesson",
-            question: "question",
-            intro: "intro",
-            conclusion: ["conclusion"],
-            expectations: [{
-              expectation: "expectation 1",
-              hints: [{
-                text: "hint 1.1",
-              },],
-            },],
-            lastTrainedAt: "",
-            isTrainable: true,
-          },
-        }
-      })],
-    });
+    cyMockDefault(cy, {
+      gqlQueries: [mockGQL("lesson", {
+        lessonId: "lesson",
+        name: "lesson",
+        question: "question",
+        intro: "intro",
+        conclusion: ["conclusion"],
+        expectations: [{
+          expectation: "expectation 1",
+          hints: [{
+            text: "hint 1.1",
+          },],
+        },],
+        lastTrainedAt: "",
+        isTrainable: true,
+      }, true)],
+      userRole: "admin"
+    })
     cy.visit("/lessons/edit?lessonId=lesson");
-    cy.wait("@login");
-    cy.wait("@lesson");
     cy.get("#intro").fill("Hello World");
     cy.matchImageSnapshot(snapname("displays-save-button-enabled-after-edits"));
   });

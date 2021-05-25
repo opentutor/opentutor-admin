@@ -4,24 +4,14 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-export function cySetup(cy) {
-  cy.server();
-  cy.viewport(1280, 720);
+
+interface MockGraphQLQuery {
+  query: string;
+  data: any | any[];
+  me: boolean;
 }
 
-export interface MockGraphQLQuery {
-  (req: any, grapqlBody: any): void;
-}
-
-export interface MockGraphQLArgs {
-  mocks: MockGraphQLQuery[];
-  alias?: string;
-}
-
-
-// can't find way to import Cypress's StaticResponse interface
-// so just define it  here
-export interface StaticResponse {
+interface StaticResponse {
   /**
    * Serve a fixture as the response body.
    */
@@ -56,11 +46,6 @@ export interface StaticResponse {
   throttleKbps?: number;
 }
 
-/**
- * Maybe cypress will fix in future release,
- * but as of 6.0, most `cy.intercept` calls
- * will trigger an abort because no default CORS headers
- */
 export function staticResponse(s: StaticResponse): StaticResponse {
   return {
     ...{
@@ -73,54 +58,107 @@ export function staticResponse(s: StaticResponse): StaticResponse {
   };
 }
 
-export function cyMockByQueryName(query: string, data: any): MockGraphQLQuery {
-  return (req: any, grapqlBody: any) => {
-    const q = grapqlBody.query.replace(/\s+/g, " ").replace("\n", "").trim();
-    if (q.indexOf(`{ ${query}`) !== -1) {
-      req.reply({
-        body: {
-          data: data,
-          errors: null,
-        },
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      req.alias = query;
+export function cySetup(cy) {
+  cy.server();
+  cy.viewport(1280, 720);
+}
+
+export interface AppConfig {
+  googleClientId: string;
+}
+export const CONFIG_DEFAULT: AppConfig = {
+  googleClientId: "fake-google-client-id",
+};
+export function mockGQLConfig(appConfig: Partial<AppConfig>): MockGraphQLQuery {
+  return mockGQL("appConfig", { ...CONFIG_DEFAULT, ...(appConfig || {}) }, false);
+}
+
+export function cyInterceptGraphQL(cy, mocks: MockGraphQLQuery[]): void {
+  const queryCalls: any = {};
+  for (const mock of mocks) {
+    queryCalls[mock.query] = 0;
+  }
+  cy.intercept("/graphql", (req) => {
+    const { body } = req;
+    const queryBody = body.query.replace(/\s+/g, " ").replace("\n", "").trim();
+    let handled = false;
+    for (const mock of mocks) {
+      if (
+        queryBody.indexOf(`{ ${mock.query}(`) !== -1 ||
+        queryBody.indexOf(`{ ${mock.query} {`) !== -1
+      ) {
+        const data = Array.isArray(mock.data) ? mock.data : [mock.data];
+        const val = data[Math.min(queryCalls[mock.query], data.length - 1)];
+        const body = {};
+        if (mock.me) {
+          const _inner = {};
+          _inner[mock.query] = val;
+          body["me"] = _inner;
+        } else {
+          body[mock.query] = val;
+        }
+        req.alias = mock.query;
+        req.reply(
+          staticResponse({
+            body: {
+              data: body,
+              errors: null,
+            },
+          })
+        );
+        queryCalls[mock.query] += 1;
+        handled = true;
+        break;
+      }
     }
+    if (!handled) {
+      console.error(`failed to handle query for...`);
+      console.error(req);
+    }
+  });
+}
+
+export function mockGQL(
+  query: string,
+  data: any | any[],
+  me = false
+): MockGraphQLQuery {
+  return {
+    query,
+    data,
+    me,
   };
 }
 
-export function cyMockGraphQL(cy, args: MockGraphQLArgs): void {
-  const r = cy.intercept(
-    {
-      method: "POST",
-      url: "**/graphql",
-    },
-    (req) => {
-      const g = req.body;
-      for (const m of args.mocks) {
-        m(req, g);
-      }
-    }
-  );
-  if (args.alias) {
-    r.as(args.alias);
-  }
+export function cyMockLogin(cy): void {
+  cy.setCookie("accessToken", "accessToken");
 }
 
-export function cyLogin(cy, userRole = "author"): MockGraphQLQuery {
-  cy.intercept("**/config", { GOOGLE_CLIENT_ID: "test" });
-  cy.setCookie("accessToken", "accessToken");
-  return cyMockByQueryName("login", {
-    login: {
+export function cyMockDefault(
+  cy,
+  args: {
+    appConfig?: Partial<AppConfig>;
+    gqlQueries?: MockGraphQLQuery[];
+    noLogin?: boolean;
+    userRole?: string;
+  } = {}
+) {
+  const appConfig = args?.appConfig || {};
+  const gqlQueries = args?.gqlQueries || [];
+  if (!args.noLogin) {
+    cy.setCookie("accessToken", "accessToken");
+  }
+  cyInterceptGraphQL(cy, [
+    mockGQLConfig(appConfig),
+    mockGQL("login", {
       user: {
         id: "kayla",
         name: "Kayla",
         email: "kayla@opentutor.com",
-        userRole
+        userRole: args.userRole || "author"
       },
-      accessToken: 'accessToken'
-    },
-  });
+      accessToken: "accessToken"
+    }),
+    ...gqlQueries,
+  ]);
 }

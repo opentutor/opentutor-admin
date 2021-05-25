@@ -4,29 +4,39 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-"use strict";
-const express = require("express");
-const path = require("path");
-const app = express();
-const http = require("http");
-const cors = require("cors");
-var server = http.createServer(app);
-app.use(express.json());
-app.use(
-  express.urlencoded({
-    extended: false,
-  })
-);
-app.use(express.static(path.join(__dirname, "public")));
-app.use(cors());
-app.use("/", express.static(path.join(__dirname, "public", "admin")));
-app.get("/config", (req, res) => {
-  res.send({
-    GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID || "",
-  });
-});
-const port = process.env.NODE_PORT || 3000;
-server.listen(port, function () {
-  console.log(`node listening on port ${port}`);
-});
-module.exports = app;
+
+export const users = {
+  edges: [
+    {
+      cursor: "cursor 1",
+      node: {
+        id: "admin",
+        name: "Admin",
+        email: "admin@opentutor.org",
+        userRole: "admin",
+      },
+    },
+    {
+      cursor: "cursor 2",
+      node: {
+        id: "contentmanager",
+        name: "Content Manager",
+        email: "contentmanager@opentutor.org",
+        userRole: "contentManager"
+      },
+    },
+    {
+      cursor: "cursor 2",
+      node: {
+        id: "author",
+        name: "Author",
+        email: "author@opentutor.org",
+        userRole: "author"
+      },
+    },
+  ],
+  pageInfo: {
+    hasNextPage: false,
+    endCursor: "cursor 2",
+  },
+}

@@ -5,6 +5,7 @@ Permission to use, copy, modify, and distribute this software and its documentat
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
 import axios, { AxiosResponse } from "axios";
+import { AppConfig } from "config";
 import {
   DeleteLesson,
   DeleteSession,
@@ -44,6 +45,35 @@ function findOrThrow<T>(res: AxiosResponse<GQLResponse<T>>): T {
     throw new Error(`invalid result body: ${JSON.stringify(res.data)}`);
   }
   return res.data.data;
+}
+
+export async function fetchAppConfig(): Promise<AppConfig> {
+  const gqlRes = await axios.post<GQLResponse<{ appConfig: AppConfig }>>(
+    GRAPHQL_ENDPOINT,
+    {
+      query: `
+      query {
+        appConfig {
+          googleClientId
+        }
+      }
+    `,
+    }
+  );
+  if (gqlRes.status !== 200) {
+    throw new Error(`appConfig load failed: ${gqlRes.statusText}}`);
+  }
+  if (gqlRes.data.errors) {
+    throw new Error(
+      `errors reponse to appConfig query: ${JSON.stringify(gqlRes.data.errors)}`
+    );
+  }
+  if (!gqlRes.data.data) {
+    throw new Error(
+      `no data in non-error reponse: ${JSON.stringify(gqlRes.data)}`
+    );
+  }
+  return gqlRes.data.data.appConfig;
 }
 
 export async function fetchSessions(
