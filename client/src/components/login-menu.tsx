@@ -102,7 +102,19 @@ export function LoginMenu(props: {
       <Typography variant="h5" className={classes.title}>
         Welcome to OpenTutor
       </Typography>
-      {googleClientId ? (
+      {process.env.ACCESS_TOKEN ? (
+        <Button
+          id="login-button"
+          variant="contained"
+          color="primary"
+          onClick={() =>
+            setCookie("accessToken", process.env.ACCESS_TOKEN, { path: "/" })
+          }
+          className={classes.button}
+        >
+          Sign in
+        </Button>
+      ) : (
         <GoogleLogin
           clientId={googleClientId}
           onSuccess={onGoogleLogin}
@@ -120,16 +132,6 @@ export function LoginMenu(props: {
             </Button>
           )}
         />
-      ) : (
-        <Button
-          id="login-button"
-          variant="contained"
-          color="primary"
-          disabled={true}
-          className={classes.button}
-        >
-          Sign in with Google
-        </Button>
       )}
       {props.children}
     </div>
