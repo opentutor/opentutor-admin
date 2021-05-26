@@ -79,7 +79,6 @@ function SettingsPage(): JSX.Element {
           color="primary"
           className={styles.trainButton}
           onClick={() => {
-            console.log("Ready the Ninjas! We have a mission!");
             startDefaultTraining();
           }}
           disabled={isTraining}
