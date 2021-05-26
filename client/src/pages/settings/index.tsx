@@ -13,13 +13,12 @@ import {
   Typography,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { userIsElevated } from "api";
 import NavBar from "components/nav-bar";
 import SessionContext from "context/session";
 import "styles/layout.css";
 import "react-toastify/dist/ReactToastify.css";
 import { useWithTraining } from "hooks/use-with-training";
-import { TrainState } from "types";
+import { TrainState, UserRole } from "types";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -60,15 +59,13 @@ function SettingsPage(props: { path: string }): JSX.Element {
   const { isTraining, trainStatus, startDefaultTraining } = useWithTraining();
 
   if (typeof window !== "undefined" && !cookies.accessToken) {
-    return <div>Please login to view users.</div>;
+    return <div>Please login to view settings.</div>;
   }
   if (!context.user) {
     return <CircularProgress />;
   }
-  if (!userIsElevated(context.user)) {
-    return (
-      <div>You must be an admin or content manager to view this page.</div>
-    );
+  if (context.user.userRole !== UserRole.ADMIN) {
+    return <div>You must be an admin to view this page.</div>;
   }
 
   return (
@@ -83,6 +80,7 @@ function SettingsPage(props: { path: string }): JSX.Element {
             startDefaultTraining();
           }}
           disabled={isTraining}
+          data-cy="train-default-button"
         >
           Train Default Classifier
         </Button>
