@@ -6,7 +6,7 @@ The full terms of this copyright and license should always be found in the root 
 */
 import React, { useContext } from "react";
 import { useCookies } from "react-cookie";
-import { CircularProgress, Button, Container } from "@material-ui/core";
+import { CircularProgress, Button, Container, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { userIsElevated } from "api";
 import NavBar from "components/nav-bar";
@@ -14,6 +14,7 @@ import SessionContext from "context/session";
 import "styles/layout.css";
 import "react-toastify/dist/ReactToastify.css";
 import { useWithTraining } from "hooks/use-with-training";
+import { TrainState } from "types";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -38,6 +39,12 @@ const useStyles = makeStyles((theme) => ({
   trainButton: {
     marginTop: 25,
   },
+  loading: {
+    display: "block",
+    marginLeft: "auto",
+    marginRight: "auto",
+    marginTop: 10,
+  }
 }));
 
 function SettingsPage(props: { path: string }): JSX.Element {
@@ -71,9 +78,17 @@ function SettingsPage(props: { path: string }): JSX.Element {
             console.log("Ready the Ninjas! We have a mission!");
             startDefaultTraining();
           }}
+          disabled={isTraining}
         >
           Train Default Classifier
         </Button>
+        {isTraining ? (
+          <CircularProgress className={styles.loading} />
+        ) : trainStatus.state === TrainState.SUCCESS ? (
+          <Typography id="train-success">{`TRAINING SUCCEEDED`}</Typography>
+        ) : trainStatus.state === TrainState.FAILURE ? (
+          <Typography id="train-failure">{`TRAINING FAILED`}</Typography>
+        ) : null}
       </Container>
     </div>
   );
