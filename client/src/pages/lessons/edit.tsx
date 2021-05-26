@@ -25,25 +25,18 @@ import {
   Typography,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import {
-  fetchLesson,
-  updateLesson,
-  fetchTrainingStatus,
-  trainLesson,
-  userCanEdit,
-  fetchLessons,
-} from "api";
+import { fetchLesson, updateLesson, userCanEdit, fetchLessons } from "api";
 import SessionContext from "context/session";
 import NavBar from "components/nav-bar";
 import ConclusionsList from "components/conclusions-list";
 import ExpectationsList from "components/expectations-list";
 import { validateExpectationFeatures } from "schemas/validation";
-import { Lesson, LessonExpectation, TrainStatus, TrainState } from "types";
+import { Lesson, LessonExpectation, TrainState } from "types";
 import withLocation from "wrap-with-location";
+import { useWithTraining } from "hooks/use-with-training";
 import "styles/layout.css";
 import "jsoneditor-react/es/editor.min.css";
 import "react-toastify/dist/ReactToastify.css";
-import { useWithTraining } from "hooks/use-with-training";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -552,7 +545,11 @@ const LessonEdit = (props: { search: LessonEditSearch }) => {
               : "#808080",
           }}
           disabled={isTraining || !lessonUnderEdit.lesson}
-          onClick={() => startLessonTraining(lessonUnderEdit.lesson!)}
+          onClick={() => {
+            if (lessonUnderEdit.lesson) {
+              startLessonTraining(lessonUnderEdit.lesson);
+            }
+          }}
         >
           Train
         </Button>

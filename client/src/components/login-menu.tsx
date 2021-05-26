@@ -114,7 +114,7 @@ export function LoginMenu(props: {
         >
           Sign in
         </Button>
-      ) : (
+      ) : googleClientId ? (
         <GoogleLogin
           clientId={googleClientId}
           onSuccess={onGoogleLogin}
@@ -132,6 +132,16 @@ export function LoginMenu(props: {
             </Button>
           )}
         />
+      ) : (
+        <Button
+          id="login-button"
+          variant="contained"
+          color="primary"
+          disabled={true}
+          className={classes.button}
+        >
+          Sign in with Google
+        </Button>
       )}
       {props.children}
     </div>

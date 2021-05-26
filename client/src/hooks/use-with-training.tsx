@@ -11,14 +11,15 @@ import useInterval from "./use-interval";
 
 export interface TrainingStatus {
   isTraining: boolean;
-  trainingMessage: string;
+  trainingMessage: string | undefined;
   statusUrl: string;
   trainStatus: TrainStatus;
   startLessonTraining: (lesson: Lesson) => void;
+  startDefaultTraining: () => void;
   dismissTrainingMessage: () => void;
 }
 
-export function useWithTraining(pollingInterval = 1000) {
+export function useWithTraining(pollingInterval = 1000): TrainingStatus {
   const [isTraining, setIsTraining] = useState<boolean>(false);
   const [message, setMessage] = useState<string>();
   const [statusUrl, setStatusUrl] = useState<string>("");
