@@ -6,32 +6,14 @@ The full terms of this copyright and license should always be found in the root 
 */
 import React, { useContext } from "react";
 import { useCookies } from "react-cookie";
-import { ToastContainer, toast } from "react-toastify";
-import {
-  AppBar,
-  CircularProgress,
-  Button,
-  MenuItem,
-  Paper,
-  Select,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  Container,
-  Toolbar,
-  Typography,
-} from "@material-ui/core";
+import { CircularProgress, Button, Container } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import KeyboardArrowLeftIcon from "@material-ui/icons/KeyboardArrowLeft";
-import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
-import { fetchUsers, updateUserPermissions, userIsElevated } from "api";
-import { Connection, Edge, User, UserRole } from "types";
+import { userIsElevated } from "api";
 import NavBar from "components/nav-bar";
-import { ColumnDef, ColumnHeader } from "components/column-header";
 import SessionContext from "context/session";
 import "styles/layout.css";
 import "react-toastify/dist/ReactToastify.css";
+import { useWithTraining } from "hooks/use-with-training";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -62,6 +44,8 @@ function SettingsPage(props: { path: string }): JSX.Element {
   const context = useContext(SessionContext);
   const [cookies] = useCookies(["accessToken"]);
   const styles = useStyles();
+  const { isTraining, trainStatus, trainingMessage, startDefaultTraining } =
+    useWithTraining();
 
   if (typeof window !== "undefined" && !cookies.accessToken) {
     return <div>Please login to view users.</div>;
@@ -85,6 +69,7 @@ function SettingsPage(props: { path: string }): JSX.Element {
           className={styles.trainButton}
           onClick={() => {
             console.log("Ready the Ninjas! We have a mission!");
+            startDefaultTraining();
           }}
         >
           Train Default Classifier
