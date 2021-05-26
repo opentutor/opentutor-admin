@@ -13,6 +13,7 @@ import EditPage from "pages/lessons/edit";
 import SessionsPage from "pages/sessions/index";
 import SessionPage from "pages/sessions/session";
 import UsersPage from "pages/users/index";
+import SettingsPage from "pages/settings/index";
 import "styles/layout.css";
 
 function IndexPage(props: { location: Location }): JSX.Element {
@@ -26,6 +27,7 @@ function IndexPage(props: { location: Location }): JSX.Element {
           <SessionPage path={withPrefix("sessions/session")} />
         </SessionsPage>
         <UsersPage path={withPrefix("users")} />
+        <SettingsPage path={withPrefix("settings")} />
       </LoginMenu>
     </Router>
   );

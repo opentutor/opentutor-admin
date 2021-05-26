@@ -26,6 +26,10 @@ import AccountCircle from "@material-ui/icons/AccountCircle";
 import CloseIcon from "@material-ui/icons/Close";
 import MenuIcon from "@material-ui/icons/Menu";
 import ListIcon from "@material-ui/icons/List";
+import AssignmentIcon from "@material-ui/icons/Assignment";
+import AssessmentIcon from "@material-ui/icons/Assessment";
+import GroupIcon from "@material-ui/icons/Group";
+import SettingsIcon from "@material-ui/icons/Settings";
 import { userIsElevated } from "api";
 import SessionContext from "context/session";
 
@@ -53,22 +57,30 @@ function NavMenu(): JSX.Element {
     <List dense>
       <ListItem button component={Link} to={withPrefix("/lessons")}>
         <ListItemIcon>
-          <ListIcon />
+          <AssignmentIcon />
         </ListItemIcon>
         <ListItemText primary="Lessons" />
       </ListItem>
       <ListItem button component={Link} to={withPrefix("/sessions")}>
         <ListItemIcon>
-          <ListIcon />
+          <AssessmentIcon />
         </ListItemIcon>
         <ListItemText primary="Grading" />
       </ListItem>
       {userIsElevated(context.user) ? (
         <ListItem button component={Link} to={withPrefix("/users")}>
           <ListItemIcon>
-            <ListIcon />
+            <GroupIcon />
           </ListItemIcon>
           <ListItemText primary="Users" />
+        </ListItem>
+      ) : undefined}
+      {userIsElevated(context.user) ? (
+        <ListItem button component={Link} to={withPrefix("/settings")}>
+          <ListItemIcon>
+            <SettingsIcon />
+          </ListItemIcon>
+          <ListItemText primary="Settings" />
         </ListItem>
       ) : undefined}
     </List>
