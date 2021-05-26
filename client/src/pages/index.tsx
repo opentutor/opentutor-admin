@@ -27,7 +27,7 @@ function IndexPage(props: { location: Location }): JSX.Element {
           <SessionPage path={withPrefix("sessions/session")} />
         </SessionsPage>
         <UsersPage path={withPrefix("users")} />
-        <SettingsPage />
+        <SettingsPage path={withPrefix("settings")} />
       </LoginMenu>
     </Router>
   );

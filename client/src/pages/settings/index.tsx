@@ -52,7 +52,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function SettingsPage(): JSX.Element {
+// eslint-disable-next-line  @typescript-eslint/no-unused-vars
+function SettingsPage(props: { path: string }): JSX.Element {
   const context = useContext(SessionContext);
   const [cookies] = useCookies(["accessToken"]);
   const styles = useStyles();
