@@ -6,7 +6,12 @@ The full terms of this copyright and license should always be found in the root 
 */
 import React, { useContext } from "react";
 import { useCookies } from "react-cookie";
-import { CircularProgress, Button, Container, Typography } from "@material-ui/core";
+import {
+  CircularProgress,
+  Button,
+  Container,
+  Typography,
+} from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { userIsElevated } from "api";
 import NavBar from "components/nav-bar";
@@ -44,15 +49,14 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: "auto",
     marginRight: "auto",
     marginTop: 10,
-  }
+  },
 }));
 
-function SettingsPage(props: { path: string }): JSX.Element {
+function SettingsPage(): JSX.Element {
   const context = useContext(SessionContext);
   const [cookies] = useCookies(["accessToken"]);
   const styles = useStyles();
-  const { isTraining, trainStatus, trainingMessage, startDefaultTraining } =
-    useWithTraining();
+  const { isTraining, trainStatus, startDefaultTraining } = useWithTraining();
 
   if (typeof window !== "undefined" && !cookies.accessToken) {
     return <div>Please login to view users.</div>;
