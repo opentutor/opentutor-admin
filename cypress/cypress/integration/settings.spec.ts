@@ -15,7 +15,6 @@ describe("settings screen", () => {
   it("displays settings to an admin", () => {
     cySetup(cy);
     cyMockDefault(cy, {
-      // gqlQueries: [mockGQL("users", users, true)],
       userRole: "admin"
     })
     cy.visit("/settings");
@@ -26,7 +25,6 @@ describe("settings screen", () => {
     cySetup(cy);
     cyMockDefault(cy, {
       noLogin: true,
-      // gqlQueries: [mockGQL("users", users, true)],
     })
     cy.visit("/settings");
     cy.contains("Please login to view settings.")
@@ -36,23 +34,10 @@ describe("settings screen", () => {
   it("hides settings if not admin", () => {
     cySetup(cy);
     cyMockDefault(cy, {
-      // gqlQueries: [mockGQL("users", users, true)],
       userRole: "contentManager"
     })
     cy.visit("/settings");
     cy.contains("You must be an admin to view this page.")
     cy.get("[data-cy=train-default-button]").should("not.exist")
   });
-
-  it("show loading indicator on train", () => {
-
-  })
-
-  it("show success message on successful train", () => {
-
-  })
-
-  it("show failure message on failed train", () => {
-
-  })
 });

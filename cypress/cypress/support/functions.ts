@@ -197,6 +197,26 @@ export function cyMockTrain(
   return () => cy.wait("@train");
 }
 
+export function cyMockTrainDefault(
+  cy: Cypress.cy,
+  params: {
+    statusUrl?: string;
+    responseStatus?: number;
+  } = {}
+): WaitFunc {
+  params = params || {};
+  cy.intercept("POST", "**/train_default", {
+    statusCode: params.responseStatus || 200,
+    body: {
+      data: {
+        statusUrl: params.statusUrl || TRAIN_STATUS_URL,
+      },
+      errors: null,
+    },
+  }).as("train");
+  return () => cy.wait("@train");
+}
+
 export function cyMockTrainStatusSeq(
   cy: Cypress.cy,
   responses: StatusResponse[],
