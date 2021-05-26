@@ -4,7 +4,7 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import { fetchTrainingStatus, trainLesson } from "api";
+import { fetchTrainingStatus, trainDefault, trainLesson } from "api";
 import { useState } from "react";
 import { Lesson, TrainState, TrainStatus } from "types";
 import useInterval from "./use-interval";
@@ -81,6 +81,26 @@ export function useWithTraining(pollingInterval = 1000) {
       });
   }
 
+  function startDefaultTraining() {
+    if (isTraining) {
+      return;
+    }
+    trainDefault()
+      .then((trainJob) => {
+        setStatusUrl(trainJob.statusUrl);
+        setIsTraining(true);
+      })
+      .catch((err: Error) => {
+        console.error(err);
+        setTrainStatus({
+          state: TrainState.FAILURE,
+          status: err.message || `${err}`,
+        });
+        setIsTraining(false);
+        setMessage("Training Failed");
+      });
+  }
+
   function dismissTrainingMessage() {
     setMessage(undefined);
   }
@@ -91,6 +111,7 @@ export function useWithTraining(pollingInterval = 1000) {
     statusUrl,
     trainStatus,
     startLessonTraining,
+    startDefaultTraining,
     dismissTrainingMessage,
   };
 }
