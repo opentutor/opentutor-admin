@@ -4,10 +4,9 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import { withPrefix } from "gatsby";
+import { navigate, Link } from "gatsby";
 import React, { useContext } from "react";
 import { useCookies } from "react-cookie";
-import { navigate } from "@reach/router";
 import {
   AppBar,
   CircularProgress,
@@ -24,7 +23,6 @@ import {
   Toolbar,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { Link } from "@reach/router";
 import KeyboardArrowLeftIcon from "@material-ui/icons/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
 import AssignmentIcon from "@material-ui/icons/Assignment";
@@ -184,7 +182,7 @@ function SessionItem(props: { row: Edge<Session>; i: number }): JSX.Element {
   const context = useContext(SessionContext);
 
   function handleGrade(): void {
-    navigate(withPrefix(`/sessions/session?sessionId=${row.node.sessionId}`));
+    navigate(`/sessions/session?sessionId=${row.node.sessionId}`);
   }
 
   return (
@@ -202,11 +200,7 @@ function SessionItem(props: { row: Edge<Session>; i: number }): JSX.Element {
     >
       <TableCell id="lesson" align="left">
         {userCanEdit(row.node.lesson, context.user) ? (
-          <Link
-            to={withPrefix(
-              `/lessons/edit?lessonId=${row.node.lesson.lessonId}`
-            )}
-          >
+          <Link to={`/lessons/edit?lessonId=${row.node.lesson.lessonId}`}>
             {row.node.lesson?.name || "No Lesson Name"}
           </Link>
         ) : (
@@ -248,10 +242,7 @@ function SessionItem(props: { row: Edge<Session>; i: number }): JSX.Element {
   );
 }
 
-function SessionsTable(props: {
-  path: string;
-  search: { lessonId: string };
-}): JSX.Element {
+function SessionsTable(props: { search: { lessonId: string } }): JSX.Element {
   const classes = useStyles();
   const [cookies] = useCookies(["accessToken"]);
   const context = useContext(SessionContext);
@@ -359,11 +350,7 @@ function SessionsTable(props: {
   );
 }
 
-function SessionsPage(props: {
-  path: string;
-  search: { lessonId: string };
-  children?: React.ReactNode;
-}): JSX.Element {
+function SessionsPage(props: { search: { lessonId: string } }): JSX.Element {
   const context = useContext(SessionContext);
   const [cookies] = useCookies(["accessToken"]);
 
@@ -377,8 +364,7 @@ function SessionsPage(props: {
   return (
     <div>
       <NavBar title="Grading" />
-      <SessionsTable path={props.path} search={props.search} />
-      {props.children}
+      <SessionsTable search={props.search} />
     </div>
   );
 }
