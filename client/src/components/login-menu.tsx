@@ -46,10 +46,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export function LoginMenu(props: {
-  path: string;
-  children?: React.ReactNode;
-}): JSX.Element {
+export function LoginMenu(): JSX.Element {
   const classes = useStyles();
   const [cookies, setCookie] = useCookies(["accessToken"]);
   const context = useContext(SessionContext);
@@ -143,7 +140,6 @@ export function LoginMenu(props: {
           Sign in with Google
         </Button>
       )}
-      {props.children}
     </div>
   );
 }

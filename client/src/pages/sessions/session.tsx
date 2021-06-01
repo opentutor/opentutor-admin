@@ -4,10 +4,13 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import { withPrefix } from "gatsby";
+import { navigate } from "gatsby";
 import React, { useContext } from "react";
 import { useCookies } from "react-cookie";
+<<<<<<< HEAD
 import { navigate } from "gatsby";
+=======
+>>>>>>> main
 import { makeStyles } from "@material-ui/core/styles";
 import {
   Paper,
@@ -41,8 +44,8 @@ const useStyles = makeStyles({
   },
 });
 
-const SessionTable = ({ search }: { search: { sessionId: string } }) => {
-  const { sessionId } = search;
+const SessionTable = (props: { search: { sessionId: string } }) => {
+  const { sessionId } = props.search;
   const classes = useStyles();
   const [cookies] = useCookies(["accessToken"]);
   const context = useContext(SessionContext);
@@ -71,11 +74,11 @@ const SessionTable = ({ search }: { search: { sessionId: string } }) => {
   };
 
   function handleDone(): void {
-    navigate(withPrefix(`/sessions`));
+    navigate(`/sessions`);
   }
 
   function handleEdit(lessonId: string): void {
-    navigate(withPrefix("/lessons/edit?lessonId=" + lessonId));
+    navigate(`/lessons/edit?lessonId=${lessonId}`);
   }
 
   React.useEffect(() => {
@@ -239,7 +242,7 @@ const SessionTable = ({ search }: { search: { sessionId: string } }) => {
   );
 };
 
-const SessionPage = ({ search }: { search: { sessionId: string } }) => {
+const SessionPage = (props: { search: { sessionId: string } }) => {
   const context = useContext(SessionContext);
   const [cookies] = useCookies(["accessToken"]);
   if (typeof window !== "undefined" && !cookies.accessToken) {
@@ -252,7 +255,7 @@ const SessionPage = ({ search }: { search: { sessionId: string } }) => {
   return (
     <div>
       <NavBar title="Grade Session" disableMenu={true} />
-      <SessionTable search={search} />
+      <SessionTable search={props.search} />
     </div>
   );
 };

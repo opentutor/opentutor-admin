@@ -4,10 +4,9 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import { withPrefix } from "gatsby";
 import React from "react";
-import { Router } from "@reach/router";
 import LoginMenu from "components/login-menu";
+<<<<<<< HEAD
 import CreatePage from "pages/lessons/index";
 import EditPage from "pages/lessons/edit";
 import SessionsPage from "pages/sessions/index";
@@ -31,6 +30,12 @@ function IndexPage(props: { location: Location }): JSX.Element {
       </LoginMenu>
     </Router>
   );
+=======
+import "styles/layout.css";
+
+function IndexPage(): JSX.Element {
+  return <LoginMenu />;
+>>>>>>> main
 }
 
 export default IndexPage;

@@ -4,7 +4,7 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import { withPrefix, navigate, Link } from "gatsby";
+import { Link, navigate } from "gatsby";
 import React, { useContext } from "react";
 import { useCookies } from "react-cookie";
 import {
@@ -54,20 +54,20 @@ function NavMenu(): JSX.Element {
   const context = useContext(SessionContext);
   return (
     <List dense>
-      <ListItem button component={Link} to={withPrefix("/lessons")}>
+      <ListItem button component={Link} to={"/lessons"}>
         <ListItemIcon>
           <AssignmentIcon />
         </ListItemIcon>
         <ListItemText primary="Lessons" />
       </ListItem>
-      <ListItem button component={Link} to={withPrefix("/sessions")}>
+      <ListItem button component={Link} to={"/sessions"}>
         <ListItemIcon>
           <AssessmentIcon />
         </ListItemIcon>
         <ListItemText primary="Grading" />
       </ListItem>
       {userIsElevated(context.user) ? (
-        <ListItem button component={Link} to={withPrefix("/users")}>
+        <ListItem button component={Link} to={"/users"}>
           <ListItemIcon>
             <GroupIcon />
           </ListItemIcon>
@@ -75,7 +75,7 @@ function NavMenu(): JSX.Element {
         </ListItem>
       ) : undefined}
       {userIsElevated(context.user) ? (
-        <ListItem button component={Link} to={withPrefix("/settings")}>
+        <ListItem button component={Link} to={"/settings"}>
           <ListItemIcon>
             <SettingsIcon />
           </ListItemIcon>

@@ -612,10 +612,7 @@ const LessonEdit = (props: { search: LessonEditSearch }) => {
   );
 };
 
-function EditPage(props: {
-  path: string;
-  search: LessonEditSearch;
-}): JSX.Element {
+function EditPage(props: { search: LessonEditSearch }): JSX.Element {
   const context = useContext(SessionContext);
   const [cookies] = useCookies(["accessToken"]);
 
