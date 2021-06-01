@@ -75,7 +75,7 @@ function NavMenu(): JSX.Element {
           <ListItemText primary="Users" />
         </ListItem>
       ) : undefined}
-      {(context.user && context.user.userRole === UserRole.ADMIN) ? (
+      {context.user && context.user.userRole === UserRole.ADMIN ? (
         <ListItem button component={Link} to={"/settings"}>
           <ListItemIcon>
             <SettingsIcon />
