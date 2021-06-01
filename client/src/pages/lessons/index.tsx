@@ -4,7 +4,7 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import { withPrefix } from "gatsby";
+import { Link, navigate } from "gatsby";
 import React, { useContext } from "react";
 import { useCookies } from "react-cookie";
 import { ToastContainer, toast } from "react-toastify";
@@ -34,7 +34,6 @@ import FileCopyIcon from "@material-ui/icons/FileCopy";
 import KeyboardArrowLeftIcon from "@material-ui/icons/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
 import LaunchIcon from "@material-ui/icons/Launch";
-import { Link, navigate } from "@reach/router";
 import { fetchLessons, deleteLesson, userCanEdit } from "api";
 import { Connection, Edge, Lesson } from "types";
 import { ColumnDef, ColumnHeader } from "components/column-header";
@@ -127,7 +126,7 @@ const TableFooter = (props: {
   const context = useContext(SessionContext);
 
   function onCreate() {
-    navigate(withPrefix("/lessons/edit"));
+    navigate("/lessons/edit");
   }
 
   return (
@@ -168,30 +167,29 @@ const TableFooter = (props: {
 };
 
 const LessonItem = (props: {
-  location: Location;
   row: Edge<Lesson>;
   i: number;
   onDeleted: (id: string) => void;
 }) => {
-  const { location, row, i, onDeleted } = props;
+  const { row, i, onDeleted } = props;
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
   const deleteMenuOpen = Boolean(anchorEl);
   const context = useContext(SessionContext);
   const [cookies] = useCookies(["accessToken"]);
 
   function launchLesson(id: string) {
-    const host = process.env.TUTOR_ENDPOINT || location.origin;
+    const host = process.env.TUTOR_ENDPOINT || window.location.origin;
     const guest = `&guest=${context.user?.name}`;
     const path = `${host}/tutor?lesson=${id}&admin=true${guest}`;
     window.location.href = path;
   }
 
   function handleCopy(): void {
-    navigate(withPrefix(`/lessons/edit?copyLesson=${row.node.lessonId}`));
+    navigate(`/lessons/edit?copyLesson=${row.node.lessonId}`);
   }
 
   function handleGrade(): void {
-    navigate(withPrefix(`/sessions?lessonId=${row.node.lessonId}`));
+    navigate(`/sessions?lessonId=${row.node.lessonId}`);
   }
 
   const handleDelete = (e: React.MouseEvent<HTMLElement>) => {
@@ -217,7 +215,7 @@ const LessonItem = (props: {
     <TableRow id={`lesson-${i}`} hover role="checkbox" tabIndex={-1}>
       <TableCell id="name" align="left">
         {userCanEdit(row.node, context.user) ? (
-          <Link to={withPrefix(`/lessons/edit?lessonId=${row.node.lessonId}`)}>
+          <Link to={`/lessons/edit?lessonId=${row.node.lessonId}`}>
             {row.node.name || "No Lesson Name"}
           </Link>
         ) : (
@@ -284,7 +282,7 @@ const LessonItem = (props: {
   );
 };
 
-const LessonsTable = (props: { location: Location }) => {
+const LessonsTable = () => {
   const classes = useStyles();
   const context = useContext(SessionContext);
   const [cookies] = useCookies(["accessToken"]);
@@ -356,7 +354,6 @@ const LessonsTable = (props: { location: Location }) => {
               {lessons.edges.map((row, i) => (
                 <LessonItem
                   key={`lesson-${i}`}
-                  location={props.location}
                   row={row}
                   i={i}
                   onDeleted={onDeleted}
@@ -382,11 +379,7 @@ const LessonsTable = (props: { location: Location }) => {
   );
 };
 
-const LessonsPage = (props: {
-  location: Location;
-  path: string;
-  children?: React.ReactNode;
-}): JSX.Element => {
+const LessonsPage = (): JSX.Element => {
   const context = useContext(SessionContext);
   const [cookies] = useCookies(["accessToken"]);
 
@@ -400,8 +393,7 @@ const LessonsPage = (props: {
   return (
     <div>
       <NavBar title="Lessons" />
-      <LessonsTable location={props.location} />
-      {props.children}
+      <LessonsTable />
     </div>
   );
 };

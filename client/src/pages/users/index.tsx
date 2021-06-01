@@ -160,8 +160,8 @@ function UserItem(props: {
     </TableRow>
   );
 }
-// eslint-disable-next-line  @typescript-eslint/no-unused-vars
-function UsersTable(props: { path: string }): JSX.Element {
+
+function UsersTable(): JSX.Element {
   const classes = useStyles();
   const [cookies] = useCookies(["accessToken"]);
   const [users, setUsers] = React.useState<Connection<User>>();
@@ -256,7 +256,7 @@ function UsersTable(props: { path: string }): JSX.Element {
   );
 }
 
-function UsersPage(props: { path: string }): JSX.Element {
+function UsersPage(): JSX.Element {
   const context = useContext(SessionContext);
   const [cookies] = useCookies(["accessToken"]);
 
@@ -275,7 +275,7 @@ function UsersPage(props: { path: string }): JSX.Element {
   return (
     <div>
       <NavBar title="Manage Users" />
-      <UsersTable path={props.path} />
+      <UsersTable />
     </div>
   );
 }
