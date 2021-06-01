@@ -31,6 +31,7 @@ import GroupIcon from "@material-ui/icons/Group";
 import SettingsIcon from "@material-ui/icons/Settings";
 import { userIsElevated } from "api";
 import SessionContext from "context/session";
+import { UserRole } from "types";
 
 const useStyles = makeStyles((theme) => ({
   toolbar: theme.mixins.toolbar,
@@ -74,7 +75,7 @@ function NavMenu(): JSX.Element {
           <ListItemText primary="Users" />
         </ListItem>
       ) : undefined}
-      {userIsElevated(context.user) ? (
+      {(context.user && context.user.userRole === UserRole.ADMIN) ? (
         <ListItem button component={Link} to={"/settings"}>
           <ListItemIcon>
             <SettingsIcon />
