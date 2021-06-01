@@ -52,13 +52,13 @@
     "trim": "1.0.1"
   },
   "scripts": {
-    "build": "npx gatsby build --prefix-paths",
+    "build": "npx gatsby build",
     "dependencies-update": "npx ncu -u",
     "develop": "npx gatsby develop",
     "format": "prettier --write '**/*.{js,jsx,json,ts,tsx}'",
     "preinstall": "npx npm-force-resolutions",
     "start": "npm run develop",
-    "serve": "gatsby serve --prefix-paths",
+    "serve": "gatsby serve",
     "test": "echo 'all tests are cypress for now'",
     "test:all": "npx run test:format && npx run test:lint && npx run test:audit && npx run test:types && npx run test:cypress && npx test",
     "test:audit": "npm audit --level=moderate --production",

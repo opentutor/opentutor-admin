@@ -4,7 +4,7 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import { withPrefix, navigate } from "gatsby";
+import { navigate } from "gatsby";
 import React, { useContext } from "react";
 import { useCookies } from "react-cookie";
 import { Link } from "@reach/router";
@@ -52,20 +52,20 @@ function NavMenu(): JSX.Element {
   const context = useContext(SessionContext);
   return (
     <List dense>
-      <ListItem button component={Link} to={withPrefix("/lessons")}>
+      <ListItem button component={Link} to={"/lessons"}>
         <ListItemIcon>
           <ListIcon />
         </ListItemIcon>
         <ListItemText primary="Lessons" />
       </ListItem>
-      <ListItem button component={Link} to={withPrefix("/sessions")}>
+      <ListItem button component={Link} to={"/sessions"}>
         <ListItemIcon>
           <ListIcon />
         </ListItemIcon>
         <ListItemText primary="Grading" />
       </ListItem>
       {userIsElevated(context.user) ? (
-        <ListItem button component={Link} to={withPrefix("/users")}>
+        <ListItem button component={Link} to={"/users"}>
           <ListItemIcon>
             <ListIcon />
           </ListItemIcon>
