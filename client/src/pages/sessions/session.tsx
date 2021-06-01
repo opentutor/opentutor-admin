@@ -7,10 +7,6 @@ The full terms of this copyright and license should always be found in the root 
 import { navigate } from "gatsby";
 import React, { useContext } from "react";
 import { useCookies } from "react-cookie";
-<<<<<<< HEAD
-import { navigate } from "gatsby";
-=======
->>>>>>> main
 import { makeStyles } from "@material-ui/core/styles";
 import {
   Paper,

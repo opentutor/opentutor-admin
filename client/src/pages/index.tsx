@@ -6,36 +6,10 @@ The full terms of this copyright and license should always be found in the root 
 */
 import React from "react";
 import LoginMenu from "components/login-menu";
-<<<<<<< HEAD
-import CreatePage from "pages/lessons/index";
-import EditPage from "pages/lessons/edit";
-import SessionsPage from "pages/sessions/index";
-import SessionPage from "pages/sessions/session";
-import UsersPage from "pages/users/index";
-import SettingsPage from "pages/settings/index";
-import "styles/layout.css";
-
-function IndexPage(props: { location: Location }): JSX.Element {
-  return (
-    <Router>
-      <LoginMenu path={withPrefix("/")}>
-        <CreatePage path={withPrefix("lessons")} location={props.location}>
-          <EditPage path={withPrefix("lessons/edit")} />
-        </CreatePage>
-        <SessionsPage path={withPrefix("sessions")}>
-          <SessionPage path={withPrefix("sessions/session")} />
-        </SessionsPage>
-        <UsersPage path={withPrefix("users")} />
-        <SettingsPage path={withPrefix("settings")} />
-      </LoginMenu>
-    </Router>
-  );
-=======
 import "styles/layout.css";
 
 function IndexPage(): JSX.Element {
   return <LoginMenu />;
->>>>>>> main
 }
 
 export default IndexPage;
