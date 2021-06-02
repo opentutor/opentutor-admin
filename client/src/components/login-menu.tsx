@@ -99,7 +99,19 @@ export function LoginMenu(): JSX.Element {
       <Typography variant="h5" className={classes.title}>
         Welcome to OpenTutor
       </Typography>
-      {googleClientId ? (
+      {process.env.ACCESS_TOKEN ? (
+        <Button
+          id="login-button"
+          variant="contained"
+          color="primary"
+          onClick={() =>
+            setCookie("accessToken", process.env.ACCESS_TOKEN, { path: "/" })
+          }
+          className={classes.button}
+        >
+          Sign in
+        </Button>
+      ) : googleClientId ? (
         <GoogleLogin
           clientId={googleClientId}
           onSuccess={onGoogleLogin}

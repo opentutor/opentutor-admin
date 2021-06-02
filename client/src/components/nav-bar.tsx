@@ -25,9 +25,13 @@ import { makeStyles } from "@material-ui/core/styles";
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import CloseIcon from "@material-ui/icons/Close";
 import MenuIcon from "@material-ui/icons/Menu";
-import ListIcon from "@material-ui/icons/List";
+import AssignmentIcon from "@material-ui/icons/Assignment";
+import AssessmentIcon from "@material-ui/icons/Assessment";
+import GroupIcon from "@material-ui/icons/Group";
+import SettingsIcon from "@material-ui/icons/Settings";
 import { userIsElevated } from "api";
 import SessionContext from "context/session";
+import { UserRole } from "types";
 
 const useStyles = makeStyles((theme) => ({
   toolbar: theme.mixins.toolbar,
@@ -53,22 +57,30 @@ function NavMenu(): JSX.Element {
     <List dense>
       <ListItem button component={Link} to={"/lessons"}>
         <ListItemIcon>
-          <ListIcon />
+          <AssignmentIcon />
         </ListItemIcon>
         <ListItemText primary="Lessons" />
       </ListItem>
       <ListItem button component={Link} to={"/sessions"}>
         <ListItemIcon>
-          <ListIcon />
+          <AssessmentIcon />
         </ListItemIcon>
         <ListItemText primary="Grading" />
       </ListItem>
       {userIsElevated(context.user) ? (
         <ListItem button component={Link} to={"/users"}>
           <ListItemIcon>
-            <ListIcon />
+            <GroupIcon />
           </ListItemIcon>
           <ListItemText primary="Users" />
+        </ListItem>
+      ) : undefined}
+      {context.user && context.user.userRole === UserRole.ADMIN ? (
+        <ListItem button component={Link} to={"/settings"}>
+          <ListItemIcon>
+            <SettingsIcon />
+          </ListItemIcon>
+          <ListItemText primary="Settings" />
         </ListItem>
       ) : undefined}
     </List>

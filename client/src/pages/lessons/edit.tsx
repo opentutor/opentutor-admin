@@ -25,26 +25,18 @@ import {
   Typography,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import {
-  fetchLesson,
-  updateLesson,
-  fetchTrainingStatus,
-  trainLesson,
-  userCanEdit,
-  fetchLessons,
-} from "api";
+import { fetchLesson, updateLesson, userCanEdit, fetchLessons } from "api";
 import SessionContext from "context/session";
 import NavBar from "components/nav-bar";
 import ConclusionsList from "components/conclusions-list";
 import ExpectationsList from "components/expectations-list";
 import { validateExpectationFeatures } from "schemas/validation";
-import { Lesson, LessonExpectation, TrainStatus, TrainState } from "types";
+import { Lesson, LessonExpectation, TrainState } from "types";
 import withLocation from "wrap-with-location";
+import { useWithTraining } from "hooks/use-with-training";
 import "styles/layout.css";
 import "jsoneditor-react/es/editor.min.css";
 import "react-toastify/dist/ReactToastify.css";
-
-const TRAIN_STATUS_POLL_INTERVAL_DEFAULT = 1000;
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -151,22 +143,18 @@ const LessonEdit = (props: { search: LessonEditSearch }) => {
   const classes = useStyles();
   const [cookies] = useCookies(["accessToken"]);
   const context = useContext(SessionContext);
-  const trainStatusPollInterval = !isNaN(
-    Number(props.search.trainStatusPollInterval)
-  )
-    ? Number(props.search.trainStatusPollInterval)
-    : TRAIN_STATUS_POLL_INTERVAL_DEFAULT;
   const [lessonUnderEdit, setLessonUnderEdit] = React.useState<LessonUnderEdit>(
     { lesson: undefined, dirty: false }
   );
   const [error, setError] = React.useState("");
   const [savePopUp, setSavePopUp] = React.useState(false);
-  const [isTraining, setIsTraining] = React.useState(false);
-  const [trainPopUp, setTrainPopUp] = React.useState(false);
-  const [statusUrl, setStatusUrl] = React.useState("");
-  const [trainData, setTrainData] = React.useState<TrainStatus>({
-    state: TrainState.NONE,
-  });
+  const {
+    isTraining,
+    trainStatus,
+    trainingMessage,
+    startLessonTraining,
+    dismissTrainingMessage,
+  } = useWithTraining(props.search.trainStatusPollInterval);
 
   React.useEffect(() => {
     if (lessonId) {
@@ -218,6 +206,16 @@ const LessonEdit = (props: { search: LessonEditSearch }) => {
       setError("");
     }
   }, [lessonUnderEdit.lesson]);
+
+  React.useEffect(() => {
+    if (trainStatus.state === TrainState.SUCCESS) {
+      fetchLesson(lessonId, cookies.accessToken)
+        .then((lesson) => {
+          setLesson(lesson);
+        })
+        .catch((err) => console.error(err));
+    }
+  }, [trainStatus]);
 
   function setLesson(lesson?: Lesson, dirty?: boolean) {
     if (lessonUnderEdit.lesson?.lessonId !== lesson?.lessonId) {
@@ -295,85 +293,6 @@ const LessonEdit = (props: { search: LessonEditSearch }) => {
 
   function handleDiscard() {
     navigate(`/lessons`);
-  }
-
-  function useInterval(callback: () => void, delay: number | null) {
-    const savedCallback = React.useRef<() => void>();
-
-    React.useEffect(() => {
-      savedCallback.current = callback;
-    });
-
-    React.useEffect(() => {
-      function tick() {
-        if (savedCallback.current) {
-          savedCallback.current();
-        }
-      }
-
-      if (delay) {
-        const id = setInterval(tick, delay);
-        return () => clearInterval(id);
-      }
-    }, [delay]);
-  }
-
-  function handleTrain(): void {
-    if (!lessonUnderEdit.lesson) {
-      return;
-    }
-    if (lessonUnderEdit.lesson?.isTrainable) {
-      trainLesson(lessonUnderEdit.lesson?.lessonId)
-        .then((trainJob) => {
-          setStatusUrl(trainJob.statusUrl);
-          setIsTraining(true);
-        })
-        .catch((err: Error) => {
-          console.error(err);
-          setTrainData({
-            state: TrainState.FAILURE,
-            status: err.message || `${err}`,
-          });
-          setIsTraining(false);
-          setTrainPopUp(true);
-        });
-    } else {
-      setTrainPopUp(true);
-    }
-  }
-
-  useInterval(
-    () => {
-      fetchTrainingStatus(statusUrl)
-        .then((trainStatus) => {
-          setTrainData(trainStatus);
-          if (
-            trainStatus.state === TrainState.SUCCESS ||
-            trainStatus.state === TrainState.FAILURE
-          ) {
-            setTrainPopUp(true);
-            setIsTraining(false);
-            if (trainStatus.state === TrainState.SUCCESS) {
-              fetchLesson(lessonId, cookies.accessToken)
-                .then((lesson) => {
-                  setLesson(lesson);
-                })
-                .catch((err) => console.error(err));
-            }
-          }
-        })
-        .catch((err: Error) => {
-          setTrainData({ state: TrainState.FAILURE, status: err.message });
-          setTrainPopUp(true);
-          setIsTraining(false);
-          console.error(err);
-        });
-    },
-    isTraining ? trainStatusPollInterval : null
-  );
-
-  function handleTrainPopUp(): void {
-    setTrainPopUp(false);
   }
 
   if (!lessonUnderEdit.lesson) {
@@ -567,24 +486,24 @@ const LessonEdit = (props: { search: LessonEditSearch }) => {
         id="train-data"
         border={5}
         borderColor={
-          trainData.state !== TrainState.SUCCESS &&
-          trainData.state !== TrainState.FAILURE
+          trainStatus.state !== TrainState.SUCCESS &&
+          trainStatus.state !== TrainState.FAILURE
             ? null
-            : trainData.state === TrainState.FAILURE
+            : trainStatus.state === TrainState.FAILURE
             ? "#FF0000"
             : !(
-                trainData.info &&
-                trainData.info?.expectations &&
-                Array.isArray(trainData.info?.expectations) &&
-                trainData.info.expectations.length > 0
+                trainStatus.info &&
+                trainStatus.info?.expectations &&
+                Array.isArray(trainStatus.info?.expectations) &&
+                trainStatus.info.expectations.length > 0
               )
             ? "#FF0000"
             : Math.min(
-                ...trainData.info?.expectations.map((x) => x.accuracy)
+                ...trainStatus.info?.expectations.map((x) => x.accuracy)
               ) >= 0.6
             ? "#008000"
             : Math.min(
-                ...trainData.info?.expectations.map((x) => x.accuracy)
+                ...trainStatus.info?.expectations.map((x) => x.accuracy)
               ) >= 0.4
             ? "#FFFF00"
             : "#FF0000"
@@ -598,9 +517,9 @@ const LessonEdit = (props: { search: LessonEditSearch }) => {
         </Typography>
         {isTraining ? (
           <CircularProgress />
-        ) : trainData.state === TrainState.SUCCESS ? (
+        ) : trainStatus.state === TrainState.SUCCESS ? (
           <List>
-            {trainData.info?.expectations?.map((x, i) => (
+            {trainStatus.info?.expectations?.map((x, i) => (
               <ListItem key={`train-success-accuracy-${i}`}>
                 <ListItemText
                   style={{ textAlign: "center" }}
@@ -609,7 +528,7 @@ const LessonEdit = (props: { search: LessonEditSearch }) => {
               </ListItem>
             ))}
           </List>
-        ) : trainData.state === TrainState.FAILURE ? (
+        ) : trainStatus.state === TrainState.FAILURE ? (
           <Typography id="train-failure">{`TRAINING FAILED`}</Typography>
         ) : null}
       </Box>
@@ -625,8 +544,12 @@ const LessonEdit = (props: { search: LessonEditSearch }) => {
               ? "#1B6A9C"
               : "#808080",
           }}
-          disabled={isTraining}
-          onClick={handleTrain}
+          disabled={isTraining || !lessonUnderEdit.lesson}
+          onClick={() => {
+            if (lessonUnderEdit.lesson) {
+              startLessonTraining(lessonUnderEdit.lesson);
+            }
+          }}
         >
           Train
         </Button>
@@ -666,14 +589,8 @@ const LessonEdit = (props: { search: LessonEditSearch }) => {
           Discard
         </Button>
       </div>
-      <Dialog open={trainPopUp} onClose={handleTrainPopUp}>
-        {!lessonUnderEdit.lesson?.isTrainable ? (
-          <DialogTitle> NEEDS MORE GRADED DATA </DialogTitle>
-        ) : trainData.state === TrainState.SUCCESS ? (
-          <DialogTitle> Training Success </DialogTitle>
-        ) : trainData.state === TrainState.FAILURE ? (
-          <DialogTitle> Training Failed</DialogTitle>
-        ) : null}
+      <Dialog open={Boolean(trainingMessage)} onClose={dismissTrainingMessage}>
+        <DialogTitle>{trainingMessage}</DialogTitle>
       </Dialog>
       <Dialog open={savePopUp} onClose={() => handleSavePopUp(false)}>
         <DialogTitle>Save</DialogTitle>

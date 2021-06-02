@@ -5,6 +5,8 @@ Permission to use, copy, modify, and distribute this software and its documentat
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
 
+import { TrainStatus } from "./dtos";
+
 interface MockGraphQLQuery {
   query: string;
   data: any | any[];
@@ -66,9 +68,11 @@ export function cySetup(cy) {
 export interface AppConfig {
   googleClientId: string;
 }
+
 export const CONFIG_DEFAULT: AppConfig = {
   googleClientId: "fake-google-client-id",
 };
+
 export function mockGQLConfig(appConfig: Partial<AppConfig>): MockGraphQLQuery {
   return mockGQL("appConfig", { ...CONFIG_DEFAULT, ...(appConfig || {}) }, false);
 }
@@ -161,4 +165,110 @@ export function cyMockDefault(
     }),
     ...gqlQueries,
   ]);
+}
+
+const TRAIN_STATUS_URL = `/classifier/train/status/some-job-id`;
+interface WaitFunc {
+  (): void;
+}
+interface StatusResponse {
+  status: TrainStatus;
+  repeat?: number;
+  responseStatusCode?: number;
+}
+
+export function cyMockTrain(
+  cy: Cypress.cy,
+  params: {
+    statusUrl?: string;
+    responseStatus?: number;
+  } = {}
+): WaitFunc {
+  params = params || {};
+  cy.intercept("POST", "**/train", {
+    statusCode: params.responseStatus || 200,
+    body: {
+      data: {
+        statusUrl: params.statusUrl || TRAIN_STATUS_URL,
+      },
+      errors: null,
+    },
+  }).as("train");
+  return () => cy.wait("@train");
+}
+
+export function cyMockTrainDefault(
+  cy: Cypress.cy,
+  params: {
+    statusUrl?: string;
+    responseStatus?: number;
+  } = {}
+): WaitFunc {
+  params = params || {};
+  cy.intercept("POST", "**/train_default", {
+    statusCode: params.responseStatus || 200,
+    body: {
+      data: {
+        statusUrl: params.statusUrl || TRAIN_STATUS_URL,
+      },
+      errors: null,
+    },
+  }).as("train");
+  return () => cy.wait("@train");
+}
+
+export function cyMockTrainStatusSeq(
+  cy: Cypress.cy,
+  responses: StatusResponse[],
+  statusUrl = TRAIN_STATUS_URL
+): WaitFunc {
+  /**
+   * What is this crazy complicated test setup?
+   * 
+   * The model-training sequence is that the admin client
+   * triggers a training job, and then polls a status url
+   * until that training job completes with SUCCESS or FAILURE.
+   * 
+   * Until the training job is done, the status url 
+   * will be returning other statuses, 
+   * like PENDING or IN_PROGRESS.
+   * 
+   * So the purpose of this function 
+   * is to set up the training-status url
+   * to mock a series of responses, 
+   * e.g. PENDING, IN_PROGRESS, IN_PROGESS, SUCCESS
+   */
+  let responseIndex = 0;
+  let repeatCount = 0;
+  let totalResponses = 0;
+  const alias = "polling";
+  cy.intercept("GET", `**/${statusUrl || TRAIN_STATUS_URL}`, (req) => {
+    const nextResponse = responses[responseIndex];
+    req.reply({
+      statusCode: nextResponse.responseStatusCode || 200,
+      body: {
+        data: nextResponse.status,
+      },
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    totalResponses++;
+    const responseRepeatCount = !isNaN(Number(nextResponse.repeat))
+      ? Number(nextResponse.repeat)
+      : 1;
+    repeatCount++;
+    if (
+      repeatCount >= responseRepeatCount &&
+      responseIndex + 1 < responses.length
+    ) {
+      responseIndex++;
+      repeatCount = 0;
+    }
+  }).as(alias);
+  return () => {
+    for (let i = 0; i < totalResponses; i++) {
+      cy.wait(alias);
+    }
+  };
 }
