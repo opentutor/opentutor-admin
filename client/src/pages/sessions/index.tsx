@@ -66,6 +66,13 @@ const columns: ColumnDef[] = [
     sortable: true,
   },
   {
+    id: "lessonCreatedBy",
+    label: "Created By",
+    minWidth: 170,
+    align: "left",
+    sortable: true,
+  },
+  {
     id: "graderGrade",
     label: "Instructor Grade",
     minWidth: 100,
@@ -98,13 +105,6 @@ const columns: ColumnDef[] = [
   {
     id: "createdAt",
     label: "Date",
-    minWidth: 170,
-    align: "left",
-    sortable: true,
-  },
-  {
-    id: "lessonCreatedBy",
-    label: "Created By",
     minWidth: 170,
     align: "left",
     sortable: true,
@@ -208,6 +208,9 @@ function SessionItem(props: { row: Edge<Session>; i: number }): JSX.Element {
           row.node.lesson?.name || "No Lesson Name"
         )}
       </TableCell>
+      <TableCell id="creator" align="left">
+        {row.node.lessonCreatedBy || "Guest"}
+      </TableCell>
       <TableCell id="instructor-grade" align="right">
         {row.node.graderGrade || row.node.graderGrade === 0
           ? Math.trunc(row.node.graderGrade * 100)
@@ -224,9 +227,6 @@ function SessionItem(props: { row: Edge<Session>; i: number }): JSX.Element {
       </TableCell>
       <TableCell id="date" align="left">
         {row.node.createdAt || ""}
-      </TableCell>
-      <TableCell id="creator" align="left">
-        {row.node.lessonCreatedBy || "Guest"}
       </TableCell>
       <TableCell id="username" align="left">
         {row.node.username || "Guest"}
