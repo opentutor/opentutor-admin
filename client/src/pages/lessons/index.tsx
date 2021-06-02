@@ -25,10 +25,11 @@ import {
   TableContainer,
   TableRow,
   Toolbar,
+  Tooltip,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import AddIcon from "@material-ui/icons/Add";
-import AssignmentIcon from "@material-ui/icons/Assignment";
+import AssessmentIcon from "@material-ui/icons/Assessment";
 import DeleteIcon from "@material-ui/icons/Delete";
 import FileCopyIcon from "@material-ui/icons/FileCopy";
 import KeyboardArrowLeftIcon from "@material-ui/icons/KeyboardArrowLeft";
@@ -71,46 +72,53 @@ const useStyles = makeStyles((theme) => ({
 
 const columns: ColumnDef[] = [
   { id: "name", label: "Lesson", minWidth: 200, align: "left", sortable: true },
-  {
-    id: "launch",
-    label: "Launch",
-    minWidth: 0,
-    align: "left",
-    sortable: false,
-  },
-  {
-    id: "grade",
-    label: "Grade",
-    minWidth: 0,
-    align: "center",
-    sortable: false,
-  },
+  // {
+  //   id: "launch",
+  //   label: "Launch",
+  //   minWidth: 0,
+  //   align: "left",
+  //   sortable: false,
+  // },
+  // {
+  //   id: "grade",
+  //   label: "Grade",
+  //   minWidth: 0,
+  //   align: "left",
+  //   sortable: false,
+  // },
   {
     id: "updatedAt",
     label: "Date",
     minWidth: 170,
-    align: "center",
+    align: "left",
     sortable: true,
   },
   {
     id: "createdByName",
     label: "Created By",
     minWidth: 200,
-    align: "center",
+    align: "left",
     sortable: true,
   },
+  // {
+  //   id: "delete",
+  //   label: "Delete",
+  //   minWidth: 0,
+  //   align: "center",
+  //   sortable: false,
+  // },
+  // {
+  //   id: "copy",
+  //   label: "Copy",
+  //   minWidth: 0,
+  //   align: "center",
+  //   sortable: false,
+  // },
   {
-    id: "delete",
-    label: "Delete",
+    id: "actions",
+    label: "",
     minWidth: 0,
-    align: "center",
-    sortable: false,
-  },
-  {
-    id: "copy",
-    label: "Copy",
-    minWidth: 0,
-    align: "center",
+    align: "left",
     sortable: false,
   },
 ];
@@ -222,28 +230,28 @@ const LessonItem = (props: {
           row.node.name || "No Lesson Name"
         )}
       </TableCell>
-      <TableCell id="launch" align="left">
+      {/* <TableCell id="launch" align="left">
         <IconButton onClick={() => launchLesson(row.node.lessonId)}>
           <LaunchIcon />
         </IconButton>
       </TableCell>
-      <TableCell id="grade">
+      <TableCell id="grade" align="left">
         <IconButton
           onClick={() => {
             handleGrade();
           }}
           disabled={!userCanEdit(row.node, context.user)}
         >
-          <AssignmentIcon />
+          <AssessmentIcon />
         </IconButton>
-      </TableCell>
-      <TableCell id="date" align="center">
+      </TableCell> */}
+      <TableCell id="date" align="left">
         {row.node.updatedAt ? row.node.updatedAt.toLocaleString() : ""}
       </TableCell>
-      <TableCell id="creator" align="center">
+      <TableCell id="creator" align="left">
         {row.node.createdByName}
       </TableCell>
-      <TableCell id="delete" align="center">
+      {/* <TableCell id="delete" align="center">
         <IconButton
           onClick={handleDelete}
           disabled={!userCanEdit(row.node, context.user)}
@@ -255,6 +263,38 @@ const LessonItem = (props: {
         <IconButton onClick={handleCopy}>
           <FileCopyIcon />
         </IconButton>
+      </TableCell> */}
+      <TableCell id="actions" align="right">
+        <Tooltip title="Launch" arrow>
+          <IconButton id="launch-button" onClick={() => launchLesson(row.node.lessonId)}>
+            <LaunchIcon />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Grade" arrow>
+          <IconButton
+            id="grade-button"
+            onClick={() => {
+              handleGrade();
+            }}
+            disabled={!userCanEdit(row.node, context.user)}
+          >
+            <AssessmentIcon />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Duplicate" arrow>
+          <IconButton id="copy-button" onClick={handleCopy}>
+            <FileCopyIcon />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Delete" arrow>
+          <IconButton
+            id="delete-button"
+            onClick={handleDelete}
+            disabled={!userCanEdit(row.node, context.user)}
+          >
+            <DeleteIcon style={{color: "red"}}/>
+          </IconButton>
+        </Tooltip>
       </TableCell>
       <Menu
         id="delete-menu"

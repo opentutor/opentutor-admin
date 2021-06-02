@@ -21,11 +21,12 @@ import {
   TableContainer,
   TableRow,
   Toolbar,
+  Tooltip,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import KeyboardArrowLeftIcon from "@material-ui/icons/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
-import AssignmentIcon from "@material-ui/icons/Assignment";
+import AssessmentIcon from "@material-ui/icons/Assessment";
 import { fetchSessions, userCanEdit } from "api";
 import { Connection, Edge, Session } from "types";
 import NavBar from "components/nav-bar";
@@ -65,25 +66,18 @@ const columns: ColumnDef[] = [
     sortable: true,
   },
   {
-    id: "grade-link",
-    label: "Grade",
-    minWidth: 0,
-    align: "center",
-    sortable: false,
-  },
-  {
     id: "graderGrade",
     label: "Instructor Grade",
-    minWidth: 170,
-    align: "center",
+    minWidth: 100,
+    align: "right",
     format: (value: number): string => value.toLocaleString("en-US"),
     sortable: true,
   },
   {
     id: "classifierGrade",
     label: "Classifier Grade",
-    minWidth: 170,
-    align: "center",
+    minWidth: 100,
+    align: "right",
     format: (value: number): string => value.toLocaleString("en-US"),
     sortable: true,
   },
@@ -91,36 +85,43 @@ const columns: ColumnDef[] = [
     id: "lastGradedByName",
     label: "Last Graded By",
     minWidth: 170,
-    align: "center",
+    align: "left",
     sortable: true,
   },
   {
     id: "lastGradedAt",
     label: "Last Graded At",
     minWidth: 170,
-    align: "center",
+    align: "left",
     sortable: true,
   },
   {
     id: "createdAt",
     label: "Date",
     minWidth: 170,
-    align: "center",
+    align: "left",
     sortable: true,
   },
   {
     id: "lessonCreatedBy",
     label: "Created By",
     minWidth: 170,
-    align: "center",
+    align: "left",
     sortable: true,
   },
   {
     id: "username",
     label: "Username",
     minWidth: 170,
-    align: "center",
+    align: "left",
     sortable: true,
+  },
+  {
+    id: "actions",
+    label: "",
+    minWidth: 0,
+    align: "center",
+    sortable: false,
   },
 ];
 
@@ -207,36 +208,39 @@ function SessionItem(props: { row: Edge<Session>; i: number }): JSX.Element {
           row.node.lesson?.name || "No Lesson Name"
         )}
       </TableCell>
-      <TableCell id="grade">
-        <IconButton
-          onClick={handleGrade}
-          disabled={!userCanEdit(row.node.lesson, context.user)}
-        >
-          <AssignmentIcon />
-        </IconButton>
-      </TableCell>
-      <TableCell id="instructor-grade" align="center">
+      <TableCell id="instructor-grade" align="right">
         {row.node.graderGrade || row.node.graderGrade === 0
           ? Math.trunc(row.node.graderGrade * 100)
           : "?"}
       </TableCell>
-      <TableCell id="classifier-grade" align="center">
+      <TableCell id="classifier-grade" align="right">
         {row.node ? Math.trunc(row.node.classifierGrade * 100) : "?"}
       </TableCell>
-      <TableCell id="last-graded-by" align="center">
+      <TableCell id="last-graded-by" align="left">
         {row.node.lastGradedByName || ""}
       </TableCell>
-      <TableCell id="last-graded-at" align="center">
-        {row.node.lastGradedAt || ""}
+      <TableCell id="last-graded-at" align="left">
+        {row.node.lastGradedAt || "Never"}
       </TableCell>
-      <TableCell id="date" align="center">
+      <TableCell id="date" align="left">
         {row.node.createdAt || ""}
       </TableCell>
-      <TableCell id="creator" align="center">
+      <TableCell id="creator" align="left">
         {row.node.lessonCreatedBy || "Guest"}
       </TableCell>
-      <TableCell id="username" align="center">
+      <TableCell id="username" align="left">
         {row.node.username || "Guest"}
+      </TableCell>
+      <TableCell id="actions" align="center">
+      <Tooltip title="Grade" arrow>
+        <IconButton
+          id="grade-button"
+          onClick={handleGrade}
+          disabled={!userCanEdit(row.node.lesson, context.user)}
+        >
+          <AssessmentIcon />
+        </IconButton>
+        </Tooltip>
       </TableCell>
     </TableRow>
   );

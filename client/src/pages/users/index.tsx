@@ -52,6 +52,9 @@ const useStyles = makeStyles((theme) => ({
     position: "absolute",
     right: theme.spacing(1),
   },
+  dropdown: {
+    width: 170
+  }
 }));
 
 const columns: ColumnDef[] = [
@@ -73,7 +76,7 @@ const columns: ColumnDef[] = [
     id: "userRole",
     label: "Role",
     minWidth: 170,
-    align: "center",
+    align: "left",
     sortable: true,
   },
 ];
@@ -111,6 +114,7 @@ function UserItem(props: {
   const { row, i } = props;
   const [cookies] = useCookies(["accessToken"]);
   const context = useContext(SessionContext);
+  const styles = useStyles();
 
   async function handleRoleChange(user: string, permission: string) {
     try {
@@ -129,7 +133,7 @@ function UserItem(props: {
       <TableCell id="email" align="left">
         {row.node.email}
       </TableCell>
-      <TableCell id="role" align="center">
+      <TableCell id="role" align="left">
         <Select
           id="select-role"
           value={row.node.userRole}
@@ -138,6 +142,7 @@ function UserItem(props: {
           ) => {
             handleRoleChange(row.node.id, event.target.value as string);
           }}
+          className={styles.dropdown}
         >
           <MenuItem id={UserRole.AUTHOR} value={UserRole.AUTHOR}>
             Author
