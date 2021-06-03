@@ -153,7 +153,7 @@ export function NavBar(props: {
   }
 
   return (
-    <div id="nav-bar"  className={classes.root} data-cy="nav-bar">
+    <div id="nav-bar" className={classes.root} data-cy="nav-bar">
       <AppBar position="fixed">
         <Toolbar>
           {context.user ? (
@@ -175,7 +175,12 @@ export function NavBar(props: {
               {props.disableMenu ? <CloseIcon /> : <MenuIcon />}
             </IconButton>
           ) : undefined}
-          <Typography id="title" variant="h6" className={classes.title} data-cy="title">
+          <Typography
+            id="title"
+            variant="h6"
+            className={classes.title}
+            data-cy="title"
+          >
             {props.title}
           </Typography>
           {context.user ? <LoginOption classes={classes} /> : undefined}
