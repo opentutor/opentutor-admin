@@ -170,11 +170,12 @@ export function NavBar(props: {
                   toggleDrawer(true);
                 }
               }}
+              data-cy={props.disableMenu ? "back-button" : "menu-button"}
             >
               {props.disableMenu ? <CloseIcon /> : <MenuIcon />}
             </IconButton>
           ) : undefined}
-          <Typography id="title" variant="h6" className={classes.title}>
+          <Typography id="title" variant="h6" className={classes.title} data-cy="title">
             {props.title}
           </Typography>
           {context.user ? <LoginOption classes={classes} /> : undefined}
@@ -186,6 +187,7 @@ export function NavBar(props: {
         open={isDrawerOpen}
         onClose={() => toggleDrawer(false)}
         onOpen={() => toggleDrawer(true)}
+        data-cy="drawer"
       >
         <Toolbar />
         <NavMenu />
