@@ -22,8 +22,8 @@ describe("sessions screen", () => {
         gqlQueries: [mockGQL("sessions", sessions, true)]
       })
       cy.visit("/sessions");
-      cy.get("#session-0 #grade button").should("be.disabled");
-      cy.get("#session-1 #grade button").should("be.disabled");
+      cy.get("#session-0 #grade-button").should("be.disabled");
+      cy.get("#session-1 #grade-button").should("be.disabled");
     });
 
     it("enables edit if user is admin", () => {
@@ -33,8 +33,8 @@ describe("sessions screen", () => {
         userRole: "admin"
       })
       cy.visit("/sessions");
-      cy.get("#session-0 #grade button").should("not.be.disabled");
-      cy.get("#session-1 #grade button").should("not.be.disabled");
+      cy.get("#session-0 #grade-button").should("not.be.disabled");
+      cy.get("#session-1 #grade-button").should("not.be.disabled");
     });
 
     it("enables edit if user is contentManager", () => {
@@ -46,8 +46,8 @@ describe("sessions screen", () => {
       cy.visit("/sessions");
       cy.wait("@login");
       cy.wait("@sessions");
-      cy.get("#session-0 #grade button").should("not.be.disabled");
-      cy.get("#session-1 #grade button").should("not.be.disabled");
+      cy.get("#session-0 #grade-button").should("not.be.disabled");
+      cy.get("#session-1 #grade-button").should("not.be.disabled");
     });
 
     it("enables edit if user created lesson", () => {
@@ -95,8 +95,8 @@ describe("sessions screen", () => {
         }, true)],
       })
       cy.visit("/sessions");
-      cy.get("#session-0 #grade button").should("not.be.disabled");
-      cy.get("#session-1 #grade button").should("not.be.disabled");
+      cy.get("#session-0 #grade-button").should("not.be.disabled");
+      cy.get("#session-1 #grade-button").should("not.be.disabled");
     });
   });
 
@@ -109,7 +109,7 @@ describe("sessions screen", () => {
     cy.visit("/sessions");
     cy.get("#column-header");
     cy.get("#column-header #lessonName").contains("Lesson");
-    cy.get("#column-header #grade-link").contains("Grade");
+    // cy.get("#column-header #grade-link").contains("Grade");
     cy.get("#column-header #graderGrade").contains("Instructor Grade");
     cy.get("#column-header #classifierGrade").contains("Classifier Grade");
     cy.get("#column-header #lastGradedByName").contains("Last Graded By");
@@ -161,7 +161,7 @@ describe("sessions screen", () => {
       userRole: "admin"
     })
     cy.visit("/sessions");
-    cy.get("#session-0 #grade button").trigger('mouseover').click();
+    cy.get("#session-0 #grade-button").trigger('mouseover').click();
     cy.location("pathname").should("contain", "/sessions/session");
     cy.location("search").should("contain", "?sessionId=session1");
   });

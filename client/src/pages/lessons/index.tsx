@@ -66,26 +66,15 @@ const useStyles = makeStyles((theme) => ({
     zIndex: 1,
   },
   progress: {
-    marginLeft: "50%",
+    position: "fixed",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
   },
 }));
 
 const columns: ColumnDef[] = [
   { id: "name", label: "Lesson", minWidth: 200, align: "left", sortable: true },
-  // {
-  //   id: "launch",
-  //   label: "Launch",
-  //   minWidth: 0,
-  //   align: "left",
-  //   sortable: false,
-  // },
-  // {
-  //   id: "grade",
-  //   label: "Grade",
-  //   minWidth: 0,
-  //   align: "left",
-  //   sortable: false,
-  // },
   {
     id: "updatedAt",
     label: "Date",
@@ -100,20 +89,6 @@ const columns: ColumnDef[] = [
     align: "left",
     sortable: true,
   },
-  // {
-  //   id: "delete",
-  //   label: "Delete",
-  //   minWidth: 0,
-  //   align: "center",
-  //   sortable: false,
-  // },
-  // {
-  //   id: "copy",
-  //   label: "Copy",
-  //   minWidth: 0,
-  //   align: "center",
-  //   sortable: false,
-  // },
   {
     id: "actions",
     label: "",
@@ -230,46 +205,13 @@ const LessonItem = (props: {
           row.node.name || "No Lesson Name"
         )}
       </TableCell>
-      {/* <TableCell id="launch" align="left">
-        <IconButton onClick={() => launchLesson(row.node.lessonId)}>
-          <LaunchIcon />
-        </IconButton>
-      </TableCell>
-      <TableCell id="grade" align="left">
-        <IconButton
-          onClick={() => {
-            handleGrade();
-          }}
-          disabled={!userCanEdit(row.node, context.user)}
-        >
-          <AssessmentIcon />
-        </IconButton>
-      </TableCell> */}
       <TableCell id="date" align="left">
         {row.node.updatedAt ? row.node.updatedAt.toLocaleString() : ""}
       </TableCell>
       <TableCell id="creator" align="left">
         {row.node.createdByName}
       </TableCell>
-      {/* <TableCell id="delete" align="center">
-        <IconButton
-          onClick={handleDelete}
-          disabled={!userCanEdit(row.node, context.user)}
-        >
-          <DeleteIcon />
-        </IconButton>
-      </TableCell>
-      <TableCell id="copy" align="center">
-        <IconButton onClick={handleCopy}>
-          <FileCopyIcon />
-        </IconButton>
-      </TableCell> */}
       <TableCell id="actions" align="right">
-        <Tooltip title="Launch" arrow>
-          <IconButton id="launch-button" onClick={() => launchLesson(row.node.lessonId)}>
-            <LaunchIcon />
-          </IconButton>
-        </Tooltip>
         <Tooltip title="Grade" arrow>
           <IconButton
             id="grade-button"
@@ -279,6 +221,14 @@ const LessonItem = (props: {
             disabled={!userCanEdit(row.node, context.user)}
           >
             <AssessmentIcon />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Launch" arrow>
+          <IconButton
+            id="launch-button"
+            onClick={() => launchLesson(row.node.lessonId)}
+          >
+            <LaunchIcon />
           </IconButton>
         </Tooltip>
         <Tooltip title="Duplicate" arrow>
@@ -292,7 +242,7 @@ const LessonItem = (props: {
             onClick={handleDelete}
             disabled={!userCanEdit(row.node, context.user)}
           >
-            <DeleteIcon style={{color: "red"}}/>
+            <DeleteIcon style={{ color: "red" }} />
           </IconButton>
         </Tooltip>
       </TableCell>
@@ -382,8 +332,8 @@ const LessonsTable = () => {
   return (
     <div className={classes.root}>
       <Paper className={classes.container}>
-        <TableContainer>
-          <Table stickyHeader aria-label="sticky table">
+        <TableContainer style={{ height: "calc(100vh - 128px)" }}>
+          <Table stickyHeader={true} aria-label="sticky table">
             <ColumnHeader
               columns={columns}
               sortBy={sortBy}
@@ -422,12 +372,13 @@ const LessonsTable = () => {
 const LessonsPage = (): JSX.Element => {
   const context = useContext(SessionContext);
   const [cookies] = useCookies(["accessToken"]);
+  const styles = useStyles();
 
   if (typeof window !== "undefined" && !cookies.accessToken) {
     return <div>Please login to view lessons.</div>;
   }
   if (!context.user) {
-    return <CircularProgress />;
+    return <CircularProgress className={styles.progress} />;
   }
 
   return (

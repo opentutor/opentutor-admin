@@ -22,6 +22,7 @@ import {
   TableRow,
   Toolbar,
   Tooltip,
+  Box,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import KeyboardArrowLeftIcon from "@material-ui/icons/KeyboardArrowLeft";
@@ -49,7 +50,10 @@ const useStyles = makeStyles((theme) => ({
     bottom: 0,
   },
   progress: {
-    marginLeft: "50%",
+    position: "fixed",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
   },
   paging: {
     position: "absolute",
@@ -73,11 +77,17 @@ const columns: ColumnDef[] = [
     sortable: true,
   },
   {
-    id: "graderGrade",
-    label: "Instructor Grade",
-    minWidth: 100,
-    align: "right",
-    format: (value: number): string => value.toLocaleString("en-US"),
+    id: "createdAt",
+    label: "Date",
+    minWidth: 170,
+    align: "left",
+    sortable: true,
+  },
+  {
+    id: "username",
+    label: "Username",
+    minWidth: 170,
+    align: "left",
     sortable: true,
   },
   {
@@ -89,29 +99,16 @@ const columns: ColumnDef[] = [
     sortable: true,
   },
   {
-    id: "lastGradedByName",
-    label: "Last Graded By",
-    minWidth: 170,
-    align: "left",
+    id: "graderGrade",
+    label: "Instructor Grade",
+    minWidth: 100,
+    align: "right",
+    format: (value: number): string => value.toLocaleString("en-US"),
     sortable: true,
   },
   {
     id: "lastGradedAt",
     label: "Last Graded At",
-    minWidth: 170,
-    align: "left",
-    sortable: true,
-  },
-  {
-    id: "createdAt",
-    label: "Date",
-    minWidth: 170,
-    align: "left",
-    sortable: true,
-  },
-  {
-    id: "username",
-    label: "Username",
     minWidth: 170,
     align: "left",
     sortable: true,
@@ -211,35 +208,41 @@ function SessionItem(props: { row: Edge<Session>; i: number }): JSX.Element {
       <TableCell id="creator" align="left">
         {row.node.lessonCreatedBy || "Guest"}
       </TableCell>
-      <TableCell id="instructor-grade" align="right">
-        {row.node.graderGrade || row.node.graderGrade === 0
-          ? Math.trunc(row.node.graderGrade * 100)
-          : "?"}
-      </TableCell>
-      <TableCell id="classifier-grade" align="right">
-        {row.node ? Math.trunc(row.node.classifierGrade * 100) : "?"}
-      </TableCell>
-      <TableCell id="last-graded-by" align="left">
-        {row.node.lastGradedByName || ""}
-      </TableCell>
-      <TableCell id="last-graded-at" align="left">
-        {row.node.lastGradedAt || "Never"}
-      </TableCell>
       <TableCell id="date" align="left">
         {row.node.createdAt || ""}
       </TableCell>
       <TableCell id="username" align="left">
         {row.node.username || "Guest"}
       </TableCell>
+      <TableCell id="classifier-grade" align="right">
+        {row.node ? Math.trunc(row.node.classifierGrade * 100) : "?"}
+      </TableCell>
+      <TableCell id="instructor-grade" align="right">
+        {row.node.graderGrade || row.node.graderGrade === 0
+          ? Math.trunc(row.node.graderGrade * 100)
+          : "N/A"}
+      </TableCell>
+      <TableCell id="last-graded-at" align="left">
+        {row.node.lastGradedAt ? (
+          <Tooltip
+            title={`Graded By: ${row.node.lastGradedByName || "Unknown"}`}
+            arrow
+          >
+            <Box>{row.node.lastGradedAt}</Box>
+          </Tooltip>
+        ) : (
+          "Never"
+        )}
+      </TableCell>
       <TableCell id="actions" align="center">
-      <Tooltip title="Grade" arrow>
-        <IconButton
-          id="grade-button"
-          onClick={handleGrade}
-          disabled={!userCanEdit(row.node.lesson, context.user)}
-        >
-          <AssessmentIcon />
-        </IconButton>
+        <Tooltip title="Grade" arrow>
+          <IconButton
+            id="grade-button"
+            onClick={handleGrade}
+            disabled={!userCanEdit(row.node.lesson, context.user)}
+          >
+            <AssessmentIcon />
+          </IconButton>
         </Tooltip>
       </TableCell>
     </TableRow>
@@ -274,14 +277,14 @@ function SessionsTable(props: { search: { lessonId: string } }): JSX.Element {
     const filter: {
       lessonCreatedBy?: string;
       lessonId?: string;
-      // graderGrade?: string | null;
+      graderGrade?: string | null;
     } = {};
     if (context.onlyCreator) {
       filter.lessonCreatedBy = context.user?.name;
     }
-    // if (!context.showGraded) {
-    //   filter.graderGrade = null;
-    // }
+    if (!context.showGraded) {
+      filter.graderGrade = null;
+    }
     if (lessonId) {
       filter.lessonId = lessonId;
     }
@@ -323,7 +326,7 @@ function SessionsTable(props: { search: { lessonId: string } }): JSX.Element {
   return (
     <div className={classes.root}>
       <Paper className={classes.container}>
-        <TableContainer>
+        <TableContainer style={{ height: "calc(100vh - 128px)" }}>
           <Table stickyHeader aria-label="sticky table">
             <ColumnHeader
               columns={columns}
@@ -357,12 +360,13 @@ function SessionsTable(props: { search: { lessonId: string } }): JSX.Element {
 function SessionsPage(props: { search: { lessonId: string } }): JSX.Element {
   const context = useContext(SessionContext);
   const [cookies] = useCookies(["accessToken"]);
+  const styles = useStyles();
 
   if (typeof window !== "undefined" && !cookies.accessToken) {
     return <div>Please login to view sessions.</div>;
   }
   if (!context.user) {
-    return <CircularProgress />;
+    return <CircularProgress className={styles.progress} />;
   }
 
   return (

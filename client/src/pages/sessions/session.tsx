@@ -38,6 +38,12 @@ const useStyles = makeStyles({
   container: {
     maxHeight: 440,
   },
+  progress: {
+    position: "fixed",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+  },
 });
 
 const SessionTable = (props: { search: { sessionId: string } }) => {
@@ -93,7 +99,7 @@ const SessionTable = (props: { search: { sessionId: string } }) => {
   }, []);
 
   if (!session) {
-    return <CircularProgress />;
+    return <CircularProgress className={classes.progress} />;
   }
 
   if (
@@ -241,11 +247,12 @@ const SessionTable = (props: { search: { sessionId: string } }) => {
 const SessionPage = (props: { search: { sessionId: string } }) => {
   const context = useContext(SessionContext);
   const [cookies] = useCookies(["accessToken"]);
+  const styles = useStyles();
   if (typeof window !== "undefined" && !cookies.accessToken) {
     return <div>Please login to view session.</div>;
   }
   if (!context.user) {
-    return <CircularProgress />;
+    return <CircularProgress className={styles.progress} />;
   }
 
   return (

@@ -46,15 +46,18 @@ const useStyles = makeStyles((theme) => ({
     bottom: 0,
   },
   progress: {
-    marginLeft: "50%",
+    position: "fixed",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
   },
   paging: {
     position: "absolute",
     right: theme.spacing(1),
   },
   dropdown: {
-    width: 170
-  }
+    width: 170,
+  },
 }));
 
 const columns: ColumnDef[] = [
@@ -224,7 +227,7 @@ function UsersTable(): JSX.Element {
   return (
     <div className={classes.root}>
       <Paper className={classes.container}>
-        <TableContainer>
+        <TableContainer style={{ height: "calc(100vh - 128px)" }}>
           <Table stickyHeader aria-label="sticky table">
             <ColumnHeader
               columns={columns}
@@ -264,12 +267,13 @@ function UsersTable(): JSX.Element {
 function UsersPage(): JSX.Element {
   const context = useContext(SessionContext);
   const [cookies] = useCookies(["accessToken"]);
+  const styles = useStyles();
 
   if (typeof window !== "undefined" && !cookies.accessToken) {
     return <div>Please login to view users.</div>;
   }
   if (!context.user) {
-    return <CircularProgress />;
+    return <CircularProgress className={styles.progress} />;
   }
   if (!userIsElevated(context.user)) {
     return (
