@@ -17,7 +17,7 @@ describe("Navigation bar", () => {
         userRole: "admin"
       })
       cy.visit("/");
-      cy.get("#nav-bar").get("#menu-button").trigger('mouseover').click();
+      cy.get('[data-cy=nav-bar]').get("#menu-button").trigger('mouseover').click();
       cy.get("#drawer a").eq(0).contains("Lessons");
       cy.get("#drawer a").eq(0).trigger('mouseover').click();
       cy.location("pathname").should("contain", "/lessons");
