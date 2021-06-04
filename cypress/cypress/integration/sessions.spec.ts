@@ -109,10 +109,8 @@ describe("sessions screen", () => {
     cy.visit("/sessions");
     cy.get("#column-header");
     cy.get("#column-header #lessonName").contains("Lesson");
-    // cy.get("#column-header #grade-link").contains("Grade");
     cy.get("#column-header #graderGrade").contains("Instructor Grade");
     cy.get("#column-header #classifierGrade").contains("Classifier Grade");
-    cy.get("#column-header #lastGradedByName").contains("Last Graded By");
     cy.get("#column-header #lastGradedAt").contains("Last Graded At");
     cy.get("#column-header #username").contains("Username");
     cy.get("#column-header #lessonCreatedBy").contains("Created By");
@@ -133,10 +131,9 @@ describe("sessions screen", () => {
     cy.get("#session-0 #date").contains("1/1/20000, 12:00:00 AM");
     cy.get("#session-0 #creator").contains("teacher 1");
     cy.get("#session-0 #username").contains("user 1");
-    cy.get("#session-0 #last-graded-by").contains("Grader");
     cy.get("#session-0 #last-graded-at").contains("1/2/20000, 12:00:00 AM");
     cy.get("#session-1 #lesson").contains("lesson 2");
-    cy.get("#session-1 #instructor-grade").contains("?");
+    cy.get("#session-1 #instructor-grade").contains("N/A");
     cy.get("#session-1 #classifier-grade").contains("50");
     cy.get("#session-1 #creator").contains("teacher 2");
     cy.get("#session-1 #username").contains("user 2");
