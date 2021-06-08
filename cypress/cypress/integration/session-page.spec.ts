@@ -127,20 +127,20 @@ describe("session screen", () => {
     cySetup(cy);
     cyMockDefault(cy, { gqlQueries: [mockGQL("session", session, true)], userRole: "admin" })
     cy.visit("/sessions/session?sessionId=session1");
-    cy.get('[data-cy=response-0 #answer]').should("contain", "answer 1");
-    cy.get('[data-cy=response-0 #grade-0 #classifier-grade]').should("contain", "Good");
-    cy.get('[data-cy=response-0 #grade-1 #classifier-grade]').should("contain", "Bad");
-    cy.get('[data-cy=response-1 #answer]').should("contain", "answer 2");
-    cy.get('[data-cy=response-1 #grade-0 #classifier-grade]').should("contain", "Bad");
-    cy.get('[data-cy=response-1 #grade-1 #classifier-grade]').should("contain", "Good");
+    cy.get('[data-cy=response-0]').find('[answer]').should("contain", "answer 1");
+    cy.get('[data-cy=response-0]').find('[grade-0]').find('[classifier-grade]').should("contain", "Good");
+    cy.get('[data-cy=response-0]').find('[grade-1]').find('[classifier-grade]').should("contain", "Bad");
+    cy.get('[data-cy=response-1]').find('[answer]').should("contain", "answer 2");
+    cy.get('[data-cy=response-1]').find('[grade-0]').find('[classifier-grade]').should("contain", "Bad");
+    cy.get('[data-cy=response-1]').find('[grade-1]').find('[classifier-grade]').should("contain", "Good");
   });
 
   it("grades first response", () => {
     cySetup(cy);
     cyMockDefault(cy, { gqlQueries: [mockGQL("session", session, true)], userRole: "admin" })
     cy.visit("/sessions/session?sessionId=session1");
-    cy.get('[data-cy=response-0 #grade-0 #select-grade]').should("have.value", "");
-    cy.get('[data-cy=response-0 #grade-0 #select-grade]').trigger('mouseover').click();
+    cy.get('[data-cy=response-0]').find('[grade-0]').find('[select-grade]').should("have.value", "");
+    cy.get('[data-cy=response-0]').find('[grade-0]').find('[select-grade]').trigger('mouseover').click();
     cy.get('[data-cy=good]').trigger('mouseover').click();
   });
 });

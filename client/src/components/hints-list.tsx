@@ -169,6 +169,7 @@ export default function HintsList(props: {
       </DragDropContext>
       <Button
         id="add-hint"
+        data-cy="add-hint"
         startIcon={<AddIcon />}
         className={classes.button}
         onClick={handleAddHint}

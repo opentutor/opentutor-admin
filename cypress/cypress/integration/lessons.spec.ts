@@ -26,12 +26,12 @@ describe("lessons screen", () => {
         gqlQueries: [mockGQL("lessons", lessons, true)],
       })
       cy.visit("/lessons");
-      cy.get('[data-cy=lesson-0 #delete button]').should("be.disabled");
-      cy.get('[data-cy=lesson-0 #grade button]').should("be.disabled");
-      cy.get('[data-cy=lesson-0 #name]').should("not.have.class", "a");
-      cy.get('[data-cy=lesson-1 #delete button]').should("be.disabled");
-      cy.get('[data-cy=lesson-1 #grade button]').should("be.disabled");
-      cy.get('[data-cy=lesson-1 #name]').should("not.have.class", "a");
+      cy.get('[data-cy=lesson-0]').find('[delete button]').should("be.disabled");
+      cy.get('[data-cy=lesson-0]').find('[grade button]').should("be.disabled");
+      cy.get('[data-cy=lesson-0]').find('[name]').should("not.have.class", "a");
+      cy.get('[data-cy=lesson-1]').find('[delete button]').should("be.disabled");
+      cy.get('[data-cy=lesson-1]').find('[grade button]').should("be.disabled");
+      cy.get('[data-cy=lesson-1]').find('[name]').should("not.have.class", "a");
     });
   
     it("enables edit, grade, and delete if user is an admin", () => {
@@ -41,8 +41,8 @@ describe("lessons screen", () => {
         userRole: "admin"
       })
       cy.visit("/lessons");
-      cy.get('[data-cy=lesson-0 #delete button]').should("not.be.disabled");
-      cy.get('[data-cy=lesson-0 #grade button]').should("not.be.disabled");
+      cy.get('[data-cy=lesson-0]').find('[delete button]').should("not.be.disabled");
+      cy.get('[data-cy=lesson-0]').find('[grade button]').should("not.be.disabled");
     });
   
     it("enables edit, grade, and delete if user is a contentManager", () => {
@@ -52,8 +52,8 @@ describe("lessons screen", () => {
         userRole: "contentManager"
       })
       cy.visit("/lessons");
-      cy.get('[data-cy=lesson-0 #delete button]').should("not.be.disabled");
-      cy.get('[data-cy=lesson-0 #grade button]').should("not.be.disabled");
+      cy.get('[data-cy=lesson-0]').find('[delete button]').should("not.be.disabled");
+      cy.get('[data-cy=lesson-0]').find('[grade button]').should("not.be.disabled");
     });
   
     it("enables edit, grade, and delete if user created lesson", () => {
@@ -83,8 +83,8 @@ describe("lessons screen", () => {
         }, true)],
       })
       cy.visit("/lessons");
-      cy.get('[data-cy=lesson-0 #delete button]').should("not.be.disabled");
-      cy.get('[data-cy=lesson-0 #grade button]').should("not.be.disabled");
+      cy.get('[data-cy=lesson-0]').find('[delete button]').should("not.be.disabled");
+      cy.get('[data-cy=lesson-0]').find('[grade button]').should("not.be.disabled");
     });
   });
 
@@ -96,12 +96,12 @@ describe("lessons screen", () => {
     })
     cy.visit("/lessons");
     cy.get('[data-cy=column-header]');
-    cy.get('[data-cy=column-header #name]').contains("Lesson");
-    cy.get('[data-cy=column-header #launch]').contains("Launch");
-    cy.get('[data-cy=column-header #grade]').contains("Grade");
-    cy.get('[data-cy=column-header #updatedAt]').contains("Date");
-    cy.get('[data-cy=column-header #createdByName]').contains("Created By");
-    cy.get('[data-cy=column-header #delete]').contains("Delete");
+    cy.get('[data-cy=column-header]').find('[name]').contains("Lesson");
+    cy.get('[data-cy=column-header]').find('[launch]').contains("Launch");
+    cy.get('[data-cy=column-header]').find('[grade]').contains("Grade");
+    cy.get('[data-cy=column-header]').find('[updatedAt]').contains("Date");
+    cy.get('[data-cy=column-header]').find('[createdByName]').contains("Created By");
+    cy.get('[data-cy=column-header]').find('[data-cy=delete]').contains("Delete");
   });
 
   it("displays a list of lessons", () => {
@@ -112,18 +112,18 @@ describe("lessons screen", () => {
     })
     cy.visit("/lessons");
     cy.get('[data-cy=lessons]').children().should("have.length", 2);
-    cy.get('[data-cy=lesson-0 #name]').contains("lesson 1");
-    cy.get('[data-cy=lesson-0 #launch button]').should("not.be.disabled");
-    cy.get('[data-cy=lesson-0 #grade button]').should("not.be.disabled");
-    cy.get('[data-cy=lesson-0 #date]').contains("1/1/20000, 12:00:00 AM");
-    cy.get('[data-cy=lesson-0 #creator]').contains("teacher 1");
-    cy.get('[data-cy=lesson-0 #delete button]').should("not.be.disabled");
-    cy.get('[data-cy=lesson-1 #name]').contains("lesson 2");
-    cy.get('[data-cy=lesson-1 #launch button]').should("not.be.disabled");
-    cy.get('[data-cy=lesson-1 #grade button]').should("not.be.disabled");
-    cy.get('[data-cy=lesson-1 #date]').contains("1/1/20000, 12:00:00 AM");
-    cy.get('[data-cy=lesson-1 #creator]').contains("teacher 2");
-    cy.get('[data-cy=lesson-1 #delete button]').should("not.be.disabled");
+    cy.get('[data-cy=lesson-0]').find('[name]').contains("lesson 1");
+    cy.get('[data-cy=lesson-0]').find('[launch button]').should("not.be.disabled");
+    cy.get('[data-cy=lesson-0]').find('[grade button]').should("not.be.disabled");
+    cy.get('[data-cy=lesson-0]').find('[date]').contains("1/1/20000, 12:00:00 AM");
+    cy.get('[data-cy=lesson-0]').find('[creator]').contains("teacher 1");
+    cy.get('[data-cy=lesson-0]').find('[delete button]').should("not.be.disabled");
+    cy.get('[data-cy=lesson-1]').find('[name]').contains("lesson 2");
+    cy.get('[data-cy=lesson-1]').find('[launch button]').should("not.be.disabled");
+    cy.get('[data-cy=lesson-1]').find('[grade button]').should("not.be.disabled");
+    cy.get('[data-cy=lesson-1]').find('[date]').contains("1/1/20000, 12:00:00 AM");
+    cy.get('[data-cy=lesson-1]').find('[creator]').contains("teacher 2");
+    cy.get('[data-cy=lesson-1]').find('[delete button]').should("not.be.disabled");
   });
 
   it("opens edit for a lesson", () => {
@@ -133,7 +133,7 @@ describe("lessons screen", () => {
       userRole: "admin"
     })
     cy.visit("/lessons");
-    cy.get('[data-cy=lesson-0 #name a]').trigger("mouseover").click();
+    cy.get('[data-cy=lesson-0]').find('[name a]').trigger("mouseover").click();
     cy.location("pathname").should("contain", "/lessons/edit");
     cy.location("search").should("eq", "?lessonId=lesson1");
   });
@@ -145,7 +145,7 @@ describe("lessons screen", () => {
       userRole: "admin"
     })
     cy.visit("/lessons");
-    cy.get('[data-cy=lesson-0 #grade]').trigger("mouseover").click();
+    cy.get('[data-cy=lesson-0]').find('[grade]').trigger("mouseover").click();
     cy.location("pathname").should("contain", "/sessions");
     cy.location("search").should("eq", "?lessonId=lesson1");
   });
@@ -157,7 +157,7 @@ describe("lessons screen", () => {
       userRole: "admin"
     })
     cy.visit("/lessons");
-    cy.get('[data-cy=lesson-0 #copy]').trigger("mouseover").click();
+    cy.get('[data-cy=lesson-0]').find('[copy]').trigger("mouseover").click();
     cy.location("pathname").should("contain", "/lessons/edit");
     cy.location("search").should("eq", "?copyLesson=lesson1");
   });
@@ -169,7 +169,7 @@ describe("lessons screen", () => {
       userRole: "admin"
     })
     cy.visit("/lessons");
-    cy.get('[data-cy=lesson-0 #launch button]').trigger("mouseover").click();
+    cy.get('[data-cy=lesson-0]').find('[launch button]').trigger("mouseover").click();
     cy.location("pathname").should("contain", "/tutor");
     cy.location("search").should("contain", "lesson=lesson1");
     cy.location("search").should("contain", "guest=Kayla");

@@ -12,13 +12,13 @@ describe("Login", () => {
     cySetup(cy);
     cy.visit("/");
     cy.contains("Welcome to OpenTutor");
-    cy.get('[data-cy=login-menu #login-button]');
+    cy.get('[data-cy=login-menu]').find('[login-button]');
   });
 
   it("login disabled if missing GOOGLE_CLIENT_ID", () => {
     cySetup(cy);
     cy.visit("/");
-    cy.get('[data-cy=login-menu #login-button]').should("be.disabled");
+    cy.get('[data-cy=login-menu]').find('[login-button]').should("be.disabled");
   });
 
   it("login enabled if GOOGLE_CLIENT_ID is set", () => {
@@ -27,7 +27,7 @@ describe("Login", () => {
       noLogin: true
     })
     cy.visit("/");
-    cy.get('[data-cy=login-menu #login-button]').should("not.be.disabled");
+    cy.get('[data-cy=login-menu]').find('[login-button]').should("not.be.disabled");
   });
 
   it("redirects to lesson page after logging in", () => {
@@ -48,7 +48,7 @@ describe("Login", () => {
     cy.visit("/");
     cy.location("pathname").should("contain", "lessons");
     cy.get('[data-cy=lessons]').children().should("have.length", 2);
-    cy.get('[data-cy=login-option #login-button]').trigger('mouseover').click();
+    cy.get('[data-cy=login-option]').find('[login-button]').trigger('mouseover').click();
     cy.get('[data-cy=logout]').trigger('mouseover').click();
     cy.location("pathname").should("not.contain", "lessons");
     cy.contains("Welcome to OpenTutor")

@@ -20,15 +20,15 @@ describe("users screen", () => {
     })
     cy.visit("/users");
     cy.get('[data-cy=users]').children().should("have.length", 3);
-    cy.get('[data-cy=user-0 #name]').contains("Admin");
-    cy.get('[data-cy=user-0 #email]').contains("admin@opentutor.org");
-    cy.get('[data-cy=user-0 #role]').contains("Admin");
-    cy.get('[data-cy=user-1 #name]').contains("Content Manager");
-    cy.get('[data-cy=user-1 #email]').contains("contentmanager@opentutor.org");
-    cy.get('[data-cy=user-1 #role]').contains("Content Manager");
-    cy.get('[data-cy=user-2 #name]').contains("Author");
-    cy.get('[data-cy=user-2 #email]').contains("author@opentutor.org");
-    cy.get('[data-cy=user-2 #role]').contains("Author");
+    cy.get('[data-cy=user-0]').find('[name]').contains("Admin");
+    cy.get('[data-cy=user-0]').find('[email]').contains("admin@opentutor.org");
+    cy.get('[data-cy=user-0]').find('[role]').contains("Admin");
+    cy.get('[data-cy=user-1]').find('[name]').contains("Content Manager");
+    cy.get('[data-cy=user-1]').find('[email]').contains("contentmanager@opentutor.org");
+    cy.get('[data-cy=user-1]').find('[role]').contains("Content Manager");
+    cy.get('[data-cy=user-2]').find('[name]').contains("Author");
+    cy.get('[data-cy=user-2]').find('[email]').contains("author@opentutor.org");
+    cy.get('[data-cy=user-2]').find('[role]').contains("Author");
   });
 
   it("displays a list of users to a content manager", () => {
@@ -39,15 +39,15 @@ describe("users screen", () => {
     })
     cy.visit("/users");
     cy.get('[data-cy=users]').children().should("have.length", 3);
-    cy.get('[data-cy=user-0 #name]').contains("Admin");
-    cy.get('[data-cy=user-0 #email]').contains("admin@opentutor.org");
-    cy.get('[data-cy=user-0 #role]').contains("Admin");
-    cy.get('[data-cy=user-1 #name]').contains("Content Manager");
-    cy.get('[data-cy=user-1 #email]').contains("contentmanager@opentutor.org");
-    cy.get('[data-cy=user-1 #role]').contains("Content Manager");
-    cy.get('[data-cy=user-2 #name]').contains("Author");
-    cy.get('[data-cy=user-2 #email]').contains("author@opentutor.org");
-    cy.get('[data-cy=user-2 #role]').contains("Author");
+    cy.get('[data-cy=user-0]').find('[name]').contains("Admin");
+    cy.get('[data-cy=user-0]').find('[email]').contains("admin@opentutor.org");
+    cy.get('[data-cy=user-0]').find('[role]').contains("Admin");
+    cy.get('[data-cy=user-1]').find('[name]').contains("Content Manager");
+    cy.get('[data-cy=user-1]').find('[email]').contains("contentmanager@opentutor.org");
+    cy.get('[data-cy=user-1]').find('[role]').contains("Content Manager");
+    cy.get('[data-cy=user-2]').find('[name]').contains("Author");
+    cy.get('[data-cy=user-2]').find('[email]').contains("author@opentutor.org");
+    cy.get('[data-cy=user-2]').find('[role]').contains("Author");
   });
 
   it("hides users if not logged in", () => {
