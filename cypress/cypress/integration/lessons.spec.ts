@@ -97,11 +97,8 @@ describe("lessons screen", () => {
     cy.visit("/lessons");
     cy.get("#column-header");
     cy.get("#column-header #name").contains("Lesson");
-    // cy.get("#column-header #launch-button").contains("Launch");
-    // cy.get("#column-header #grade-button").contains("Grade");
     cy.get("#column-header #updatedAt").contains("Date");
     cy.get("#column-header #createdByName").contains("Created By");
-    // cy.get("#column-header #delete-button").contains("Delete");
   });
 
   it("displays a list of lessons", () => {
