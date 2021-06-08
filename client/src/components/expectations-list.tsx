@@ -110,7 +110,7 @@ const ExpectationCard = (props: {
   }
 
   return (
-    <Card id={`expectation-${expIdx}`}>
+    <Card id={`expectation-${expIdx}`} data-cy={`expectation-${expIdx}`}>
       <CardContent>
         <div style={{ display: "flex", flexDirection: "row" }}>
           <CardActions>
@@ -118,6 +118,7 @@ const ExpectationCard = (props: {
           </CardActions>
           <TextField
             id="edit-expectation"
+            data-cy="edit-expectation"
             margin="normal"
             name="expectations"
             label={`Expectation ${expIdx + 1}`}
@@ -135,7 +136,7 @@ const ExpectationCard = (props: {
           <CardActions>
             {canDelete ? (
               <IconButton
-                id="delete"
+                id="delete" data-cy="delete"
                 aria-label="remove expectation"
                 size="small"
                 onClick={handleRemoveExpectation}
@@ -145,6 +146,7 @@ const ExpectationCard = (props: {
             ) : null}
             <IconButton
               id="expand"
+              data-cy="expand"
               aria-label="expand expectation"
               size="small"
               aria-expanded={expanded}
@@ -260,6 +262,7 @@ function ExpectationsList(props: {
             <List
               {...provided.droppableProps}
               id="expectations"
+              data-cy="expectations"
               ref={provided.innerRef}
               className={
                 snapshot.isDraggingOver ? classes.listDragging : classes.list
@@ -306,6 +309,7 @@ function ExpectationsList(props: {
       </DragDropContext>
       <Button
         id="add-expectation"
+        data-cy="add-expectation"
         startIcon={<AddIcon />}
         className={classes.button}
         onClick={handleAddExpectation}

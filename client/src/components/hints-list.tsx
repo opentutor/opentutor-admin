@@ -40,13 +40,14 @@ const HintCard = (props: {
     props;
 
   return (
-    <Card id={`hint-${hintIdx}`} variant="outlined">
+    <Card id={`hint-${hintIdx}`} data-cy={`hint-${hintIdx}`} variant="outlined">
       <CardContent style={{ display: "flex", flexDirection: "row" }}>
         <CardActions>
           <DragHandleIcon />
         </CardActions>
         <TextField
           id="edit-hint"
+          data-cy="edit-hint"
           margin="normal"
           label={`Hint ${hintIdx + 1}`}
           placeholder="Add a hint to help for the expectation, e.g. 'One of them starts with R'"
@@ -65,7 +66,7 @@ const HintCard = (props: {
         <CardActions>
           {canDelete ? (
             <IconButton
-              id="delete"
+              id="delete" data-cy="delete"
               aria-label="remove hint"
               size="small"
               onClick={handleRemoveHint}
@@ -126,6 +127,7 @@ export default function HintsList(props: {
             <List
               {...provided.droppableProps}
               id="hints"
+              data-cy="hints"
               ref={provided.innerRef}
               dense
               disablePadding

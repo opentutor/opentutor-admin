@@ -243,7 +243,7 @@ const LessonItem = (props: {
       <TableCell id="creator" align="center">
         {row.node.createdByName}
       </TableCell>
-      <TableCell id="delete" align="center">
+      <TableCell id="delete" data-cy="delete" align="center">
         <IconButton
           onClick={handleDelete}
           disabled={!userCanEdit(row.node, context.user)}
