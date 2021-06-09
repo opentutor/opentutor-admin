@@ -6,6 +6,7 @@ The full terms of this copyright and license should always be found in the root 
 */
 import { cySetup, cyMockDefault, mockGQL } from '../support/functions';
 import { lesson } from '../fixtures/lesson';
+import { find } from 'cypress/types/lodash';
 
 const lessons = {
   edges: [
@@ -334,9 +335,9 @@ describe('edit lesson screen', () => {
       });
       cy.visit('/lessons/edit?lessonId=q1');
       cy.get('[data-cy=lesson-id]').clear().type('~');
-      cy.get('#lesson-id-helper-text').contains(
-        'id must be lower-case and alpha-numeric.'
-      );
+      cy.get('[data-cy=lesson-id]')
+        .find('p')
+        .contains('id must be lower-case and alpha-numeric.');
       cy.get('[data-cy=save-button]').should('be.disabled');
       cy.get('[data-cy=launch-button]').should('be.disabled');
     });
@@ -349,9 +350,9 @@ describe('edit lesson screen', () => {
       });
       cy.visit('/lessons/edit?lessonId=q1');
       cy.get('[data-cy=lesson-id]').clear().type('A');
-      cy.get('#lesson-id-helper-text').contains(
-        'id must be lower-case and alpha-numeric.'
-      );
+      cy.get('[data-cy=lesson-id]')
+        .find('p')
+        .contains('id must be lower-case and alpha-numeric.');
       cy.get('[data-cy=save-button]').should('be.disabled');
       cy.get('[data-cy=launch-button]').should('be.disabled');
     });
@@ -367,9 +368,9 @@ describe('edit lesson screen', () => {
       });
       cy.visit('/lessons/edit');
       cy.get('[data-cy=lesson-id]').clear().type('q1');
-      cy.get('#lesson-id-helper-text').contains(
-        'id is already being used for another lesson.'
-      );
+      cy.get('[data-cy=lesson-id]')
+        .find('p')
+        .contains('id is already being used for another lesson.');
       cy.get('[data-cy=save-button]').should('be.disabled');
       cy.get('[data-cy=launch-button]').should('be.disabled');
     });
