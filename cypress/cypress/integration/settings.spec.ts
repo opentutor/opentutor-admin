@@ -18,7 +18,7 @@ describe("settings screen", () => {
       userRole: "admin"
     })
     cy.visit("/settings");
-    cy.get("[data-cy=train-default-button]").should("exist")
+    cy.get('[data-cy=train-default-button]').should("exist")
   });
 
   it("hides settings if not logged in", () => {
@@ -28,7 +28,7 @@ describe("settings screen", () => {
     })
     cy.visit("/settings");
     cy.contains("Please login to view settings.")
-    cy.get("[data-cy=train-default-button]").should("not.exist")
+    cy.get('[data-cy=train-default-button]').should("not.exist")
   });
 
   it("hides settings if not admin", () => {
@@ -38,6 +38,6 @@ describe("settings screen", () => {
     })
     cy.visit("/settings");
     cy.contains("You must be an admin to view this page.")
-    cy.get("[data-cy=train-default-button]").should("not.exist")
+    cy.get('[data-cy=train-default-button]').should("not.exist")
   });
 });

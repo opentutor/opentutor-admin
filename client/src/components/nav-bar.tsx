@@ -108,9 +108,9 @@ function LoginOption(props: { classes: { login: string } }): JSX.Element {
   }
 
   return (
-    <div id="login-option" className={classes.login}>
+    <div id="login-option" data-cy="login-option" className={classes.login}>
       <Button
-        id="login-button"
+        id="login-button" data-cy="login-button"
         onClick={handleMenu}
         startIcon={<AccountCircle />}
         style={{ color: "white" }}
@@ -118,7 +118,7 @@ function LoginOption(props: { classes: { login: string } }): JSX.Element {
         {context.user?.name}
       </Button>
       <Menu
-        id="login-menu"
+        id="login-menu" data-cy="login-menu"
         anchorEl={anchorEl}
         anchorOrigin={{
           vertical: "top",
@@ -132,7 +132,7 @@ function LoginOption(props: { classes: { login: string } }): JSX.Element {
         open={open}
         onClose={handleClose}
       >
-        <MenuItem id="logout" onClick={onLogout}>
+        <MenuItem id="logout" data-cy="logout" onClick={onLogout}>
           Logout
         </MenuItem>
       </Menu>
@@ -153,7 +153,7 @@ export function NavBar(props: {
   }
 
   return (
-    <div id="nav-bar" className={classes.root} data-cy="nav-bar">
+    <div id="nav-bar" data-cy="nav-bar" className={classes.root} >
       <AppBar position="fixed">
         <Toolbar>
           {context.user ? (
@@ -176,10 +176,10 @@ export function NavBar(props: {
             </IconButton>
           ) : undefined}
           <Typography
-            id="title"
+            id="title" data-cy="title"
             variant="h6"
             className={classes.title}
-            data-cy="title"
+            
           >
             {props.title}
           </Typography>
@@ -187,12 +187,12 @@ export function NavBar(props: {
         </Toolbar>
       </AppBar>
       <SwipeableDrawer
-        id="drawer"
+        id="drawer" data-cy="drawer"
         anchor="left"
         open={isDrawerOpen}
         onClose={() => toggleDrawer(false)}
         onOpen={() => toggleDrawer(true)}
-        data-cy="drawer"
+        
       >
         <Toolbar />
         <NavMenu />

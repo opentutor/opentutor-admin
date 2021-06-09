@@ -91,10 +91,10 @@ function TableFooter(props: {
     <AppBar position="sticky" color="default" className={classes.appBar}>
       <Toolbar>
         <div className={classes.paging}>
-          <IconButton id="prev-page" disabled={!hasPrev} onClick={onPrev}>
+          <IconButton id="prev-page" data-cy="prev-page" disabled={!hasPrev} onClick={onPrev}>
             <KeyboardArrowLeftIcon />
           </IconButton>
-          <IconButton id="next-page" disabled={!hasNext} onClick={onNext}>
+          <IconButton id="next-page" data-cy="next-page" disabled={!hasNext} onClick={onNext}>
             <KeyboardArrowRightIcon />
           </IconButton>
         </div>
@@ -122,16 +122,16 @@ function UserItem(props: {
   }
 
   return (
-    <TableRow id={`user-${i}`} hover role="checkbox" tabIndex={-1}>
-      <TableCell id="name" align="left">
+    <TableRow id={`user-${i}`} data-cy={`user-${i}`} hover role="checkbox" tabIndex={-1}>
+      <TableCell id="name" data-cy="name"  align="left">
         {row.node.name}
       </TableCell>
-      <TableCell id="email" align="left">
+      <TableCell id="email" data-cy="email" align="left">
         {row.node.email}
       </TableCell>
-      <TableCell id="role" align="center">
+      <TableCell id="role" data-cy="role" align="center">
         <Select
-          id="select-role"
+          id="select-role" data-cy="select-role"
           value={row.node.userRole}
           onChange={(
             event: React.ChangeEvent<{ value: unknown; name?: unknown }>
@@ -227,7 +227,7 @@ function UsersTable(): JSX.Element {
               sortAsc={sortAsc}
               onSort={onSort}
             />
-            <TableBody id="users">
+            <TableBody id="users" data-cy="users">
               {users.edges.map((row, i) => (
                 <UserItem
                   key={row.node.id}

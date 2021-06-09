@@ -106,11 +106,11 @@ const SessionTable = (props: { search: { sessionId: string } }) => {
 
   return (
     <Paper className={classes.root}>
-      <div id="lesson">{session.lesson?.name || "No Lesson Name"}</div>
-      <div id="username">{session.username || "Guest"}</div>
-      <div id="date">{date ? date : ""}</div>
-      <div id="question"> {session.question?.text || ""} </div>
-      <div id="score">
+      <div id="lesson" data-cy="lesson">{session.lesson?.name || "No Lesson Name"}</div>
+      <div id="username" data-cy="username">{session.username || "Guest"}</div>
+      <div id="date" data-cy="date">{date ? date : ""}</div>
+      <div id="question" data-cy="question"> {session.question?.text || ""} </div>
+      <div id="score" data-cy="score">
         Score:{" "}
         {session.graderGrade || session.graderGrade !== null
           ? Math.trunc(session.graderGrade * 100)
@@ -140,12 +140,13 @@ const SessionTable = (props: { search: { sessionId: string } }) => {
               return (
                 <TableRow
                   id={`response-${i}`}
+                  data-cy={`response-${i}`}
                   key={`response-${i}`}
                   hover
                   role="checkbox"
                   tabIndex={-1}
                 >
-                  <TableCell id="answer">{row.text}</TableCell>
+                  <TableCell id="answer" data-cy="answer">{row.text}</TableCell>
                   {session?.question?.expectations.map((column, j: number) => (
                     <TableCell
                       style={{
@@ -168,10 +169,11 @@ const SessionTable = (props: { search: { sessionId: string } }) => {
                       }}
                       key={`grade-${j}`}
                       id={`grade-${j}`}
+                      data-cy={`grade-${j}`}
                       align="left"
                     >
                       <Typography
-                        id="classifier-grade"
+                        id="classifier-grade" data-cy="classifier-grade"
                         align="right"
                         component={"span"}
                       >
@@ -182,13 +184,13 @@ const SessionTable = (props: { search: { sessionId: string } }) => {
                       </Typography>
                       <br />
                       <Typography
-                        id="instructor-grade"
+                        id="instructor-grade" data-cy="instructor-grade"
                         align="right"
                         component={"span"}
                       >
                         Grade:
                         <Select
-                          id="select-grade"
+                          id="select-grade" data-cy="select-grade"
                           labelId={`set-grade-${i}-${j}`}
                           value={
                             row.expectationScores[j]
@@ -198,16 +200,16 @@ const SessionTable = (props: { search: { sessionId: string } }) => {
                           name={`${i} ${j}`}
                           onChange={handleGradeExpectationChange}
                         >
-                          <MenuItem id="none" value="">
+                          <MenuItem id="none" data-cy="none" value="">
                             <em>Empty</em>
                           </MenuItem>
-                          <MenuItem id="good" value={"Good"}>
+                          <MenuItem id="good" data-cy="good" value={"Good"}>
                             Good
                           </MenuItem>
-                          <MenuItem id="bad" value={"Bad"}>
+                          <MenuItem id="bad" data-cy="bad" value={"Bad"}>
                             Bad
                           </MenuItem>
-                          <MenuItem id="neutral" value={"Neutral"}>
+                          <MenuItem id="neutral" data-cy="neutral" value={"Neutral"}>
                             Neutral
                           </MenuItem>
                         </Select>

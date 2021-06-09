@@ -78,7 +78,7 @@ describe("screenshots - lesson edit", () => {
       userRole: "admin",
     });
     cy.visit("/lessons/edit?lessonId=lesson");
-    cy.get("[data-cy=intro]").within(($input) => {
+    cy.get('[data-cy=intro]').within(($input) => {
       cy.get("textarea").fill("Hello World");
     });
     cy.matchImageSnapshot(snapname("displays-save-button-enabled-after-edits"));

@@ -29,10 +29,10 @@ describe("settings screen - training default", () => {
     const waitComplete = cyMockTrainStatusSeq(cy, [
       { status: { state: TrainState.PENDING } },
     ]);
-    cy.get("[data-cy=train-default-button]").trigger("mouseover").click();
+    cy.get('[data-cy=train-default-button]').trigger("mouseover").click();
     waitTrainDefault();
     waitComplete();
-    cy.get("[data-cy=loading]").should("exist");
+    cy.get('[data-cy=loading]').should("exist");
   })
 
   it("fails for state FAILURE", () => {
@@ -47,10 +47,10 @@ describe("settings screen - training default", () => {
       { status: { state: TrainState.STARTED } },
       { status: { state: TrainState.FAILURE } },
     ]);
-    cy.get("[data-cy=train-default-button]").trigger("mouseover").click();
+    cy.get('[data-cy=train-default-button]').trigger("mouseover").click();
     waitTrainDefault();
     waitComplete();
-    cy.get("[data-cy=train-failure]").should("contain", "TRAINING FAILED");
+    cy.get('[data-cy=train-failure]').should("contain", "TRAINING FAILED");
   });
 
   it("fails for http error on start", () => {
@@ -60,9 +60,9 @@ describe("settings screen - training default", () => {
     })
     cy.visit("/settings");
     const waitTrainDefault = cyMockTrainDefault(cy, { responseStatus: 500 });
-    cy.get("[data-cy=train-default-button]").trigger("mouseover").click();
+    cy.get('[data-cy=train-default-button]').trigger("mouseover").click();
     waitTrainDefault();
-    cy.get("[data-cy=train-failure]").should("contain", "TRAINING FAILED");
+    cy.get('[data-cy=train-failure]').should("contain", "TRAINING FAILED");
   });
 
   it("fails for http error on poll status", () => {
@@ -82,10 +82,10 @@ describe("settings screen - training default", () => {
         responseStatusCode: 500,
       },
     ]);
-    cy.get("[data-cy=train-default-button]").trigger("mouseover").click();
+    cy.get('[data-cy=train-default-button]').trigger("mouseover").click();
     waitTrainDefault();
     waitComplete();
-    cy.get("[data-cy=train-failure]").should("contain", "TRAINING FAILED");
+    cy.get('[data-cy=train-failure]').should("contain", "TRAINING FAILED");
   });
 
   it("show success message on successful train", () => {
@@ -100,9 +100,9 @@ describe("settings screen - training default", () => {
       { status: { state: TrainState.STARTED } },
       { status: { state: TrainState.SUCCESS } },
     ]);
-    cy.get("[data-cy=train-default-button]").trigger("mouseover").click();
+    cy.get('[data-cy=train-default-button]').trigger("mouseover").click();
     waitTrainDefault();
     waitComplete();
-    cy.get("[data-cy=train-success]").should("contain", "TRAINING SUCCEEDED");
+    cy.get('[data-cy=train-success]').should("contain", "TRAINING SUCCEEDED");
   })
 });

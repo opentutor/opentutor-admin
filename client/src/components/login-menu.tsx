@@ -94,14 +94,14 @@ export function LoginMenu(): JSX.Element {
   }
 
   return (
-    <div id="login-menu" className={classes.root}>
+    <div id="login-menu" data-cy="login-menu" className={classes.root}>
       <NavBar title="OpenTutor" />
       <Typography variant="h5" className={classes.title}>
         Welcome to OpenTutor
       </Typography>
       {process.env.ACCESS_TOKEN ? (
         <Button
-          id="login-button"
+          id="login-button" data-cy="login-button"
           variant="contained"
           color="primary"
           onClick={() =>
@@ -118,7 +118,7 @@ export function LoginMenu(): JSX.Element {
           cookiePolicy={"single_host_origin"}
           render={(renderProps) => (
             <Button
-              id="login-button"
+              id="login-button" data-cy="login-button"
               variant="contained"
               color="primary"
               onClick={renderProps.onClick}
@@ -131,7 +131,7 @@ export function LoginMenu(): JSX.Element {
         />
       ) : (
         <Button
-          id="login-button"
+          id="login-button" data-cy="login-button"
           variant="contained"
           color="primary"
           disabled={true}

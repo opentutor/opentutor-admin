@@ -46,8 +46,8 @@ const HintCard = (props: {
           <DragHandleIcon />
         </CardActions>
         <TextField
-          id="edit-hint"
-          data-cy="edit-hint"
+          id="edit-hint" data-cy="edit-hint"
+          
           margin="normal"
           label={`Hint ${hintIdx + 1}`}
           placeholder="Add a hint to help for the expectation, e.g. 'One of them starts with R'"
@@ -66,7 +66,7 @@ const HintCard = (props: {
         <CardActions>
           {canDelete ? (
             <IconButton
-              id="delete" data-cy="delete"
+              id="delete" data-cy="delete" 
               aria-label="remove hint"
               size="small"
               onClick={handleRemoveHint}
@@ -122,12 +122,12 @@ export default function HintsList(props: {
         Hints
       </Typography>
       <DragDropContext onDragEnd={onDragEnd}>
-        <Droppable droppableId="droppable">
+        <Droppable droppableid="droppable" data-cy="droppable">
           {(provided, snapshot) => (
             <List
               {...provided.droppableProps}
-              id="hints"
-              data-cy="hints"
+              id="hints" data-cy="hints"
+              
               ref={provided.innerRef}
               dense
               disablePadding
@@ -168,8 +168,8 @@ export default function HintsList(props: {
         </Droppable>
       </DragDropContext>
       <Button
-        id="add-hint"
-        data-cy="add-hint"
+        id="add-hint" data-cy="add-hint"
+        
         startIcon={<AddIcon />}
         className={classes.button}
         onClick={handleAddHint}

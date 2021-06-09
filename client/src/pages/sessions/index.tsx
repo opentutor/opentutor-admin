@@ -142,7 +142,7 @@ function TableFooter(props: {
           <FormControlLabel
             control={
               <Switch
-                id="toggle-creator"
+                id="toggle-creator" data-cy="toggle-creator"
                 checked={onlyCreator}
                 onChange={toggleCreator}
                 aria-label="switch"
@@ -155,7 +155,7 @@ function TableFooter(props: {
           <FormControlLabel
             control={
               <Switch
-                id="toggle-graded"
+                id="toggle-graded" data-cy="toggle-graded"
                 checked={showGraded}
                 onChange={toggleGraded}
                 aria-label="switch"
@@ -165,10 +165,10 @@ function TableFooter(props: {
           />
         </FormGroup>
         <div className={classes.paging}>
-          <IconButton id="prev-page" disabled={!hasPrev} onClick={onPrev}>
+          <IconButton id="prev-page" data-cy="prev-page" disabled={!hasPrev} onClick={onPrev}>
             <KeyboardArrowLeftIcon />
           </IconButton>
-          <IconButton id="next-page" disabled={!hasNext} onClick={onNext}>
+          <IconButton id="next-page" data-cy="next-page" disabled={!hasNext} onClick={onNext}>
             <KeyboardArrowRightIcon />
           </IconButton>
         </div>
@@ -188,6 +188,7 @@ function SessionItem(props: { row: Edge<Session>; i: number }): JSX.Element {
   return (
     <TableRow
       id={`session-${i}`}
+      data-cy={`session-${i}`} 
       hover
       role="checkbox"
       tabIndex={-1}
@@ -198,7 +199,7 @@ function SessionItem(props: { row: Edge<Session>; i: number }): JSX.Element {
             : "white",
       }}
     >
-      <TableCell id="lesson" align="left">
+      <TableCell id="lesson" data-cy="lesson" align="left">
         {userCanEdit(row.node.lesson, context.user) ? (
           <Link to={`/lessons/edit?lessonId=${row.node.lesson.lessonId}`}>
             {row.node.lesson?.name || "No Lesson Name"}
@@ -207,7 +208,7 @@ function SessionItem(props: { row: Edge<Session>; i: number }): JSX.Element {
           row.node.lesson?.name || "No Lesson Name"
         )}
       </TableCell>
-      <TableCell id="grade">
+      <TableCell id="grade" data-cy="grade">
         <IconButton
           onClick={handleGrade}
           disabled={!userCanEdit(row.node.lesson, context.user)}
@@ -215,27 +216,27 @@ function SessionItem(props: { row: Edge<Session>; i: number }): JSX.Element {
           <AssignmentIcon />
         </IconButton>
       </TableCell>
-      <TableCell id="instructor-grade" align="center">
+      <TableCell id="instructor-grade" data-cy="instructor-grade" align="center">
         {row.node.graderGrade || row.node.graderGrade === 0
           ? Math.trunc(row.node.graderGrade * 100)
           : "?"}
       </TableCell>
-      <TableCell id="classifier-grade" align="center">
+      <TableCell id="classifier-grade" data-cy="classifier-grade" align="center">
         {row.node ? Math.trunc(row.node.classifierGrade * 100) : "?"}
       </TableCell>
-      <TableCell id="last-graded-by" align="center">
+      <TableCell id="last-graded-by" data-cy="last-graded-by" align="center">
         {row.node.lastGradedByName || ""}
       </TableCell>
-      <TableCell id="last-graded-at" align="center">
+      <TableCell id="last-graded-at" data-cy="last-graded-at" align="center">
         {row.node.lastGradedAt || ""}
       </TableCell>
-      <TableCell id="date" align="center">
+      <TableCell id="date" data-cy="date" align="center">
         {row.node.createdAt || ""}
       </TableCell>
-      <TableCell id="creator" align="center">
+      <TableCell id="creator" data-cy="creator" align="center">
         {row.node.lessonCreatedBy || "Guest"}
       </TableCell>
-      <TableCell id="username" align="center">
+      <TableCell id="username" data-cy="username" align="center">
         {row.node.username || "Guest"}
       </TableCell>
     </TableRow>
@@ -327,7 +328,7 @@ function SessionsTable(props: { search: { lessonId: string } }): JSX.Element {
               sortAsc={sortAsc}
               onSort={onSort}
             />
-            <TableBody id="sessions">
+            <TableBody id="sessions" data-cy="sessions">
               {sessions.edges.map((row, i) => (
                 <SessionItem key={row.node.sessionId} row={row} i={i} />
               ))}
