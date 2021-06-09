@@ -99,7 +99,7 @@ describe('lesson screen - training', () => {
       waitTrainLesson();
       waitComplete();
       for (let i = 0; i < ex.expectedAccuracies.length; i++) {
-        cy.get(`#train-success-accuracy-${i}`).should(
+        cy.get(`[data-cy=train-success-accuracy-${i}]`).should(
           'contain',
           ex.expectedAccuracies[i]
         );

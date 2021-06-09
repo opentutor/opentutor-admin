@@ -40,13 +40,12 @@ const HintCard = (props: {
     props;
 
   return (
-    <Card id={`hint-${hintIdx}`} data-cy={`hint-${hintIdx}`} variant="outlined">
+    <Card data-cy={`hint-${hintIdx}`} variant="outlined">
       <CardContent style={{ display: "flex", flexDirection: "row" }}>
         <CardActions>
           <DragHandleIcon />
         </CardActions>
         <TextField
-          id="edit-hint"
           data-cy="edit-hint"
           margin="normal"
           label={`Hint ${hintIdx + 1}`}
@@ -66,7 +65,6 @@ const HintCard = (props: {
         <CardActions>
           {canDelete ? (
             <IconButton
-              id="delete"
               data-cy="delete"
               aria-label="remove hint"
               size="small"
@@ -127,7 +125,6 @@ export default function HintsList(props: {
           {(provided, snapshot) => (
             <List
               {...provided.droppableProps}
-              id="hints"
               data-cy="hints"
               ref={provided.innerRef}
               dense
@@ -169,7 +166,6 @@ export default function HintsList(props: {
         </Droppable>
       </DragDropContext>
       <Button
-        id="add-hint"
         data-cy="add-hint"
         startIcon={<AddIcon />}
         className={classes.button}

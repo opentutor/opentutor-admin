@@ -50,14 +50,13 @@ const ConclusionCard = (props: {
   } = props;
 
   return (
-    <Card id={`conclusion-${idx}`} data-cy={`conclusion-${idx}`}>
+    <Card data-cy={`conclusion-${idx}`}>
       <CardContent style={{ display: "flex", flexDirection: "row" }}>
         <CardActions>
           <DragHandleIcon />
         </CardActions>
         <TextField
           margin="normal"
-          id="edit-conclusion"
           data-cy="edit-conclusion"
           label={`Conclusion ${idx + 1}`}
           multiline
@@ -76,7 +75,6 @@ const ConclusionCard = (props: {
         <CardActions>
           {canDelete ? (
             <IconButton
-              id="delete"
               data-cy="delete"
               aria-label="remove conclusion"
               size="small"
@@ -136,7 +134,6 @@ function ConclusionsList(props: {
           {(provided, snapshot) => (
             <List
               {...provided.droppableProps}
-              id="conclusions"
               data-cy="conclusions"
               ref={provided.innerRef}
               className={
@@ -176,7 +173,6 @@ function ConclusionsList(props: {
         </Droppable>
       </DragDropContext>
       <Button
-        id="add-conclusion"
         data-cy="add-conclusion"
         startIcon={<AddIcon />}
         className={classes.button}
