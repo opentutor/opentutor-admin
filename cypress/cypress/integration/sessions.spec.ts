@@ -129,25 +129,33 @@ describe('sessions screen', () => {
     });
     cy.visit('/sessions');
     cy.get('[data-cy=column-header]');
-    cy.get('[data-cy=column-header]').find('#lessonName').contains('Lesson');
-    cy.get('[data-cy=column-header]').find('#grade-link').contains('Grade');
     cy.get('[data-cy=column-header]')
-      .find('#graderGrade')
+      .find('[data-cy=lessonName]')
+      .contains('Lesson');
+    cy.get('[data-cy=column-header]')
+      .find('[data-cy=grade-link]')
+      .contains('Grade');
+    cy.get('[data-cy=column-header]')
+      .find('[data-cy=graderGrade]')
       .contains('Instructor Grade');
     cy.get('[data-cy=column-header]')
-      .find('#classifierGrade')
+      .find('[data-cy=classifierGrade]')
       .contains('Classifier Grade');
     cy.get('[data-cy=column-header]')
-      .find('#lastGradedByName')
+      .find('[data-cy=lastGradedByName]')
       .contains('Last Graded By');
     cy.get('[data-cy=column-header]')
-      .find('#lastGradedAt')
+      .find('[data-cy=lastGradedAt]')
       .contains('Last Graded At');
-    cy.get('[data-cy=column-header]').find('#username').contains('Username');
     cy.get('[data-cy=column-header]')
-      .find('#lessonCreatedBy')
+      .find('[data-cy=username]')
+      .contains('Username');
+    cy.get('[data-cy=column-header]')
+      .find('[data-cy=lessonCreatedBy]')
       .contains('Created By');
-    cy.get('[data-cy=column-header]').find('#username').contains('Username');
+    cy.get('[data-cy=column-header]')
+      .find('[data-cy=username]')
+      .contains('Username');
   });
 
   it('displays a list of sessions', () => {

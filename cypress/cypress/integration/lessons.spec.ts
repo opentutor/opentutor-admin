@@ -121,14 +121,20 @@ describe('lessons screen', () => {
     });
     cy.visit('/lessons');
     cy.get('[data-cy=column-header]');
-    cy.get('[data-cy=column-header]').find('#name').contains('Lesson');
-    cy.get('[data-cy=column-header]').find('#launch').contains('Launch');
-    cy.get('[data-cy=column-header]').find('#grade').contains('Grade');
-    cy.get('[data-cy=column-header]').find('#updatedAt').contains('Date');
+    cy.get('[data-cy=column-header]').find('[data-cy=name]').contains('Lesson');
     cy.get('[data-cy=column-header]')
-      .find('#createdByName')
+      .find('[data-cy=launch]')
+      .contains('Launch');
+    cy.get('[data-cy=column-header]').find('[data-cy=grade]').contains('Grade');
+    cy.get('[data-cy=column-header]')
+      .find('[data-cy=updatedAt]')
+      .contains('Date');
+    cy.get('[data-cy=column-header]')
+      .find('[data-cy=createdByName]')
       .contains('Created By');
-    cy.get('[data-cy=column-header]').find('#delete').contains('Delete');
+    cy.get('[data-cy=column-header]')
+      .find('[data-cy=delete]')
+      .contains('Delete');
   });
 
   it('displays a list of lessons', () => {

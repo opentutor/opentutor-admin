@@ -36,6 +36,7 @@ export function ColumnHeader(props: {
         {columns.map((column) => (
           <TableCell
             id={column.id}
+            data-cy={column.id}
             key={column.id}
             align={column.align}
             style={{ minWidth: column.minWidth }}
