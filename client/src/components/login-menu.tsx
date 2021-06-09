@@ -101,7 +101,8 @@ export function LoginMenu(): JSX.Element {
       </Typography>
       {process.env.ACCESS_TOKEN ? (
         <Button
-          id="login-button" data-cy="login-button"
+          id="login-button"
+          data-cy="login-button"
           variant="contained"
           color="primary"
           onClick={() =>
@@ -118,7 +119,8 @@ export function LoginMenu(): JSX.Element {
           cookiePolicy={"single_host_origin"}
           render={(renderProps) => (
             <Button
-              id="login-button" data-cy="login-button"
+              id="login-button"
+              data-cy="login-button"
               variant="contained"
               color="primary"
               onClick={renderProps.onClick}
@@ -131,7 +133,8 @@ export function LoginMenu(): JSX.Element {
         />
       ) : (
         <Button
-          id="login-button" data-cy="login-button"
+          id="login-button"
+          data-cy="login-button"
           variant="contained"
           color="primary"
           disabled={true}

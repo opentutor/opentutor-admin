@@ -4,68 +4,84 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import {
-  cySetup,
-  cyMockDefault,
-  mockGQL
-} from "../support/functions";
-import { users } from "../fixtures/users";
+import { cySetup, cyMockDefault, mockGQL } from '../support/functions';
+import { users } from '../fixtures/users';
 
-describe("users screen", () => {
-  it("displays a list of users to an admin", () => {
+describe('users screen', () => {
+  it('displays a list of users to an admin', () => {
     cySetup(cy);
     cyMockDefault(cy, {
-      gqlQueries: [mockGQL("users", users, true)],
-      userRole: "admin"
-    })
-    cy.visit("/users");
-    cy.get('[data-cy=users]').children().should("have.length", 3);
-    cy.get('[data-cy=user-0]').find('[data-cy=name]').contains("Admin");
-    cy.get('[data-cy=user-0]').find('[data-cy=email]').contains("admin@opentutor.org");
-    cy.get('[data-cy=user-0]').find('[data-cy=role]').contains("Admin");
-    cy.get('[data-cy=user-1]').find('[data-cy=name]').contains("Content Manager");
-    cy.get('[data-cy=user-1]').find('[data-cy=email]').contains("contentmanager@opentutor.org");
-    cy.get('[data-cy=user-1]').find('[data-cy=role]').contains("Content Manager");
-    cy.get('[data-cy=user-2]').find('[data-cy=name]').contains("Author");
-    cy.get('[data-cy=user-2]').find('[data-cy=email]').contains("author@opentutor.org");
-    cy.get('[data-cy=user-2]').find('[data-cy=role]').contains("Author");
+      gqlQueries: [mockGQL('users', users, true)],
+      userRole: 'admin',
+    });
+    cy.visit('/users');
+    cy.get('[data-cy=users]').children().should('have.length', 3);
+    cy.get('[data-cy=user-0]').find('[data-cy=name]').contains('Admin');
+    cy.get('[data-cy=user-0]')
+      .find('[data-cy=email]')
+      .contains('admin@opentutor.org');
+    cy.get('[data-cy=user-0]').find('[data-cy=role]').contains('Admin');
+    cy.get('[data-cy=user-1]')
+      .find('[data-cy=name]')
+      .contains('Content Manager');
+    cy.get('[data-cy=user-1]')
+      .find('[data-cy=email]')
+      .contains('contentmanager@opentutor.org');
+    cy.get('[data-cy=user-1]')
+      .find('[data-cy=role]')
+      .contains('Content Manager');
+    cy.get('[data-cy=user-2]').find('[data-cy=name]').contains('Author');
+    cy.get('[data-cy=user-2]')
+      .find('[data-cy=email]')
+      .contains('author@opentutor.org');
+    cy.get('[data-cy=user-2]').find('[data-cy=role]').contains('Author');
   });
 
-  it("displays a list of users to a content manager", () => {
+  it('displays a list of users to a content manager', () => {
     cySetup(cy);
     cyMockDefault(cy, {
-      gqlQueries: [mockGQL("users", users, true)],
-      userRole: "contentManager"
-    })
-    cy.visit("/users");
-    cy.get('[data-cy=users]').children().should("have.length", 3);
-    cy.get('[data-cy=user-0]').find('[data-cy=name]').contains("Admin");
-    cy.get('[data-cy=user-0]').find('[data-cy=email]').contains("admin@opentutor.org");
-    cy.get('[data-cy=user-0]').find('[data-cy=role]').contains("Admin");
-    cy.get('[data-cy=user-1]').find('[data-cy=name]').contains("Content Manager");
-    cy.get('[data-cy=user-1]').find('[data-cy=email]').contains("contentmanager@opentutor.org");
-    cy.get('[data-cy=user-1]').find('[data-cy=role]').contains("Content Manager");
-    cy.get('[data-cy=user-2]').find('[data-cy=name]').contains("Author");
-    cy.get('[data-cy=user-2]').find('[data-cy=email]').contains("author@opentutor.org");
-    cy.get('[data-cy=user-2]').find('[data-cy=role]').contains("Author");
+      gqlQueries: [mockGQL('users', users, true)],
+      userRole: 'contentManager',
+    });
+    cy.visit('/users');
+    cy.get('[data-cy=users]').children().should('have.length', 3);
+    cy.get('[data-cy=user-0]').find('[data-cy=name]').contains('Admin');
+    cy.get('[data-cy=user-0]')
+      .find('[data-cy=email]')
+      .contains('admin@opentutor.org');
+    cy.get('[data-cy=user-0]').find('[data-cy=role]').contains('Admin');
+    cy.get('[data-cy=user-1]')
+      .find('[data-cy=name]')
+      .contains('Content Manager');
+    cy.get('[data-cy=user-1]')
+      .find('[data-cy=email]')
+      .contains('contentmanager@opentutor.org');
+    cy.get('[data-cy=user-1]')
+      .find('[data-cy=role]')
+      .contains('Content Manager');
+    cy.get('[data-cy=user-2]').find('[data-cy=name]').contains('Author');
+    cy.get('[data-cy=user-2]')
+      .find('[data-cy=email]')
+      .contains('author@opentutor.org');
+    cy.get('[data-cy=user-2]').find('[data-cy=role]').contains('Author');
   });
 
-  it("hides users if not logged in", () => {
+  it('hides users if not logged in', () => {
     cySetup(cy);
     cyMockDefault(cy, {
       noLogin: true,
-      gqlQueries: [mockGQL("users", users, true)],
-    })
-    cy.visit("/users");
-    cy.contains("Please login to view users.")
+      gqlQueries: [mockGQL('users', users, true)],
+    });
+    cy.visit('/users');
+    cy.contains('Please login to view users.');
   });
 
-  it("hides users if not admin or content manager", () => {
+  it('hides users if not admin or content manager', () => {
     cySetup(cy);
     cyMockDefault(cy, {
-      gqlQueries: [mockGQL("users", users, true)],
-    })
-    cy.visit("/users");
-    cy.contains("You must be an admin or content manager to view this page.")
+      gqlQueries: [mockGQL('users', users, true)],
+    });
+    cy.visit('/users');
+    cy.contains('You must be an admin or content manager to view this page.');
   });
 });

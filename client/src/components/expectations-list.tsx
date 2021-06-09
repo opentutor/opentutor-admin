@@ -117,8 +117,8 @@ const ExpectationCard = (props: {
             <DragHandleIcon />
           </CardActions>
           <TextField
-            id="edit-expectation" data-cy="edit-expectation"
-            
+            id="edit-expectation"
+            data-cy="edit-expectation"
             margin="normal"
             name="expectations"
             label={`Expectation ${expIdx + 1}`}
@@ -136,7 +136,8 @@ const ExpectationCard = (props: {
           <CardActions>
             {canDelete ? (
               <IconButton
-                id="delete" data-cy="delete" 
+                id="delete"
+                data-cy="delete"
                 aria-label="remove expectation"
                 size="small"
                 onClick={handleRemoveExpectation}
@@ -145,8 +146,8 @@ const ExpectationCard = (props: {
               </IconButton>
             ) : null}
             <IconButton
-              id="expand" data-cy="expand"
-              
+              id="expand"
+              data-cy="expand"
               aria-label="expand expectation"
               size="small"
               aria-expanded={expanded}
@@ -257,12 +258,12 @@ function ExpectationsList(props: {
         Expectations
       </Typography>
       <DragDropContext onDragEnd={onDragEnd}>
-        <Droppable droppableid="droppable" data-cy="droppable">
+        <Droppable droppableid="droppable">
           {(provided, snapshot) => (
             <List
               {...provided.droppableProps}
-              id="expectations" data-cy="expectations"
-              
+              id="expectations"
+              data-cy="expectations"
               ref={provided.innerRef}
               className={
                 snapshot.isDraggingOver ? classes.listDragging : classes.list
@@ -308,8 +309,8 @@ function ExpectationsList(props: {
         </Droppable>
       </DragDropContext>
       <Button
-        id="add-expectation" data-cy="add-expectation"
-        
+        id="add-expectation"
+        data-cy="add-expectation"
         startIcon={<AddIcon />}
         className={classes.button}
         onClick={handleAddExpectation}

@@ -4,40 +4,36 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import {
-  cySetup,
-  cyMockDefault,
-  mockGQL
-} from "../support/functions";
-import { users } from "../fixtures/users";
+import { cySetup, cyMockDefault, mockGQL } from '../support/functions';
+import { users } from '../fixtures/users';
 
-describe("settings screen", () => {
-  it("displays settings to an admin", () => {
+describe('settings screen', () => {
+  it('displays settings to an admin', () => {
     cySetup(cy);
     cyMockDefault(cy, {
-      userRole: "admin"
-    })
-    cy.visit("/settings");
-    cy.get('[data-cy=train-default-button]').should("exist")
+      userRole: 'admin',
+    });
+    cy.visit('/settings');
+    cy.get('[data-cy=train-default-button]').should('exist');
   });
 
-  it("hides settings if not logged in", () => {
+  it('hides settings if not logged in', () => {
     cySetup(cy);
     cyMockDefault(cy, {
       noLogin: true,
-    })
-    cy.visit("/settings");
-    cy.contains("Please login to view settings.")
-    cy.get('[data-cy=train-default-button]').should("not.exist")
+    });
+    cy.visit('/settings');
+    cy.contains('Please login to view settings.');
+    cy.get('[data-cy=train-default-button]').should('not.exist');
   });
 
-  it("hides settings if not admin", () => {
+  it('hides settings if not admin', () => {
     cySetup(cy);
     cyMockDefault(cy, {
-      userRole: "contentManager"
-    })
-    cy.visit("/settings");
-    cy.contains("You must be an admin to view this page.")
-    cy.get('[data-cy=train-default-button]').should("not.exist")
+      userRole: 'contentManager',
+    });
+    cy.visit('/settings');
+    cy.contains('You must be an admin to view this page.');
+    cy.get('[data-cy=train-default-button]').should('not.exist');
   });
 });

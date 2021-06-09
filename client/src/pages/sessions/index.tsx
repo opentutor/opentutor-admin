@@ -142,7 +142,8 @@ function TableFooter(props: {
           <FormControlLabel
             control={
               <Switch
-                id="toggle-creator" data-cy="toggle-creator"
+                id="toggle-creator"
+                data-cy="toggle-creator"
                 checked={onlyCreator}
                 onChange={toggleCreator}
                 aria-label="switch"
@@ -155,7 +156,8 @@ function TableFooter(props: {
           <FormControlLabel
             control={
               <Switch
-                id="toggle-graded" data-cy="toggle-graded"
+                id="toggle-graded"
+                data-cy="toggle-graded"
                 checked={showGraded}
                 onChange={toggleGraded}
                 aria-label="switch"
@@ -165,10 +167,20 @@ function TableFooter(props: {
           />
         </FormGroup>
         <div className={classes.paging}>
-          <IconButton id="prev-page" data-cy="prev-page" disabled={!hasPrev} onClick={onPrev}>
+          <IconButton
+            id="prev-page"
+            data-cy="prev-page"
+            disabled={!hasPrev}
+            onClick={onPrev}
+          >
             <KeyboardArrowLeftIcon />
           </IconButton>
-          <IconButton id="next-page" data-cy="next-page" disabled={!hasNext} onClick={onNext}>
+          <IconButton
+            id="next-page"
+            data-cy="next-page"
+            disabled={!hasNext}
+            onClick={onNext}
+          >
             <KeyboardArrowRightIcon />
           </IconButton>
         </div>
@@ -188,7 +200,7 @@ function SessionItem(props: { row: Edge<Session>; i: number }): JSX.Element {
   return (
     <TableRow
       id={`session-${i}`}
-      data-cy={`session-${i}`} 
+      data-cy={`session-${i}`}
       hover
       role="checkbox"
       tabIndex={-1}
@@ -216,12 +228,20 @@ function SessionItem(props: { row: Edge<Session>; i: number }): JSX.Element {
           <AssignmentIcon />
         </IconButton>
       </TableCell>
-      <TableCell id="instructor-grade" data-cy="instructor-grade" align="center">
+      <TableCell
+        id="instructor-grade"
+        data-cy="instructor-grade"
+        align="center"
+      >
         {row.node.graderGrade || row.node.graderGrade === 0
           ? Math.trunc(row.node.graderGrade * 100)
           : "?"}
       </TableCell>
-      <TableCell id="classifier-grade" data-cy="classifier-grade" align="center">
+      <TableCell
+        id="classifier-grade"
+        data-cy="classifier-grade"
+        align="center"
+      >
         {row.node ? Math.trunc(row.node.classifierGrade * 100) : "?"}
       </TableCell>
       <TableCell id="last-graded-by" data-cy="last-graded-by" align="center">

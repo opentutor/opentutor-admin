@@ -4,81 +4,95 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import {
-  cySetup,
-  cyMockDefault,
-  mockGQL
-} from "../support/functions";
+import { cySetup, cyMockDefault, mockGQL } from '../support/functions';
 
 function snapname(n) {
   return `screenshots-grade-session-list-${n}`;
 }
 
-describe("screenshots - grade session list", () => {
+describe('screenshots - grade session list', () => {
   it("displays sessions with 'show graded' disabled by default'", () => {
     cySetup(cy);
     cyMockDefault(cy, {
-      gqlQueries: [mockGQL("sessions", {
-        edges: [{
-          cursor: "cursor 2",
-          node: {
-            lesson: {
-              name: "lesson 2",
+      gqlQueries: [
+        mockGQL(
+          'sessions',
+          {
+            edges: [
+              {
+                cursor: 'cursor 2',
+                node: {
+                  lesson: {
+                    name: 'lesson 2',
+                  },
+                  sessionId: 'session 2',
+                  classifierGrade: 0.5,
+                  graderGrade: null,
+                  createdAt: '1/1/2000, 12:00:00 AM',
+                },
+              },
+            ],
+            pageInfo: {
+              hasNextPage: false,
+              endCursor: 'cursor 2 ',
             },
-            sessionId: "session 2",
-            classifierGrade: 0.5,
-            graderGrade: null,
-            createdAt: "1/1/2000, 12:00:00 AM",
           },
-        },],
-        pageInfo: {
-          hasNextPage: false,
-          endCursor: "cursor 2 ",
-        },
-      }, true)]
-    })
-    cy.visit("/sessions");
+          true
+        ),
+      ],
+    });
+    cy.visit('/sessions');
     cy.matchImageSnapshot(
-      snapname("displays-sessions-show-graded-disabled-default")
+      snapname('displays-sessions-show-graded-disabled-default')
     );
   });
 
   it("displays ungraded sessions when 'show graded' enabled", () => {
     cySetup(cy);
     cyMockDefault(cy, {
-      gqlQueries: [mockGQL("sessions", {
-        edges: [{
-          cursor: "cursor 1",
-          node: {
-            lesson: {
-              name: "lesson 1",
+      gqlQueries: [
+        mockGQL(
+          'sessions',
+          {
+            edges: [
+              {
+                cursor: 'cursor 1',
+                node: {
+                  lesson: {
+                    name: 'lesson 1',
+                  },
+                  sessionId: 'session 1',
+                  classifierGrade: 1,
+                  graderGrade: 1,
+                  createdAt: '1/1/2000, 12:00:00 AM',
+                },
+              },
+              {
+                cursor: 'cursor 2',
+                node: {
+                  lesson: {
+                    name: 'lesson 2',
+                  },
+                  sessionId: 'session 2',
+                  classifierGrade: 0.5,
+                  graderGrade: null,
+                  createdAt: '1/1/2000, 12:00:00 AM',
+                },
+              },
+            ],
+            pageInfo: {
+              hasNextPage: false,
+              endCursor: 'cursor 2 ',
             },
-            sessionId: "session 1",
-            classifierGrade: 1,
-            graderGrade: 1,
-            createdAt: "1/1/2000, 12:00:00 AM",
           },
-        }, {
-          cursor: "cursor 2",
-          node: {
-            lesson: {
-              name: "lesson 2",
-            },
-            sessionId: "session 2",
-            classifierGrade: 0.5,
-            graderGrade: null,
-            createdAt: "1/1/2000, 12:00:00 AM",
-          },
-        },],
-        pageInfo: {
-          hasNextPage: false,
-          endCursor: "cursor 2 ",
-        },
-      }, true)]
-    })
-    cy.visit("/sessions");
+          true
+        ),
+      ],
+    });
+    cy.visit('/sessions');
     cy.get('[data-cy=toggle-graded]').within(($input) => {
-      cy.get("input").check();});
-    cy.matchImageSnapshot(snapname("displays-sessions-show-graded-enabled"));
+      cy.get('input').check();
+    });
+    cy.matchImageSnapshot(snapname('displays-sessions-show-graded-enabled'));
   });
 });

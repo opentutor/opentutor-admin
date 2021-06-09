@@ -31,7 +31,7 @@ export function ColumnHeader(props: {
   const { columns, sortBy, sortAsc, onSort } = props;
 
   return (
-    <TableHead id="column-header" data-cy="column-header" >
+    <TableHead id="column-header" data-cy="column-header">
       <TableRow>
         {columns.map((column) => (
           <TableCell
@@ -44,7 +44,8 @@ export function ColumnHeader(props: {
               column.label
             ) : (
               <TableSortLabel
-                id="sort" data-cy="sort"
+                id="sort"
+                data-cy="sort"
                 active={sortBy === column.id}
                 direction={sortAsc ? "asc" : "desc"}
                 onClick={() => {

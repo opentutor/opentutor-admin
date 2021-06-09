@@ -80,16 +80,16 @@ function SettingsPage(props: { path: string }): JSX.Element {
             startDefaultTraining();
           }}
           disabled={isTraining}
-          
+          data-cy="train-default-button"
         >
           Train Default Classifier
         </Button>
         {isTraining ? (
-          <CircularProgress  className={styles.loading} />
+          <CircularProgress data-cy="loading" className={styles.loading} />
         ) : trainStatus.state === TrainState.SUCCESS ? (
-          <Typography >{`TRAINING SUCCEEDED`}</Typography>
+          <Typography data-cy="train-success">{`TRAINING SUCCEEDED`}</Typography>
         ) : trainStatus.state === TrainState.FAILURE ? (
-          <Typography >{`TRAINING FAILED`}</Typography>
+          <Typography data-cy="train-failure">{`TRAINING FAILED`}</Typography>
         ) : null}
       </Container>
     </div>

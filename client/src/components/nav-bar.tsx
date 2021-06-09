@@ -110,7 +110,8 @@ function LoginOption(props: { classes: { login: string } }): JSX.Element {
   return (
     <div id="login-option" data-cy="login-option" className={classes.login}>
       <Button
-        id="login-button" data-cy="login-button"
+        id="login-button"
+        data-cy="login-button"
         onClick={handleMenu}
         startIcon={<AccountCircle />}
         style={{ color: "white" }}
@@ -118,7 +119,8 @@ function LoginOption(props: { classes: { login: string } }): JSX.Element {
         {context.user?.name}
       </Button>
       <Menu
-        id="login-menu" data-cy="login-menu"
+        id="login-menu"
+        data-cy="login-menu"
         anchorEl={anchorEl}
         anchorOrigin={{
           vertical: "top",
@@ -153,7 +155,7 @@ export function NavBar(props: {
   }
 
   return (
-    <div id="nav-bar" data-cy="nav-bar" className={classes.root} >
+    <div id="nav-bar" data-cy="nav-bar" className={classes.root}>
       <AppBar position="fixed">
         <Toolbar>
           {context.user ? (
@@ -176,10 +178,10 @@ export function NavBar(props: {
             </IconButton>
           ) : undefined}
           <Typography
-            id="title" data-cy="title"
+            id="title"
+            data-cy="title"
             variant="h6"
             className={classes.title}
-            
           >
             {props.title}
           </Typography>
@@ -187,12 +189,12 @@ export function NavBar(props: {
         </Toolbar>
       </AppBar>
       <SwipeableDrawer
-        id="drawer" data-cy="drawer"
+        id="drawer"
+        data-cy="drawer"
         anchor="left"
         open={isDrawerOpen}
         onClose={() => toggleDrawer(false)}
         onOpen={() => toggleDrawer(true)}
-        
       >
         <Toolbar />
         <NavMenu />

@@ -132,17 +132,28 @@ const TableFooter = (props: {
   return (
     <AppBar position="sticky" color="default" className={classes.appBar}>
       <Toolbar>
-        <IconButton id="prev-page" data-cy="prev-page" disabled={!hasPrev} onClick={onPrev}>
+        <IconButton
+          id="prev-page"
+          data-cy="prev-page"
+          disabled={!hasPrev}
+          onClick={onPrev}
+        >
           <KeyboardArrowLeftIcon />
         </IconButton>
-        <IconButton id="next-page" data-cy="next-page" disabled={!hasNext} onClick={onNext}>
+        <IconButton
+          id="next-page"
+          data-cy="next-page"
+          disabled={!hasNext}
+          onClick={onNext}
+        >
           <KeyboardArrowRightIcon />
         </IconButton>
         <FormGroup>
           <FormControlLabel
             control={
               <Switch
-                id="toggle-creator" data-cy="toggle-creator"
+                id="toggle-creator"
+                data-cy="toggle-creator"
                 checked={context.onlyCreator}
                 onChange={context.toggleCreator}
                 aria-label="switch"
@@ -152,7 +163,8 @@ const TableFooter = (props: {
           />
         </FormGroup>
         <Fab
-          id="create-button" data-cy="create-button" 
+          id="create-button"
+          data-cy="create-button"
           variant="extended"
           color="primary"
           className={classes.fab}
@@ -212,8 +224,14 @@ const LessonItem = (props: {
   }
 
   return (
-    <TableRow id={`lesson-${i}`} data-cy={`lesson-${i}`} hover role="checkbox" tabIndex={-1}>
-      <TableCell id="name" data-cy="name"  align="left">
+    <TableRow
+      id={`lesson-${i}`}
+      data-cy={`lesson-${i}`}
+      hover
+      role="checkbox"
+      tabIndex={-1}
+    >
+      <TableCell id="name" data-cy="name" align="left">
         {userCanEdit(row.node, context.user) ? (
           <Link to={`/lessons/edit?lessonId=${row.node.lessonId}`}>
             {row.node.name || "No Lesson Name"}
@@ -243,7 +261,7 @@ const LessonItem = (props: {
       <TableCell id="creator" data-cy="creator" align="center">
         {row.node.createdByName}
       </TableCell>
-      <TableCell id="delete" data-cy="delete"  align="center">
+      <TableCell id="delete" data-cy="delete" align="center">
         <IconButton
           onClick={handleDelete}
           disabled={!userCanEdit(row.node, context.user)}
@@ -257,7 +275,8 @@ const LessonItem = (props: {
         </IconButton>
       </TableCell>
       <Menu
-        id="delete-menu" data-cy="delete-menu"
+        id="delete-menu"
+        data-cy="delete-menu"
         anchorEl={anchorEl}
         anchorOrigin={{
           vertical: "top",
@@ -271,10 +290,18 @@ const LessonItem = (props: {
         open={deleteMenuOpen}
         onClose={handleClose}
       >
-        <MenuItem id="confirm-delete" data-cy="confirm-delete" onClick={confirmDelete}>
+        <MenuItem
+          id="confirm-delete"
+          data-cy="confirm-delete"
+          onClick={confirmDelete}
+        >
           Confirm
         </MenuItem>
-        <MenuItem id="cancel-delete" data-cy="cancel-delete" onClick={handleClose}>
+        <MenuItem
+          id="cancel-delete"
+          data-cy="cancel-delete"
+          onClick={handleClose}
+        >
           Cancel
         </MenuItem>
       </Menu>
@@ -350,7 +377,7 @@ const LessonsTable = () => {
               sortAsc={sortAsc}
               onSort={onSort}
             />
-            <TableBody id="lessons" data-cy="lessons" >
+            <TableBody id="lessons" data-cy="lessons">
               {lessons.edges.map((row, i) => (
                 <LessonItem
                   key={`lesson-${i}`}

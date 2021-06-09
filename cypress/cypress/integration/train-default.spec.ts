@@ -4,73 +4,72 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import { TrainState } from "../support/dtos";
+import { TrainState } from '../support/dtos';
 import {
   cySetup,
   cyMockDefault,
   mockGQL,
   cyMockTrainDefault,
   cyMockTrainStatusSeq,
-} from "../support/functions";
+} from '../support/functions';
 
 function snapname(n) {
   return `lesson-page-${n}`;
 }
 
-describe("settings screen - training default", () => {
-
-  it("show loading indicator on train", () => {
+describe('settings screen - training default', () => {
+  it('show loading indicator on train', () => {
     cySetup(cy);
     cyMockDefault(cy, {
-      userRole: "admin"
-    })
-    cy.visit("/settings");
+      userRole: 'admin',
+    });
+    cy.visit('/settings');
     const waitTrainDefault = cyMockTrainDefault(cy);
     const waitComplete = cyMockTrainStatusSeq(cy, [
       { status: { state: TrainState.PENDING } },
     ]);
-    cy.get('[data-cy=train-default-button]').trigger("mouseover").click();
+    cy.get('[data-cy=train-default-button]').trigger('mouseover').click();
     waitTrainDefault();
     waitComplete();
-    cy.get('[data-cy=loading]').should("exist");
-  })
+    cy.get('[data-cy=loading]').should('exist');
+  });
 
-  it("fails for state FAILURE", () => {
+  it('fails for state FAILURE', () => {
     cySetup(cy);
     cyMockDefault(cy, {
-      userRole: "admin"
-    })
-    cy.visit("/settings");
+      userRole: 'admin',
+    });
+    cy.visit('/settings');
     const waitTrainDefault = cyMockTrainDefault(cy);
     const waitComplete = cyMockTrainStatusSeq(cy, [
       { status: { state: TrainState.PENDING } },
       { status: { state: TrainState.STARTED } },
       { status: { state: TrainState.FAILURE } },
     ]);
-    cy.get('[data-cy=train-default-button]').trigger("mouseover").click();
+    cy.get('[data-cy=train-default-button]').trigger('mouseover').click();
     waitTrainDefault();
     waitComplete();
-    cy.get('[data-cy=train-failure]').should("contain", "TRAINING FAILED");
+    cy.get('[data-cy=train-failure]').should('contain', 'TRAINING FAILED');
   });
 
-  it("fails for http error on start", () => {
+  it('fails for http error on start', () => {
     cySetup(cy);
     cyMockDefault(cy, {
-      userRole: "admin"
-    })
-    cy.visit("/settings");
+      userRole: 'admin',
+    });
+    cy.visit('/settings');
     const waitTrainDefault = cyMockTrainDefault(cy, { responseStatus: 500 });
-    cy.get('[data-cy=train-default-button]').trigger("mouseover").click();
+    cy.get('[data-cy=train-default-button]').trigger('mouseover').click();
     waitTrainDefault();
-    cy.get('[data-cy=train-failure]').should("contain", "TRAINING FAILED");
+    cy.get('[data-cy=train-failure]').should('contain', 'TRAINING FAILED');
   });
 
-  it("fails for http error on poll status", () => {
+  it('fails for http error on poll status', () => {
     cySetup(cy);
     cyMockDefault(cy, {
-      userRole: "admin"
-    })
-    cy.visit("/settings");
+      userRole: 'admin',
+    });
+    cy.visit('/settings');
     const waitTrainDefault = cyMockTrainDefault(cy);
     const waitComplete = cyMockTrainStatusSeq(cy, [
       { status: { state: TrainState.PENDING } },
@@ -82,27 +81,27 @@ describe("settings screen - training default", () => {
         responseStatusCode: 500,
       },
     ]);
-    cy.get('[data-cy=train-default-button]').trigger("mouseover").click();
+    cy.get('[data-cy=train-default-button]').trigger('mouseover').click();
     waitTrainDefault();
     waitComplete();
-    cy.get('[data-cy=train-failure]').should("contain", "TRAINING FAILED");
+    cy.get('[data-cy=train-failure]').should('contain', 'TRAINING FAILED');
   });
 
-  it("show success message on successful train", () => {
+  it('show success message on successful train', () => {
     cySetup(cy);
     cyMockDefault(cy, {
-      userRole: "admin"
-    })
-    cy.visit("/settings");
+      userRole: 'admin',
+    });
+    cy.visit('/settings');
     const waitTrainDefault = cyMockTrainDefault(cy);
     const waitComplete = cyMockTrainStatusSeq(cy, [
       { status: { state: TrainState.PENDING } },
       { status: { state: TrainState.STARTED } },
       { status: { state: TrainState.SUCCESS } },
     ]);
-    cy.get('[data-cy=train-default-button]').trigger("mouseover").click();
+    cy.get('[data-cy=train-default-button]').trigger('mouseover').click();
     waitTrainDefault();
     waitComplete();
-    cy.get('[data-cy=train-success]').should("contain", "TRAINING SUCCEEDED");
-  })
+    cy.get('[data-cy=train-success]').should('contain', 'TRAINING SUCCEEDED');
+  });
 });
