@@ -19,9 +19,9 @@ docker-build:
 		-t $(DOCKER_IMAGE) \
 	.
 
-PHONY: format
-format:
-	cd client && $(MAKE) format
+.PHONY: format
+format: node_modules/prettier
+	npm run format
 
 LICENSE:
 	@echo "you must have a LICENSE file" 1>&2
@@ -51,9 +51,9 @@ PHONY: test-audit
 test-audit:
 	cd client && $(MAKE) test-audit
 
-PHONY: test-format
-test-format:
-	cd client && $(MAKE) test-format
+.PHONY: test-format
+test-format: node_modules/prettier
+	npm run test:format
 
 PHONY: test-lint
 test-lint:

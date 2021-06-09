@@ -42,7 +42,6 @@
     "gatsby-plugin-material-ui": "^3.0.1",
     "gatsby-plugin-typescript": "^3.6.0",
     "npm-check-updates": "^11.5.13",
-    "prettier": "^2.3.0",
     "typescript": "^4.3.2"
   },
   "keywords": [
@@ -52,15 +51,13 @@
     "build": "npx gatsby build --prefix-paths",
     "dependencies-update": "npx ncu -u",
     "develop": "npx gatsby develop",
-    "format": "prettier --write '**/*.{js,jsx,json,ts,tsx}'",
     "preinstall": "npx npm-force-resolutions",
     "start": "npm run develop",
     "serve": "gatsby serve --prefix-paths",
     "test": "echo 'all tests are cypress for now'",
-    "test:all": "npx run test:format && npx run test:lint && npx run test:audit && npx run test:types && npx run test:cypress && npx test",
+    "test:all": "npx run test:lint && npx run test:audit && npx run test:types && npx run test:cypress && npx test",
     "test:audit": "npm audit --level=moderate --production",
     "test:cypress": "npx run cy:run --spec 'cypress/**/*.spec.js'",
-    "test:format": "prettier --check '**/*.{js,jsx,json,ts,tsx}'",
     "test:lint": "eslint src --ext ts --ext tsx --ext js --ext jsx --max-warnings=0",
     "test:types": "tsc --noEmit"
   },

@@ -46,10 +46,6 @@ dependencies-update:
 develop: .env.development node_modules/gatsby
 	npx gatsby develop
 
-.PHONY: format
-format: node_modules/prettier
-	npm run format
-
 node_modules/cypress:
 	$(MAKE) install
 
@@ -76,7 +72,6 @@ test:
 PHONY: test-all
 test-all:
 	$(MAKE) test-audit
-	$(MAKE) test-format
 	$(MAKE) test-lint
 	$(MAKE) test-types
 
@@ -84,11 +79,7 @@ test-all:
 test-audit:
 	npm run test:audit
 
-.PHONY: test-format
-test-format: node_modules/prettier
-	npm run test:format
-
-.PHONY: test-format
+.PHONY: test-lint
 test-lint: node_modules/eslint
 	npm run test:lint
 
