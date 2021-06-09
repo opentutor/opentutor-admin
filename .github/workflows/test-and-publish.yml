@@ -10,18 +10,18 @@ jobs:
           node-version: "14.15"
       - name: install
         run:  npm ci
+      - name: format test
+        run: npm run test:format
+      - name: license test
+        run: npm run test:license
       - name: Client - install
         run: cd client && npm ci
       # - name: Client - audit
       #   run: cd client && npm run test:audit
-      - name: Client - format test
-        run: npm run test:format
       - name: Client - lint test
         run: cd client && npm run test:lint
       - name: Client - types test
         run: cd client && npm run test:types
-      - name: license test
-        run: npm run test:license
   test-e2e:
     name: test e2e
     runs-on: ubuntu-latest

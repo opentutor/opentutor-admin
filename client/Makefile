@@ -61,7 +61,7 @@ node_modules/prettier:
 node_modules/typescript:
 	$(MAKE) install
 
-PHONY: install
+.PHONY: install
 install:
 	npm ci 
 
@@ -69,7 +69,7 @@ install:
 test:
 	npm run test
 
-PHONY: test-all
+.PHONY: test-all
 test-all:
 	$(MAKE) test-audit
 	$(MAKE) test-lint
