@@ -317,6 +317,7 @@ const LessonEdit = (props: { search: LessonEditSearch }) => {
           direction="column"
           justify="flex-start"
           alignItems="flex-start"
+          data-cy="lesson-edit-grid"
         >
           <TextField
             id="lesson-name"

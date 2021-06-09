@@ -62,7 +62,7 @@ export function staticResponse(s: StaticResponse): StaticResponse {
 
 export function cySetup(cy) {
   cy.server();
-  cy.viewport(1280, 720);
+  cy.viewport(1920, 1080);
 }
 
 export interface AppConfig {

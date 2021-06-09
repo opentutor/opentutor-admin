@@ -123,7 +123,7 @@ const SessionTable = (props: { search: { sessionId: string } }) => {
           : "?"}
       </div>
       <TableContainer className={classes.container}>
-        <Table stickyHeader aria-label="sticky table">
+        <Table stickyHeader aria-label="sticky table" data-cy="session-table">
           <TableHead>
             <TableRow>
               <TableCell align="center" style={{ width: 100 }}>
