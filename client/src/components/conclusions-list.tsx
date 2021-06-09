@@ -132,7 +132,7 @@ function ConclusionsList(props: {
         Conclusions
       </Typography>
       <DragDropContext onDragEnd={onDragEnd}>
-        <Droppable droppableid="droppable">
+        <Droppable droppableId="droppable">
           {(provided, snapshot) => (
             <List
               {...provided.droppableProps}

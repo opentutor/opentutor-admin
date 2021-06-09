@@ -123,7 +123,7 @@ export default function HintsList(props: {
         Hints
       </Typography>
       <DragDropContext onDragEnd={onDragEnd}>
-        <Droppable droppableid="droppable">
+        <Droppable droppableId="droppable">
           {(provided, snapshot) => (
             <List
               {...provided.droppableProps}
