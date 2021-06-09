@@ -55,7 +55,6 @@
     "start": "npm run develop",
     "serve": "gatsby serve --prefix-paths",
     "test": "echo 'all tests are cypress for now'",
-    "test:all": "npx run test:lint && npx run test:audit && npx run test:types && npx run test:cypress && npx test",
     "test:audit": "npm audit --level=moderate --production",
     "test:cypress": "npx run cy:run --spec 'cypress/**/*.spec.js'",
     "test:lint": "eslint src --ext ts --ext tsx --ext js --ext jsx --max-warnings=0",

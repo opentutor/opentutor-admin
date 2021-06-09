@@ -61,6 +61,14 @@ node_modules/prettier:
 node_modules/typescript:
 	$(MAKE) install
 
+.PHONY: format
+format:
+	cd .. && $(MAKE) format
+
+.PHONY: license
+license:
+	cd .. && $(MAKE) license
+
 .PHONY: install
 install:
 	npm ci 
@@ -72,12 +80,22 @@ test:
 .PHONY: test-all
 test-all:
 	$(MAKE) test-audit
+	$(MAKE) test-format
+	$(MAKE) test-license
 	$(MAKE) test-lint
 	$(MAKE) test-types
 
 .PHONY: test-audit
 test-audit:
 	npm run test:audit
+
+.PHONY: test-format
+test-format:
+	cd .. && $(MAKE) test-format
+
+.PHONY: test-license
+test-license:
+	cd .. && $(MAKE) test-license
 
 .PHONY: test-lint
 test-lint: node_modules/eslint
