@@ -327,7 +327,11 @@ function SessionsTable(props: { search: { lessonId: string } }): JSX.Element {
     <div className={classes.root}>
       <Paper className={classes.container}>
         <TableContainer style={{ height: "calc(100vh - 128px)" }}>
-          <Table stickyHeader aria-label="sticky table" data-cy="sessions-table">
+          <Table
+            stickyHeader
+            aria-label="sticky table"
+            data-cy="sessions-table"
+          >
             <ColumnHeader
               columns={columns}
               sortBy={sortBy}

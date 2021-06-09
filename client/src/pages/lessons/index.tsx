@@ -332,7 +332,10 @@ const LessonsTable = () => {
   return (
     <div className={classes.root}>
       <Paper className={classes.container}>
-        <TableContainer style={{ height: "calc(100vh - 128px)" }} data-cy="lessons-table">
+        <TableContainer
+          style={{ height: "calc(100vh - 128px)" }}
+          data-cy="lessons-table"
+        >
           <Table stickyHeader={true} aria-label="sticky table">
             <ColumnHeader
               columns={columns}
