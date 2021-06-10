@@ -25,9 +25,9 @@ export const lesson = {
       },
     },
   ],
-  createdBy: 'opentutor',
-  createdByName: 'OpenTutor',
-}
+  createdBy: "opentutor",
+  createdByName: "OpenTutor",
+};
 
 export const lessons = {
   edges: [
@@ -54,4 +54,4 @@ export const lessons = {
     hasNextPage: false,
     endCursor: "cursor 2",
   },
-}
+};

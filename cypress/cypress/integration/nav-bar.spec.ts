@@ -14,36 +14,36 @@ describe("Navigation bar", () => {
     it("navigates to /lessons", () => {
       cySetup(cy);
       cyMockDefault(cy, {
-        userRole: "admin"
-      })
+        userRole: "admin",
+      });
       cy.visit("/");
-      cy.get("#nav-bar").get("#menu-button").trigger('mouseover').click();
+      cy.get("#nav-bar").get("#menu-button").trigger("mouseover").click();
       cy.get("#drawer a").eq(0).contains("Lessons");
-      cy.get("#drawer a").eq(0).trigger('mouseover').click();
+      cy.get("#drawer a").eq(0).trigger("mouseover").click();
       cy.location("pathname").should("contain", "/lessons");
     });
 
     it("navigates to /sessions", () => {
       cySetup(cy);
       cyMockDefault(cy, {
-        userRole: "admin"
-      })
+        userRole: "admin",
+      });
       cy.visit("/");
-      cy.get("#nav-bar").get("#menu-button").trigger('mouseover').click();
+      cy.get("#nav-bar").get("#menu-button").trigger("mouseover").click();
       cy.get("#drawer a").eq(1).contains("Grading");
-      cy.get("#drawer a").eq(1).trigger('mouseover').click();
+      cy.get("#drawer a").eq(1).trigger("mouseover").click();
       cy.location("pathname").should("contain", "/sessions");
     });
 
     it("navigates to /users", () => {
       cySetup(cy);
       cyMockDefault(cy, {
-        userRole: "admin"
-      })
+        userRole: "admin",
+      });
       cy.visit("/");
-      cy.get("#nav-bar").get("#menu-button").trigger('mouseover').click();
+      cy.get("#nav-bar").get("#menu-button").trigger("mouseover").click();
       cy.get("#drawer a").eq(2).contains("Users");
-      cy.get("#drawer a").eq(2).trigger('mouseover').click();
+      cy.get("#drawer a").eq(2).trigger("mouseover").click();
       cy.location("pathname").should("contain", "/users");
     });
   });
@@ -51,31 +51,31 @@ describe("Navigation bar", () => {
   describe("permissions", () => {
     it("hides /users if user does not have elevated permissions", () => {
       cySetup(cy);
-      cyMockDefault(cy)
+      cyMockDefault(cy);
       cy.visit("/");
-      cy.get("#nav-bar").get("#menu-button").trigger('mouseover').click();
+      cy.get("#nav-bar").get("#menu-button").trigger("mouseover").click();
       cy.get("#drawer a").eq(0).contains("Lessons");
       cy.get("#drawer a").eq(1).contains("Grading");
-      cy.get("#drawer a").should("have.length", 2)
+      cy.get("#drawer a").should("have.length", 2);
     });
 
     it("shows /users if user is an admin", () => {
       cySetup(cy);
       cyMockDefault(cy, {
-        userRole: "admin"
-      })
+        userRole: "admin",
+      });
       cy.visit("/");
-      cy.get("#nav-bar").get("#menu-button").trigger('mouseover').click();
+      cy.get("#nav-bar").get("#menu-button").trigger("mouseover").click();
       cy.get("#drawer a").eq(2).contains("Users");
     });
 
     it("shows /users if user is a content manager", () => {
       cySetup(cy);
       cyMockDefault(cy, {
-        userRole: "contentManager"
-      })
+        userRole: "contentManager",
+      });
       cy.visit("/");
-      cy.get("#nav-bar").get("#menu-button").trigger('mouseover').click();
+      cy.get("#nav-bar").get("#menu-button").trigger("mouseover").click();
       cy.get("#drawer a").eq(2).contains("Users");
     });
   });
@@ -87,9 +87,9 @@ describe("Navigation bar", () => {
       gqlQueries: [
         mockGQL("lessons", lessons, true),
         mockGQL("sessions", sessions, true),
-        mockGQL("users", users, true)
+        mockGQL("users", users, true),
       ],
-    })
+    });
     cy.visit("/lessons");
     cy.get("#nav-bar").get("#title").contains("Lessons");
     cy.visit("/lessons/edit");
@@ -105,11 +105,11 @@ describe("Navigation bar", () => {
   it("opens drawer menu", () => {
     cySetup(cy);
     cyMockDefault(cy, {
-      userRole: "admin"
-    })
+      userRole: "admin",
+    });
     cy.visit("/");
     cy.get("#drawer").should("not.exist");
-    cy.get("#nav-bar").get("#menu-button").trigger('mouseover').click();
+    cy.get("#nav-bar").get("#menu-button").trigger("mouseover").click();
     cy.get("#drawer");
     cy.get("#drawer a").eq(0).contains("Lessons");
     cy.get("#drawer a").eq(1).contains("Grading");
@@ -119,34 +119,38 @@ describe("Navigation bar", () => {
   it("shows back button on session page instead of menu button", () => {
     cySetup(cy);
     cyMockDefault(cy, {
-      gqlQueries: [mockGQL("session", {
-        username: "username1",
-        sessionId: "session1",
-        createdAt: "1/1/2001",
-        lesson: {
-          name: "lesson 1",
-        },
-        graderGrade: null,
-        question: {
-          text: "question?",
-          expectations: [
-            { text: "expected text 1" },
-          ],
-        },
-        userResponses: [
+      gqlQueries: [
+        mockGQL(
+          "session",
           {
-            text: "answer 1",
-            expectationScores: [
+            username: "username1",
+            sessionId: "session1",
+            createdAt: "1/1/2001",
+            lesson: {
+              name: "lesson 1",
+            },
+            graderGrade: null,
+            question: {
+              text: "question?",
+              expectations: [{ text: "expected text 1" }],
+            },
+            userResponses: [
               {
-                classifierGrade: "Good",
-                graderGrade: "",
+                text: "answer 1",
+                expectationScores: [
+                  {
+                    classifierGrade: "Good",
+                    graderGrade: "",
+                  },
+                ],
               },
             ],
           },
-        ],
-      }, true)],
-      userRole: "admin"
-    })
+          true
+        ),
+      ],
+      userRole: "admin",
+    });
     cy.visit("/sessions/session?sessionId=session1");
     cy.get("#nav-bar").get("#back-button");
   });

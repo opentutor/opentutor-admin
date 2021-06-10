@@ -37,7 +37,7 @@ const lesson = {
   features: {},
   isTrainable: true,
   lastTrainedAt: "",
-}
+};
 
 describe("lesson screen - training", () => {
   [
@@ -73,51 +73,53 @@ describe("lesson screen - training", () => {
       expectedFeedback: "green",
     },
   ].forEach((ex) => {
-    it(`train lesson displays ${ex.expectedFeedback
-      } feedback on success when expectation accuracies ${JSON.stringify(
-        ex.expectedAccuracies
-      )}`, () => {
-        cySetup(cy);
-        cyMockDefault(cy, {
-          gqlQueries: [mockGQL("lesson", lesson, true)],
-          userRole: "admin"
-        })
-        const waitTrainLesson = cyMockTrain(cy);
-        const waitComplete = cyMockTrainStatusSeq(cy, [
-          { status: { state: TrainState.PENDING }, repeat: ex.pendingCount },
-          { status: { state: TrainState.STARTED }, repeat: ex.progressCount },
-          {
-            status: {
-              state: TrainState.SUCCESS,
-              info: ex.info,
-            },
-          },
-        ]);
-        cy.visit("/lessons/edit?lessonId=lesson&trainStatusPollInterval=10");
-        cy.get("#train-button").trigger("mouseover").click();
-        waitTrainLesson();
-        waitComplete();
-        for (let i = 0; i < ex.expectedAccuracies.length; i++) {
-          cy.get(`#train-success-accuracy-${i}`).should(
-            "contain",
-            ex.expectedAccuracies[i]
-          );
-        }
-        cy.get("#train-data").matchImageSnapshot(
-          snapname(
-            `train-success-displays-${ex.expectedFeedback
-            }-for-expectation-accuracies-${ex.expectedAccuracies.join("-")}`
-          )
-        );
+    it(`train lesson displays ${
+      ex.expectedFeedback
+    } feedback on success when expectation accuracies ${JSON.stringify(
+      ex.expectedAccuracies
+    )}`, () => {
+      cySetup(cy);
+      cyMockDefault(cy, {
+        gqlQueries: [mockGQL("lesson", lesson, true)],
+        userRole: "admin",
       });
+      const waitTrainLesson = cyMockTrain(cy);
+      const waitComplete = cyMockTrainStatusSeq(cy, [
+        { status: { state: TrainState.PENDING }, repeat: ex.pendingCount },
+        { status: { state: TrainState.STARTED }, repeat: ex.progressCount },
+        {
+          status: {
+            state: TrainState.SUCCESS,
+            info: ex.info,
+          },
+        },
+      ]);
+      cy.visit("/lessons/edit?lessonId=lesson&trainStatusPollInterval=10");
+      cy.get("#train-button").trigger("mouseover").click();
+      waitTrainLesson();
+      waitComplete();
+      for (let i = 0; i < ex.expectedAccuracies.length; i++) {
+        cy.get(`#train-success-accuracy-${i}`).should(
+          "contain",
+          ex.expectedAccuracies[i]
+        );
+      }
+      cy.get("#train-data").matchImageSnapshot(
+        snapname(
+          `train-success-displays-${
+            ex.expectedFeedback
+          }-for-expectation-accuracies-${ex.expectedAccuracies.join("-")}`
+        )
+      );
+    });
   });
 
   it("train lesson fails for state FAILURE", () => {
     cySetup(cy);
     cyMockDefault(cy, {
       gqlQueries: [mockGQL("lesson", lesson, true)],
-      userRole: "admin"
-    })
+      userRole: "admin",
+    });
     cy.visit("/lessons/edit?lessonId=lesson&trainStatusPollInterval=10");
     const waitTrainLesson = cyMockTrain(cy);
     const waitComplete = cyMockTrainStatusSeq(cy, [
@@ -139,8 +141,8 @@ describe("lesson screen - training", () => {
     cySetup(cy);
     cyMockDefault(cy, {
       gqlQueries: [mockGQL("lesson", lesson, true)],
-      userRole: "admin"
-    })
+      userRole: "admin",
+    });
     cy.visit("/lessons/edit?lessonId=lesson&trainStatusPollInterval=10");
     const waitTrainLesson = cyMockTrain(cy, { responseStatus: 500 });
     cy.get("#train-button").trigger("mouseover").click();
@@ -152,8 +154,8 @@ describe("lesson screen - training", () => {
     cySetup(cy);
     cyMockDefault(cy, {
       gqlQueries: [mockGQL("lesson", lesson, true)],
-      userRole: "admin"
-    })
+      userRole: "admin",
+    });
     cy.visit("/lessons/edit?lessonId=lesson&trainStatusPollInterval=10");
     const waitTrainLesson = cyMockTrain(cy);
     const waitComplete = cyMockTrainStatusSeq(cy, [

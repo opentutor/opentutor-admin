@@ -14,79 +14,85 @@ describe("screenshots - grade session", () => {
   it("displays feedback after answer marked good", () => {
     cySetup(cy);
     cyMockDefault(cy, {
-      gqlQueries: [mockGQL("session", {
-        sessionId: "session1",
-        lesson: {
-          name: "lesson 1",
-          createdByName: "username1",
-        },
-        graderGrade: null,
-        question: {
-          text: "question?",
-          expectations: [
-            { text: "expected text 1" },
-            { text: "expected text 2" },
-          ],
-        },
-        userResponses: [
+      gqlQueries: [
+        mockGQL(
+          "session",
           {
-            text: "answer 1",
-            expectationScores: [
+            sessionId: "session1",
+            lesson: {
+              name: "lesson 1",
+              createdByName: "username1",
+            },
+            graderGrade: null,
+            question: {
+              text: "question?",
+              expectations: [
+                { text: "expected text 1" },
+                { text: "expected text 2" },
+              ],
+            },
+            userResponses: [
               {
-                classifierGrade: "Good",
-                graderGrade: "Good",
+                text: "answer 1",
+                expectationScores: [
+                  {
+                    classifierGrade: "Good",
+                    graderGrade: "Good",
+                  },
+                  {
+                    classifierGrade: "Bad",
+                    graderGrade: "",
+                  },
+                ],
               },
               {
-                classifierGrade: "Bad",
-                graderGrade: "",
+                text: "answer 2",
+                expectationScores: [
+                  {
+                    classifierGrade: "Bad",
+                    graderGrade: "",
+                  },
+                  {
+                    classifierGrade: "Good",
+                    graderGrade: "",
+                  },
+                ],
+              },
+              {
+                text: "answer 3",
+                expectationScores: [
+                  {
+                    classifierGrade: "Bad",
+                    graderGrade: "",
+                  },
+                  {
+                    classifierGrade: "Bad",
+                    graderGrade: "Bad",
+                  },
+                ],
+              },
+              {
+                text: "answer 4",
+                expectationScores: [
+                  {
+                    classifierGrade: "Good",
+                    graderGrade: "Good",
+                  },
+                  {
+                    classifierGrade: "Bad",
+                    graderGrade: "Bad",
+                  },
+                ],
               },
             ],
           },
-          {
-            text: "answer 2",
-            expectationScores: [
-              {
-                classifierGrade: "Bad",
-                graderGrade: "",
-              },
-              {
-                classifierGrade: "Good",
-                graderGrade: "",
-              },
-            ],
-          },
-          {
-            text: "answer 3",
-            expectationScores: [
-              {
-                classifierGrade: "Bad",
-                graderGrade: "",
-              },
-              {
-                classifierGrade: "Bad",
-                graderGrade: "Bad",
-              },
-            ],
-          },
-          {
-            text: "answer 4",
-            expectationScores: [
-              {
-                classifierGrade: "Good",
-                graderGrade: "Good",
-              },
-              {
-                classifierGrade: "Bad",
-                graderGrade: "Bad",
-              },
-            ],
-          },
-        ],
-      }, true)],
-      userRole: "admin"
-    })
+          true
+        ),
+      ],
+      userRole: "admin",
+    });
     cy.visit("/sessions/session?sessionId=session1");
-    cy.get('[data-cy=session-table]', { timeout: 10000 }).should('be.visible');
+    cy.get("[data-cy=session-table]", { timeout: 10000 }).should("be.visible");
     cy.matchImageSnapshot(
       snapname("displays-feedback-after-answer-marked-good")
     );

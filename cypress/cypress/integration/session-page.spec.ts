@@ -17,115 +17,147 @@ describe("session screen", () => {
 
     it("cannot view session if user does not have permission to edit", () => {
       cySetup(cy);
-      cyMockDefault(cy, { gqlQueries: [mockGQL("session", session, true)] })
+      cyMockDefault(cy, { gqlQueries: [mockGQL("session", session, true)] });
       cy.visit("/sessions/session?sessionId=session1");
       cy.contains("You do not have permission to grade this session.");
     });
 
     it("can view session if user is admin", () => {
       cySetup(cy);
-      cyMockDefault(cy, { gqlQueries: [mockGQL("session", session, true)], userRole: "admin" })
+      cyMockDefault(cy, {
+        gqlQueries: [mockGQL("session", session, true)],
+        userRole: "admin",
+      });
       cy.visit("/sessions/session?sessionId=session1");
       cy.get("#lesson");
     });
 
     it("can view session if user is contentManager", () => {
       cySetup(cy);
-      cyMockDefault(cy, { gqlQueries: [mockGQL("session", session, true)], userRole: "contentManager" })
+      cyMockDefault(cy, {
+        gqlQueries: [mockGQL("session", session, true)],
+        userRole: "contentManager",
+      });
       cy.visit("/sessions/session?sessionId=session1");
       cy.get("#lesson");
     });
 
     it("can view session if user created lesson", () => {
       cySetup(cy);
-      cyMockDefault(cy, { gqlQueries: [mockGQL("session", {
-        username: "username1",
-        sessionId: "session1",
-        createdAt: "1/1/2001",
-        lesson: {
-          name: "lesson 1",
-          createdBy: 'kayla',
-        },
-        graderGrade: null,
-        question: {
-          text: "question?",
-          expectations: [
-            { text: "expected text 1" },
-            { text: "expected text 2" },
-          ],
-        },
-        userResponses: [
-          {
-            text: "answer 1",
-            expectationScores: [
-              {
-                classifierGrade: "Good",
-                graderGrade: "",
+      cyMockDefault(cy, {
+        gqlQueries: [
+          mockGQL(
+            "session",
+            {
+              username: "username1",
+              sessionId: "session1",
+              createdAt: "1/1/2001",
+              lesson: {
+                name: "lesson 1",
+                createdBy: "kayla",
               },
-              {
-                classifierGrade: "Bad",
-                graderGrade: "",
+              graderGrade: null,
+              question: {
+                text: "question?",
+                expectations: [
+                  { text: "expected text 1" },
+                  { text: "expected text 2" },
+                ],
               },
-            ],
-          },
-          {
-            text: "answer 2",
-            expectationScores: [
-              {
-                classifierGrade: "Bad",
-                graderGrade: "",
-              },
-              {
-                classifierGrade: "Good",
-                graderGrade: "",
-              },
-            ],
-          },
+              userResponses: [
+                {
+                  text: "answer 1",
+                  expectationScores: [
+                    {
+                      classifierGrade: "Good",
+                      graderGrade: "",
+                    },
+                    {
+                      classifierGrade: "Bad",
+                      graderGrade: "",
+                    },
+                  ],
+                },
+                {
+                  text: "answer 2",
+                  expectationScores: [
+                    {
+                      classifierGrade: "Bad",
+                      graderGrade: "",
+                    },
+                    {
+                      classifierGrade: "Good",
+                      graderGrade: "",
+                    },
+                  ],
+                },
+              ],
+            },
+            true
+          ),
         ],
-      }, true)] })
+      });
       cy.visit("/sessions/session?sessionId=session1");
       cy.get("#lesson");
     });
-  })
+  });
 
   it("shows lesson name", () => {
     cySetup(cy);
-    cyMockDefault(cy, { gqlQueries: [mockGQL("session", session, true)], userRole: "admin" })
+    cyMockDefault(cy, {
+      gqlQueries: [mockGQL("session", session, true)],
+      userRole: "admin",
+    });
     cy.visit("/sessions/session?sessionId=session1");
     cy.get("#lesson").should("contain", "lesson 1");
   });
 
   it("shows session username", () => {
     cySetup(cy);
-    cyMockDefault(cy, { gqlQueries: [mockGQL("session", session, true)], userRole: "admin" })
+    cyMockDefault(cy, {
+      gqlQueries: [mockGQL("session", session, true)],
+      userRole: "admin",
+    });
     cy.visit("/sessions/session?sessionId=session1");
     cy.get("#username").should("contain", "username1");
   });
 
   it("shows session date", () => {
     cySetup(cy);
-    cyMockDefault(cy, { gqlQueries: [mockGQL("session", session, true)], userRole: "admin" })
+    cyMockDefault(cy, {
+      gqlQueries: [mockGQL("session", session, true)],
+      userRole: "admin",
+    });
     cy.visit("/sessions/session?sessionId=session1");
     cy.get("#date").should("contain", "1/1/2001");
   });
 
   it("shows lesson question", () => {
     cySetup(cy);
-    cyMockDefault(cy, { gqlQueries: [mockGQL("session", session, true)], userRole: "admin" })
+    cyMockDefault(cy, {
+      gqlQueries: [mockGQL("session", session, true)],
+      userRole: "admin",
+    });
     cy.visit("/sessions/session?sessionId=session1");
     cy.get("#question").should("contain", "question?");
   });
 
   it("shows session score", () => {
     cySetup(cy);
-    cyMockDefault(cy, { gqlQueries: [mockGQL("session", session, true)], userRole: "admin" })
+    cyMockDefault(cy, {
+      gqlQueries: [mockGQL("session", session, true)],
+      userRole: "admin",
+    });
     cy.visit("/sessions/session?sessionId=session1");
     cy.get("#score").should("contain", "Score: ?");
   });
 
   it("shows user responses", () => {
     cySetup(cy);
-    cyMockDefault(cy, { gqlQueries: [mockGQL("session", session, true)], userRole: "admin" })
+    cyMockDefault(cy, {
+      gqlQueries: [mockGQL("session", session, true)],
+      userRole: "admin",
+    });
     cy.visit("/sessions/session?sessionId=session1");
     cy.get("#response-0 #answer").should("contain", "answer 1");
     cy.get("#response-0 #grade-0 #classifier-grade").should("contain", "Good");
@@ -137,10 +169,13 @@ describe("session screen", () => {
 
   it("grades first response", () => {
     cySetup(cy);
-    cyMockDefault(cy, { gqlQueries: [mockGQL("session", session, true)], userRole: "admin" })
+    cyMockDefault(cy, {
+      gqlQueries: [mockGQL("session", session, true)],
+      userRole: "admin",
+    });
     cy.visit("/sessions/session?sessionId=session1");
     cy.get("#response-0 #grade-0 #select-grade").should("have.value", "");
-    cy.get("#response-0 #grade-0 #select-grade").trigger('mouseover').click();
-    cy.get("#good").trigger('mouseover').click();
+    cy.get("#response-0 #grade-0 #select-grade").trigger("mouseover").click();
+    cy.get("#good").trigger("mouseover").click();
   });
 });

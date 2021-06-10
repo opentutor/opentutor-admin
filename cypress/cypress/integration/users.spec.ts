@@ -4,11 +4,7 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import {
-  cySetup,
-  cyMockDefault,
-  mockGQL
-} from "../support/functions";
+import { cySetup, cyMockDefault, mockGQL } from "../support/functions";
 import { users } from "../fixtures/users";
 
 describe("users screen", () => {
@@ -16,8 +12,8 @@ describe("users screen", () => {
     cySetup(cy);
     cyMockDefault(cy, {
       gqlQueries: [mockGQL("users", users, true)],
-      userRole: "admin"
-    })
+      userRole: "admin",
+    });
     cy.visit("/users");
     cy.get("#users").children().should("have.length", 3);
     cy.get("#user-0 #name").contains("Admin");
@@ -35,8 +31,8 @@ describe("users screen", () => {
     cySetup(cy);
     cyMockDefault(cy, {
       gqlQueries: [mockGQL("users", users, true)],
-      userRole: "contentManager"
-    })
+      userRole: "contentManager",
+    });
     cy.visit("/users");
     cy.get("#users").children().should("have.length", 3);
     cy.get("#user-0 #name").contains("Admin");
@@ -55,17 +51,17 @@ describe("users screen", () => {
     cyMockDefault(cy, {
       noLogin: true,
       gqlQueries: [mockGQL("users", users, true)],
-    })
+    });
     cy.visit("/users");
-    cy.contains("Please login to view users.")
+    cy.contains("Please login to view users.");
   });
 
   it("hides users if not admin or content manager", () => {
     cySetup(cy);
     cyMockDefault(cy, {
       gqlQueries: [mockGQL("users", users, true)],
-    })
+    });
     cy.visit("/users");
-    cy.contains("You must be an admin or content manager to view this page.")
+    cy.contains("You must be an admin or content manager to view this page.");
   });
 });

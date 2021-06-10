@@ -5,26 +5,21 @@ Permission to use, copy, modify, and distribute this software and its documentat
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
 import { lessons } from "../fixtures/lesson";
-import {
-  cySetup,
-  cyMockDefault,
-  mockGQL
-} from "../support/functions";
+import { cySetup, cyMockDefault, mockGQL } from "../support/functions";
 
 describe("lessons screen", () => {
-
   describe("permissions", () => {
     it("cannot view lessons list if not logged in", () => {
       cySetup(cy);
       cy.visit("/lessons");
       cy.contains("Please login to view lessons.");
     });
-  
+
     it("disables edit, grade, and delete if user does not have edit permissions", () => {
       cySetup(cy);
       cyMockDefault(cy, {
         gqlQueries: [mockGQL("lessons", lessons, true)],
-      })
+      });
       cy.visit("/lessons");
       cy.get("#lesson-0 #delete-button").should("be.disabled");
       cy.get("#lesson-0 #grade-button").should("be.disabled");
@@ -33,55 +28,61 @@ describe("lessons screen", () => {
       cy.get("#lesson-1 #grade-button").should("be.disabled");
       cy.get("#lesson-1 #name").should("not.have.class", "a");
     });
-  
+
     it("enables edit, grade, and delete if user is an admin", () => {
       cySetup(cy);
       cyMockDefault(cy, {
         gqlQueries: [mockGQL("lessons", lessons, true)],
-        userRole: "admin"
-      })
+        userRole: "admin",
+      });
       cy.visit("/lessons");
       cy.get("#lesson-0 #delete-button").should("not.be.disabled");
       cy.get("#lesson-0 #grade-button").should("not.be.disabled");
     });
-  
+
     it("enables edit, grade, and delete if user is a contentManager", () => {
       cySetup(cy);
       cyMockDefault(cy, {
         gqlQueries: [mockGQL("lessons", lessons, true)],
-        userRole: "contentManager"
-      })
+        userRole: "contentManager",
+      });
       cy.visit("/lessons");
       cy.get("#lesson-0 #delete-button").should("not.be.disabled");
       cy.get("#lesson-0 #grade-button").should("not.be.disabled");
     });
-  
+
     it("enables edit, grade, and delete if user created lesson", () => {
       cySetup(cy);
       cyMockDefault(cy, {
-        gqlQueries: [mockGQL("lessons", {
-          edges: [
+        gqlQueries: [
+          mockGQL(
+            "lessons",
             {
-              cursor: "cursor 1",
-              node: {
-                lessonId: "lesson1",
-                name: "lesson 1",
-                updatedAt: "1/1/20000, 12:00:00 AM",
-                createdBy: "kayla",
-                createdByName: "Kayla",
-                userPermissions: {
-                  edit: false,
-                  view: false,
+              edges: [
+                {
+                  cursor: "cursor 1",
+                  node: {
+                    lessonId: "lesson1",
+                    name: "lesson 1",
+                    updatedAt: "1/1/20000, 12:00:00 AM",
+                    createdBy: "kayla",
+                    createdByName: "Kayla",
+                    userPermissions: {
+                      edit: false,
+                      view: false,
+                    },
+                  },
                 },
+              ],
+              pageInfo: {
+                hasNextPage: false,
+                endCursor: "cursor 2",
               },
             },
-          ],
-          pageInfo: {
-            hasNextPage: false,
-            endCursor: "cursor 2",
-          },
-        }, true)],
-      })
+            true
+          ),
+        ],
+      });
       cy.visit("/lessons");
       cy.get("#lesson-0 #delete-button").should("not.be.disabled");
       cy.get("#lesson-0 #grade-button").should("not.be.disabled");
@@ -92,8 +93,8 @@ describe("lessons screen", () => {
     cySetup(cy);
     cyMockDefault(cy, {
       gqlQueries: [mockGQL("lessons", lessons, true)],
-      userRole: "admin"
-    })
+      userRole: "admin",
+    });
     cy.visit("/lessons");
     cy.get("#column-header");
     cy.get("#column-header #name").contains("Lesson");
@@ -105,8 +106,8 @@ describe("lessons screen", () => {
     cySetup(cy);
     cyMockDefault(cy, {
       gqlQueries: [mockGQL("lessons", lessons, true)],
-      userRole: "admin"
-    })
+      userRole: "admin",
+    });
     cy.visit("/lessons");
     cy.get("#lessons").children().should("have.length", 2);
     cy.get("#lesson-0 #name").contains("lesson 1");
@@ -127,8 +128,8 @@ describe("lessons screen", () => {
     cySetup(cy);
     cyMockDefault(cy, {
       gqlQueries: [mockGQL("lessons", lessons, true)],
-      userRole: "admin"
-    })
+      userRole: "admin",
+    });
     cy.visit("/lessons");
     cy.get("#lesson-0 #name a").trigger("mouseover").click();
     cy.location("pathname").should("contain", "/lessons/edit");
@@ -139,8 +140,8 @@ describe("lessons screen", () => {
     cySetup(cy);
     cyMockDefault(cy, {
       gqlQueries: [mockGQL("lessons", lessons, true)],
-      userRole: "admin"
-    })
+      userRole: "admin",
+    });
     cy.visit("/lessons");
     cy.get("#lesson-0 #grade-button").trigger("mouseover").click();
     cy.location("pathname").should("contain", "/sessions");
@@ -151,8 +152,8 @@ describe("lessons screen", () => {
     cySetup(cy);
     cyMockDefault(cy, {
       gqlQueries: [mockGQL("lessons", lessons, true)],
-      userRole: "admin"
-    })
+      userRole: "admin",
+    });
     cy.visit("/lessons");
     cy.get("#lesson-0 #copy-button").trigger("mouseover").click();
     cy.location("pathname").should("contain", "/lessons/edit");
@@ -163,8 +164,8 @@ describe("lessons screen", () => {
     cySetup(cy);
     cyMockDefault(cy, {
       gqlQueries: [mockGQL("lessons", lessons, true)],
-      userRole: "admin"
-    })
+      userRole: "admin",
+    });
     cy.visit("/lessons");
     cy.get("#lesson-0 #launch-button").trigger("mouseover").click();
     cy.location("pathname").should("contain", "/tutor");
@@ -177,8 +178,8 @@ describe("lessons screen", () => {
     cySetup(cy);
     cyMockDefault(cy, {
       gqlQueries: [mockGQL("lessons", lessons, true)],
-      userRole: "admin"
-    })
+      userRole: "admin",
+    });
     cy.visit("/lessons");
     cy.get("#create-button").trigger("mouseover").click();
     cy.location("pathname").should("contain", "/lessons/edit");

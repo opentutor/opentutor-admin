@@ -31,8 +31,8 @@ const lessons = {
             },
           },
         ],
-        createdBy: 'opentutor',
-        createdByName: 'OpenTutor',
+        createdBy: "opentutor",
+        createdByName: "OpenTutor",
       },
     },
   ],
@@ -40,10 +40,9 @@ const lessons = {
     hasNextPage: false,
     endCursor: "cursor 2",
   },
-}
+};
 
 describe("edit lesson screen", () => {
-
   describe("permissions", () => {
     it("cannot view lesson page if not logged in", () => {
       cySetup(cy);
@@ -55,7 +54,7 @@ describe("edit lesson screen", () => {
       cySetup(cy);
       cyMockDefault(cy, {
         gqlQueries: [mockGQL("lesson", lesson, true)],
-      })
+      });
       cy.visit("/lessons/edit?lessonId=q1");
       cy.contains("You do not have permission to view this lesson.");
     });
@@ -63,12 +62,18 @@ describe("edit lesson screen", () => {
     it("can view lesson page if user created lesson", () => {
       cySetup(cy);
       cyMockDefault(cy, {
-        gqlQueries: [mockGQL("lesson", {
-          ...lesson,
-          createdBy: 'kayla',
-          createdByName: 'Kayla',
-        }, true)],
-      })
+        gqlQueries: [
+          mockGQL(
+            "lesson",
+            {
+              ...lesson,
+              createdBy: "kayla",
+              createdByName: "Kayla",
+            },
+            true
+          ),
+        ],
+      });
       cy.visit("/lessons/edit?lessonId=q1");
       cy.get("#lesson-creator").should("have.value", "Kayla");
     });
@@ -77,8 +82,8 @@ describe("edit lesson screen", () => {
       cySetup(cy);
       cyMockDefault(cy, {
         gqlQueries: [mockGQL("lesson", lesson, true)],
-        userRole: "admin"
-      })
+        userRole: "admin",
+      });
       cy.visit("/lessons/edit?lessonId=q1");
       cy.get("#lesson-creator").should("have.value", "OpenTutor");
     });
@@ -87,8 +92,8 @@ describe("edit lesson screen", () => {
       cySetup(cy);
       cyMockDefault(cy, {
         gqlQueries: [mockGQL("lesson", lesson, true)],
-        userRole: "contentManager"
-      })
+        userRole: "contentManager",
+      });
       cy.visit("/lessons/edit?lessonId=q1");
       cy.get("#lesson-creator").should("have.value", "OpenTutor");
     });
@@ -97,9 +102,12 @@ describe("edit lesson screen", () => {
   describe("new lesson", () => {
     it("new lesson has default values", () => {
       cySetup(cy);
-      cyMockDefault(cy)
+      cyMockDefault(cy);
       cy.visit("/lessons/edit");
-      cy.get("#lesson-name").should("have.value", "Display name for the lesson");
+      cy.get("#lesson-name").should(
+        "have.value",
+        "Display name for the lesson"
+      );
       cy.get("#lesson-creator").should("have.value", "Kayla");
       cy.get("#intro").should(
         "have.value",
@@ -129,7 +137,7 @@ describe("edit lesson screen", () => {
 
     it("edits a new lesson", () => {
       cySetup(cy);
-      cyMockDefault(cy)
+      cyMockDefault(cy);
       cy.visit("/lessons/edit");
       cy.get("#lesson-name").fill("Review Diode Current Flow");
       cy.get("#lesson-id").fill("review-diode-current-flow");
@@ -182,7 +190,7 @@ describe("edit lesson screen", () => {
 
     it("launch lesson is disabled if new lesson", () => {
       cySetup(cy);
-      cyMockDefault(cy)
+      cyMockDefault(cy);
       cy.visit("/lessons/edit");
       cy.get("#launch-button").should("be.disabled");
     });
@@ -193,17 +201,11 @@ describe("edit lesson screen", () => {
       cySetup(cy);
       cyMockDefault(cy, {
         gqlQueries: [mockGQL("lesson", lesson, true)],
-        userRole: "admin"
-      })
+        userRole: "admin",
+      });
       cy.visit("/lessons/edit?copyLesson=q1");
-      cy.get("#intro").should(
-        "have.value",
-        "introduction"
-      );
-      cy.get("#question").should(
-        "have.value",
-        "question"
-      );
+      cy.get("#intro").should("have.value", "introduction");
+      cy.get("#question").should("have.value", "question");
       cy.get("#image").should("have.value", "");
       cy.get("#expectations").children().should("have.length", 1);
       cy.get("#expectation-0 #edit-expectation").should(
@@ -213,10 +215,7 @@ describe("edit lesson screen", () => {
       cy.get("#expectation-0 .jsoneditor").contains("bad1");
       cy.get("#expectation-0 .jsoneditor").contains("bad2");
       cy.get("#expectation-0 #hints").children().should("have.length", 1);
-      cy.get("#hint-0 #edit-hint").should(
-        "have.value",
-        "hint 1.1"
-      );
+      cy.get("#hint-0 #edit-hint").should("have.value", "hint 1.1");
       cy.get("#conclusions").children().should("have.length", 1);
       cy.get("#conclusion-0 #edit-conclusion").should(
         "have.value",
@@ -228,8 +227,8 @@ describe("edit lesson screen", () => {
       cySetup(cy);
       cyMockDefault(cy, {
         gqlQueries: [mockGQL("lesson", lesson, true)],
-        userRole: "admin"
-      })
+        userRole: "admin",
+      });
       cy.visit("/lessons/edit?copyLesson=q1");
       cy.get("#lesson-name").should("have.value", "Copy of lesson");
       cy.get("#lesson-id").should("not.have.value", "q1");
@@ -242,11 +241,13 @@ describe("edit lesson screen", () => {
       cySetup(cy);
       cyMockDefault(cy, {
         gqlQueries: [mockGQL("lesson", lesson, true)],
-        userRole: "admin"
-      })
+        userRole: "admin",
+      });
       cy.visit("/lessons/edit?lessonId=q1");
       cy.get("#lesson-id").clear().type("~");
-      cy.get("#lesson-id-helper-text").contains("id must be lower-case and alpha-numeric.")
+      cy.get("#lesson-id-helper-text").contains(
+        "id must be lower-case and alpha-numeric."
+      );
       cy.get("#save-button").should("be.disabled");
       cy.get("#launch-button").should("be.disabled");
     });
@@ -255,11 +256,13 @@ describe("edit lesson screen", () => {
       cySetup(cy);
       cyMockDefault(cy, {
         gqlQueries: [mockGQL("lesson", lesson, true)],
-        userRole: "admin"
-      })
+        userRole: "admin",
+      });
       cy.visit("/lessons/edit?lessonId=q1");
       cy.get("#lesson-id").clear().type("A");
-      cy.get("#lesson-id-helper-text").contains("id must be lower-case and alpha-numeric.")
+      cy.get("#lesson-id-helper-text").contains(
+        "id must be lower-case and alpha-numeric."
+      );
       cy.get("#save-button").should("be.disabled");
       cy.get("#launch-button").should("be.disabled");
     });
@@ -267,12 +270,17 @@ describe("edit lesson screen", () => {
     it("lessonId is invalid if another lesson is already using the lessonId", () => {
       cySetup(cy);
       cyMockDefault(cy, {
-        gqlQueries: [mockGQL("lesson", lesson, true), mockGQL("lessons", lessons, true)],
-        userRole: "admin"
-      })
+        gqlQueries: [
+          mockGQL("lesson", lesson, true),
+          mockGQL("lessons", lessons, true),
+        ],
+        userRole: "admin",
+      });
       cy.visit("/lessons/edit");
       cy.get("#lesson-id").clear().type("q1");
-      cy.get("#lesson-id-helper-text").contains("id is already being used for another lesson.")
+      cy.get("#lesson-id-helper-text").contains(
+        "id is already being used for another lesson."
+      );
       cy.get("#save-button").should("be.disabled");
       cy.get("#launch-button").should("be.disabled");
     });
@@ -280,8 +288,8 @@ describe("edit lesson screen", () => {
     it("lessonId is valid if it is unique, lower-case, and alpha-numeric", () => {
       cySetup(cy);
       cyMockDefault(cy, {
-        userRole: "admin"
-      })
+        userRole: "admin",
+      });
       cy.visit("/lessons/edit");
       cy.get("#lesson-id").clear().type("q0");
       cy.get("#lesson-name").clear().type("{backspace}");
@@ -293,20 +301,14 @@ describe("edit lesson screen", () => {
     cySetup(cy);
     cyMockDefault(cy, {
       gqlQueries: [mockGQL("lesson", lesson, true)],
-      userRole: "admin"
-    })
+      userRole: "admin",
+    });
     cy.visit("/lessons/edit?lessonId=q1");
     cy.get("#lesson-id").should("have.value", "q1");
     cy.get("#lesson-name").should("have.value", "lesson");
     cy.get("#lesson-creator").should("have.value", "OpenTutor");
-    cy.get("#intro").should(
-      "have.value",
-      "introduction"
-    );
-    cy.get("#question").should(
-      "have.value",
-      "question"
-    );
+    cy.get("#intro").should("have.value", "introduction");
+    cy.get("#question").should("have.value", "question");
     cy.get("#image").should("have.value", "");
     cy.get("#expectations").children().should("have.length", 1);
     cy.get("#expectation-0 #edit-expectation").should(
@@ -316,31 +318,25 @@ describe("edit lesson screen", () => {
     cy.get("#expectation-0 .jsoneditor").contains("bad1");
     cy.get("#expectation-0 .jsoneditor").contains("bad2");
     cy.get("#expectation-0 #hints").children().should("have.length", 1);
-    cy.get("#hint-0 #edit-hint").should(
-      "have.value",
-      "hint 1.1"
-    );
+    cy.get("#hint-0 #edit-hint").should("have.value", "hint 1.1");
     cy.get("#conclusions").children().should("have.length", 1);
-    cy.get("#conclusion-0 #edit-conclusion").should(
-      "have.value",
-      "conclusion"
-    );
+    cy.get("#conclusion-0 #edit-conclusion").should("have.value", "conclusion");
   });
 
   it("can expand and collapse an expectation", () => {
     cySetup(cy);
-    cyMockDefault(cy)
+    cyMockDefault(cy);
     cy.visit("/lessons/edit");
     // expectation is expanded by default
     cy.get("#expectation-0 #edit-expectation");
     cy.get("#expectation-0 #hints");
     cy.get("#hint-0 #edit-hint");
     // collapsing an expectation hides hints
-    cy.get("#expectation-0 #expand").trigger('mouseover').click();
+    cy.get("#expectation-0 #expand").trigger("mouseover").click();
     cy.get("#expectation-0 #edit-expectation");
     cy.get("#expectation-0 #hints").should("not.exist");
     // expanding an expectation reveals hints
-    cy.get("#expectation-0 #expand").trigger('mouseover').click();
+    cy.get("#expectation-0 #expand").trigger("mouseover").click();
     cy.get("#expectation-0 #edit-expectation");
     cy.get("#expectation-0 #hints");
     cy.get("#hint-0 #edit-hint");
@@ -348,43 +344,43 @@ describe("edit lesson screen", () => {
 
   it("adds and deletes an expectation", () => {
     cySetup(cy);
-    cyMockDefault(cy)
+    cyMockDefault(cy);
     cy.visit("/lessons/edit");
     // must have at least 1 expectation
     cy.get("#expectations").children().should("have.length", 1);
     cy.get("#expectation-0 #delete").should("not.exist");
     // add and delete
-    cy.get("#add-expectation").trigger('mouseover').click();
+    cy.get("#add-expectation").trigger("mouseover").click();
     cy.get("#expectations").children().should("have.length", 2);
-    cy.get("#expectation-0 #delete").trigger('mouseover').click();
+    cy.get("#expectation-0 #delete").trigger("mouseover").click();
     cy.get("#expectations").children().should("have.length", 1);
   });
 
   it("adds and deletes a hint", () => {
     cySetup(cy);
-    cyMockDefault(cy)
+    cyMockDefault(cy);
     cy.visit("/lessons/edit");
     // must have at least 1 hint
     cy.get("#hints").children().should("have.length", 1);
     cy.get("#hint-0 #delete").should("not.exist");
     // add and delete
-    cy.get("#add-hint").trigger('mouseover').click();
+    cy.get("#add-hint").trigger("mouseover").click();
     cy.get("#hints").children().should("have.length", 2);
-    cy.get("#hint-0 #delete").trigger('mouseover').click();
+    cy.get("#hint-0 #delete").trigger("mouseover").click();
     cy.get("#hints").children().should("have.length", 1);
   });
 
   it("adds and deletes a conclusion", () => {
     cySetup(cy);
-    cyMockDefault(cy)
+    cyMockDefault(cy);
     cy.visit("/lessons/edit");
     // must have at least 1 conclusion
     cy.get("#conclusions").children().should("have.length", 1);
     cy.get("#conclusion-0 #delete").should("not.exist");
     // add and delete
-    cy.get("#add-conclusion").trigger('mouseover').click();
+    cy.get("#add-conclusion").trigger("mouseover").click();
     cy.get("#conclusions").children().should("have.length", 2);
-    cy.get("#conclusion-0 #delete").trigger('mouseover').click();
+    cy.get("#conclusion-0 #delete").trigger("mouseover").click();
     cy.get("#conclusions").children().should("have.length", 1);
   });
 
@@ -392,8 +388,8 @@ describe("edit lesson screen", () => {
     cySetup(cy);
     cyMockDefault(cy, {
       gqlQueries: [mockGQL("lesson", lesson, true)],
-      userRole: "admin"
-    })
+      userRole: "admin",
+    });
     cy.visit("/lessons/edit?lessonId=q1");
     cy.get("#save-button").should("not.exist");
   });
@@ -402,8 +398,8 @@ describe("edit lesson screen", () => {
     cySetup(cy);
     cyMockDefault(cy, {
       gqlQueries: [mockGQL("lesson", lesson, true)],
-      userRole: "admin"
-    })
+      userRole: "admin",
+    });
     cy.visit("/lessons/edit?lessonId=q1");
     cy.get("#lesson-name").clear().type("{backspace}");
     cy.get("#save-button").should("be.visible");
@@ -413,21 +409,21 @@ describe("edit lesson screen", () => {
     cySetup(cy);
     cyMockDefault(cy, {
       gqlQueries: [mockGQL("lesson", lesson, true)],
-      userRole: "admin"
-    })
+      userRole: "admin",
+    });
     cy.visit("/lessons/edit?lessonId=q1");
     cy.get("#lesson-name").clear().type("{backspace}");
-    cy.get("#save-button").trigger('mouseover').click();
+    cy.get("#save-button").trigger("mouseover").click();
   });
 
   it("launches lesson", () => {
     cySetup(cy);
     cyMockDefault(cy, {
       gqlQueries: [mockGQL("lesson", lesson, true)],
-      userRole: "admin"
-    })
+      userRole: "admin",
+    });
     cy.visit("/lessons/edit?lessonId=q1");
-    cy.get("#launch-button").trigger('mouseover').click();
+    cy.get("#launch-button").trigger("mouseover").click();
     cy.location("pathname").should("eq", "/tutor");
   });
 });
