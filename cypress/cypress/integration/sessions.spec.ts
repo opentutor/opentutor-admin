@@ -188,6 +188,11 @@ describe("sessions screen", () => {
       .find("[data-cy=creator]")
       .contains("teacher 2");
     cy.get("[data-cy=session-1]").find("[data-cy=username]").contains("user 2");
+    // Tooltips
+    cy.get("[data-cy=session-0]")
+      .find("[data-cy=grade-button]")
+      .trigger('mouseover')
+    cy.contains("Grade");
   });
 
   it("opens edit for a session", () => {
