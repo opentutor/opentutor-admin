@@ -191,7 +191,7 @@ describe("sessions screen", () => {
     // Tooltips
     cy.get("[data-cy=session-0]")
       .find("[data-cy=grade-button]")
-      .trigger('mouseover')
+      .trigger("mouseover");
     cy.contains("Grade");
   });
 

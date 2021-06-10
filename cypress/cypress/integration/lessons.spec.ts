@@ -174,19 +174,19 @@ describe("lessons screen", () => {
     // Tooltips
     cy.get("[data-cy=lesson-0]")
       .find("[data-cy=grade-button]")
-      .trigger('mouseover')
+      .trigger("mouseover");
     cy.contains("Grade");
     cy.get("[data-cy=lesson-0]")
       .find("[data-cy=launch-button]")
-      .trigger('mouseover')
+      .trigger("mouseover");
     cy.contains("Launch");
     cy.get("[data-cy=lesson-0]")
       .find("[data-cy=copy-button]")
-      .trigger('mouseover')
+      .trigger("mouseover");
     cy.contains("Duplicate");
     cy.get("[data-cy=lesson-0]")
       .find("[data-cy=delete-button]")
-      .trigger('mouseover')
+      .trigger("mouseover");
     cy.contains("Delete");
   });
 
