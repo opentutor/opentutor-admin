@@ -95,16 +95,16 @@ describe("lesson screen - training", () => {
         },
       ]);
       cy.visit("/lessons/edit?lessonId=lesson&trainStatusPollInterval=10");
-      cy.get("#train-button").trigger("mouseover").click();
+      cy.get("[data-cy=train-button]").trigger("mouseover").click();
       waitTrainLesson();
       waitComplete();
       for (let i = 0; i < ex.expectedAccuracies.length; i++) {
-        cy.get(`#train-success-accuracy-${i}`).should(
+        cy.get(`[data-cy=train-success-accuracy-${i}]`).should(
           "contain",
           ex.expectedAccuracies[i]
         );
       }
-      cy.get("#train-data").matchImageSnapshot(
+      cy.get("[data-cy=train-data]").matchImageSnapshot(
         snapname(
           `train-success-displays-${
             ex.expectedFeedback
@@ -131,10 +131,10 @@ describe("lesson screen - training", () => {
         },
       },
     ]);
-    cy.get("#train-button").trigger("mouseover").click();
+    cy.get("[data-cy=train-button]").trigger("mouseover").click();
     waitTrainLesson();
     waitComplete();
-    cy.get("#train-failure").should("contain", "TRAINING FAILED");
+    cy.get("[data-cy=train-failure]").should("contain", "TRAINING FAILED");
   });
 
   it("train lesson fails for http error on start", () => {
@@ -145,9 +145,9 @@ describe("lesson screen - training", () => {
     });
     cy.visit("/lessons/edit?lessonId=lesson&trainStatusPollInterval=10");
     const waitTrainLesson = cyMockTrain(cy, { responseStatus: 500 });
-    cy.get("#train-button").trigger("mouseover").click();
+    cy.get("[data-cy=train-button]").trigger("mouseover").click();
     waitTrainLesson();
-    cy.get("#train-failure").should("contain", "TRAINING FAILED");
+    cy.get("[data-cy=train-failure]").should("contain", "TRAINING FAILED");
   });
 
   it("train lesson fails for http error on poll status", () => {
@@ -168,9 +168,9 @@ describe("lesson screen - training", () => {
         responseStatusCode: 500,
       },
     ]);
-    cy.get("#train-button").trigger("mouseover").click();
+    cy.get("[data-cy=train-button]").trigger("mouseover").click();
     waitTrainLesson();
     waitComplete();
-    cy.get("#train-failure").should("contain", "TRAINING FAILED");
+    cy.get("[data-cy=train-failure]").should("contain", "TRAINING FAILED");
   });
 });

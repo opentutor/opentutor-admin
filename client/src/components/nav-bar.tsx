@@ -108,9 +108,9 @@ function LoginOption(props: { classes: { login: string } }): JSX.Element {
   }
 
   return (
-    <div id="login-option" className={classes.login}>
+    <div data-cy="login-option" className={classes.login}>
       <Button
-        id="login-button"
+        data-cy="login-button"
         onClick={handleMenu}
         startIcon={<AccountCircle />}
         style={{ color: "white" }}
@@ -118,7 +118,7 @@ function LoginOption(props: { classes: { login: string } }): JSX.Element {
         {context.user?.name}
       </Button>
       <Menu
-        id="login-menu"
+        data-cy="login-menu"
         anchorEl={anchorEl}
         anchorOrigin={{
           vertical: "top",
@@ -132,7 +132,7 @@ function LoginOption(props: { classes: { login: string } }): JSX.Element {
         open={open}
         onClose={handleClose}
       >
-        <MenuItem id="logout" onClick={onLogout}>
+        <MenuItem data-cy="logout" onClick={onLogout}>
           Logout
         </MenuItem>
       </Menu>
@@ -153,12 +153,11 @@ export function NavBar(props: {
   }
 
   return (
-    <div id="nav-bar" className={classes.root}>
+    <div data-cy="nav-bar" className={classes.root}>
       <AppBar position="fixed">
         <Toolbar>
           {context.user ? (
             <IconButton
-              id={props.disableMenu ? "back-button" : "menu-button"}
               edge="start"
               color="inherit"
               aria-label="menu"
@@ -170,18 +169,19 @@ export function NavBar(props: {
                   toggleDrawer(true);
                 }
               }}
+              data-cy={props.disableMenu ? "back-button" : "menu-button"}
             >
               {props.disableMenu ? <CloseIcon /> : <MenuIcon />}
             </IconButton>
           ) : undefined}
-          <Typography id="title" variant="h6" className={classes.title}>
+          <Typography data-cy="title" variant="h6" className={classes.title}>
             {props.title}
           </Typography>
           {context.user ? <LoginOption classes={classes} /> : undefined}
         </Toolbar>
       </AppBar>
       <SwipeableDrawer
-        id="drawer"
+        data-cy="drawer"
         anchor="left"
         open={isDrawerOpen}
         onClose={() => toggleDrawer(false)}

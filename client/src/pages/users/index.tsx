@@ -97,10 +97,10 @@ function TableFooter(props: {
     <AppBar position="sticky" color="default" className={classes.appBar}>
       <Toolbar>
         <div className={classes.paging}>
-          <IconButton id="prev-page" disabled={!hasPrev} onClick={onPrev}>
+          <IconButton data-cy="prev-page" disabled={!hasPrev} onClick={onPrev}>
             <KeyboardArrowLeftIcon />
           </IconButton>
-          <IconButton id="next-page" disabled={!hasNext} onClick={onNext}>
+          <IconButton data-cy="next-page" disabled={!hasNext} onClick={onNext}>
             <KeyboardArrowRightIcon />
           </IconButton>
         </div>
@@ -129,16 +129,16 @@ function UserItem(props: {
   }
 
   return (
-    <TableRow id={`user-${i}`} hover role="checkbox" tabIndex={-1}>
-      <TableCell id="name" align="left">
+    <TableRow data-cy={`user-${i}`} hover role="checkbox" tabIndex={-1}>
+      <TableCell data-cy="name" align="left">
         {row.node.name}
       </TableCell>
-      <TableCell id="email" align="left">
+      <TableCell data-cy="email" align="left">
         {row.node.email}
       </TableCell>
-      <TableCell id="role" align="left">
+      <TableCell data-cy="role" align="left">
         <Select
-          id="select-role"
+          data-cy="select-role"
           value={row.node.userRole}
           onChange={(
             event: React.ChangeEvent<{ value: unknown; name?: unknown }>
@@ -147,17 +147,17 @@ function UserItem(props: {
           }}
           className={styles.dropdown}
         >
-          <MenuItem id={UserRole.AUTHOR} value={UserRole.AUTHOR}>
+          <MenuItem data-cy={UserRole.AUTHOR} value={UserRole.AUTHOR}>
             Author
           </MenuItem>
           <MenuItem
-            id={UserRole.CONTENT_MANAGER}
+            data-cy={UserRole.CONTENT_MANAGER}
             value={UserRole.CONTENT_MANAGER}
           >
             Content Manager
           </MenuItem>
           <MenuItem
-            id={UserRole.ADMIN}
+            data-cy={UserRole.ADMIN}
             value={UserRole.ADMIN}
             disabled={context.user?.userRole !== UserRole.ADMIN}
           >
@@ -235,7 +235,7 @@ function UsersTable(): JSX.Element {
               sortAsc={sortAsc}
               onSort={onSort}
             />
-            <TableBody id="users">
+            <TableBody data-cy="users">
               {users.edges.map((row, i) => (
                 <UserItem
                   key={row.node.id}

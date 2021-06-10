@@ -29,7 +29,7 @@ describe("session screen", () => {
         userRole: "admin",
       });
       cy.visit("/sessions/session?sessionId=session1");
-      cy.get("#lesson");
+      cy.get("[data-cy=lesson]");
     });
 
     it("can view session if user is contentManager", () => {
@@ -39,7 +39,7 @@ describe("session screen", () => {
         userRole: "contentManager",
       });
       cy.visit("/sessions/session?sessionId=session1");
-      cy.get("#lesson");
+      cy.get("[data-cy=lesson]");
     });
 
     it("can view session if user created lesson", () => {
@@ -98,7 +98,7 @@ describe("session screen", () => {
         ],
       });
       cy.visit("/sessions/session?sessionId=session1");
-      cy.get("#lesson");
+      cy.get("[data-cy=lesson]");
     });
   });
 
@@ -109,7 +109,7 @@ describe("session screen", () => {
       userRole: "admin",
     });
     cy.visit("/sessions/session?sessionId=session1");
-    cy.get("#lesson").should("contain", "lesson 1");
+    cy.get("[data-cy=lesson]").should("contain", "lesson 1");
   });
 
   it("shows session username", () => {
@@ -119,7 +119,7 @@ describe("session screen", () => {
       userRole: "admin",
     });
     cy.visit("/sessions/session?sessionId=session1");
-    cy.get("#username").should("contain", "username1");
+    cy.get("[data-cy=username]").should("contain", "username1");
   });
 
   it("shows session date", () => {
@@ -129,7 +129,7 @@ describe("session screen", () => {
       userRole: "admin",
     });
     cy.visit("/sessions/session?sessionId=session1");
-    cy.get("#date").should("contain", "1/1/2001");
+    cy.get("[data-cy=date]").should("contain", "1/1/2001");
   });
 
   it("shows lesson question", () => {
@@ -139,7 +139,7 @@ describe("session screen", () => {
       userRole: "admin",
     });
     cy.visit("/sessions/session?sessionId=session1");
-    cy.get("#question").should("contain", "question?");
+    cy.get("[data-cy=question]").should("contain", "question?");
   });
 
   it("shows session score", () => {
@@ -149,7 +149,7 @@ describe("session screen", () => {
       userRole: "admin",
     });
     cy.visit("/sessions/session?sessionId=session1");
-    cy.get("#score").should("contain", "Score: ?");
+    cy.get("[data-cy=score]").should("contain", "Score: ?");
   });
 
   it("shows user responses", () => {
@@ -159,12 +159,28 @@ describe("session screen", () => {
       userRole: "admin",
     });
     cy.visit("/sessions/session?sessionId=session1");
-    cy.get("#response-0 #answer").should("contain", "answer 1");
-    cy.get("#response-0 #grade-0 #classifier-grade").should("contain", "Good");
-    cy.get("#response-0 #grade-1 #classifier-grade").should("contain", "Bad");
-    cy.get("#response-1 #answer").should("contain", "answer 2");
-    cy.get("#response-1 #grade-0 #classifier-grade").should("contain", "Bad");
-    cy.get("#response-1 #grade-1 #classifier-grade").should("contain", "Good");
+    cy.get("[data-cy=response-0]")
+      .find("[data-cy=answer]")
+      .should("contain", "answer 1");
+    cy.get("[data-cy=response-0]")
+      .find("[data-cy=grade-0]")
+      .find("[data-cy=classifier-grade]")
+      .should("contain", "Good");
+    cy.get("[data-cy=response-0]")
+      .find("[data-cy=grade-1]")
+      .find("[data-cy=classifier-grade]")
+      .should("contain", "Bad");
+    cy.get("[data-cy=response-1]")
+      .find("[data-cy=answer]")
+      .should("contain", "answer 2");
+    cy.get("[data-cy=response-1]")
+      .find("[data-cy=grade-0]")
+      .find("[data-cy=classifier-grade]")
+      .should("contain", "Bad");
+    cy.get("[data-cy=response-1]")
+      .find("[data-cy=grade-1]")
+      .find("[data-cy=classifier-grade]")
+      .should("contain", "Good");
   });
 
   it("grades first response", () => {
@@ -174,8 +190,15 @@ describe("session screen", () => {
       userRole: "admin",
     });
     cy.visit("/sessions/session?sessionId=session1");
-    cy.get("#response-0 #grade-0 #select-grade").should("have.value", "");
-    cy.get("#response-0 #grade-0 #select-grade").trigger("mouseover").click();
-    cy.get("#good").trigger("mouseover").click();
+    cy.get("[data-cy=response-0]")
+      .find("[data-cy=grade-0]")
+      .find("[data-cy=select-grade]")
+      .should("have.value", "");
+    cy.get("[data-cy=response-0]")
+      .find("[data-cy=grade-0]")
+      .find("[data-cy=select-grade]")
+      .trigger("mouseover")
+      .click();
+    cy.get("[data-cy=good]").trigger("mouseover").click();
   });
 });

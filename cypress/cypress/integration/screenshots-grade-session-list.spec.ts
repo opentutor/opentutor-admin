@@ -91,7 +91,9 @@ describe("screenshots - grade session list", () => {
       ],
     });
     cy.visit("/sessions");
-    cy.get("#toggle-graded").check();
+    cy.get("[data-cy=toggle-graded]").within(($input) => {
+      cy.get("input").check();
+    });
     cy.matchImageSnapshot(snapname("displays-sessions-show-graded-enabled"));
   });
 });

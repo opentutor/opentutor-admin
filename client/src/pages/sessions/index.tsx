@@ -140,7 +140,7 @@ function TableFooter(props: {
           <FormControlLabel
             control={
               <Switch
-                id="toggle-creator"
+                data-cy="toggle-creator"
                 checked={onlyCreator}
                 onChange={toggleCreator}
                 aria-label="switch"
@@ -153,7 +153,7 @@ function TableFooter(props: {
           <FormControlLabel
             control={
               <Switch
-                id="toggle-graded"
+                data-cy="toggle-graded"
                 checked={showGraded}
                 onChange={toggleGraded}
                 aria-label="switch"
@@ -163,10 +163,10 @@ function TableFooter(props: {
           />
         </FormGroup>
         <div className={classes.paging}>
-          <IconButton id="prev-page" disabled={!hasPrev} onClick={onPrev}>
+          <IconButton data-cy="prev-page" disabled={!hasPrev} onClick={onPrev}>
             <KeyboardArrowLeftIcon />
           </IconButton>
-          <IconButton id="next-page" disabled={!hasNext} onClick={onNext}>
+          <IconButton data-cy="next-page" disabled={!hasNext} onClick={onNext}>
             <KeyboardArrowRightIcon />
           </IconButton>
         </div>
@@ -185,7 +185,7 @@ function SessionItem(props: { row: Edge<Session>; i: number }): JSX.Element {
 
   return (
     <TableRow
-      id={`session-${i}`}
+      data-cy={`session-${i}`}
       hover
       role="checkbox"
       tabIndex={-1}
@@ -196,33 +196,36 @@ function SessionItem(props: { row: Edge<Session>; i: number }): JSX.Element {
             : "white",
       }}
     >
-      <TableCell id="lesson" align="left">
+      <TableCell data-cy="lesson" align="left">
         {userCanEdit(row.node.lesson, context.user) ? (
-          <Link to={`/lessons/edit?lessonId=${row.node.lesson.lessonId}`}>
+          <Link
+            data-cy="lesson-link"
+            to={`/lessons/edit?lessonId=${row.node.lesson.lessonId}`}
+          >
             {row.node.lesson?.name || "No Lesson Name"}
           </Link>
         ) : (
           row.node.lesson?.name || "No Lesson Name"
         )}
       </TableCell>
-      <TableCell id="creator" align="left">
+      <TableCell data-cy="creator" align="left">
         {row.node.lessonCreatedBy || "Guest"}
       </TableCell>
-      <TableCell id="date" align="left">
+      <TableCell data-cy="date" align="left">
         {row.node.createdAt || ""}
       </TableCell>
-      <TableCell id="username" align="left">
+      <TableCell data-cy="username" align="left">
         {row.node.username || "Guest"}
       </TableCell>
-      <TableCell id="classifier-grade" align="right">
+      <TableCell data-cy="classifier-grade" align="right">
         {row.node ? Math.trunc(row.node.classifierGrade * 100) : "?"}
       </TableCell>
-      <TableCell id="instructor-grade" align="right">
+      <TableCell data-cy="instructor-grade" align="right">
         {row.node.graderGrade || row.node.graderGrade === 0
           ? Math.trunc(row.node.graderGrade * 100)
           : "N/A"}
       </TableCell>
-      <TableCell id="last-graded-at" align="left">
+      <TableCell data-cy="last-graded-at" align="left">
         {row.node.lastGradedAt ? (
           <Tooltip
             title={`Graded By: ${row.node.lastGradedByName || "Unknown"}`}
@@ -234,10 +237,10 @@ function SessionItem(props: { row: Edge<Session>; i: number }): JSX.Element {
           "Never"
         )}
       </TableCell>
-      <TableCell id="actions" align="center">
+      <TableCell data-cy="actions" align="center">
         <Tooltip title="Grade" arrow>
           <IconButton
-            id="grade-button"
+            data-cy="grade-button"
             onClick={handleGrade}
             disabled={!userCanEdit(row.node.lesson, context.user)}
           >
@@ -338,7 +341,7 @@ function SessionsTable(props: { search: { lessonId: string } }): JSX.Element {
               sortAsc={sortAsc}
               onSort={onSort}
             />
-            <TableBody id="sessions">
+            <TableBody data-cy="sessions">
               {sessions.edges.map((row, i) => (
                 <SessionItem key={row.node.sessionId} row={row} i={i} />
               ))}
