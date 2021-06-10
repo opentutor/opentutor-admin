@@ -180,7 +180,7 @@ describe("sessions screen", () => {
     cy.get("[data-cy=session-1]").find("[data-cy=lesson]").contains("lesson 2");
     cy.get("[data-cy=session-1]")
       .find("[data-cy=instructor-grade]")
-      .contains("?");
+      .contains("N/A");
     cy.get("[data-cy=session-1]")
       .find("[data-cy=classifier-grade]")
       .contains("50");
