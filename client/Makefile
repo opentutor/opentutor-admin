@@ -18,14 +18,8 @@ dependencies-update:
 develop: .env.development node_modules/gatsby
 	npx gatsby develop
 
-<<<<<<< HEAD
-.PHONY: format
-format: node_modules/prettier
-	npm run format
-=======
 node_modules/cypress:
 	$(MAKE) install
->>>>>>> main
 
 node_modules/eslint:
 	$(MAKE) install
