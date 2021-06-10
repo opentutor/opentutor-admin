@@ -10,8 +10,8 @@ jobs:
           node-version: "14.15"
       - name: install
         run:  npm ci
-      # - name: format test
-      #   run: npm run test:format
+      - name: format test
+        run: npm run test:format
       - name: license test
         run: npm run test:license
       - name: Client - install
