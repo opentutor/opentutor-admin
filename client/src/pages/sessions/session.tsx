@@ -132,6 +132,7 @@ const SessionTable = (props: { search: { sessionId: string } }) => {
               {session.question?.expectations.map((column, i: number) => (
                 <TableCell
                   key={`expectation-${i}`}
+                  data-cy={`expectation-${i}`}
                   align="center"
                   style={{ width: 170 }}
                 >
