@@ -4,61 +4,83 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import { cySetup, cyMockDefault, mockGQL } from "../support/functions";
+import { cySetup, cyMockDefault, mockGQL } from '../support/functions';
 
 function snapname(n) {
   return `screenshots-lesson-edit-${n}`;
 }
 
-describe("screenshots - lesson edit", () => {
-  it("displays lesson form on load", () => {
+describe('screenshots - lesson edit', () => {
+  it('displays lesson form on load', () => {
     cySetup(cy);
     cyMockDefault(cy, {
-      gqlQueries: [mockGQL("lesson", {
-        lessonId: "lesson",
-        name: "lesson",
-        intro: "intro",
-        question: "question",
-        conclusion: ["conclusion"],
-        expectations: [{
-          expectation: "expectation 1",
-          hints: [{
-            text: "hint 1.1",
-          }],
-          features: {},
-        }],
-        features: {},
-        lastTrainedAt: "",
-        isTrainable: true,
-      }, true)],
-      userRole: "admin"
-    })
-    cy.visit("/lessons/edit?lessonId=lesson");
-    cy.matchImageSnapshot(snapname("displays-lesson-form-on-load"));
+      gqlQueries: [
+        mockGQL(
+          'lesson',
+          {
+            lessonId: 'lesson',
+            name: 'lesson',
+            intro: 'intro',
+            question: 'question',
+            conclusion: ['conclusion'],
+            expectations: [
+              {
+                expectation: 'expectation 1',
+                hints: [
+                  {
+                    text: 'hint 1.1',
+                  },
+                ],
+                features: {},
+              },
+            ],
+            features: {},
+            lastTrainedAt: '',
+            isTrainable: true,
+          },
+          true
+        ),
+      ],
+      userRole: 'admin',
+    });
+    cy.visit('/lessons/edit?lessonId=lesson');
+    cy.matchImageSnapshot(snapname('displays-lesson-form-on-load'));
   });
 
-  it("displays save button enabled after edits", () => {
+  it('displays save button enabled after edits', () => {
     cySetup(cy);
     cyMockDefault(cy, {
-      gqlQueries: [mockGQL("lesson", {
-        lessonId: "lesson",
-        name: "lesson",
-        question: "question",
-        intro: "intro",
-        conclusion: ["conclusion"],
-        expectations: [{
-          expectation: "expectation 1",
-          hints: [{
-            text: "hint 1.1",
-          },],
-        },],
-        lastTrainedAt: "",
-        isTrainable: true,
-      }, true)],
-      userRole: "admin"
-    })
-    cy.visit("/lessons/edit?lessonId=lesson");
-    cy.get("#intro").fill("Hello World");
-    cy.matchImageSnapshot(snapname("displays-save-button-enabled-after-edits"));
+      gqlQueries: [
+        mockGQL(
+          'lesson',
+          {
+            lessonId: 'lesson',
+            name: 'lesson',
+            question: 'question',
+            intro: 'intro',
+            conclusion: ['conclusion'],
+            expectations: [
+              {
+                expectation: 'expectation 1',
+                hints: [
+                  {
+                    text: 'hint 1.1',
+                  },
+                ],
+              },
+            ],
+            lastTrainedAt: '',
+            isTrainable: true,
+          },
+          true
+        ),
+      ],
+      userRole: 'admin',
+    });
+    cy.visit('/lessons/edit?lessonId=lesson');
+    cy.get('[data-cy=intro]').within(($input) => {
+      cy.get('textarea').fill('Hello World');
+    });
+    cy.matchImageSnapshot(snapname('displays-save-button-enabled-after-edits'));
   });
 });

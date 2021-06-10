@@ -132,17 +132,17 @@ const TableFooter = (props: {
   return (
     <AppBar position="sticky" color="default" className={classes.appBar}>
       <Toolbar>
-        <IconButton id="prev-page" disabled={!hasPrev} onClick={onPrev}>
+        <IconButton data-cy="prev-page" disabled={!hasPrev} onClick={onPrev}>
           <KeyboardArrowLeftIcon />
         </IconButton>
-        <IconButton id="next-page" disabled={!hasNext} onClick={onNext}>
+        <IconButton data-cy="next-page" disabled={!hasNext} onClick={onNext}>
           <KeyboardArrowRightIcon />
         </IconButton>
         <FormGroup>
           <FormControlLabel
             control={
               <Switch
-                id="toggle-creator"
+                data-cy="toggle-creator"
                 checked={context.onlyCreator}
                 onChange={context.toggleCreator}
                 aria-label="switch"
@@ -152,7 +152,7 @@ const TableFooter = (props: {
           />
         </FormGroup>
         <Fab
-          id="create-button"
+          data-cy="create-button"
           variant="extended"
           color="primary"
           className={classes.fab}
@@ -212,8 +212,8 @@ const LessonItem = (props: {
   }
 
   return (
-    <TableRow id={`lesson-${i}`} hover role="checkbox" tabIndex={-1}>
-      <TableCell id="name" align="left">
+    <TableRow data-cy={`lesson-${i}`} hover role="checkbox" tabIndex={-1}>
+      <TableCell data-cy="name" align="left">
         {userCanEdit(row.node, context.user) ? (
           <Link to={`/lessons/edit?lessonId=${row.node.lessonId}`}>
             {row.node.name || "No Lesson Name"}
@@ -222,12 +222,12 @@ const LessonItem = (props: {
           row.node.name || "No Lesson Name"
         )}
       </TableCell>
-      <TableCell id="launch" align="left">
+      <TableCell data-cy="launch" align="left">
         <IconButton onClick={() => launchLesson(row.node.lessonId)}>
           <LaunchIcon />
         </IconButton>
       </TableCell>
-      <TableCell id="grade">
+      <TableCell data-cy="grade">
         <IconButton
           onClick={() => {
             handleGrade();
@@ -237,13 +237,13 @@ const LessonItem = (props: {
           <AssignmentIcon />
         </IconButton>
       </TableCell>
-      <TableCell id="date" align="center">
+      <TableCell data-cy="date" align="center">
         {row.node.updatedAt ? row.node.updatedAt.toLocaleString() : ""}
       </TableCell>
-      <TableCell id="creator" align="center">
+      <TableCell data-cy="creator" align="center">
         {row.node.createdByName}
       </TableCell>
-      <TableCell id="delete" align="center">
+      <TableCell data-cy="delete" align="center">
         <IconButton
           onClick={handleDelete}
           disabled={!userCanEdit(row.node, context.user)}
@@ -251,13 +251,13 @@ const LessonItem = (props: {
           <DeleteIcon />
         </IconButton>
       </TableCell>
-      <TableCell id="copy" align="center">
+      <TableCell data-cy="copy" align="center">
         <IconButton onClick={handleCopy}>
           <FileCopyIcon />
         </IconButton>
       </TableCell>
       <Menu
-        id="delete-menu"
+        data-cy="delete-menu"
         anchorEl={anchorEl}
         anchorOrigin={{
           vertical: "top",
@@ -271,10 +271,10 @@ const LessonItem = (props: {
         open={deleteMenuOpen}
         onClose={handleClose}
       >
-        <MenuItem id="confirm-delete" onClick={confirmDelete}>
+        <MenuItem data-cy="confirm-delete" onClick={confirmDelete}>
           Confirm
         </MenuItem>
-        <MenuItem id="cancel-delete" onClick={handleClose}>
+        <MenuItem data-cy="cancel-delete" onClick={handleClose}>
           Cancel
         </MenuItem>
       </Menu>
@@ -350,7 +350,7 @@ const LessonsTable = () => {
               sortAsc={sortAsc}
               onSort={onSort}
             />
-            <TableBody id="lessons">
+            <TableBody data-cy="lessons">
               {lessons.edges.map((row, i) => (
                 <LessonItem
                   key={`lesson-${i}`}

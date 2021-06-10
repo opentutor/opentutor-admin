@@ -313,7 +313,7 @@ const LessonEdit = (props: { search: LessonEditSearch }) => {
           alignItems="flex-start"
         >
           <TextField
-            id="lesson-name"
+            data-cy="lesson-name"
             label="Lesson Name"
             placeholder="Display name for the lesson"
             fullWidth
@@ -333,7 +333,7 @@ const LessonEdit = (props: { search: LessonEditSearch }) => {
             variant="outlined"
           />
           <TextField
-            id="lesson-id"
+            data-cy="lesson-id"
             label="Lesson ID"
             placeholder="Unique alias to the lesson"
             fullWidth
@@ -356,7 +356,7 @@ const LessonEdit = (props: { search: LessonEditSearch }) => {
             size="small"
           />
           <TextField
-            id="lesson-creator"
+            data-cy="lesson-creator"
             label="Created By"
             placeholder="Guest"
             variant="outlined"
@@ -376,7 +376,7 @@ const LessonEdit = (props: { search: LessonEditSearch }) => {
           style={{ paddingTop: "40px" }}
         >
           <TextField
-            id="intro"
+            data-cy="intro"
             label="Introduction"
             placeholder="Introduction to the lesson,  e.g. 'This is a lesson about RGB colors'"
             multiline
@@ -398,7 +398,7 @@ const LessonEdit = (props: { search: LessonEditSearch }) => {
             variant="outlined"
           />
           <TextField
-            id="question"
+            data-cy="question"
             label="Question"
             placeholder="Question the student needs to answer, e.g. 'What are the colors in RGB?'"
             multiline
@@ -421,7 +421,7 @@ const LessonEdit = (props: { search: LessonEditSearch }) => {
           />
           <div className={classes.image}>
             <TextField
-              id="image"
+              data-cy="image"
               label="Image"
               placeholder="Link to image url"
               multiline
@@ -444,7 +444,7 @@ const LessonEdit = (props: { search: LessonEditSearch }) => {
             />
             <img
               className={classes.thumbnail}
-              id="image-thumbnail"
+              data-cy="image-thumbnail"
               src={lessonUnderEdit.lesson?.image}
               style={{ height: 50 }}
               onClick={() => {
@@ -483,7 +483,7 @@ const LessonEdit = (props: { search: LessonEditSearch }) => {
         />
       </form>
       <Box
-        id="train-data"
+        data-cy="train-data"
         border={5}
         borderColor={
           trainStatus.state !== TrainState.SUCCESS &&
@@ -523,18 +523,18 @@ const LessonEdit = (props: { search: LessonEditSearch }) => {
               <ListItem key={`train-success-accuracy-${i}`}>
                 <ListItemText
                   style={{ textAlign: "center" }}
-                  id={`train-success-accuracy-${i}`}
+                  data-cy={`train-success-accuracy-${i}`}
                 >{`Accuracy: ${x.accuracy.toFixed(2)}`}</ListItemText>
               </ListItem>
             ))}
           </List>
         ) : trainStatus.state === TrainState.FAILURE ? (
-          <Typography id="train-failure">{`TRAINING FAILED`}</Typography>
+          <Typography data-cy="train-failure">{`TRAINING FAILED`}</Typography>
         ) : null}
       </Box>
       <div>
         <Button
-          id="train-button"
+          data-cy="train-button"
           className={classes.button}
           variant="contained"
           color="primary"
@@ -554,7 +554,7 @@ const LessonEdit = (props: { search: LessonEditSearch }) => {
           Train
         </Button>
         <Button
-          id="launch-button"
+          data-cy="launch-button"
           className={classes.button}
           variant="contained"
           color="primary"
@@ -566,7 +566,7 @@ const LessonEdit = (props: { search: LessonEditSearch }) => {
         </Button>
         {lessonUnderEdit.dirty ? (
           <Button
-            id="save-button"
+            data-cy="save-button"
             className={classes.button}
             variant="contained"
             color="primary"
@@ -578,7 +578,7 @@ const LessonEdit = (props: { search: LessonEditSearch }) => {
           </Button>
         ) : null}
         <Button
-          id="discard-button"
+          data-cy="discard-button"
           className={classes.button}
           variant="contained"
           color="primary"
@@ -596,13 +596,13 @@ const LessonEdit = (props: { search: LessonEditSearch }) => {
         <DialogTitle>Save</DialogTitle>
         <DialogActions>
           <Button
-            id="save-continue"
+            data-cy="save-continue"
             onClick={handleSaveContinue}
             color="primary"
           >
             Continue
           </Button>
-          <Button id="save-exit" onClick={handleSaveExit} color="primary">
+          <Button data-cy="save-exit" onClick={handleSaveExit} color="primary">
             Exit
           </Button>
         </DialogActions>
