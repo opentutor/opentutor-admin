@@ -22,7 +22,7 @@ export const users = {
         id: "contentmanager",
         name: "Content Manager",
         email: "contentmanager@opentutor.org",
-        userRole: "contentManager"
+        userRole: "contentManager",
       },
     },
     {
@@ -31,7 +31,7 @@ export const users = {
         id: "author",
         name: "Author",
         email: "author@opentutor.org",
-        userRole: "author"
+        userRole: "author",
       },
     },
   ],
@@ -39,4 +39,4 @@ export const users = {
     hasNextPage: false,
     endCursor: "cursor 2",
   },
-}
+};

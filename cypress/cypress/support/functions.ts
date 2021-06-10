@@ -74,7 +74,11 @@ export const CONFIG_DEFAULT: AppConfig = {
 };
 
 export function mockGQLConfig(appConfig: Partial<AppConfig>): MockGraphQLQuery {
-  return mockGQL("appConfig", { ...CONFIG_DEFAULT, ...(appConfig || {}) }, false);
+  return mockGQL(
+    "appConfig",
+    { ...CONFIG_DEFAULT, ...(appConfig || {}) },
+    false
+  );
 }
 
 export function cyInterceptGraphQL(cy, mocks: MockGraphQLQuery[]): void {
@@ -159,9 +163,9 @@ export function cyMockDefault(
         id: "kayla",
         name: "Kayla",
         email: "kayla@opentutor.com",
-        userRole: args.userRole || "author"
+        userRole: args.userRole || "author",
       },
-      accessToken: "accessToken"
+      accessToken: "accessToken",
     }),
     ...gqlQueries,
   ]);
@@ -224,18 +228,18 @@ export function cyMockTrainStatusSeq(
 ): WaitFunc {
   /**
    * What is this crazy complicated test setup?
-   * 
+   *
    * The model-training sequence is that the admin client
    * triggers a training job, and then polls a status url
    * until that training job completes with SUCCESS or FAILURE.
-   * 
-   * Until the training job is done, the status url 
-   * will be returning other statuses, 
+   *
+   * Until the training job is done, the status url
+   * will be returning other statuses,
    * like PENDING or IN_PROGRESS.
-   * 
-   * So the purpose of this function 
+   *
+   * So the purpose of this function
    * is to set up the training-status url
-   * to mock a series of responses, 
+   * to mock a series of responses,
    * e.g. PENDING, IN_PROGRESS, IN_PROGESS, SUCCESS
    */
   let responseIndex = 0;

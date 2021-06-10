@@ -4,31 +4,31 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import { TrainState } from '../support/dtos';
+import { TrainState } from "../support/dtos";
 import {
   cySetup,
   cyMockDefault,
   mockGQL,
   cyMockTrain,
   cyMockTrainStatusSeq,
-} from '../support/functions';
+} from "../support/functions";
 
 function snapname(n) {
   return `lesson-page-${n}`;
 }
 
 const lesson = {
-  lessonId: 'lesson',
-  name: 'lesson',
-  introduction: 'introduction',
-  question: 'question',
-  conclusion: ['conclusion'],
+  lessonId: "lesson",
+  name: "lesson",
+  introduction: "introduction",
+  question: "question",
+  conclusion: ["conclusion"],
   expectations: [
     {
-      expectation: 'expectation 1',
+      expectation: "expectation 1",
       hints: [
         {
-          text: 'hint 1.1',
+          text: "hint 1.1",
         },
       ],
       features: {},
@@ -36,10 +36,10 @@ const lesson = {
   ],
   features: {},
   isTrainable: true,
-  lastTrainedAt: '',
+  lastTrainedAt: "",
 };
 
-describe('lesson screen - training', () => {
+describe("lesson screen - training", () => {
   [
     {
       pendingCount: 1,
@@ -52,7 +52,7 @@ describe('lesson screen - training', () => {
         ],
       },
       expectedAccuracies: [0.17, 0.98, 0.99],
-      expectedFeedback: 'red',
+      expectedFeedback: "red",
     },
     {
       pendingCount: 1,
@@ -61,7 +61,7 @@ describe('lesson screen - training', () => {
         expectations: [{ accuracy: 0.95123 }, { accuracy: 0.41123 }],
       },
       expectedAccuracies: [0.95, 0.41],
-      expectedFeedback: 'yellow',
+      expectedFeedback: "yellow",
     },
     {
       pendingCount: 1,
@@ -70,7 +70,7 @@ describe('lesson screen - training', () => {
         expectations: [{ accuracy: 0.61123 }, { accuracy: 0.99123 }],
       },
       expectedAccuracies: [0.61, 0.99],
-      expectedFeedback: 'green',
+      expectedFeedback: "green",
     },
   ].forEach((ex) => {
     it(`train lesson displays ${
@@ -80,8 +80,8 @@ describe('lesson screen - training', () => {
     )}`, () => {
       cySetup(cy);
       cyMockDefault(cy, {
-        gqlQueries: [mockGQL('lesson', lesson, true)],
-        userRole: 'admin',
+        gqlQueries: [mockGQL("lesson", lesson, true)],
+        userRole: "admin",
       });
       const waitTrainLesson = cyMockTrain(cy);
       const waitComplete = cyMockTrainStatusSeq(cy, [
@@ -94,33 +94,33 @@ describe('lesson screen - training', () => {
           },
         },
       ]);
-      cy.visit('/lessons/edit?lessonId=lesson&trainStatusPollInterval=10');
-      cy.get('[data-cy=train-button]').trigger('mouseover').click();
+      cy.visit("/lessons/edit?lessonId=lesson&trainStatusPollInterval=10");
+      cy.get("[data-cy=train-button]").trigger("mouseover").click();
       waitTrainLesson();
       waitComplete();
       for (let i = 0; i < ex.expectedAccuracies.length; i++) {
         cy.get(`[data-cy=train-success-accuracy-${i}]`).should(
-          'contain',
+          "contain",
           ex.expectedAccuracies[i]
         );
       }
-      cy.get('[data-cy=train-data]').matchImageSnapshot(
+      cy.get("[data-cy=train-data]").matchImageSnapshot(
         snapname(
           `train-success-displays-${
             ex.expectedFeedback
-          }-for-expectation-accuracies-${ex.expectedAccuracies.join('-')}`
+          }-for-expectation-accuracies-${ex.expectedAccuracies.join("-")}`
         )
       );
     });
   });
 
-  it('train lesson fails for state FAILURE', () => {
+  it("train lesson fails for state FAILURE", () => {
     cySetup(cy);
     cyMockDefault(cy, {
-      gqlQueries: [mockGQL('lesson', lesson, true)],
-      userRole: 'admin',
+      gqlQueries: [mockGQL("lesson", lesson, true)],
+      userRole: "admin",
     });
-    cy.visit('/lessons/edit?lessonId=lesson&trainStatusPollInterval=10');
+    cy.visit("/lessons/edit?lessonId=lesson&trainStatusPollInterval=10");
     const waitTrainLesson = cyMockTrain(cy);
     const waitComplete = cyMockTrainStatusSeq(cy, [
       { status: { state: TrainState.PENDING } },
@@ -131,32 +131,32 @@ describe('lesson screen - training', () => {
         },
       },
     ]);
-    cy.get('[data-cy=train-button]').trigger('mouseover').click();
+    cy.get("[data-cy=train-button]").trigger("mouseover").click();
     waitTrainLesson();
     waitComplete();
-    cy.get('[data-cy=train-failure]').should('contain', 'TRAINING FAILED');
+    cy.get("[data-cy=train-failure]").should("contain", "TRAINING FAILED");
   });
 
-  it('train lesson fails for http error on start', () => {
+  it("train lesson fails for http error on start", () => {
     cySetup(cy);
     cyMockDefault(cy, {
-      gqlQueries: [mockGQL('lesson', lesson, true)],
-      userRole: 'admin',
+      gqlQueries: [mockGQL("lesson", lesson, true)],
+      userRole: "admin",
     });
-    cy.visit('/lessons/edit?lessonId=lesson&trainStatusPollInterval=10');
+    cy.visit("/lessons/edit?lessonId=lesson&trainStatusPollInterval=10");
     const waitTrainLesson = cyMockTrain(cy, { responseStatus: 500 });
-    cy.get('[data-cy=train-button]').trigger('mouseover').click();
+    cy.get("[data-cy=train-button]").trigger("mouseover").click();
     waitTrainLesson();
-    cy.get('[data-cy=train-failure]').should('contain', 'TRAINING FAILED');
+    cy.get("[data-cy=train-failure]").should("contain", "TRAINING FAILED");
   });
 
-  it('train lesson fails for http error on poll status', () => {
+  it("train lesson fails for http error on poll status", () => {
     cySetup(cy);
     cyMockDefault(cy, {
-      gqlQueries: [mockGQL('lesson', lesson, true)],
-      userRole: 'admin',
+      gqlQueries: [mockGQL("lesson", lesson, true)],
+      userRole: "admin",
     });
-    cy.visit('/lessons/edit?lessonId=lesson&trainStatusPollInterval=10');
+    cy.visit("/lessons/edit?lessonId=lesson&trainStatusPollInterval=10");
     const waitTrainLesson = cyMockTrain(cy);
     const waitComplete = cyMockTrainStatusSeq(cy, [
       { status: { state: TrainState.PENDING } },
@@ -168,9 +168,9 @@ describe('lesson screen - training', () => {
         responseStatusCode: 500,
       },
     ]);
-    cy.get('[data-cy=train-button]').trigger('mouseover').click();
+    cy.get("[data-cy=train-button]").trigger("mouseover").click();
     waitTrainLesson();
     waitComplete();
-    cy.get('[data-cy=train-failure]').should('contain', 'TRAINING FAILED');
+    cy.get("[data-cy=train-failure]").should("contain", "TRAINING FAILED");
   });
 });

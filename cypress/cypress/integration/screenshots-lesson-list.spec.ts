@@ -4,49 +4,49 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import { cySetup, cyMockDefault, mockGQL } from '../support/functions';
+import { cySetup, cyMockDefault, mockGQL } from "../support/functions";
 
 function snapname(n) {
   return `screenshots-lesson-list-${n}`;
 }
 
-describe('screenshots - lesson list', () => {
-  it('displays a list of lessons', () => {
+describe("screenshots - lesson list", () => {
+  it("displays a list of lessons", () => {
     cySetup(cy);
     cyMockDefault(cy, {
       gqlQueries: [
         mockGQL(
-          'lessons',
+          "lessons",
           {
             edges: [
               {
-                cursor: 'cursor 1',
+                cursor: "cursor 1",
                 node: {
-                  lessonId: 'lesson1',
-                  name: 'lesson 1',
-                  updatedAt: '1/1/20000, 12:00:00 AM',
+                  lessonId: "lesson1",
+                  name: "lesson 1",
+                  updatedAt: "1/1/20000, 12:00:00 AM",
                 },
               },
               {
-                cursor: 'cursor 2',
+                cursor: "cursor 2",
                 node: {
-                  lessonId: 'lesson2',
-                  name: 'lesson 2',
-                  updatedAt: '1/1/20000, 12:00:00 AM',
+                  lessonId: "lesson2",
+                  name: "lesson 2",
+                  updatedAt: "1/1/20000, 12:00:00 AM",
                 },
               },
             ],
             pageInfo: {
               hasNextPage: false,
-              endCursor: 'cursor 2 ',
+              endCursor: "cursor 2 ",
             },
           },
           true
         ),
       ],
-      userRole: 'admin',
+      userRole: "admin",
     });
-    cy.visit('/lessons');
-    cy.matchImageSnapshot(snapname('displays-a-list-of-lessons'));
+    cy.visit("/lessons");
+    cy.matchImageSnapshot(snapname("displays-a-list-of-lessons"));
   });
 });

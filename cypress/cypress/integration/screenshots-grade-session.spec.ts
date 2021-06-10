@@ -4,83 +4,83 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import { cySetup, cyMockDefault, mockGQL } from '../support/functions';
+import { cySetup, cyMockDefault, mockGQL } from "../support/functions";
 
 function snapname(n) {
   return `screenshots-grade-session-${n}`;
 }
 
-describe('screenshots - grade session', () => {
-  it('displays feedback after answer marked good', () => {
+describe("screenshots - grade session", () => {
+  it("displays feedback after answer marked good", () => {
     cySetup(cy);
     cyMockDefault(cy, {
       gqlQueries: [
         mockGQL(
-          'session',
+          "session",
           {
-            sessionId: 'session1',
+            sessionId: "session1",
             lesson: {
-              name: 'lesson 1',
-              createdByName: 'username1',
+              name: "lesson 1",
+              createdByName: "username1",
             },
             graderGrade: null,
             question: {
-              text: 'question?',
+              text: "question?",
               expectations: [
-                { text: 'expected text 1' },
-                { text: 'expected text 2' },
+                { text: "expected text 1" },
+                { text: "expected text 2" },
               ],
             },
             userResponses: [
               {
-                text: 'answer 1',
+                text: "answer 1",
                 expectationScores: [
                   {
-                    classifierGrade: 'Good',
-                    graderGrade: 'Good',
+                    classifierGrade: "Good",
+                    graderGrade: "Good",
                   },
                   {
-                    classifierGrade: 'Bad',
-                    graderGrade: '',
+                    classifierGrade: "Bad",
+                    graderGrade: "",
                   },
                 ],
               },
               {
-                text: 'answer 2',
+                text: "answer 2",
                 expectationScores: [
                   {
-                    classifierGrade: 'Bad',
-                    graderGrade: '',
+                    classifierGrade: "Bad",
+                    graderGrade: "",
                   },
                   {
-                    classifierGrade: 'Good',
-                    graderGrade: '',
+                    classifierGrade: "Good",
+                    graderGrade: "",
                   },
                 ],
               },
               {
-                text: 'answer 3',
+                text: "answer 3",
                 expectationScores: [
                   {
-                    classifierGrade: 'Bad',
-                    graderGrade: '',
+                    classifierGrade: "Bad",
+                    graderGrade: "",
                   },
                   {
-                    classifierGrade: 'Bad',
-                    graderGrade: 'Bad',
+                    classifierGrade: "Bad",
+                    graderGrade: "Bad",
                   },
                 ],
               },
               {
-                text: 'answer 4',
+                text: "answer 4",
                 expectationScores: [
                   {
-                    classifierGrade: 'Good',
-                    graderGrade: 'Good',
+                    classifierGrade: "Good",
+                    graderGrade: "Good",
                   },
                   {
-                    classifierGrade: 'Bad',
-                    graderGrade: 'Bad',
+                    classifierGrade: "Bad",
+                    graderGrade: "Bad",
                   },
                 ],
               },
@@ -90,9 +90,9 @@ describe('screenshots - grade session', () => {
         ),
       ],
     });
-    cy.visit('/sessions/session?sessionId=session1');
+    cy.visit("/sessions/session?sessionId=session1");
     cy.matchImageSnapshot(
-      snapname('displays-feedback-after-answer-marked-good')
+      snapname("displays-feedback-after-answer-marked-good")
     );
   });
 });
