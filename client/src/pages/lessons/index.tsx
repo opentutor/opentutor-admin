@@ -71,6 +71,16 @@ const useStyles = makeStyles((theme) => ({
     left: "50%",
     transform: "translate(-50%, -50%)",
   },
+  normalButton: {
+    "&:hover": {
+      color: theme.palette.primary.main,
+    },
+  },
+  dangerButton: {
+    "&:hover": {
+      color: "red",
+    },
+  },
 }));
 
 const columns: ColumnDef[] = [
@@ -159,6 +169,7 @@ const LessonItem = (props: {
   const deleteMenuOpen = Boolean(anchorEl);
   const context = useContext(SessionContext);
   const [cookies] = useCookies(["accessToken"]);
+  const styles = useStyles();
 
   function launchLesson(id: string) {
     const host = process.env.TUTOR_ENDPOINT || window.location.origin;
@@ -222,6 +233,7 @@ const LessonItem = (props: {
               handleGrade();
             }}
             disabled={!userCanEdit(row.node, context.user)}
+            className={styles.normalButton}
           >
             <AssessmentIcon />
           </IconButton>
@@ -230,12 +242,17 @@ const LessonItem = (props: {
           <IconButton
             data-cy="launch-button"
             onClick={() => launchLesson(row.node.lessonId)}
+            className={styles.normalButton}
           >
             <LaunchIcon />
           </IconButton>
         </Tooltip>
         <Tooltip title="Duplicate" arrow>
-          <IconButton data-cy="copy-button" onClick={handleCopy}>
+          <IconButton
+            data-cy="copy-button"
+            onClick={handleCopy}
+            className={styles.normalButton}
+          >
             <FileCopyIcon />
           </IconButton>
         </Tooltip>
@@ -244,8 +261,9 @@ const LessonItem = (props: {
             data-cy="delete-button"
             onClick={handleDelete}
             disabled={!userCanEdit(row.node, context.user)}
+            className={styles.dangerButton}
           >
-            <DeleteIcon style={{ color: "red" }} />
+            <DeleteIcon />
           </IconButton>
         </Tooltip>
       </TableCell>

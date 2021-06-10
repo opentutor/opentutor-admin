@@ -59,6 +59,11 @@ const useStyles = makeStyles((theme) => ({
     position: "absolute",
     right: theme.spacing(1),
   },
+  normalButton: {
+    "&:hover": {
+      color: theme.palette.primary.main,
+    },
+  },
 }));
 
 const columns: ColumnDef[] = [
@@ -178,6 +183,7 @@ function TableFooter(props: {
 function SessionItem(props: { row: Edge<Session>; i: number }): JSX.Element {
   const { row, i } = props;
   const context = useContext(SessionContext);
+  const styles = useStyles();
 
   function handleGrade(): void {
     navigate(`/sessions/session?sessionId=${row.node.sessionId}`);
@@ -243,6 +249,7 @@ function SessionItem(props: { row: Edge<Session>; i: number }): JSX.Element {
             data-cy="grade-button"
             onClick={handleGrade}
             disabled={!userCanEdit(row.node.lesson, context.user)}
+            className={styles.normalButton}
           >
             <AssessmentIcon />
           </IconButton>
