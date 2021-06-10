@@ -22,19 +22,19 @@ describe("lessons screen", () => {
       });
       cy.visit("/lessons");
       cy.get("[data-cy=lesson-0]")
-        .find("[data-cy=delete] button")
+        .find("[data-cy=delete-button]")
         .should("be.disabled");
       cy.get("[data-cy=lesson-0]")
-        .find("[data-cy=grade] button")
+        .find("[data-cy=grade-button]")
         .should("be.disabled");
       cy.get("[data-cy=lesson-0]")
         .find("[data-cy=name]")
         .should("not.have.class", "a");
       cy.get("[data-cy=lesson-1]")
-        .find("[data-cy=delete] button")
+        .find("[data-cy=delete-button]")
         .should("be.disabled");
       cy.get("[data-cy=lesson-1]")
-        .find("[data-cy=grade] button")
+        .find("[data-cy=grade-button]")
         .should("be.disabled");
       cy.get("[data-cy=lesson-1]")
         .find("[data-cy=name]")
@@ -49,10 +49,10 @@ describe("lessons screen", () => {
       });
       cy.visit("/lessons");
       cy.get("[data-cy=lesson-0]")
-        .find("[data-cy=delete] button")
+        .find("[data-cy=delete-button]")
         .should("not.be.disabled");
       cy.get("[data-cy=lesson-0]")
-        .find("[data-cy=grade] button")
+        .find("[data-cy=grade-button]")
         .should("not.be.disabled");
     });
 
@@ -64,10 +64,10 @@ describe("lessons screen", () => {
       });
       cy.visit("/lessons");
       cy.get("[data-cy=lesson-0]")
-        .find("[data-cy=delete] button")
+        .find("[data-cy=delete-button]")
         .should("not.be.disabled");
       cy.get("[data-cy=lesson-0]")
-        .find("[data-cy=grade] button")
+        .find("[data-cy=grade-button]")
         .should("not.be.disabled");
     });
 
@@ -105,10 +105,10 @@ describe("lessons screen", () => {
       });
       cy.visit("/lessons");
       cy.get("[data-cy=lesson-0]")
-        .find("[data-cy=delete] button")
+        .find("[data-cy=delete-button]")
         .should("not.be.disabled");
       cy.get("[data-cy=lesson-0]")
-        .find("[data-cy=grade] button")
+        .find("[data-cy=grade-button]")
         .should("not.be.disabled");
     });
   });
@@ -138,19 +138,39 @@ describe("lessons screen", () => {
     });
     cy.visit("/lessons");
     // TO FIX
-    cy.get("#lessons").children().should("have.length", 2);
-    cy.get("#lesson-0 #name").contains("lesson 1");
-    cy.get("#lesson-0 #launch-button").should("not.be.disabled");
-    cy.get("#lesson-0 #grade-button").should("not.be.disabled");
-    cy.get("#lesson-0 #date").contains("1/1/20000, 12:00:00 AM");
-    cy.get("#lesson-0 #creator").contains("teacher 1");
-    cy.get("#lesson-0 #delete-button").should("not.be.disabled");
-    cy.get("#lesson-1 #name").contains("lesson 2");
-    cy.get("#lesson-1 #launch-button").should("not.be.disabled");
-    cy.get("#lesson-1 #grade-button").should("not.be.disabled");
-    cy.get("#lesson-1 #date").contains("1/1/20000, 12:00:00 AM");
-    cy.get("#lesson-1 #creator").contains("teacher 2");
-    cy.get("#lesson-1 #delete-button").should("not.be.disabled");
+    cy.get("[data-cy=lessons]").children().should("have.length", 2);
+    cy.get("[data-cy=lesson-0]").find("[data-cy=name]").contains("lesson 1");
+    cy.get("[data-cy=lesson-0]")
+      .find("[data-cy=launch-button]")
+      .should("not.be.disabled");
+    cy.get("[data-cy=lesson-0]")
+      .find("[data-cy=grade-button]")
+      .should("not.be.disabled");
+    cy.get("[data-cy=lesson-0]")
+      .find("[data-cy=date]")
+      .contains("1/1/20000, 12:00:00 AM");
+    cy.get("[data-cy=lesson-0]")
+      .find("[data-cy=creator]")
+      .contains("teacher 1");
+    cy.get("[data-cy=lesson-0]")
+      .find("[data-cy=delete-button]")
+      .should("not.be.disabled");
+    cy.get("[data-cy=lesson-1]").find("[data-cy=name]").contains("lesson 2");
+    cy.get("[data-cy=lesson-1]")
+      .find("[data-cy=launch-button]")
+      .should("not.be.disabled");
+    cy.get("[data-cy=lesson-1]")
+      .find("[data-cy=grade-button]")
+      .should("not.be.disabled");
+    cy.get("[data-cy=lesson-1]")
+      .find("[data-cy=date]")
+      .contains("1/1/20000, 12:00:00 AM");
+    cy.get("[data-cy=lesson-1]")
+      .find("[data-cy=creator]")
+      .contains("teacher 2");
+    cy.get("[data-cy=lesson-1]")
+      .find("[data-cy=delete-button]")
+      .should("not.be.disabled");
     //TO FIX
   });
 
@@ -177,7 +197,7 @@ describe("lessons screen", () => {
     });
     cy.visit("/lessons");
     cy.get("[data-cy=lesson-0]")
-      .find("[data-cy=grade]")
+      .find("[data-cy=grade-button]")
       .trigger("mouseover")
       .click();
     cy.location("pathname").should("contain", "/sessions");
@@ -207,7 +227,7 @@ describe("lessons screen", () => {
     });
     cy.visit("/lessons");
     cy.get("[data-cy=lesson-0]")
-      .find("[data-cy=launch-button] button")
+      .find("[data-cy=launch-button]")
       .trigger("mouseover")
       .click();
     cy.location("pathname").should("contain", "/tutor");

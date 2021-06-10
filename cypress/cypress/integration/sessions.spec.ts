@@ -22,10 +22,10 @@ describe("sessions screen", () => {
       });
       cy.visit("/sessions");
       cy.get("[data-cy=session-0]")
-        .find("[data-cy=grade] button")
+        .find("[data-cy=grade-button]")
         .should("be.disabled");
       cy.get("[data-cy=session-1]")
-        .find("[data-cy=grade] button")
+        .find("[data-cy=grade-button]")
         .should("be.disabled");
     });
 
@@ -37,10 +37,10 @@ describe("sessions screen", () => {
       });
       cy.visit("/sessions");
       cy.get("[data-cy=session-0]")
-        .find("[data-cy=grade] button")
+        .find("[data-cy=grade-button]")
         .should("not.be.disabled");
       cy.get("[data-cy=session-1]")
-        .find("[data-cy=grade] button")
+        .find("[data-cy=grade-button]")
         .should("not.be.disabled");
     });
 
@@ -54,10 +54,10 @@ describe("sessions screen", () => {
       cy.wait("@login");
       cy.wait("@sessions");
       cy.get("[data-cy=session-0]")
-        .find("[data-cy=grade] button")
+        .find("[data-cy=grade-button]")
         .should("not.be.disabled");
       cy.get("[data-cy=session-1]")
-        .find("[data-cy=grade] button")
+        .find("[data-cy=grade-button]")
         .should("not.be.disabled");
     });
 
@@ -113,10 +113,10 @@ describe("sessions screen", () => {
       });
       cy.visit("/sessions");
       cy.get("[data-cy=session-0]")
-        .find("[data-cy=grade] button")
+        .find("[data-cy=grade-button]")
         .should("not.be.disabled");
       cy.get("[data-cy=session-1]")
-        .find("[data-cy=grade] button")
+        .find("[data-cy=grade-button]")
         .should("not.be.disabled");
     });
   });
@@ -213,7 +213,7 @@ describe("sessions screen", () => {
     });
     cy.visit("/sessions");
     cy.get("[data-cy=session-0]")
-      .find("[data-cy=grade] button")
+      .find("[data-cy=grade-button]")
       .trigger("mouseover")
       .click();
     cy.location("pathname").should("contain", "/sessions/session");
