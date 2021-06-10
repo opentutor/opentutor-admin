@@ -198,7 +198,10 @@ function SessionItem(props: { row: Edge<Session>; i: number }): JSX.Element {
     >
       <TableCell data-cy="lesson" align="left">
         {userCanEdit(row.node.lesson, context.user) ? (
-          <Link to={`/lessons/edit?lessonId=${row.node.lesson.lessonId}`}>
+          <Link
+            data-cy="lesson-link"
+            to={`/lessons/edit?lessonId=${row.node.lesson.lessonId}`}
+          >
             {row.node.lesson?.name || "No Lesson Name"}
           </Link>
         ) : (

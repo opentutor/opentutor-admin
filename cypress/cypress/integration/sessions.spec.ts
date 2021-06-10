@@ -198,7 +198,8 @@ describe("sessions screen", () => {
     });
     cy.visit("/sessions");
     cy.get("[data-cy=session-0]")
-      .find("[data-cy=lesson] a")
+      .find("[data-cy=lesson]")
+      .find("[data-cy=lesson-link]")
       .trigger("mouseover")
       .click();
     cy.location("pathname").should("contain", "/lessons/edit");

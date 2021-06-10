@@ -198,7 +198,10 @@ const LessonItem = (props: {
     <TableRow data-cy={`lesson-${i}`} hover role="checkbox" tabIndex={-1}>
       <TableCell data-cy="name" align="left">
         {userCanEdit(row.node, context.user) ? (
-          <Link to={`/lessons/edit?lessonId=${row.node.lessonId}`}>
+          <Link
+            data-cy="name-link"
+            to={`/lessons/edit?lessonId=${row.node.lessonId}`}
+          >
             {row.node.name || "No Lesson Name"}
           </Link>
         ) : (
