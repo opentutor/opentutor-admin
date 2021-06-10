@@ -137,7 +137,7 @@ describe("lessons screen", () => {
       userRole: "admin",
     });
     cy.visit("/lessons");
-    // TO FIX
+
     cy.get("[data-cy=lessons]").children().should("have.length", 2);
     cy.get("[data-cy=lesson-0]").find("[data-cy=name]").contains("lesson 1");
     cy.get("[data-cy=lesson-0]")
@@ -171,7 +171,6 @@ describe("lessons screen", () => {
     cy.get("[data-cy=lesson-1]")
       .find("[data-cy=delete-button]")
       .should("not.be.disabled");
-    //TO FIX
   });
 
   it("opens edit for a lesson", () => {
