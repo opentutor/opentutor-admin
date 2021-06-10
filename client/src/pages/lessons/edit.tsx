@@ -95,6 +95,12 @@ const useStyles = makeStyles((theme) => ({
   thumbnail: {
     padding: 10,
   },
+  progress: {
+    position: "fixed",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+  },
 }));
 
 const newLesson: Lesson = {
@@ -296,7 +302,7 @@ const LessonEdit = (props: { search: LessonEditSearch }) => {
   }
 
   if (!lessonUnderEdit.lesson) {
-    return <CircularProgress />;
+    return <CircularProgress className={classes.progress} />;
   }
 
   if (lessonId && !userCanEdit(lessonUnderEdit.lesson, context.user)) {
@@ -311,6 +317,7 @@ const LessonEdit = (props: { search: LessonEditSearch }) => {
           direction="column"
           justify="flex-start"
           alignItems="flex-start"
+          data-cy="lesson-edit-grid"
         >
           <TextField
             data-cy="lesson-name"
@@ -516,7 +523,7 @@ const LessonEdit = (props: { search: LessonEditSearch }) => {
             : `Last Trained: Never Trained`}
         </Typography>
         {isTraining ? (
-          <CircularProgress />
+          <CircularProgress className={classes.progress} />
         ) : trainStatus.state === TrainState.SUCCESS ? (
           <List>
             {trainStatus.info?.expectations?.map((x, i) => (
@@ -615,12 +622,13 @@ const LessonEdit = (props: { search: LessonEditSearch }) => {
 function EditPage(props: { search: LessonEditSearch }): JSX.Element {
   const context = useContext(SessionContext);
   const [cookies] = useCookies(["accessToken"]);
+  const styles = useStyles();
 
   if (typeof window !== "undefined" && !cookies.accessToken) {
     return <div>Please login to view lesson.</div>;
   }
   if (!context.user) {
-    return <CircularProgress />;
+    return <CircularProgress className={styles.progress} />;
   }
   return (
     <div>

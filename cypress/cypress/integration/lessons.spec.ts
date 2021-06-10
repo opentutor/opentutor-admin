@@ -123,18 +123,11 @@ describe("lessons screen", () => {
     cy.get("[data-cy=column-header]");
     cy.get("[data-cy=column-header]").find("[data-cy=name]").contains("Lesson");
     cy.get("[data-cy=column-header]")
-      .find("[data-cy=launch]")
-      .contains("Launch");
-    cy.get("[data-cy=column-header]").find("[data-cy=grade]").contains("Grade");
-    cy.get("[data-cy=column-header]")
       .find("[data-cy=updatedAt]")
       .contains("Date");
     cy.get("[data-cy=column-header]")
       .find("[data-cy=createdByName]")
       .contains("Created By");
-    cy.get("[data-cy=column-header]")
-      .find("[data-cy=delete]")
-      .contains("Delete");
   });
 
   it("displays a list of lessons", () => {
@@ -144,39 +137,21 @@ describe("lessons screen", () => {
       userRole: "admin",
     });
     cy.visit("/lessons");
-    cy.get("[data-cy=lessons]").children().should("have.length", 2);
-    cy.get("[data-cy=lesson-0]").find("[data-cy=name]").contains("lesson 1");
-    cy.get("[data-cy=lesson-0]")
-      .find("[data-cy=launch] button")
-      .should("not.be.disabled");
-    cy.get("[data-cy=lesson-0]")
-      .find("[data-cy=grade] button")
-      .should("not.be.disabled");
-    cy.get("[data-cy=lesson-0]")
-      .find("[data-cy=date]")
-      .contains("1/1/20000, 12:00:00 AM");
-    cy.get("[data-cy=lesson-0]")
-      .find("[data-cy=creator]")
-      .contains("teacher 1");
-    cy.get("[data-cy=lesson-0]")
-      .find("[data-cy=delete] button")
-      .should("not.be.disabled");
-    cy.get("[data-cy=lesson-1]").find("[data-cy=name]").contains("lesson 2");
-    cy.get("[data-cy=lesson-1]")
-      .find("[data-cy=launch] button")
-      .should("not.be.disabled");
-    cy.get("[data-cy=lesson-1]")
-      .find("[data-cy=grade] button")
-      .should("not.be.disabled");
-    cy.get("[data-cy=lesson-1]")
-      .find("[data-cy=date]")
-      .contains("1/1/20000, 12:00:00 AM");
-    cy.get("[data-cy=lesson-1]")
-      .find("[data-cy=creator]")
-      .contains("teacher 2");
-    cy.get("[data-cy=lesson-1]")
-      .find("[data-cy=delete] button")
-      .should("not.be.disabled");
+    // TO FIX
+    cy.get("#lessons").children().should("have.length", 2);
+    cy.get("#lesson-0 #name").contains("lesson 1");
+    cy.get("#lesson-0 #launch-button").should("not.be.disabled");
+    cy.get("#lesson-0 #grade-button").should("not.be.disabled");
+    cy.get("#lesson-0 #date").contains("1/1/20000, 12:00:00 AM");
+    cy.get("#lesson-0 #creator").contains("teacher 1");
+    cy.get("#lesson-0 #delete-button").should("not.be.disabled");
+    cy.get("#lesson-1 #name").contains("lesson 2");
+    cy.get("#lesson-1 #launch-button").should("not.be.disabled");
+    cy.get("#lesson-1 #grade-button").should("not.be.disabled");
+    cy.get("#lesson-1 #date").contains("1/1/20000, 12:00:00 AM");
+    cy.get("#lesson-1 #creator").contains("teacher 2");
+    cy.get("#lesson-1 #delete-button").should("not.be.disabled");
+    //TO FIX
   });
 
   it("opens edit for a lesson", () => {
@@ -217,7 +192,7 @@ describe("lessons screen", () => {
     });
     cy.visit("/lessons");
     cy.get("[data-cy=lesson-0]")
-      .find("[data-cy=copy]")
+      .find("[data-cy=copy-button]")
       .trigger("mouseover")
       .click();
     cy.location("pathname").should("contain", "/lessons/edit");
@@ -232,7 +207,7 @@ describe("lessons screen", () => {
     });
     cy.visit("/lessons");
     cy.get("[data-cy=lesson-0]")
-      .find("[data-cy=launch] button")
+      .find("[data-cy=launch-button] button")
       .trigger("mouseover")
       .click();
     cy.location("pathname").should("contain", "/tutor");

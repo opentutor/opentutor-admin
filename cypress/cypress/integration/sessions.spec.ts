@@ -133,17 +133,11 @@ describe("sessions screen", () => {
       .find("[data-cy=lessonName]")
       .contains("Lesson");
     cy.get("[data-cy=column-header]")
-      .find("[data-cy=grade-link]")
-      .contains("Grade");
-    cy.get("[data-cy=column-header]")
       .find("[data-cy=graderGrade]")
       .contains("Instructor Grade");
     cy.get("[data-cy=column-header]")
       .find("[data-cy=classifierGrade]")
       .contains("Classifier Grade");
-    cy.get("[data-cy=column-header]")
-      .find("[data-cy=lastGradedByName]")
-      .contains("Last Graded By");
     cy.get("[data-cy=column-header]")
       .find("[data-cy=lastGradedAt]")
       .contains("Last Graded At");
@@ -180,9 +174,6 @@ describe("sessions screen", () => {
       .find("[data-cy=creator]")
       .contains("teacher 1");
     cy.get("[data-cy=session-0]").find("[data-cy=username]").contains("user 1");
-    cy.get("[data-cy=session-0]")
-      .find("[data-cy=last-graded-by]")
-      .contains("Grader");
     cy.get("[data-cy=session-0]")
       .find("[data-cy=last-graded-at]")
       .contains("1/2/20000, 12:00:00 AM");

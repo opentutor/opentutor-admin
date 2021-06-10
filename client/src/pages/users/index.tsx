@@ -46,11 +46,17 @@ const useStyles = makeStyles((theme) => ({
     bottom: 0,
   },
   progress: {
-    marginLeft: "50%",
+    position: "fixed",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
   },
   paging: {
     position: "absolute",
     right: theme.spacing(1),
+  },
+  dropdown: {
+    width: 170,
   },
 }));
 
@@ -73,7 +79,7 @@ const columns: ColumnDef[] = [
     id: "userRole",
     label: "Role",
     minWidth: 170,
-    align: "center",
+    align: "left",
     sortable: true,
   },
 ];
@@ -111,6 +117,7 @@ function UserItem(props: {
   const { row, i } = props;
   const [cookies] = useCookies(["accessToken"]);
   const context = useContext(SessionContext);
+  const styles = useStyles();
 
   async function handleRoleChange(user: string, permission: string) {
     try {
@@ -129,7 +136,7 @@ function UserItem(props: {
       <TableCell data-cy="email" align="left">
         {row.node.email}
       </TableCell>
-      <TableCell data-cy="role" align="center">
+      <TableCell data-cy="role" align="left">
         <Select
           data-cy="select-role"
           value={row.node.userRole}
@@ -138,6 +145,7 @@ function UserItem(props: {
           ) => {
             handleRoleChange(row.node.id, event.target.value as string);
           }}
+          className={styles.dropdown}
         >
           <MenuItem data-cy={UserRole.AUTHOR} value={UserRole.AUTHOR}>
             Author
@@ -219,7 +227,7 @@ function UsersTable(): JSX.Element {
   return (
     <div className={classes.root}>
       <Paper className={classes.container}>
-        <TableContainer>
+        <TableContainer style={{ height: "calc(100vh - 128px)" }}>
           <Table stickyHeader aria-label="sticky table">
             <ColumnHeader
               columns={columns}
@@ -259,12 +267,13 @@ function UsersTable(): JSX.Element {
 function UsersPage(): JSX.Element {
   const context = useContext(SessionContext);
   const [cookies] = useCookies(["accessToken"]);
+  const styles = useStyles();
 
   if (typeof window !== "undefined" && !cookies.accessToken) {
     return <div>Please login to view users.</div>;
   }
   if (!context.user) {
-    return <CircularProgress />;
+    return <CircularProgress className={styles.progress} />;
   }
   if (!userIsElevated(context.user)) {
     return (

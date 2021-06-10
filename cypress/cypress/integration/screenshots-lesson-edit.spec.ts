@@ -44,6 +44,9 @@ describe("screenshots - lesson edit", () => {
       userRole: "admin",
     });
     cy.visit("/lessons/edit?lessonId=lesson");
+    cy.get("[data-cy=lesson-edit-grid]", { timeout: 10000 }).should(
+      "be.visible"
+    );
     cy.matchImageSnapshot(snapname("displays-lesson-form-on-load"));
   });
 

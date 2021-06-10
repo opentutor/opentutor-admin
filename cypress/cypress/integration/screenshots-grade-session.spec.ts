@@ -89,8 +89,10 @@ describe("screenshots - grade session", () => {
           true
         ),
       ],
+      userRole: "admin",
     });
     cy.visit("/sessions/session?sessionId=session1");
+    cy.get("[data-cy=session-table]", { timeout: 10000 }).should("be.visible");
     cy.matchImageSnapshot(
       snapname("displays-feedback-after-answer-marked-good")
     );

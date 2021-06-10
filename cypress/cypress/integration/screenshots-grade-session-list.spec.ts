@@ -42,6 +42,7 @@ describe("screenshots - grade session list", () => {
       ],
     });
     cy.visit("/sessions");
+    cy.get("[data-cy=sessions-table]", { timeout: 10000 }).should("be.visible");
     cy.matchImageSnapshot(
       snapname("displays-sessions-show-graded-disabled-default")
     );

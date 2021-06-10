@@ -47,6 +47,7 @@ describe("screenshots - lesson list", () => {
       userRole: "admin",
     });
     cy.visit("/lessons");
+    cy.get("[data-cy=lessons-table]", { timeout: 10000 }).should("be.visible");
     cy.matchImageSnapshot(snapname("displays-a-list-of-lessons"));
   });
 });

@@ -25,10 +25,11 @@ import {
   TableContainer,
   TableRow,
   Toolbar,
+  Tooltip,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import AddIcon from "@material-ui/icons/Add";
-import AssignmentIcon from "@material-ui/icons/Assignment";
+import AssessmentIcon from "@material-ui/icons/Assessment";
 import DeleteIcon from "@material-ui/icons/Delete";
 import FileCopyIcon from "@material-ui/icons/FileCopy";
 import KeyboardArrowLeftIcon from "@material-ui/icons/KeyboardArrowLeft";
@@ -65,52 +66,34 @@ const useStyles = makeStyles((theme) => ({
     zIndex: 1,
   },
   progress: {
-    marginLeft: "50%",
+    position: "fixed",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
   },
 }));
 
 const columns: ColumnDef[] = [
   { id: "name", label: "Lesson", minWidth: 200, align: "left", sortable: true },
   {
-    id: "launch",
-    label: "Launch",
-    minWidth: 0,
-    align: "left",
-    sortable: false,
-  },
-  {
-    id: "grade",
-    label: "Grade",
-    minWidth: 0,
-    align: "center",
-    sortable: false,
-  },
-  {
     id: "updatedAt",
     label: "Date",
     minWidth: 170,
-    align: "center",
+    align: "left",
     sortable: true,
   },
   {
     id: "createdByName",
     label: "Created By",
     minWidth: 200,
-    align: "center",
+    align: "left",
     sortable: true,
   },
   {
-    id: "delete",
-    label: "Delete",
+    id: "actions",
+    label: "",
     minWidth: 0,
-    align: "center",
-    sortable: false,
-  },
-  {
-    id: "copy",
-    label: "Copy",
-    minWidth: 0,
-    align: "center",
+    align: "left",
     sortable: false,
   },
 ];
@@ -222,39 +205,46 @@ const LessonItem = (props: {
           row.node.name || "No Lesson Name"
         )}
       </TableCell>
-      <TableCell data-cy="launch" align="left">
-        <IconButton onClick={() => launchLesson(row.node.lessonId)}>
-          <LaunchIcon />
-        </IconButton>
-      </TableCell>
-      <TableCell data-cy="grade">
-        <IconButton
-          onClick={() => {
-            handleGrade();
-          }}
-          disabled={!userCanEdit(row.node, context.user)}
-        >
-          <AssignmentIcon />
-        </IconButton>
-      </TableCell>
-      <TableCell data-cy="date" align="center">
+      <TableCell data-cy="date" align="left">
         {row.node.updatedAt ? row.node.updatedAt.toLocaleString() : ""}
       </TableCell>
-      <TableCell data-cy="creator" align="center">
+      <TableCell data-cy="creator" align="left">
         {row.node.createdByName}
       </TableCell>
-      <TableCell data-cy="delete" align="center">
-        <IconButton
-          onClick={handleDelete}
-          disabled={!userCanEdit(row.node, context.user)}
-        >
-          <DeleteIcon />
-        </IconButton>
-      </TableCell>
-      <TableCell data-cy="copy" align="center">
-        <IconButton onClick={handleCopy}>
-          <FileCopyIcon />
-        </IconButton>
+      <TableCell data-cy="actions" align="right">
+        <Tooltip title="Grade" arrow>
+          <IconButton
+            data-cy="grade-button"
+            onClick={() => {
+              handleGrade();
+            }}
+            disabled={!userCanEdit(row.node, context.user)}
+          >
+            <AssessmentIcon />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Launch" arrow>
+          <IconButton
+            data-cy="launch-button"
+            onClick={() => launchLesson(row.node.lessonId)}
+          >
+            <LaunchIcon />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Duplicate" arrow>
+          <IconButton data-cy="copy-button" onClick={handleCopy}>
+            <FileCopyIcon />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Delete" arrow>
+          <IconButton
+            data-cy="delete-button"
+            onClick={handleDelete}
+            disabled={!userCanEdit(row.node, context.user)}
+          >
+            <DeleteIcon style={{ color: "red" }} />
+          </IconButton>
+        </Tooltip>
       </TableCell>
       <Menu
         data-cy="delete-menu"
@@ -342,8 +332,11 @@ const LessonsTable = () => {
   return (
     <div className={classes.root}>
       <Paper className={classes.container}>
-        <TableContainer>
-          <Table stickyHeader aria-label="sticky table">
+        <TableContainer
+          style={{ height: "calc(100vh - 128px)" }}
+          data-cy="lessons-table"
+        >
+          <Table stickyHeader={true} aria-label="sticky table">
             <ColumnHeader
               columns={columns}
               sortBy={sortBy}
@@ -382,12 +375,13 @@ const LessonsTable = () => {
 const LessonsPage = (): JSX.Element => {
   const context = useContext(SessionContext);
   const [cookies] = useCookies(["accessToken"]);
+  const styles = useStyles();
 
   if (typeof window !== "undefined" && !cookies.accessToken) {
     return <div>Please login to view lessons.</div>;
   }
   if (!context.user) {
-    return <CircularProgress />;
+    return <CircularProgress className={styles.progress} />;
   }
 
   return (
