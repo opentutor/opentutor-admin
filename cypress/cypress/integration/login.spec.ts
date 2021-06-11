@@ -12,46 +12,53 @@ describe("Login", () => {
     cySetup(cy);
     cy.visit("/");
     cy.contains("Welcome to OpenTutor");
-    cy.get("#login-menu #login-button");
+    cy.get("[data-cy=login-menu]").find("[data-cy=login-button]");
   });
 
   it("login disabled if missing GOOGLE_CLIENT_ID", () => {
     cySetup(cy);
     cy.visit("/");
-    cy.get("#login-menu #login-button").should("be.disabled");
+    cy.get("[data-cy=login-menu]")
+      .find("[data-cy=login-button]")
+      .should("be.disabled");
   });
 
   it("login enabled if GOOGLE_CLIENT_ID is set", () => {
     cySetup(cy);
     cyMockDefault(cy, {
-      noLogin: true
-    })
+      noLogin: true,
+    });
     cy.visit("/");
-    cy.get("#login-menu #login-button").should("not.be.disabled");
+    cy.get("[data-cy=login-menu]")
+      .find("[data-cy=login-button]")
+      .should("not.be.disabled");
   });
 
   it("redirects to lesson page after logging in", () => {
     cySetup(cy);
     cyMockDefault(cy, {
       gqlQueries: [mockGQL("lessons", lessons, true)],
-    })
+    });
     cy.visit("/");
     cy.location("pathname").should("contain", "lessons");
-    cy.get("#lessons").children().should("have.length", 2);
-});
+    cy.get("[data-cy=lessons]").children().should("have.length", 2);
+  });
 
   it("redirects to home page after logging out", () => {
     cySetup(cy);
     cyMockDefault(cy, {
       gqlQueries: [mockGQL("lessons", lessons, true)],
-    })
+    });
     cy.visit("/");
     cy.location("pathname").should("contain", "lessons");
-    cy.get("#lessons").children().should("have.length", 2);
-    cy.get("#login-option #login-button").trigger('mouseover').click();
-    cy.get("#logout").trigger('mouseover').click();
+    cy.get("[data-cy=lessons]").children().should("have.length", 2);
+    cy.get("[data-cy=login-option]")
+      .find("[data-cy=login-button]")
+      .trigger("mouseover")
+      .click();
+    cy.get("[data-cy=logout]").trigger("mouseover").click();
     cy.location("pathname").should("not.contain", "lessons");
-    cy.contains("Welcome to OpenTutor")
+    cy.contains("Welcome to OpenTutor");
   });
 
   it("cannot view lessons list if not logged in", () => {
@@ -77,5 +84,4 @@ describe("Login", () => {
     cy.visit("/sessions/session?sessionId=session1");
     cy.contains("Please login to view session.");
   });
-
 });

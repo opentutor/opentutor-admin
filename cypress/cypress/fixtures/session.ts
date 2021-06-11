@@ -14,10 +14,7 @@ export const session = {
   graderGrade: null,
   question: {
     text: "question?",
-    expectations: [
-      { text: "expected text 1" },
-      { text: "expected text 2" },
-    ],
+    expectations: [{ text: "expected text 1" }, { text: "expected text 2" }],
   },
   userResponses: [
     {
@@ -47,7 +44,7 @@ export const session = {
       ],
     },
   ],
-}
+};
 
 export const sessions = {
   edges: [
@@ -88,4 +85,4 @@ export const sessions = {
     hasNextPage: false,
     endCursor: "cursor 2 ",
   },
-}
+};

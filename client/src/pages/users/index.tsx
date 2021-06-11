@@ -46,11 +46,17 @@ const useStyles = makeStyles((theme) => ({
     bottom: 0,
   },
   progress: {
-    marginLeft: "50%",
+    position: "fixed",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
   },
   paging: {
     position: "absolute",
     right: theme.spacing(1),
+  },
+  dropdown: {
+    width: 170,
   },
 }));
 
@@ -73,7 +79,7 @@ const columns: ColumnDef[] = [
     id: "userRole",
     label: "Role",
     minWidth: 170,
-    align: "center",
+    align: "left",
     sortable: true,
   },
 ];
@@ -91,10 +97,10 @@ function TableFooter(props: {
     <AppBar position="sticky" color="default" className={classes.appBar}>
       <Toolbar>
         <div className={classes.paging}>
-          <IconButton id="prev-page" disabled={!hasPrev} onClick={onPrev}>
+          <IconButton data-cy="prev-page" disabled={!hasPrev} onClick={onPrev}>
             <KeyboardArrowLeftIcon />
           </IconButton>
-          <IconButton id="next-page" disabled={!hasNext} onClick={onNext}>
+          <IconButton data-cy="next-page" disabled={!hasNext} onClick={onNext}>
             <KeyboardArrowRightIcon />
           </IconButton>
         </div>
@@ -111,6 +117,7 @@ function UserItem(props: {
   const { row, i } = props;
   const [cookies] = useCookies(["accessToken"]);
   const context = useContext(SessionContext);
+  const styles = useStyles();
 
   async function handleRoleChange(user: string, permission: string) {
     try {
@@ -122,34 +129,35 @@ function UserItem(props: {
   }
 
   return (
-    <TableRow id={`user-${i}`} hover role="checkbox" tabIndex={-1}>
-      <TableCell id="name" align="left">
+    <TableRow data-cy={`user-${i}`} hover role="checkbox" tabIndex={-1}>
+      <TableCell data-cy="name" align="left">
         {row.node.name}
       </TableCell>
-      <TableCell id="email" align="left">
+      <TableCell data-cy="email" align="left">
         {row.node.email}
       </TableCell>
-      <TableCell id="role" align="center">
+      <TableCell data-cy="role" align="left">
         <Select
-          id="select-role"
+          data-cy="select-role"
           value={row.node.userRole}
           onChange={(
             event: React.ChangeEvent<{ value: unknown; name?: unknown }>
           ) => {
             handleRoleChange(row.node.id, event.target.value as string);
           }}
+          className={styles.dropdown}
         >
-          <MenuItem id={UserRole.AUTHOR} value={UserRole.AUTHOR}>
+          <MenuItem data-cy={UserRole.AUTHOR} value={UserRole.AUTHOR}>
             Author
           </MenuItem>
           <MenuItem
-            id={UserRole.CONTENT_MANAGER}
+            data-cy={UserRole.CONTENT_MANAGER}
             value={UserRole.CONTENT_MANAGER}
           >
             Content Manager
           </MenuItem>
           <MenuItem
-            id={UserRole.ADMIN}
+            data-cy={UserRole.ADMIN}
             value={UserRole.ADMIN}
             disabled={context.user?.userRole !== UserRole.ADMIN}
           >
@@ -219,7 +227,7 @@ function UsersTable(): JSX.Element {
   return (
     <div className={classes.root}>
       <Paper className={classes.container}>
-        <TableContainer>
+        <TableContainer style={{ height: "calc(100vh - 128px)" }}>
           <Table stickyHeader aria-label="sticky table">
             <ColumnHeader
               columns={columns}
@@ -227,7 +235,7 @@ function UsersTable(): JSX.Element {
               sortAsc={sortAsc}
               onSort={onSort}
             />
-            <TableBody id="users">
+            <TableBody data-cy="users">
               {users.edges.map((row, i) => (
                 <UserItem
                   key={row.node.id}
@@ -259,12 +267,13 @@ function UsersTable(): JSX.Element {
 function UsersPage(): JSX.Element {
   const context = useContext(SessionContext);
   const [cookies] = useCookies(["accessToken"]);
+  const styles = useStyles();
 
   if (typeof window !== "undefined" && !cookies.accessToken) {
     return <div>Please login to view users.</div>;
   }
   if (!context.user) {
-    return <CircularProgress />;
+    return <CircularProgress className={styles.progress} />;
   }
   if (!userIsElevated(context.user)) {
     return (

@@ -14,51 +14,76 @@ describe("screenshots - lesson edit", () => {
   it("displays lesson form on load", () => {
     cySetup(cy);
     cyMockDefault(cy, {
-      gqlQueries: [mockGQL("lesson", {
-        lessonId: "lesson",
-        name: "lesson",
-        intro: "intro",
-        question: "question",
-        conclusion: ["conclusion"],
-        expectations: [{
-          expectation: "expectation 1",
-          hints: [{
-            text: "hint 1.1",
-          }],
-          features: {},
-        }],
-        features: {},
-        lastTrainedAt: "",
-        isTrainable: true,
-      }, true)],
-      userRole: "admin"
-    })
+      gqlQueries: [
+        mockGQL(
+          "lesson",
+          {
+            lessonId: "lesson",
+            name: "lesson",
+            intro: "intro",
+            question: "question",
+            conclusion: ["conclusion"],
+            expectations: [
+              {
+                expectation: "expectation 1",
+                hints: [
+                  {
+                    text: "hint 1.1",
+                  },
+                ],
+                features: {},
+              },
+            ],
+            features: {},
+            lastTrainedAt: "",
+            isTrainable: true,
+          },
+          true
+        ),
+      ],
+      userRole: "admin",
+    });
     cy.visit("/lessons/edit?lessonId=lesson");
+    cy.get("[data-cy=lesson-edit-grid]", { timeout: 10000 }).should(
+      "be.visible"
+    );
     cy.matchImageSnapshot(snapname("displays-lesson-form-on-load"));
   });
 
   it("displays save button enabled after edits", () => {
     cySetup(cy);
     cyMockDefault(cy, {
-      gqlQueries: [mockGQL("lesson", {
-        lessonId: "lesson",
-        name: "lesson",
-        question: "question",
-        intro: "intro",
-        conclusion: ["conclusion"],
-        expectations: [{
-          expectation: "expectation 1",
-          hints: [{
-            text: "hint 1.1",
-          },],
-        },],
-        lastTrainedAt: "",
-        isTrainable: true,
-      }, true)],
-      userRole: "admin"
-    })
+      gqlQueries: [
+        mockGQL(
+          "lesson",
+          {
+            lessonId: "lesson",
+            name: "lesson",
+            question: "question",
+            intro: "intro",
+            conclusion: ["conclusion"],
+            expectations: [
+              {
+                expectation: "expectation 1",
+                hints: [
+                  {
+                    text: "hint 1.1",
+                  },
+                ],
+              },
+            ],
+            lastTrainedAt: "",
+            isTrainable: true,
+          },
+          true
+        ),
+      ],
+      userRole: "admin",
+    });
     cy.visit("/lessons/edit?lessonId=lesson");
-    cy.get("#intro").fill("Hello World");
+    cy.get("[data-cy=intro]").within(($input) => {
+      cy.get("textarea").fill("Hello World");
+    });
     cy.matchImageSnapshot(snapname("displays-save-button-enabled-after-edits"));
   });
 });

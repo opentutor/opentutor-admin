@@ -14,33 +14,40 @@ describe("screenshots - lesson list", () => {
   it("displays a list of lessons", () => {
     cySetup(cy);
     cyMockDefault(cy, {
-      gqlQueries: [mockGQL("lessons", {
-        edges: [
+      gqlQueries: [
+        mockGQL(
+          "lessons",
           {
-            cursor: "cursor 1",
-            node: {
-              lessonId: "lesson1",
-              name: "lesson 1",
-              updatedAt: "1/1/20000, 12:00:00 AM",
+            edges: [
+              {
+                cursor: "cursor 1",
+                node: {
+                  lessonId: "lesson1",
+                  name: "lesson 1",
+                  updatedAt: "1/1/20000, 12:00:00 AM",
+                },
+              },
+              {
+                cursor: "cursor 2",
+                node: {
+                  lessonId: "lesson2",
+                  name: "lesson 2",
+                  updatedAt: "1/1/20000, 12:00:00 AM",
+                },
+              },
+            ],
+            pageInfo: {
+              hasNextPage: false,
+              endCursor: "cursor 2 ",
             },
           },
-          {
-            cursor: "cursor 2",
-            node: {
-              lessonId: "lesson2",
-              name: "lesson 2",
-              updatedAt: "1/1/20000, 12:00:00 AM",
-            },
-          },
-        ],
-        pageInfo: {
-          hasNextPage: false,
-          endCursor: "cursor 2 ",
-        },
-      }, true)],
-      userRole: "admin"
-    })
+          true
+        ),
+      ],
+      userRole: "admin",
+    });
     cy.visit("/lessons");
+    cy.get("[data-cy=lessons-table]", { timeout: 10000 }).should("be.visible");
     cy.matchImageSnapshot(snapname("displays-a-list-of-lessons"));
   });
 });

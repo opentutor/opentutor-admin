@@ -21,11 +21,13 @@ import {
   TableContainer,
   TableRow,
   Toolbar,
+  Tooltip,
+  Box,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import KeyboardArrowLeftIcon from "@material-ui/icons/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
-import AssignmentIcon from "@material-ui/icons/Assignment";
+import AssessmentIcon from "@material-ui/icons/Assessment";
 import { fetchSessions, userCanEdit } from "api";
 import { Connection, Edge, Session } from "types";
 import NavBar from "components/nav-bar";
@@ -48,11 +50,19 @@ const useStyles = makeStyles((theme) => ({
     bottom: 0,
   },
   progress: {
-    marginLeft: "50%",
+    position: "fixed",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
   },
   paging: {
     position: "absolute",
     right: theme.spacing(1),
+  },
+  normalButton: {
+    "&:hover": {
+      color: theme.palette.primary.main,
+    },
   },
 }));
 
@@ -65,62 +75,55 @@ const columns: ColumnDef[] = [
     sortable: true,
   },
   {
-    id: "grade-link",
-    label: "Grade",
-    minWidth: 0,
-    align: "center",
-    sortable: false,
-  },
-  {
-    id: "graderGrade",
-    label: "Instructor Grade",
+    id: "lessonCreatedBy",
+    label: "Created By",
     minWidth: 170,
-    align: "center",
-    format: (value: number): string => value.toLocaleString("en-US"),
-    sortable: true,
-  },
-  {
-    id: "classifierGrade",
-    label: "Classifier Grade",
-    minWidth: 170,
-    align: "center",
-    format: (value: number): string => value.toLocaleString("en-US"),
-    sortable: true,
-  },
-  {
-    id: "lastGradedByName",
-    label: "Last Graded By",
-    minWidth: 170,
-    align: "center",
-    sortable: true,
-  },
-  {
-    id: "lastGradedAt",
-    label: "Last Graded At",
-    minWidth: 170,
-    align: "center",
+    align: "left",
     sortable: true,
   },
   {
     id: "createdAt",
     label: "Date",
     minWidth: 170,
-    align: "center",
-    sortable: true,
-  },
-  {
-    id: "lessonCreatedBy",
-    label: "Created By",
-    minWidth: 170,
-    align: "center",
+    align: "left",
     sortable: true,
   },
   {
     id: "username",
     label: "Username",
     minWidth: 170,
-    align: "center",
+    align: "left",
     sortable: true,
+  },
+  {
+    id: "classifierGrade",
+    label: "Classifier Grade",
+    minWidth: 100,
+    align: "right",
+    format: (value: number): string => value.toLocaleString("en-US"),
+    sortable: true,
+  },
+  {
+    id: "graderGrade",
+    label: "Instructor Grade",
+    minWidth: 100,
+    align: "right",
+    format: (value: number): string => value.toLocaleString("en-US"),
+    sortable: true,
+  },
+  {
+    id: "lastGradedAt",
+    label: "Last Graded At",
+    minWidth: 170,
+    align: "left",
+    sortable: true,
+  },
+  {
+    id: "actions",
+    label: "",
+    minWidth: 0,
+    align: "center",
+    sortable: false,
   },
 ];
 
@@ -142,7 +145,7 @@ function TableFooter(props: {
           <FormControlLabel
             control={
               <Switch
-                id="toggle-creator"
+                data-cy="toggle-creator"
                 checked={onlyCreator}
                 onChange={toggleCreator}
                 aria-label="switch"
@@ -155,7 +158,7 @@ function TableFooter(props: {
           <FormControlLabel
             control={
               <Switch
-                id="toggle-graded"
+                data-cy="toggle-graded"
                 checked={showGraded}
                 onChange={toggleGraded}
                 aria-label="switch"
@@ -165,10 +168,10 @@ function TableFooter(props: {
           />
         </FormGroup>
         <div className={classes.paging}>
-          <IconButton id="prev-page" disabled={!hasPrev} onClick={onPrev}>
+          <IconButton data-cy="prev-page" disabled={!hasPrev} onClick={onPrev}>
             <KeyboardArrowLeftIcon />
           </IconButton>
-          <IconButton id="next-page" disabled={!hasNext} onClick={onNext}>
+          <IconButton data-cy="next-page" disabled={!hasNext} onClick={onNext}>
             <KeyboardArrowRightIcon />
           </IconButton>
         </div>
@@ -180,6 +183,7 @@ function TableFooter(props: {
 function SessionItem(props: { row: Edge<Session>; i: number }): JSX.Element {
   const { row, i } = props;
   const context = useContext(SessionContext);
+  const styles = useStyles();
 
   function handleGrade(): void {
     navigate(`/sessions/session?sessionId=${row.node.sessionId}`);
@@ -187,7 +191,7 @@ function SessionItem(props: { row: Edge<Session>; i: number }): JSX.Element {
 
   return (
     <TableRow
-      id={`session-${i}`}
+      data-cy={`session-${i}`}
       hover
       role="checkbox"
       tabIndex={-1}
@@ -198,45 +202,58 @@ function SessionItem(props: { row: Edge<Session>; i: number }): JSX.Element {
             : "white",
       }}
     >
-      <TableCell id="lesson" align="left">
+      <TableCell data-cy="lesson" align="left">
         {userCanEdit(row.node.lesson, context.user) ? (
-          <Link to={`/lessons/edit?lessonId=${row.node.lesson.lessonId}`}>
+          <Link
+            data-cy="lesson-link"
+            to={`/lessons/edit?lessonId=${row.node.lesson.lessonId}`}
+          >
             {row.node.lesson?.name || "No Lesson Name"}
           </Link>
         ) : (
           row.node.lesson?.name || "No Lesson Name"
         )}
       </TableCell>
-      <TableCell id="grade">
-        <IconButton
-          onClick={handleGrade}
-          disabled={!userCanEdit(row.node.lesson, context.user)}
-        >
-          <AssignmentIcon />
-        </IconButton>
-      </TableCell>
-      <TableCell id="instructor-grade" align="center">
-        {row.node.graderGrade || row.node.graderGrade === 0
-          ? Math.trunc(row.node.graderGrade * 100)
-          : "?"}
-      </TableCell>
-      <TableCell id="classifier-grade" align="center">
-        {row.node ? Math.trunc(row.node.classifierGrade * 100) : "?"}
-      </TableCell>
-      <TableCell id="last-graded-by" align="center">
-        {row.node.lastGradedByName || ""}
-      </TableCell>
-      <TableCell id="last-graded-at" align="center">
-        {row.node.lastGradedAt || ""}
-      </TableCell>
-      <TableCell id="date" align="center">
-        {row.node.createdAt || ""}
-      </TableCell>
-      <TableCell id="creator" align="center">
+      <TableCell data-cy="creator" align="left">
         {row.node.lessonCreatedBy || "Guest"}
       </TableCell>
-      <TableCell id="username" align="center">
+      <TableCell data-cy="date" align="left">
+        {row.node.createdAt || ""}
+      </TableCell>
+      <TableCell data-cy="username" align="left">
         {row.node.username || "Guest"}
+      </TableCell>
+      <TableCell data-cy="classifier-grade" align="right">
+        {row.node ? Math.trunc(row.node.classifierGrade * 100) : "?"}
+      </TableCell>
+      <TableCell data-cy="instructor-grade" align="right">
+        {row.node.graderGrade || row.node.graderGrade === 0
+          ? Math.trunc(row.node.graderGrade * 100)
+          : "N/A"}
+      </TableCell>
+      <TableCell data-cy="last-graded-at" align="left">
+        {row.node.lastGradedAt ? (
+          <Tooltip
+            title={`Graded By: ${row.node.lastGradedByName || "Unknown"}`}
+            arrow
+          >
+            <Box>{row.node.lastGradedAt}</Box>
+          </Tooltip>
+        ) : (
+          "Never"
+        )}
+      </TableCell>
+      <TableCell data-cy="actions" align="center">
+        <Tooltip title="Grade" arrow>
+          <IconButton
+            data-cy="grade-button"
+            onClick={handleGrade}
+            disabled={!userCanEdit(row.node.lesson, context.user)}
+            className={styles.normalButton}
+          >
+            <AssessmentIcon />
+          </IconButton>
+        </Tooltip>
       </TableCell>
     </TableRow>
   );
@@ -270,14 +287,14 @@ function SessionsTable(props: { search: { lessonId: string } }): JSX.Element {
     const filter: {
       lessonCreatedBy?: string;
       lessonId?: string;
-      // graderGrade?: string | null;
+      graderGrade?: string | null;
     } = {};
     if (context.onlyCreator) {
       filter.lessonCreatedBy = context.user?.name;
     }
-    // if (!context.showGraded) {
-    //   filter.graderGrade = null;
-    // }
+    if (!context.showGraded) {
+      filter.graderGrade = null;
+    }
     if (lessonId) {
       filter.lessonId = lessonId;
     }
@@ -319,15 +336,19 @@ function SessionsTable(props: { search: { lessonId: string } }): JSX.Element {
   return (
     <div className={classes.root}>
       <Paper className={classes.container}>
-        <TableContainer>
-          <Table stickyHeader aria-label="sticky table">
+        <TableContainer style={{ height: "calc(100vh - 128px)" }}>
+          <Table
+            stickyHeader
+            aria-label="sticky table"
+            data-cy="sessions-table"
+          >
             <ColumnHeader
               columns={columns}
               sortBy={sortBy}
               sortAsc={sortAsc}
               onSort={onSort}
             />
-            <TableBody id="sessions">
+            <TableBody data-cy="sessions">
               {sessions.edges.map((row, i) => (
                 <SessionItem key={row.node.sessionId} row={row} i={i} />
               ))}
@@ -353,12 +374,13 @@ function SessionsTable(props: { search: { lessonId: string } }): JSX.Element {
 function SessionsPage(props: { search: { lessonId: string } }): JSX.Element {
   const context = useContext(SessionContext);
   const [cookies] = useCookies(["accessToken"]);
+  const styles = useStyles();
 
   if (typeof window !== "undefined" && !cookies.accessToken) {
     return <div>Please login to view sessions.</div>;
   }
   if (!context.user) {
-    return <CircularProgress />;
+    return <CircularProgress className={styles.progress} />;
   }
 
   return (

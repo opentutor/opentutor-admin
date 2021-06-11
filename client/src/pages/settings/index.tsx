@@ -33,9 +33,6 @@ const useStyles = makeStyles((theme) => ({
     top: "auto",
     bottom: 0,
   },
-  progress: {
-    marginLeft: "50%",
-  },
   paging: {
     position: "absolute",
     right: theme.spacing(1),
@@ -48,6 +45,12 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: "auto",
     marginRight: "auto",
     marginTop: 10,
+  },
+  progress: {
+    position: "fixed",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
   },
 }));
 
@@ -62,7 +65,7 @@ function SettingsPage(props: { path: string }): JSX.Element {
     return <div>Please login to view settings.</div>;
   }
   if (!context.user) {
-    return <CircularProgress />;
+    return <CircularProgress className={styles.progress} />;
   }
   if (context.user.userRole !== UserRole.ADMIN) {
     return <div>You must be an admin to view this page.</div>;

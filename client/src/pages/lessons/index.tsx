@@ -25,10 +25,11 @@ import {
   TableContainer,
   TableRow,
   Toolbar,
+  Tooltip,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import AddIcon from "@material-ui/icons/Add";
-import AssignmentIcon from "@material-ui/icons/Assignment";
+import AssessmentIcon from "@material-ui/icons/Assessment";
 import DeleteIcon from "@material-ui/icons/Delete";
 import FileCopyIcon from "@material-ui/icons/FileCopy";
 import KeyboardArrowLeftIcon from "@material-ui/icons/KeyboardArrowLeft";
@@ -65,52 +66,44 @@ const useStyles = makeStyles((theme) => ({
     zIndex: 1,
   },
   progress: {
-    marginLeft: "50%",
+    position: "fixed",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+  },
+  normalButton: {
+    "&:hover": {
+      color: theme.palette.primary.main,
+    },
+  },
+  dangerButton: {
+    "&:hover": {
+      color: "red",
+    },
   },
 }));
 
 const columns: ColumnDef[] = [
   { id: "name", label: "Lesson", minWidth: 200, align: "left", sortable: true },
   {
-    id: "launch",
-    label: "Launch",
-    minWidth: 0,
-    align: "left",
-    sortable: false,
-  },
-  {
-    id: "grade",
-    label: "Grade",
-    minWidth: 0,
-    align: "center",
-    sortable: false,
-  },
-  {
     id: "updatedAt",
     label: "Date",
     minWidth: 170,
-    align: "center",
+    align: "left",
     sortable: true,
   },
   {
     id: "createdByName",
     label: "Created By",
     minWidth: 200,
-    align: "center",
+    align: "left",
     sortable: true,
   },
   {
-    id: "delete",
-    label: "Delete",
+    id: "actions",
+    label: "",
     minWidth: 0,
-    align: "center",
-    sortable: false,
-  },
-  {
-    id: "copy",
-    label: "Copy",
-    minWidth: 0,
-    align: "center",
+    align: "left",
     sortable: false,
   },
 ];
@@ -132,17 +125,17 @@ const TableFooter = (props: {
   return (
     <AppBar position="sticky" color="default" className={classes.appBar}>
       <Toolbar>
-        <IconButton id="prev-page" disabled={!hasPrev} onClick={onPrev}>
+        <IconButton data-cy="prev-page" disabled={!hasPrev} onClick={onPrev}>
           <KeyboardArrowLeftIcon />
         </IconButton>
-        <IconButton id="next-page" disabled={!hasNext} onClick={onNext}>
+        <IconButton data-cy="next-page" disabled={!hasNext} onClick={onNext}>
           <KeyboardArrowRightIcon />
         </IconButton>
         <FormGroup>
           <FormControlLabel
             control={
               <Switch
-                id="toggle-creator"
+                data-cy="toggle-creator"
                 checked={context.onlyCreator}
                 onChange={context.toggleCreator}
                 aria-label="switch"
@@ -152,7 +145,7 @@ const TableFooter = (props: {
           />
         </FormGroup>
         <Fab
-          id="create-button"
+          data-cy="create-button"
           variant="extended"
           color="primary"
           className={classes.fab}
@@ -176,6 +169,7 @@ const LessonItem = (props: {
   const deleteMenuOpen = Boolean(anchorEl);
   const context = useContext(SessionContext);
   const [cookies] = useCookies(["accessToken"]);
+  const styles = useStyles();
 
   function launchLesson(id: string) {
     const host = process.env.TUTOR_ENDPOINT || window.location.origin;
@@ -212,52 +206,69 @@ const LessonItem = (props: {
   }
 
   return (
-    <TableRow id={`lesson-${i}`} hover role="checkbox" tabIndex={-1}>
-      <TableCell id="name" align="left">
+    <TableRow data-cy={`lesson-${i}`} hover role="checkbox" tabIndex={-1}>
+      <TableCell data-cy="name" align="left">
         {userCanEdit(row.node, context.user) ? (
-          <Link to={`/lessons/edit?lessonId=${row.node.lessonId}`}>
+          <Link
+            data-cy="name-link"
+            to={`/lessons/edit?lessonId=${row.node.lessonId}`}
+          >
             {row.node.name || "No Lesson Name"}
           </Link>
         ) : (
           row.node.name || "No Lesson Name"
         )}
       </TableCell>
-      <TableCell id="launch" align="left">
-        <IconButton onClick={() => launchLesson(row.node.lessonId)}>
-          <LaunchIcon />
-        </IconButton>
-      </TableCell>
-      <TableCell id="grade">
-        <IconButton
-          onClick={() => {
-            handleGrade();
-          }}
-          disabled={!userCanEdit(row.node, context.user)}
-        >
-          <AssignmentIcon />
-        </IconButton>
-      </TableCell>
-      <TableCell id="date" align="center">
+      <TableCell data-cy="date" align="left">
         {row.node.updatedAt ? row.node.updatedAt.toLocaleString() : ""}
       </TableCell>
-      <TableCell id="creator" align="center">
+      <TableCell data-cy="creator" align="left">
         {row.node.createdByName}
       </TableCell>
-      <TableCell id="delete" align="center">
-        <IconButton
-          onClick={handleDelete}
-          disabled={!userCanEdit(row.node, context.user)}
-        >
-          <DeleteIcon />
-        </IconButton>
-      </TableCell>
-      <TableCell id="copy" align="center">
-        <IconButton onClick={handleCopy}>
-          <FileCopyIcon />
-        </IconButton>
+      <TableCell data-cy="actions" align="right">
+        <Tooltip title="Grade" arrow>
+          <IconButton
+            data-cy="grade-button"
+            onClick={() => {
+              handleGrade();
+            }}
+            disabled={!userCanEdit(row.node, context.user)}
+            className={styles.normalButton}
+          >
+            <AssessmentIcon />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Launch" arrow>
+          <IconButton
+            data-cy="launch-button"
+            onClick={() => launchLesson(row.node.lessonId)}
+            className={styles.normalButton}
+          >
+            <LaunchIcon />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Duplicate" arrow>
+          <IconButton
+            data-cy="copy-button"
+            onClick={handleCopy}
+            className={styles.normalButton}
+          >
+            <FileCopyIcon />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Delete" arrow>
+          <IconButton
+            data-cy="delete-button"
+            onClick={handleDelete}
+            disabled={!userCanEdit(row.node, context.user)}
+            className={styles.dangerButton}
+          >
+            <DeleteIcon />
+          </IconButton>
+        </Tooltip>
       </TableCell>
       <Menu
-        id="delete-menu"
+        data-cy="delete-menu"
         anchorEl={anchorEl}
         anchorOrigin={{
           vertical: "top",
@@ -271,10 +282,10 @@ const LessonItem = (props: {
         open={deleteMenuOpen}
         onClose={handleClose}
       >
-        <MenuItem id="confirm-delete" onClick={confirmDelete}>
+        <MenuItem data-cy="confirm-delete" onClick={confirmDelete}>
           Confirm
         </MenuItem>
-        <MenuItem id="cancel-delete" onClick={handleClose}>
+        <MenuItem data-cy="cancel-delete" onClick={handleClose}>
           Cancel
         </MenuItem>
       </Menu>
@@ -342,15 +353,18 @@ const LessonsTable = () => {
   return (
     <div className={classes.root}>
       <Paper className={classes.container}>
-        <TableContainer>
-          <Table stickyHeader aria-label="sticky table">
+        <TableContainer
+          style={{ height: "calc(100vh - 128px)" }}
+          data-cy="lessons-table"
+        >
+          <Table stickyHeader={true} aria-label="sticky table">
             <ColumnHeader
               columns={columns}
               sortBy={sortBy}
               sortAsc={sortAsc}
               onSort={onSort}
             />
-            <TableBody id="lessons">
+            <TableBody data-cy="lessons">
               {lessons.edges.map((row, i) => (
                 <LessonItem
                   key={`lesson-${i}`}
@@ -382,12 +396,13 @@ const LessonsTable = () => {
 const LessonsPage = (): JSX.Element => {
   const context = useContext(SessionContext);
   const [cookies] = useCookies(["accessToken"]);
+  const styles = useStyles();
 
   if (typeof window !== "undefined" && !cookies.accessToken) {
     return <div>Please login to view lessons.</div>;
   }
   if (!context.user) {
-    return <CircularProgress />;
+    return <CircularProgress className={styles.progress} />;
   }
 
   return (

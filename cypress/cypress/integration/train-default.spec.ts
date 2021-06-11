@@ -18,12 +18,11 @@ function snapname(n) {
 }
 
 describe("settings screen - training default", () => {
-
   it("show loading indicator on train", () => {
     cySetup(cy);
     cyMockDefault(cy, {
-      userRole: "admin"
-    })
+      userRole: "admin",
+    });
     cy.visit("/settings");
     const waitTrainDefault = cyMockTrainDefault(cy);
     const waitComplete = cyMockTrainStatusSeq(cy, [
@@ -33,13 +32,13 @@ describe("settings screen - training default", () => {
     waitTrainDefault();
     waitComplete();
     cy.get("[data-cy=loading]").should("exist");
-  })
+  });
 
   it("fails for state FAILURE", () => {
     cySetup(cy);
     cyMockDefault(cy, {
-      userRole: "admin"
-    })
+      userRole: "admin",
+    });
     cy.visit("/settings");
     const waitTrainDefault = cyMockTrainDefault(cy);
     const waitComplete = cyMockTrainStatusSeq(cy, [
@@ -56,8 +55,8 @@ describe("settings screen - training default", () => {
   it("fails for http error on start", () => {
     cySetup(cy);
     cyMockDefault(cy, {
-      userRole: "admin"
-    })
+      userRole: "admin",
+    });
     cy.visit("/settings");
     const waitTrainDefault = cyMockTrainDefault(cy, { responseStatus: 500 });
     cy.get("[data-cy=train-default-button]").trigger("mouseover").click();
@@ -68,8 +67,8 @@ describe("settings screen - training default", () => {
   it("fails for http error on poll status", () => {
     cySetup(cy);
     cyMockDefault(cy, {
-      userRole: "admin"
-    })
+      userRole: "admin",
+    });
     cy.visit("/settings");
     const waitTrainDefault = cyMockTrainDefault(cy);
     const waitComplete = cyMockTrainStatusSeq(cy, [
@@ -91,8 +90,8 @@ describe("settings screen - training default", () => {
   it("show success message on successful train", () => {
     cySetup(cy);
     cyMockDefault(cy, {
-      userRole: "admin"
-    })
+      userRole: "admin",
+    });
     cy.visit("/settings");
     const waitTrainDefault = cyMockTrainDefault(cy);
     const waitComplete = cyMockTrainStatusSeq(cy, [
@@ -104,5 +103,5 @@ describe("settings screen - training default", () => {
     waitTrainDefault();
     waitComplete();
     cy.get("[data-cy=train-success]").should("contain", "TRAINING SUCCEEDED");
-  })
+  });
 });
