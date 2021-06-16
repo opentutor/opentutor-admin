@@ -27,9 +27,6 @@ node_modules/eslint:
 node_modules/gatsby:
 	$(MAKE) install
 
-node_modules/prettier:
-	$(MAKE) install
-
 node_modules/typescript:
 	$(MAKE) install
 
