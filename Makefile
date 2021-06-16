@@ -19,6 +19,12 @@ docker-build:
 		-t $(DOCKER_IMAGE) \
 	.
 
+node_modules/license-check-and-add:
+	npm ci
+
+node_modules/prettier:
+	npm ci
+
 .PHONY: format
 format: node_modules/prettier
 	npm run format
