@@ -8,19 +8,19 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: "14.15"
-      - name: install
+      - name: Install
         run:  npm ci
-      - name: format test
+      - name: Run format test
         run: npm run test:format
-      - name: license test
+      - name: Run license test
         run: npm run test:license
-      - name: Client - install
+      - name: Client - Install
         run: cd client && npm ci
       # - name: Client - audit
       #   run: cd client && npm run test:audit
-      - name: Client - lint test
+      - name: Client - Run lint test
         run: cd client && npm run test:lint
-      - name: Client - types test
+      - name: Client - Run types test
         run: cd client && npm run test:types
   test-e2e:
     name: test e2e
