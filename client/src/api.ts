@@ -312,6 +312,7 @@ export async function fetchLesson(
           lesson(lessonId: $lessonId) {
             lessonId
             intro
+            dialogCategory
             name
             question
             image
@@ -354,6 +355,7 @@ export async function updateLesson(
           updateLesson(lessonId: $lessonId, lesson: $lesson){
             lessonId
             intro
+            dialogCategory
             name
             question
             image
@@ -380,6 +382,7 @@ export async function updateLesson(
           lessonId: lesson.lessonId,
           name: lesson.name,
           intro: lesson.intro,
+          dialogCategory: lesson.dialogCategory,
           question: lesson.question,
           image: lesson.image,
           expectations: lesson.expectations,

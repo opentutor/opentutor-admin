@@ -17,10 +17,15 @@ import {
   DialogActions,
   DialogTitle,
   Divider,
+  FormControl,
+  FormHelperText,
   Grid,
+  InputLabel,
   List,
   ListItem,
   ListItemText,
+  MenuItem,
+  Select,
   TextField,
   Typography,
 } from "@material-ui/core";
@@ -101,6 +106,9 @@ const useStyles = makeStyles((theme) => ({
     left: "50%",
     transform: "translate(-50%, -50%)",
   },
+  selectEmpty: {
+    marginTop: theme.spacing(2),
+  },
 }));
 
 const newLesson: Lesson = {
@@ -108,6 +116,7 @@ const newLesson: Lesson = {
   name: "Display name for the lesson",
   intro:
     "Introduction to the lesson,  e.g. 'This is a lesson about RGB colors'",
+  dialogCategory: "default",
   question:
     "Question the student needs to answer, e.g. 'What are the colors in RGB?'",
   conclusion: [
@@ -309,6 +318,8 @@ const LessonEdit = (props: { search: LessonEditSearch }) => {
     return <div>You do not have permission to view this lesson.</div>;
   }
 
+  console.log(lessonUnderEdit);
+
   return (
     <div style={{ paddingTop: "20px" }}>
       <form className={classes.root} noValidate autoComplete="off">
@@ -362,6 +373,32 @@ const LessonEdit = (props: { search: LessonEditSearch }) => {
             variant="outlined"
             size="small"
           />
+          {/* Dropdown */}
+
+          <FormControl style={{ width: 800, marginLeft: 8 }}>
+            <InputLabel shrink id="demo-simple-select-placeholder-label-label">
+              Dialog Category
+            </InputLabel>
+            <Select
+              labelId="dialog-category-label"
+              value={lessonUnderEdit.lesson?.dialogCategory || "NOT SET"}
+              onChange={(e: React.ChangeEvent<{ value: unknown }>) => {
+                setLesson(
+                  {
+                    ...(lessonUnderEdit.lesson || newLesson),
+                    dialogCategory: (e.target.value as string) || "",
+                  },
+                  true
+                );
+              }}
+              // className={classes.selectEmpty}
+            >
+              <MenuItem value={"default"}>Default</MenuItem>
+              <MenuItem value={"sensitive"}>Sensitive</MenuItem>
+            </Select>
+            <FormHelperText>Select a Dialog Type</FormHelperText>
+          </FormControl>
+
           <TextField
             data-cy="lesson-creator"
             label="Created By"
