@@ -25,8 +25,8 @@ node_modules/license-check-and-add:
 node_modules/prettier:
 	npm ci
 
-.PHONY: format
-format: node_modules/prettier
+.PHONY: pretty
+pretty: node_modules/prettier
 	npm run format
 
 LICENSE:
@@ -36,6 +36,10 @@ LICENSE:
 LICENSE_HEADER:
 	@echo "you must have a LICENSE_HEADER file" 1>&2
 	exit 1
+
+.PHONY: format
+format: node_modules/prettier LICENSE LICENSE_HEADER
+	npm run license:fix && npm run format
 
 .PHONY: license
 license: LICENSE LICENSE_HEADER
