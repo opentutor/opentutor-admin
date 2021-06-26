@@ -30,6 +30,10 @@ node_modules/gatsby:
 node_modules/typescript:
 	$(MAKE) install
 
+.PHONY: pretty
+pretty:
+	cd .. && $(MAKE) pretty
+
 .PHONY: format
 format:
 	cd .. && $(MAKE) format
