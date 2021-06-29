@@ -21,9 +21,13 @@ import {
   List,
   ListItem,
   ListItemText,
+  Menu,
+  MenuItem,
   TextField,
   Typography,
 } from "@material-ui/core";
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import LaunchIcon from "@material-ui/icons/Launch";
 import { makeStyles } from "@material-ui/core/styles";
 import { fetchLesson, updateLesson, userCanEdit, fetchLessons } from "api";
 import SessionContext from "context/session";
@@ -37,6 +41,7 @@ import { useWithTraining } from "hooks/use-with-training";
 import "styles/layout.css";
 import "jsoneditor-react/es/editor.min.css";
 import "react-toastify/dist/ReactToastify.css";
+import { eventManager } from "react-toastify/dist/core";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -222,6 +227,18 @@ const LessonEdit = (props: { search: LessonEditSearch }) => {
         .catch((err) => console.error(err));
     }
   }, [trainStatus]);
+
+  const [anchorTrailEl, setAnchorTrainEl] = React.useState<null | HTMLElement>(
+    null
+  );
+
+  const handleTrainClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorTrainEl(event.currentTarget);
+  };
+
+  const handleTrainClose = () => {
+    setAnchorTrainEl(null);
+  };
 
   function setLesson(lesson?: Lesson, dirty?: boolean) {
     if (lessonUnderEdit.lesson?.lessonId !== lesson?.lessonId) {
@@ -546,20 +563,62 @@ const LessonEdit = (props: { search: LessonEditSearch }) => {
           variant="contained"
           color="primary"
           size="large"
+          endIcon={<ExpandMoreIcon/>}
           style={{
             background: lessonUnderEdit.lesson?.isTrainable
               ? "#1B6A9C"
               : "#808080",
           }}
           disabled={isTraining || !lessonUnderEdit.lesson}
-          onClick={() => {
-            if (lessonUnderEdit.lesson) {
-              startLessonTraining(lessonUnderEdit.lesson);
+          onClick={(event)=> {
+            console.log(`isTraining: ${isTraining}, lessonUnderEdit.lesson: ${lessonUnderEdit.lesson}`)
+            if(!isTraining && lessonUnderEdit.lesson) {
+              console.log("Handling click")
+              handleTrainClick(event)
             }
           }}
         >
           Train
         </Button>
+
+        <Menu
+          anchorEl={anchorTrailEl}
+          keepMounted
+          open={Boolean(anchorTrailEl)}
+          onClose={handleTrainClose}
+        >
+          <MenuItem
+            onClick={() => {
+              if (lessonUnderEdit.lesson) {
+                handleTrainClose()
+                startLessonTraining(lessonUnderEdit.lesson);
+              }
+            }}
+          >
+            Fastest
+          </MenuItem>
+          <MenuItem
+            onClick={() => {
+              if (lessonUnderEdit.lesson) {
+                handleTrainClose()
+                startLessonTraining(lessonUnderEdit.lesson);
+              }
+            }}
+          >
+            Normal
+          </MenuItem>
+          <MenuItem
+            onClick={() => {
+              if (lessonUnderEdit.lesson) {
+                handleTrainClose()
+                startLessonTraining(lessonUnderEdit.lesson);
+              }
+            }}
+          >
+            Highest Qualty
+          </MenuItem>
+        </Menu>
+
         <Button
           data-cy="launch-button"
           className={classes.button}
@@ -568,6 +627,7 @@ const LessonEdit = (props: { search: LessonEditSearch }) => {
           size="large"
           disabled={!lessonId || !isLessonValid()}
           onClick={handleLaunch}
+          endIcon={<LaunchIcon/>}
         >
           Launch
         </Button>
