@@ -34,7 +34,6 @@ import { validateExpectationFeatures } from "schemas/validation";
 import { Lesson, LessonExpectation, TrainState } from "types";
 import withLocation from "wrap-with-location";
 import { useWithTraining } from "hooks/use-with-training";
-import { useQuery } from "hooks/use-query";
 import "styles/layout.css";
 import "jsoneditor-react/es/editor.min.css";
 import "react-toastify/dist/ReactToastify.css";
@@ -150,11 +149,7 @@ const LessonEdit = (props: {
   search: LessonEditSearch;
   location: WindowLocation<unknown>;
 }) => {
-  // const { lessonId, copyLesson } = props.search;
-
-  const lessonId = useQuery("lessonId");
-  // const lessonId = "myLesson"
-  const copyLesson = useQuery("copyLesson");
+  const { lessonId, copyLesson } = props.search;
 
   const classes = useStyles();
   const [cookies] = useCookies(["accessToken"]);
@@ -171,6 +166,15 @@ const LessonEdit = (props: {
     startLessonTraining,
     dismissTrainingMessage,
   } = useWithTraining(props.search.trainStatusPollInterval);
+
+  const [mounted, setMounted] = React.useState(false);
+  React.useEffect(() => {
+    if (!lessonUnderEdit.lesson || mounted) {
+      return;
+    }
+    window.scrollTo(0, 0);
+    setMounted(true);
+  }, [lessonUnderEdit.lesson]);
 
   React.useEffect(() => {
     if (lessonId) {
@@ -202,25 +206,18 @@ const LessonEdit = (props: {
   }, [context.user]);
 
   React.useEffect(() => {
-    console.log(`Loading Lesson: query: ${props.location.search}`);
-    console.log(
-      `Props: Lesson ID:${props.search.lessonId} copyLesson:${props.search.copyLesson} trainStatusPollInterval:${props.search.trainStatusPollInterval}`
-    );
     if (!lessonUnderEdit.lesson) {
       return;
     }
     const id = lessonUnderEdit.lesson.lessonId;
-    console.log(`lessonId: ${lessonId}, id: ${id}`);
     if (!/^[a-z0-9-]+$/g.test(id)) {
       setError("id must be lower-case and alpha-numeric.");
     } else if (lessonId !== id) {
       fetchLessons({ lessonId: id }, 1, "", "", true, cookies.accessToken)
         .then((lessons) => {
           if (lessons && lessons.edges.length > 0) {
-            console.log(`ID Taken; Response: ${lessons}`);
             setError("id is already being used for another lesson.");
           } else {
-            console.log(`ID Available; Response: ${lessons}`);
             setError("");
           }
         })
@@ -255,14 +252,6 @@ const LessonEdit = (props: {
   }
 
   function isLessonValid(): boolean {
-    console.log(
-      `Lesson Valid: !error:${!error}, error.length == 0 ${
-        error.length == 0
-      } expct: ${lessonUnderEdit.lesson?.expectations.every(
-        (exp: LessonExpectation) => isExpValid(exp)
-      )}`
-    );
-
     if (!lessonUnderEdit.lesson) {
       return false;
     }
@@ -289,7 +278,7 @@ const LessonEdit = (props: {
     handleSavePopUp(false);
   }
 
-  async function saveChanges(): Promise<void> {
+  function saveChanges(): void {
     if (!lessonUnderEdit.lesson) {
       return;
     }
@@ -300,17 +289,14 @@ const LessonEdit = (props: {
     }
     const origId = lessonId || lessonUnderEdit.lesson?.lessonId;
     updateLesson(origId, convertedLesson, cookies.accessToken)
-      .then(async (lesson) => {
+      .then((lesson) => {
         if (lesson) {
-          console.log("Set lesson");
           setLesson(lesson);
         }
 
         if (lessonId !== lesson.lessonId) {
-          console.log(`Will navigate to ${lesson.lessonId}`);
-          await navigate(`/lessons/edit?lessonId=${lesson.lessonId}`);
+          window.location.href = `/lessons/edit?lessonId=${lesson.lessonId}`;
         }
-        console.log("Success!");
         toast("Success!");
       })
       .catch((err) => {
