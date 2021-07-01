@@ -21,9 +21,13 @@ import {
   List,
   ListItem,
   ListItemText,
+  Menu,
+  MenuItem,
   TextField,
   Typography,
 } from "@material-ui/core";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import LaunchIcon from "@material-ui/icons/Launch";
 import { makeStyles } from "@material-ui/core/styles";
 import { fetchLesson, updateLesson, userCanEdit, fetchLessons } from "api";
 import SessionContext from "context/session";
@@ -31,7 +35,7 @@ import NavBar from "components/nav-bar";
 import ConclusionsList from "components/conclusions-list";
 import ExpectationsList from "components/expectations-list";
 import { validateExpectationFeatures } from "schemas/validation";
-import { Lesson, LessonExpectation, TrainState } from "types";
+import { Lesson, LessonExpectation, TrainState, TrainingQuality } from "types";
 import withLocation from "wrap-with-location";
 import { useWithTraining } from "hooks/use-with-training";
 import "styles/layout.css";
@@ -222,6 +226,18 @@ const LessonEdit = (props: { search: LessonEditSearch }) => {
         .catch((err) => console.error(err));
     }
   }, [trainStatus]);
+
+  const [anchorTrailEl, setAnchorTrainEl] = React.useState<null | HTMLElement>(
+    null
+  );
+
+  const handleTrainClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorTrainEl(event.currentTarget);
+  };
+
+  const handleTrainClose = () => {
+    setAnchorTrainEl(null);
+  };
 
   function setLesson(lesson?: Lesson, dirty?: boolean) {
     if (lessonUnderEdit.lesson?.lessonId !== lesson?.lessonId) {
@@ -546,20 +562,76 @@ const LessonEdit = (props: { search: LessonEditSearch }) => {
           variant="contained"
           color="primary"
           size="large"
+          endIcon={<ExpandMoreIcon />}
           style={{
             background: lessonUnderEdit.lesson?.isTrainable
               ? "#1B6A9C"
               : "#808080",
           }}
           disabled={isTraining || !lessonUnderEdit.lesson}
-          onClick={() => {
-            if (lessonUnderEdit.lesson) {
-              startLessonTraining(lessonUnderEdit.lesson);
+          onClick={(event) => {
+            console.log(
+              `isTraining: ${isTraining}, lessonUnderEdit.lesson: ${lessonUnderEdit.lesson}`
+            );
+            if (!isTraining && lessonUnderEdit.lesson) {
+              console.log("Handling click");
+              handleTrainClick(event);
             }
           }}
         >
           Train
         </Button>
+
+        <Menu
+          anchorEl={anchorTrailEl}
+          keepMounted
+          open={Boolean(anchorTrailEl)}
+          onClose={handleTrainClose}
+        >
+          <MenuItem
+            data-cy="train-low"
+            onClick={() => {
+              if (lessonUnderEdit.lesson) {
+                handleTrainClose();
+                startLessonTraining(
+                  lessonUnderEdit.lesson,
+                  TrainingQuality.LOW
+                );
+              }
+            }}
+          >
+            Low Feature Generation (Fastest)
+          </MenuItem>
+          <MenuItem
+            data-cy="train-med"
+            onClick={() => {
+              if (lessonUnderEdit.lesson) {
+                handleTrainClose();
+                startLessonTraining(
+                  lessonUnderEdit.lesson,
+                  TrainingQuality.MEDIUM
+                );
+              }
+            }}
+          >
+            Normal Feature Generation
+          </MenuItem>
+          <MenuItem
+            data-cy="train-high"
+            onClick={() => {
+              if (lessonUnderEdit.lesson) {
+                handleTrainClose();
+                startLessonTraining(
+                  lessonUnderEdit.lesson,
+                  TrainingQuality.HIGH
+                );
+              }
+            }}
+          >
+            High Feature Generation (Slowest)
+          </MenuItem>
+        </Menu>
+
         <Button
           data-cy="launch-button"
           className={classes.button}
@@ -568,6 +640,7 @@ const LessonEdit = (props: { search: LessonEditSearch }) => {
           size="large"
           disabled={!lessonId || !isLessonValid()}
           onClick={handleLaunch}
+          endIcon={<LaunchIcon />}
         >
           Launch
         </Button>

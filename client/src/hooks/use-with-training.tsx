@@ -6,7 +6,7 @@ The full terms of this copyright and license should always be found in the root 
 */
 import { fetchTrainingStatus, trainDefault, trainLesson } from "api";
 import { useState } from "react";
-import { Lesson, TrainState, TrainStatus } from "types";
+import { Lesson, TrainState, TrainStatus, TrainingQuality } from "types";
 import useInterval from "./use-interval";
 
 export interface TrainingStatus {
@@ -14,7 +14,7 @@ export interface TrainingStatus {
   trainingMessage: string | undefined;
   statusUrl: string;
   trainStatus: TrainStatus;
-  startLessonTraining: (lesson: Lesson) => void;
+  startLessonTraining: (lesson: Lesson, quality: TrainingQuality) => void;
   startDefaultTraining: () => void;
   dismissTrainingMessage: () => void;
 }
@@ -41,7 +41,7 @@ export function useWithTraining(pollingInterval = 1000): TrainingStatus {
           }
           if (status.state === TrainState.SUCCESS) {
             setIsTraining(false);
-            setMessage("Training Success");
+            setMessage("Training Succeeded");
           }
           if (status.state === TrainState.FAILURE) {
             setIsTraining(false);
@@ -58,15 +58,17 @@ export function useWithTraining(pollingInterval = 1000): TrainingStatus {
     isTraining ? pollingInterval : null
   );
 
-  function startLessonTraining(lesson: Lesson) {
+  function startLessonTraining(lesson: Lesson, quality: TrainingQuality) {
     if (isTraining) {
       return;
     }
     if (!lesson.isTrainable) {
-      setMessage("NEEDS MORE GRADED DATA");
+      setMessage(
+        "You need more graded data before training. Please grade more sessions and try again."
+      );
       return;
     }
-    trainLesson(lesson.lessonId)
+    trainLesson(lesson.lessonId, quality)
       .then((trainJob) => {
         setStatusUrl(trainJob.statusUrl);
         setIsTraining(true);
