@@ -41,7 +41,7 @@ export function useWithTraining(pollingInterval = 1000): TrainingStatus {
           }
           if (status.state === TrainState.SUCCESS) {
             setIsTraining(false);
-            setMessage("Training Succeed");
+            setMessage("Training Succeeded");
           }
           if (status.state === TrainState.FAILURE) {
             setIsTraining(false);
