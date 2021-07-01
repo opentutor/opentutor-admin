@@ -26,7 +26,7 @@ import {
   TextField,
   Typography,
 } from "@material-ui/core";
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import LaunchIcon from "@material-ui/icons/Launch";
 import { makeStyles } from "@material-ui/core/styles";
 import { fetchLesson, updateLesson, userCanEdit, fetchLessons } from "api";
@@ -35,13 +35,12 @@ import NavBar from "components/nav-bar";
 import ConclusionsList from "components/conclusions-list";
 import ExpectationsList from "components/expectations-list";
 import { validateExpectationFeatures } from "schemas/validation";
-import { Lesson, LessonExpectation, TrainState } from "types";
+import { Lesson, LessonExpectation, TrainState, TrainingQuality } from "types";
 import withLocation from "wrap-with-location";
 import { useWithTraining } from "hooks/use-with-training";
 import "styles/layout.css";
 import "jsoneditor-react/es/editor.min.css";
 import "react-toastify/dist/ReactToastify.css";
-import { eventManager } from "react-toastify/dist/core";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -563,18 +562,20 @@ const LessonEdit = (props: { search: LessonEditSearch }) => {
           variant="contained"
           color="primary"
           size="large"
-          endIcon={<ExpandMoreIcon/>}
+          endIcon={<ExpandMoreIcon />}
           style={{
             background: lessonUnderEdit.lesson?.isTrainable
               ? "#1B6A9C"
               : "#808080",
           }}
           disabled={isTraining || !lessonUnderEdit.lesson}
-          onClick={(event)=> {
-            console.log(`isTraining: ${isTraining}, lessonUnderEdit.lesson: ${lessonUnderEdit.lesson}`)
-            if(!isTraining && lessonUnderEdit.lesson) {
-              console.log("Handling click")
-              handleTrainClick(event)
+          onClick={(event) => {
+            console.log(
+              `isTraining: ${isTraining}, lessonUnderEdit.lesson: ${lessonUnderEdit.lesson}`
+            );
+            if (!isTraining && lessonUnderEdit.lesson) {
+              console.log("Handling click");
+              handleTrainClick(event);
             }
           }}
         >
@@ -588,34 +589,46 @@ const LessonEdit = (props: { search: LessonEditSearch }) => {
           onClose={handleTrainClose}
         >
           <MenuItem
+            data-cy="train-low"
             onClick={() => {
               if (lessonUnderEdit.lesson) {
-                handleTrainClose()
-                startLessonTraining(lessonUnderEdit.lesson);
+                handleTrainClose();
+                startLessonTraining(
+                  lessonUnderEdit.lesson,
+                  TrainingQuality.LOW
+                );
               }
             }}
           >
-            Fastest
+            Low Feature Generation (Fastest)
           </MenuItem>
           <MenuItem
+            data-cy="train-med"
             onClick={() => {
               if (lessonUnderEdit.lesson) {
-                handleTrainClose()
-                startLessonTraining(lessonUnderEdit.lesson);
+                handleTrainClose();
+                startLessonTraining(
+                  lessonUnderEdit.lesson,
+                  TrainingQuality.MEDIUM
+                );
               }
             }}
           >
-            Normal
+            Normal Feature Generation
           </MenuItem>
           <MenuItem
+            data-cy="train-high"
             onClick={() => {
               if (lessonUnderEdit.lesson) {
-                handleTrainClose()
-                startLessonTraining(lessonUnderEdit.lesson);
+                handleTrainClose();
+                startLessonTraining(
+                  lessonUnderEdit.lesson,
+                  TrainingQuality.HIGH
+                );
               }
             }}
           >
-            Highest Qualty
+            High Feature Generation (Slowest)
           </MenuItem>
         </Menu>
 
@@ -627,7 +640,7 @@ const LessonEdit = (props: { search: LessonEditSearch }) => {
           size="large"
           disabled={!lessonId || !isLessonValid()}
           onClick={handleLaunch}
-          endIcon={<LaunchIcon/>}
+          endIcon={<LaunchIcon />}
         >
           Launch
         </Button>

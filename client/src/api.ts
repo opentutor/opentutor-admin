@@ -27,6 +27,7 @@ import {
   UserAccessToken,
   User,
   UserRole,
+  TrainingQuality,
 } from "types";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const urljoin = require("url-join");
@@ -446,11 +447,15 @@ export async function deleteSession(
   return findOrThrow<DeleteSession>(result).me.deleteSession;
 }
 
-export async function trainLesson(lessonId: string): Promise<TrainJob> {
+export async function trainLesson(
+  lessonId: string,
+  quality: TrainingQuality
+): Promise<TrainJob> {
   const result = await axios.post<GQLResponse<TrainJob>>(
     urljoin(CLASSIFIER_ENTRYPOINT, "train"),
     {
       lesson: lessonId,
+      quality: quality,
     }
   );
   return findOrThrow<TrainJob>(result);

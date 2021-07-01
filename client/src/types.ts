@@ -103,6 +103,12 @@ export enum TrainState {
   SUCCESS = "SUCCESS",
 }
 
+export enum TrainingQuality {
+  HIGH = "HIGH",
+  MEDIUM = "MEDIUM",
+  LOW = "LOW",
+}
+
 export interface TrainStatus {
   state: TrainState;
   status?: string;
