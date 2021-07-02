@@ -318,8 +318,6 @@ const LessonEdit = (props: { search: LessonEditSearch }) => {
     return <div>You do not have permission to view this lesson.</div>;
   }
 
-  console.log(lessonUnderEdit);
-
   return (
     <div style={{ paddingTop: "20px" }}>
       <form className={classes.root} noValidate autoComplete="off">
@@ -391,7 +389,6 @@ const LessonEdit = (props: { search: LessonEditSearch }) => {
                   true
                 );
               }}
-              // className={classes.selectEmpty}
             >
               <MenuItem value={"default"}>Default</MenuItem>
               <MenuItem value={"sensitive"}>Sensitive</MenuItem>
