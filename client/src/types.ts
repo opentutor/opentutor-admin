@@ -67,6 +67,7 @@ export interface Lesson {
   lessonId: string;
   name: string;
   intro: string;
+  dialogCategory: string;
   question: string;
   image: string;
   expectations: LessonExpectation[];
