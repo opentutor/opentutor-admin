@@ -229,7 +229,7 @@ const LessonEdit = (props: {
 
   React.useEffect(() => {
     if (trainStatus.state === TrainState.SUCCESS) {
-      fetchLesson(lessonId || "", cookies.accessToken)
+      fetchLesson(lessonId, cookies.accessToken)
         .then((lesson) => {
           setLesson(lesson);
         })
