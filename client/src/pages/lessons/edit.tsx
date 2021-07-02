@@ -257,7 +257,6 @@ const LessonEdit = (props: {
     }
     return (
       !error &&
-      error.length == 0 &&
       lessonUnderEdit.lesson?.expectations.every((exp: LessonExpectation) =>
         isExpValid(exp)
       )
