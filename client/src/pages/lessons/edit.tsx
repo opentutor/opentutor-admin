@@ -42,6 +42,7 @@ import { useWithTraining } from "hooks/use-with-training";
 import "styles/layout.css";
 import "jsoneditor-react/es/editor.min.css";
 import "react-toastify/dist/ReactToastify.css";
+import { WindowLocation } from "@reach/router";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -153,8 +154,12 @@ export interface LessonEditSearch {
   copyLesson?: string;
 }
 
-const LessonEdit = (props: { search: LessonEditSearch }) => {
+const LessonEdit = (props: {
+  search: LessonEditSearch;
+  location: WindowLocation<unknown>;
+}) => {
   const { lessonId, copyLesson } = props.search;
+
   const classes = useStyles();
   const [cookies] = useCookies(["accessToken"]);
   const context = useContext(SessionContext);
@@ -170,6 +175,15 @@ const LessonEdit = (props: { search: LessonEditSearch }) => {
     startLessonTraining,
     dismissTrainingMessage,
   } = useWithTraining(props.search.trainStatusPollInterval);
+
+  const [mounted, setMounted] = React.useState(false);
+  React.useEffect(() => {
+    if (!lessonUnderEdit.lesson || mounted) {
+      return;
+    }
+    window.scrollTo(0, 0);
+    setMounted(true);
+  }, [lessonUnderEdit.lesson]);
 
   React.useEffect(() => {
     if (lessonId) {
@@ -287,8 +301,9 @@ const LessonEdit = (props: { search: LessonEditSearch }) => {
         if (lesson) {
           setLesson(lesson);
         }
+
         if (lessonId !== lesson.lessonId) {
-          navigate(`/lessons/edit/?lessonId=${lesson.lessonId}`);
+          window.location.href = `/lessons/edit?lessonId=${lesson.lessonId}`;
         }
         toast("Success!");
       })
@@ -636,15 +651,16 @@ const LessonEdit = (props: { search: LessonEditSearch }) => {
       <Dialog open={savePopUp} onClose={() => handleSavePopUp(false)}>
         <DialogTitle>Save</DialogTitle>
         <DialogActions>
+          <Button data-cy="save-exit" onClick={handleSaveExit} color="primary">
+            Exit
+          </Button>
           <Button
             data-cy="save-continue"
             onClick={handleSaveContinue}
             color="primary"
+            variant="contained"
           >
             Continue
-          </Button>
-          <Button data-cy="save-exit" onClick={handleSaveExit} color="primary">
-            Exit
           </Button>
         </DialogActions>
       </Dialog>
@@ -653,7 +669,10 @@ const LessonEdit = (props: { search: LessonEditSearch }) => {
   );
 };
 
-function EditPage(props: { search: LessonEditSearch }): JSX.Element {
+function EditPage(props: {
+  search: LessonEditSearch;
+  location: WindowLocation<unknown>;
+}): JSX.Element {
   const context = useContext(SessionContext);
   const [cookies] = useCookies(["accessToken"]);
   const styles = useStyles();
@@ -667,7 +686,7 @@ function EditPage(props: { search: LessonEditSearch }): JSX.Element {
   return (
     <div>
       <NavBar title="Edit Lesson" />
-      <LessonEdit search={props.search} />
+      <LessonEdit search={props.search} location={props.location} />
     </div>
   );
 }
