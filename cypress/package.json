@@ -5,7 +5,7 @@
   "dependencies": {
     "cypress-fill-command": "^1.0.2",
     "cypress-image-snapshot": "^4.0.1",
-    "typescript": "^4.3.2",
+    "typescript": "^4.3.5",
     "cypress": "^7.6.0"
   },
   "scripts": {
