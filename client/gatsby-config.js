@@ -5,7 +5,6 @@ module.exports = {
     description: ``,
   },
   plugins: [
-    `gatsby-plugin-typescript`,
     {
       resolve: `gatsby-plugin-env-variables`,
       options: {
