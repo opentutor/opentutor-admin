@@ -102,6 +102,11 @@ export async function fetchSessions(
             edges {
               cursor
               node {
+                userResponses {
+                  expectationScores {
+                    classifierGrade
+                  }
+                }
                 username
                 sessionId
                 classifierGrade

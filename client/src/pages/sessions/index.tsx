@@ -28,13 +28,14 @@ import { makeStyles } from "@material-ui/core/styles";
 import KeyboardArrowLeftIcon from "@material-ui/icons/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
 import AssessmentIcon from "@material-ui/icons/Assessment";
-import { fetchSessions, userCanEdit } from "api";
-import { Connection, Edge, Session } from "types";
+import { userCanEdit } from "api";
+import { Edge, Session } from "types";
 import NavBar from "components/nav-bar";
 import { ColumnDef, ColumnHeader } from "components/column-header";
 import SessionContext from "context/session";
 import withLocation from "wrap-with-location";
 import "styles/layout.css";
+import { useWithSessions } from "hooks/use-with-sessions";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -261,69 +262,8 @@ function SessionItem(props: { row: Edge<Session>; i: number }): JSX.Element {
 
 function SessionsTable(props: { search: { lessonId: string } }): JSX.Element {
   const classes = useStyles();
-  const [cookies] = useCookies(["accessToken"]);
-  const context = useContext(SessionContext);
-  const [sessions, setSessions] = React.useState<Connection<Session>>();
-  const [cursor, setCursor] = React.useState("");
-  const [sortBy, setSortBy] = React.useState("createdAt");
-  const [sortAsc, setSortAsc] = React.useState(false);
-  const { lessonId } = props.search;
-  const rowsPerPage = 50;
-
-  function onSort(id: string) {
-    if (sortBy === id) {
-      setSortAsc(!sortAsc);
-    } else {
-      setSortBy(id);
-    }
-    setCursor("");
-  }
-
-  React.useEffect(() => {
-    setCursor("");
-  }, [context.onlyCreator, context.showGraded]);
-
-  React.useEffect(() => {
-    const filter: {
-      lessonCreatedBy?: string;
-      lessonId?: string;
-      graderGrade?: string | null;
-    } = {};
-    if (context.onlyCreator) {
-      filter.lessonCreatedBy = context.user?.name;
-    }
-    if (!context.showGraded) {
-      filter.graderGrade = null;
-    }
-    if (lessonId) {
-      filter.lessonId = lessonId;
-    }
-    let mounted = true;
-    fetchSessions(
-      filter,
-      rowsPerPage,
-      cursor,
-      sortBy,
-      sortAsc,
-      cookies.accessToken
-    )
-      .then((sessions) => {
-        if (mounted && sessions) {
-          setSessions(sessions);
-        }
-      })
-      .catch((err) => console.error(err));
-    return () => {
-      mounted = false;
-    };
-  }, [
-    context.onlyCreator,
-    context.showGraded,
-    rowsPerPage,
-    cursor,
-    sortBy,
-    sortAsc,
-  ]);
+  const { sessions, sortBy, sortAsc, sort, nextPage, prevPage } =
+    useWithSessions(props.search.lessonId);
 
   if (!sessions) {
     return (
@@ -346,7 +286,7 @@ function SessionsTable(props: { search: { lessonId: string } }): JSX.Element {
               columns={columns}
               sortBy={sortBy}
               sortAsc={sortAsc}
-              onSort={onSort}
+              onSort={sort}
             />
             <TableBody data-cy="sessions">
               {sessions.edges.map((row, i) => (
@@ -360,12 +300,8 @@ function SessionsTable(props: { search: { lessonId: string } }): JSX.Element {
         classes={classes}
         hasNext={sessions.pageInfo.hasNextPage}
         hasPrev={sessions.pageInfo.hasPreviousPage}
-        onNext={() => {
-          setCursor("next__" + sessions.pageInfo.endCursor);
-        }}
-        onPrev={() => {
-          setCursor("prev__" + sessions.pageInfo.startCursor);
-        }}
+        onNext={nextPage}
+        onPrev={prevPage}
       />
     </div>
   );
