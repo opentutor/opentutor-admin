@@ -174,16 +174,16 @@ export async function fetchSessionsData(
           ) {
             edges {
               node {
-                userResponses {
-                  expectationScores {
-                    classifierGrade
-                  }
-                }
-                username
                 sessionId
-                classifierGrade
-                graderGrade
                 createdAt
+                username
+                userResponses {
+                    text
+                    expectationScores {
+                        graderGrade
+                        classifierGrade
+                    }
+                }
               }
             }
           }

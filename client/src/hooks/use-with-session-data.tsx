@@ -6,8 +6,6 @@ The full terms of this copyright and license should always be found in the root 
 */
 import React, { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
-import { v4 as uuid } from "uuid";
-
 import { fetchSessionsData } from "api";
 import { Connection, Lesson, Session } from "types";
 
@@ -31,7 +29,7 @@ export function useWithSessionData(lessonId: string, expectation: string) {
 
   useEffect(() => {
     load();
-  });
+  }, [lessonId, expectation]);
 
   useEffect(() => {
     if (!sessions || !lesson) {
@@ -67,12 +65,14 @@ export function useWithSessionData(lessonId: string, expectation: string) {
     });
     setRows(data);
     console.log(data);
-  }, [sessions]);
+  }, [sessions, lesson]);
 
   function load() {
     const filter = { lessonId: lessonId };
-    fetchSessionsData(filter, 10000, cookies.accessToken)
+    console.log(`load ${lessonId}`);
+    fetchSessionsData(filter, 500, cookies.accessToken)
       .then((data) => {
+        console.log(data);
         if (data) {
           setSessions(data.sessions);
           setLesson(data.lesson);
