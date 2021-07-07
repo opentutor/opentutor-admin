@@ -145,6 +145,74 @@ export async function fetchSessions(
   return findOrThrow<FetchSessions>(result).me.sessions;
 }
 
+interface FetchSessionsData {
+  me: {
+    sessions: Connection<Session>;
+    lesson: Lesson;
+  };
+}
+interface SessionsData {
+  sessions: Connection<Session>;
+  lesson: Lesson;
+}
+export async function fetchSessionsData(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
+  filter: any,
+  limit: number,
+  accessToken: string
+): Promise<SessionsData> {
+  const headers = { Authorization: `bearer ${accessToken}` };
+  const result = await axios.post<GQLResponse<FetchSessionsData>>(
+    GRAPHQL_ENDPOINT,
+    {
+      query: `
+      query FetchSessions($filter: String!, $limit: Int!) {
+        me {
+          sessions(
+            filter: $filter,
+            limit: $limit,
+          ) {
+            edges {
+              node {
+                userResponses {
+                  expectationScores {
+                    classifierGrade
+                  }
+                }
+                username
+                sessionId
+                classifierGrade
+                graderGrade
+                createdAt
+                lesson {
+                  name
+                  lessonId
+                  createdBy
+                }
+                lessonCreatedBy
+                lastGradedByName
+                lastGradedAt
+              }
+            }
+          }
+          lesson(lessonId:"kaylas-final-lesson") {
+            expectations {
+              expectation
+            }
+          }
+        }
+      }
+      `,
+      variables: {
+        filter: JSON.stringify(filter),
+        limit,
+      },
+    },
+    { headers: headers }
+  );
+  return findOrThrow<FetchSessionsData>(result).me;
+}
+
 export async function fetchSession(
   sessionId: string,
   accessToken: string

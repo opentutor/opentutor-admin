@@ -42,6 +42,7 @@ import withLocation from "wrap-with-location";
 import { Helmet } from "react-helmet";
 import { useState } from "react";
 import FilteringDialog from "components/filtering-dialog";
+import { useWithSessionData } from "hooks/use-with-session-data";
 
 interface Data {
   id: string;
@@ -488,15 +489,17 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-function EnhancedTable() {
+function EnhancedTable(props: { lessonId: string; expectation: string }) {
   const classes = useStyles();
+  const [selected, setSelected] = React.useState<string[]>([]);
+  const [dense, setDense] = React.useState(false);
+  const data = useWithSessionData(props.lessonId, props.expectation);
+
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [order, setOrder] = React.useState<Order>("desc");
   const [orderBy, setOrderBy] = React.useState<keyof Data>("date");
-  const [selected, setSelected] = React.useState<string[]>([]);
-  const [page, setPage] = React.useState(0);
-  const [dense, setDense] = React.useState(false);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
-  const [rows, setRows] = React.useState(rowsUnfiltered);
+  const [rows, setRows] = React.useState(data);
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
@@ -649,9 +652,7 @@ export interface LessonExpectationSearch {
 }
 
 // eslint-disable-next-line  @typescript-eslint/no-unused-vars
-function Data(props: {
-  search: LessonExpectationSearch;
-}): JSX.Element {
+function Data(props: { search: LessonExpectationSearch }): JSX.Element {
   const { lessonId, expectation } = props.search;
   console.log(props.search);
   const context = useContext(SessionContext);
@@ -678,7 +679,7 @@ function Data(props: {
         <NavBar title="Settings" />
         <Container maxWidth="xl">
           <div style={{ marginTop: 40 }}>
-            <EnhancedTable />
+            <EnhancedTable lessonId={lessonId} expectation={expectation} />
           </div>
         </Container>
       </div>

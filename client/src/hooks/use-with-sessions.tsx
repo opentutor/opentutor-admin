@@ -47,11 +47,7 @@ export function useWithSessions(
   }, [rowsPerPage, cursor, sortBy, sortAsc]);
 
   function load() {
-    const filter: {
-      lessonCreatedBy?: string;
-      lessonId?: string;
-      graderGrade?: string | null;
-    } = {};
+    const filter = search.filter;
     if (context.onlyCreator) {
       filter.lessonCreatedBy = context.user?.name;
     }
