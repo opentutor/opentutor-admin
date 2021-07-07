@@ -91,20 +91,22 @@ interface FilteringProps {
   rows: Data[];
   setRows: React.Dispatch<React.SetStateAction<Data[]>>;
   rowsUnfiltered: Data[];
+  setPage:(value: React.SetStateAction<number>) => void
 }
 
 interface Filter {
+  dirty: boolean;
   hideUngraded: boolean;
 }
 
 export default function FilteringDialog(props: FilteringProps): JSX.Element {
-  const defaultFilter: Filter = { hideUngraded: false };
+  const defaultFilter: Filter = { hideUngraded: false, dirty: false };
   const [filter, setFilter] = React.useState(defaultFilter);
 
   const handleClose = () => {
     console.log(filter);
     //Update the rows
-
+    // TODO: Only update on change, i.e. only setPage(0) on change
     const tempRows: Data[] = [];
     props.rowsUnfiltered.forEach((row: Data) => {
       console.log(row);
@@ -120,6 +122,10 @@ export default function FilteringDialog(props: FilteringProps): JSX.Element {
       }
     });
     props.setRows(tempRows);
+    if(filter.dirty) {
+      props.setPage(0);
+      setFilter({ ...filter, dirty: false });
+    }
     console.log(tempRows);
     props.setOpen(false);
   };
@@ -145,7 +151,7 @@ export default function FilteringDialog(props: FilteringProps): JSX.Element {
               checked={filter.hideUngraded}
               onChange={() => {
                 console.log("Toggled");
-                setFilter({ ...filter, hideUngraded: !filter.hideUngraded });
+                setFilter({ ...filter, hideUngraded: !filter.hideUngraded, dirty: true });
               }}
             />
           }

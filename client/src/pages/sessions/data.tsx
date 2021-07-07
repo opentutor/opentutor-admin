@@ -386,6 +386,7 @@ interface EnhancedTableToolbarProps {
   rows: Data[];
   setRows: React.Dispatch<React.SetStateAction<Data[]>>;
   rowsUnfiltered: Data[];
+  setPage:(value: React.SetStateAction<number>) => void
 }
 
 const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
@@ -562,6 +563,7 @@ function EnhancedTable() {
           rows={rows}
           setRows={setRows}
           rowsUnfiltered={rowsUnfiltered}
+          setPage={setPage}
         />
         <TableContainer>
           <Table
