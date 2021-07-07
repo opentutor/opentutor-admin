@@ -49,7 +49,7 @@ export function useWithSessionData(lessonId: string, expectation: string) {
         }
         const exp = response.expectationScores[expIdx];
         data.push({
-          id: uuid(),
+          id: `${session.sessionId}-${i}`,
           session: session.sessionId,
           date: session.createdAt,
           username: session.username,

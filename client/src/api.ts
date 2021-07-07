@@ -184,11 +184,6 @@ export async function fetchSessionsData(
                 classifierGrade
                 graderGrade
                 createdAt
-                lesson {
-                  name
-                  lessonId
-                  createdBy
-                }
               }
             }
           }
