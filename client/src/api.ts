@@ -189,9 +189,6 @@ export async function fetchSessionsData(
                   lessonId
                   createdBy
                 }
-                lessonCreatedBy
-                lastGradedByName
-                lastGradedAt
               }
             }
           }

@@ -501,6 +501,10 @@ function EnhancedTable(props: { lessonId: string; expectation: string }) {
   const [orderBy, setOrderBy] = React.useState<keyof Data>("date");
   const [rows, setRows] = React.useState(data);
 
+  React.useEffect(() => {
+    setRows(data);
+  }, [data]);
+
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
     property: keyof Data

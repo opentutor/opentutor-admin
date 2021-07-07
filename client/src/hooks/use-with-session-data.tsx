@@ -4,22 +4,12 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
 import { v4 as uuid } from "uuid";
 
 import { fetchSessionsData } from "api";
 import { Connection, Lesson, Session } from "types";
-import SessionContext from "context/session";
-
-export interface SearchParams {
-  limit: number;
-  cursor: string;
-  sortBy: string;
-  sortAscending: boolean;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  filter: Record<string, any>;
-}
 
 export interface SessionData {
   id: string;
@@ -33,18 +23,7 @@ export interface SessionData {
   accurate: string;
 }
 
-export function useWithSessionData(
-  lessonId: string,
-  expectation: string,
-  search: SearchParams = {
-    limit: 10000,
-    cursor: "",
-    sortBy: "createdAt",
-    sortAscending: false,
-    filter: {},
-  }
-) {
-  const context = useContext(SessionContext);
+export function useWithSessionData(lessonId: string, expectation: string) {
   const [cookies] = useCookies(["accessToken"]);
   const [sessions, setSessions] = useState<Connection<Session>>();
   const [lesson, setLesson] = useState<Lesson>();
@@ -52,11 +31,7 @@ export function useWithSessionData(
 
   useEffect(() => {
     load();
-  }, [context.showGraded]);
-
-  useEffect(() => {
-    load();
-  }, [search]);
+  });
 
   useEffect(() => {
     if (!sessions || !lesson) {
@@ -95,12 +70,8 @@ export function useWithSessionData(
   }, [sessions]);
 
   function load() {
-    const filter = search.filter;
-    if (!context.showGraded) {
-      filter.graderGrade = null;
-    }
-    filter.lessonId = lessonId;
-    fetchSessionsData(filter, search.limit, cookies.accessToken)
+    const filter = { lessonId: lessonId };
+    fetchSessionsData(filter, 10000, cookies.accessToken)
       .then((data) => {
         if (data) {
           setSessions(data.sessions);
