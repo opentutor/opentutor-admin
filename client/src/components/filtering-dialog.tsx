@@ -91,7 +91,7 @@ interface FilteringProps {
   rows: Data[];
   setRows: React.Dispatch<React.SetStateAction<Data[]>>;
   rowsUnfiltered: Data[];
-  setPage:(value: React.SetStateAction<number>) => void
+  setPage: (value: React.SetStateAction<number>) => void;
 }
 
 interface Filter {
@@ -122,7 +122,7 @@ export default function FilteringDialog(props: FilteringProps): JSX.Element {
       }
     });
     props.setRows(tempRows);
-    if(filter.dirty) {
+    if (filter.dirty) {
       props.setPage(0);
       setFilter({ ...filter, dirty: false });
     }
@@ -151,7 +151,11 @@ export default function FilteringDialog(props: FilteringProps): JSX.Element {
               checked={filter.hideUngraded}
               onChange={() => {
                 console.log("Toggled");
-                setFilter({ ...filter, hideUngraded: !filter.hideUngraded, dirty: true });
+                setFilter({
+                  ...filter,
+                  hideUngraded: !filter.hideUngraded,
+                  dirty: true,
+                });
               }}
             />
           }
