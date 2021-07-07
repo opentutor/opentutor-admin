@@ -38,6 +38,7 @@ import FilterListIcon from "@material-ui/icons/FilterList";
 import NavBar from "components/nav-bar";
 import { UserRole } from "types";
 import SessionContext from "context/session";
+import withLocation from "wrap-with-location";
 import { Helmet } from "react-helmet";
 import { useState } from "react";
 import FilteringDialog from "components/filtering-dialog";
@@ -642,8 +643,17 @@ function EnhancedTable() {
   );
 }
 
+export interface LessonExpectationSearch {
+  lessonId: string;
+  expectation: string;
+}
+
 // eslint-disable-next-line  @typescript-eslint/no-unused-vars
-export default function Data(props: { path: string }): JSX.Element {
+function Data(props: {
+  search: LessonExpectationSearch;
+}): JSX.Element {
+  const { lessonId, expectation } = props.search;
+  console.log(props.search);
   const context = useContext(SessionContext);
   const [cookies] = useCookies(["accessToken"]);
   const styles = useStyles();
@@ -675,3 +685,5 @@ export default function Data(props: { path: string }): JSX.Element {
     </>
   );
 }
+
+export default withLocation(Data);
