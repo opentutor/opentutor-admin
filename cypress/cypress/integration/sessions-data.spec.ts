@@ -29,19 +29,6 @@ export const me = {
                 },
               ],
             },
-            {
-              text: "PAL3",
-              expectationScores: [
-                {
-                  graderGrade: "Good",
-                  classifierGrade: "Bad",
-                },
-                {
-                  graderGrade: "Good",
-                  classifierGrade: "Good",
-                },
-              ],
-            },
           ],
         },
       },
@@ -175,12 +162,15 @@ describe("expectation data page", () => {
   });
 
   it("shows a populated table to an admin", () => {
+    const expectationToTest = 0;
+    let counter = 0;
+
     cySetup(cy);
     cyMockDefault(cy, {
       userRole: "admin",
       gqlQueries: [mockGQL("FetchSessions", { me }, false, true)],
     });
-    cy.visit("/sessions/data?lessonId=q1&expectation=0");
+    cy.visit(`/sessions/data?lessonId=q1&expectation=${expectationToTest}`);
     cy.get("[data-cy=malformed-link]").should("not.exist");
     cy.get("[data-cy=expectation-table]").should("exist");
     [
@@ -194,6 +184,34 @@ describe("expectation data page", () => {
     ].map((header) => {
       cy.get(header).should("exist");
     });
-    cy.contains("PAL3");
+    cy.get("[data-cy=table-title]").contains(
+      me.lesson.expectations[expectationToTest].expectation
+    );
+    me.sessions.edges.map((session) => {
+      session.node.userResponses.map((userResponse, index) => {
+        cy.get(`[data-cy=table-row-${counter}]`).contains(userResponse.text);
+        counter++;
+      });
+    });
+  });
+
+  it("filters", () => {
+    cySetup(cy);
+    cyMockDefault(cy, {
+      userRole: "admin",
+      gqlQueries: [mockGQL("FetchSessions", { me }, false, true)],
+    });
+    cy.visit("/sessions/data?lessonId=q1&expectation=0");
+    cy.get("[data-cy=filter-button]").should("exist");
+  });
+
+  it("paginates", () => {
+    cySetup(cy);
+    cyMockDefault(cy, {
+      userRole: "admin",
+      gqlQueries: [mockGQL("FetchSessions", { me }, false, true)],
+    });
+    cy.visit("/sessions/data?lessonId=q1&expectation=0");
+    cy.contains("Rows per page");
   });
 });
