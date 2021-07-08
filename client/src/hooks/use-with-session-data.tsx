@@ -39,12 +39,6 @@ export function useWithSessionData(lessonId: string, expectation: number) {
     sessions.edges.forEach((e) => {
       const session = e.node;
       for (const [i, response] of session.userResponses.entries()) {
-        // const expIdx = lesson.expectations.findIndex(
-        //   (e, index) => index === expectation
-        // );
-        // if (expIdx === -1) {
-        //   continue;
-        // }
         const exp = response.expectationScores[expectation];
         data.push({
           id: `${session.sessionId}-${i}`,
