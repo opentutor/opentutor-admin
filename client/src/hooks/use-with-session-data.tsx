@@ -21,7 +21,7 @@ export interface SessionData {
   accurate: string;
 }
 
-export function useWithSessionData(lessonId: string, expectation: string) {
+export function useWithSessionData(lessonId: string, expectation: number) {
   const [cookies] = useCookies(["accessToken"]);
   const [sessions, setSessions] = useState<Connection<Session>>();
   const [lesson, setLesson] = useState<Lesson>();
@@ -39,13 +39,13 @@ export function useWithSessionData(lessonId: string, expectation: string) {
     sessions.edges.forEach((e) => {
       const session = e.node;
       for (const [i, response] of session.userResponses.entries()) {
-        const expIdx = lesson.expectations.findIndex(
-          (e) => e.expectation === expectation
-        );
-        if (expIdx === -1) {
-          continue;
-        }
-        const exp = response.expectationScores[expIdx];
+        // const expIdx = lesson.expectations.findIndex(
+        //   (e, index) => index === expectation
+        // );
+        // if (expIdx === -1) {
+        //   continue;
+        // }
+        const exp = response.expectationScores[expectation];
         data.push({
           id: `${session.sessionId}-${i}`,
           session: session.sessionId,
@@ -81,5 +81,8 @@ export function useWithSessionData(lessonId: string, expectation: string) {
       .catch((err) => console.error(err));
   }
 
-  return rows;
+  return {
+    rows: rows,
+    expectationTitle: lesson?.expectations[expectation].expectation,
+  };
 }

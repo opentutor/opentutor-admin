@@ -56,176 +56,6 @@ interface Data {
   accurate: string;
 }
 
-function createData(
-  id: string,
-  date: string,
-  username: string,
-  userAnswer: string,
-  classifierGrade: string,
-  confidence: string,
-  grade: string,
-  session: string,
-  accurate: string
-): Data {
-  return {
-    id,
-    date,
-    username,
-    userAnswer,
-    classifierGrade,
-    confidence,
-    grade,
-    session,
-    accurate,
-  };
-}
-
-// const rowsUnfiltered = [
-//   createData(
-//     "ed713f66-2939-4282-865c-ce1d0b606d4b",
-//     "6/15/2021",
-//     "Johnny Appleseed",
-//     "What color is the sky?",
-//     "Good",
-//     "85%",
-//     "Good",
-//     "",
-//     "No"
-//   ),
-//   createData(
-//     "876c0646-9538-4898-98ba-32f17e60cbe9",
-//     "6/16/2021",
-//     "Johnny Appleseed",
-//     "How high do bunnies jump?",
-//     "Bad",
-//     "85%",
-//     "",
-//     "",
-//     "Ungraded"
-//   ),
-//   createData(
-//     "6dc3b2cc-2265-400b-b38a-a488c0053026",
-//     "6/17/2021",
-//     "Johnny Appleseed",
-//     "What hobbies would you like to get into if you had the time and money?",
-//     "Good",
-//     "85%",
-//     "",
-//     "",
-//     "Yes"
-//   ),
-//   createData(
-//     "1fee2efd-540c-4ec9-ac95-5340d45ab6b9",
-//     "6/18/2021",
-//     "Johnny Appleseed",
-//     "Who in your life brings you the most joy?",
-//     "Bad",
-//     "85%",
-//     "Bad",
-//     "",
-//     "Yes"
-//   ),
-//   createData(
-//     "c8bf7025-37b9-43a8-b1fd-018813b6dd55",
-//     "6/19/2021",
-//     "Johnny Appleseed",
-//     "What was the most historic thing you witnessed in person or took part in?",
-//     "Good",
-//     "85%",
-//     "Good",
-//     "",
-//     "No"
-//   ),
-//   createData(
-//     "6f8a61d8-6586-4740-990c-16b54d28ad8e",
-//     "6/20/2021",
-//     "Johnny Appleseed",
-//     "Who do you make happy?",
-//     "Bad",
-//     "85%",
-//     "",
-//     "",
-//     "Yes"
-//   ),
-//   createData(
-//     "e0c5e2a0-166f-4d3c-a154-3586d303d233",
-//     "6/21/2021",
-//     "Johnny Appleseed",
-//     "What is the dumbest chorus from a recent song?",
-//     "Good",
-//     "85%",
-//     "",
-//     "",
-//     "Ungraded"
-//   ),
-//   createData(
-//     "8f1bf9d4-7306-4676-a429-65fbfa7742c8",
-//     "6/22/2021",
-//     "Johnny Appleseed",
-//     "What’s the biggest thing your textbooks got wrong or omitted?",
-//     "Bad",
-//     "85%",
-//     "Good",
-//     "",
-//     "No"
-//   ),
-//   createData(
-//     "5d58daa6-8024-4f5f-9369-0be9838996f8",
-//     "6/23/2021",
-//     "Johnny Appleseed",
-//     "Do you think people read more or less books now than 50 years ago?",
-//     "Good",
-//     "85%",
-//     "",
-//     "",
-//     "Yes"
-//   ),
-//   createData(
-//     "d7948924-e34a-4ff7-be7e-b3b6b8f4a999",
-//     "6/24/2021",
-//     "Johnny Appleseed",
-//     "Would you like to be famous? (If yes, what would you want to be famous for? If no, why not?)",
-//     "Bad",
-//     "85%",
-//     "",
-//     "",
-//     "Ungraded"
-//   ),
-//   createData(
-//     "993ce35c-de91-4c1c-8042-174d48928961",
-//     "6/25/2021",
-//     "Johnny Appleseed",
-//     "Is it better to be a big fish in a small pond or a small fish in a big pond?",
-//     "Good",
-//     "85%",
-//     "",
-//     "",
-//     "Yes"
-//   ),
-//   createData(
-//     "476b7b0f-337c-4759-8e59-91792bd69e67",
-//     "7/4/2021",
-//     "Johnny Appleseed",
-//     "What are your most important rules when going on a date?",
-//     "Bad",
-//     "85%",
-//     "Bad",
-//     "",
-//     "No"
-//   ),
-//   createData(
-//     "3d37ee2c-83f1-4d67-923f-e7c4cbd510b2",
-//     "7/5/2021",
-//     "Johnny Appleseed",
-//     "What is something that is considered a luxury, but you don’t think you could live without?",
-//     "Good",
-//     "85%",
-//     "",
-//     "",
-//     "Yes"
-//   ),
-// ];
-
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   if (b[orderBy] < a[orderBy]) {
     return -1;
@@ -389,11 +219,12 @@ interface EnhancedTableToolbarProps {
   setRows: React.Dispatch<React.SetStateAction<Data[]>>;
   rowsUnfiltered: Data[];
   setPage: (value: React.SetStateAction<number>) => void;
+  expectation: string;
 }
 
 const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
   const classes = useToolbarStyles();
-  const { numSelected } = props;
+  const { numSelected, expectation } = props;
 
   const [openFilterView, setOpenFilterView] = useState(false);
 
@@ -424,7 +255,7 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
             id="tableTitle"
             component="div"
           >
-            Training Data: The Human Resources team that onboarded Rush
+            Training Data: {expectation}
           </Typography>
         )}
         {numSelected > 0 ? (
@@ -489,7 +320,7 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-function EnhancedTable(props: { lessonId: string; expectation: string }) {
+function EnhancedTable(props: { lessonId: string; expectation: number }) {
   const classes = useStyles();
   const [selected, setSelected] = React.useState<string[]>([]);
   const [dense, setDense] = React.useState(false);
@@ -499,11 +330,11 @@ function EnhancedTable(props: { lessonId: string; expectation: string }) {
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [order, setOrder] = React.useState<Order>("desc");
   const [orderBy, setOrderBy] = React.useState<keyof Data>("date");
-  const [rows, setRows] = React.useState(data);
+  const [rows, setRows] = React.useState(data.rows);
 
   React.useEffect(() => {
-    setRows(data);
-  }, [data]);
+    setRows(data.rows);
+  }, [data.rows]);
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
@@ -570,8 +401,9 @@ function EnhancedTable(props: { lessonId: string; expectation: string }) {
           numSelected={selected.length}
           rows={rows}
           setRows={setRows}
-          rowsUnfiltered={data}
+          rowsUnfiltered={data.rows}
           setPage={setPage}
+          expectation={data.expectationTitle || ""}
         />
         <TableContainer>
           <Table
@@ -652,7 +484,7 @@ function EnhancedTable(props: { lessonId: string; expectation: string }) {
 
 export interface LessonExpectationSearch {
   lessonId: string;
-  expectation: string;
+  expectation: number;
 }
 
 // eslint-disable-next-line  @typescript-eslint/no-unused-vars
