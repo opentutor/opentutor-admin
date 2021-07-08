@@ -512,7 +512,7 @@ function Data(props: { search: LessonExpectationSearch }): JSX.Element {
           <style>{"body { background-color: #F5F5F5; }"}</style>
           {/* MUI Gray 100 */}
         </Helmet>
-        <NavBar title="Settings" />
+        <NavBar title="Expectation Data" />
         <Container maxWidth="xl">
           <div style={{ marginTop: 40 }}>
             <EnhancedTable lessonId={lessonId} expectation={expectation} />

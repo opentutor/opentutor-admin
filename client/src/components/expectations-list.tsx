@@ -7,6 +7,7 @@ The full terms of this copyright and license should always be found in the root 
 import Ajv from "ajv";
 import clsx from "clsx";
 import React from "react";
+import { navigate } from "gatsby";
 import {
   DragDropContext,
   Droppable,
@@ -30,6 +31,7 @@ import AddIcon from "@material-ui/icons/Add";
 import ClearOutlinedIcon from "@material-ui/icons/ClearOutlined";
 import DragHandleIcon from "@material-ui/icons/DragHandle";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import LaunchIcon from "@material-ui/icons/Launch";
 import HintsList from "components/hints-list";
 import { expectationFeatureSchema } from "schemas/validation";
 import { LessonExpectation, Hint, Features } from "types";
@@ -57,6 +59,7 @@ const ExpectationCard = (props: {
   classes: ExpectationClasses;
   expectation: LessonExpectation;
   expIdx: number;
+  lessonId: string;
   canDelete: boolean;
   handleExpectationChange: (val: string) => void;
   handleRemoveExpectation: () => void;
@@ -67,6 +70,7 @@ const ExpectationCard = (props: {
     classes,
     expectation,
     expIdx,
+    lessonId,
     canDelete,
     handleExpectationChange,
     handleRemoveExpectation,
@@ -173,6 +177,18 @@ const ExpectationCard = (props: {
           </Typography>
           {JSONEditor()}
         </Collapse>
+        <Button
+          style={{ marginLeft: 15, marginTop: 10 }}
+          variant="contained"
+          endIcon={<LaunchIcon />}
+          onClick={() => {
+            navigate(
+              `../../sessions/data?lessonId=${lessonId}&expectation=${expIdx}`
+            );
+          }}
+        >
+          View Expectation Data
+        </Button>
       </CardContent>
     </Card>
   );
@@ -181,9 +197,10 @@ const ExpectationCard = (props: {
 function ExpectationsList(props: {
   classes: ExpectationClasses;
   expectations: LessonExpectation[];
+  lessonId: string;
   updateExpectations: (val: LessonExpectation[]) => void;
 }): JSX.Element {
-  const { classes, expectations, updateExpectations } = props;
+  const { classes, expectations, lessonId, updateExpectations } = props;
 
   function replaceItem<T>(a: Array<T>, index: number, item: T): Array<T> {
     const newArr = [...a];
@@ -281,6 +298,7 @@ function ExpectationsList(props: {
                         classes={classes}
                         expectation={exp}
                         expIdx={i}
+                        lessonId={lessonId}
                         canDelete={expectations.length > 1}
                         handleExpectationChange={(val: string) => {
                           handleExpectationChange(val, i);
