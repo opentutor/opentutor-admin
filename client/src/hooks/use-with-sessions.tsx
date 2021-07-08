@@ -42,7 +42,7 @@ export function useWithSessions(
   const [cursor, setCursor] = useState(search.cursor);
   const [sortBy, setSortBy] = useState(search.sortBy);
   const [sortAsc, setSortAsc] = useState(search.sortAscending);
-  const [rowsPerPage, setRowsPerPage] = React.useState(search.limit);
+  const rowsPerPage = search.limit;
 
   useEffect(() => {
     setCursor("");
