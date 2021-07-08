@@ -165,6 +165,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
         </TableCell>
         {headCells.map((headCell) => (
           <TableCell
+            data-cy={headCell.id}
             key={headCell.id}
             align={headCell.numeric ? "right" : "left"}
             padding={headCell.disablePadding ? "none" : "normal"}
@@ -395,7 +396,7 @@ function EnhancedTable(props: { lessonId: string; expectation: number }) {
     rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
 
   return (
-    <div className={classes.root}>
+    <div className={classes.root} data-cy="expectation-table">
       <Paper className={classes.paper} elevation={3}>
         <EnhancedTableToolbar
           numSelected={selected.length}
@@ -497,6 +498,15 @@ function Data(props: { search: LessonExpectationSearch }): JSX.Element {
 
   if (typeof window !== "undefined" && !cookies.accessToken) {
     return <div>Please login to view settings.</div>;
+  }
+  if (!lessonId || !expectation) {
+    return (
+      <div data-cy="malformed-link">
+        {
+          "That's a bad link! Please double check your link and try again (Error: Missing query params)."
+        }
+      </div>
+    );
   }
   if (!context.user) {
     return <CircularProgress className={styles.progress} />;

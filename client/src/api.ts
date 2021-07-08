@@ -159,14 +159,16 @@ export async function fetchSessionsData(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
   filter: any,
   limit: number,
-  accessToken: string
+  accessToken: string,
+  lessonId: string
 ): Promise<SessionsData> {
+  console.log(`LessonId: ${lessonId}`);
   const headers = { Authorization: `bearer ${accessToken}` };
   const result = await axios.post<GQLResponse<FetchSessionsData>>(
     GRAPHQL_ENDPOINT,
     {
       query: `
-      query FetchSessions($filter: String!, $limit: Int!) {
+      query FetchSessions($filter: String!, $limit: Int!, $lessonId: String!) {
         me {
           sessions(
             filter: $filter,
@@ -187,7 +189,7 @@ export async function fetchSessionsData(
               }
             }
           }
-          lesson(lessonId:"kaylas-final-lesson") {
+          lesson(lessonId: $lessonId) {
             expectations {
               expectation
             }
@@ -198,6 +200,7 @@ export async function fetchSessionsData(
       variables: {
         filter: JSON.stringify(filter),
         limit,
+        lessonId
       },
     },
     { headers: headers }

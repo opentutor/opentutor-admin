@@ -70,7 +70,7 @@ export function useWithSessionData(
   function load() {
     const filter = { lessonId: lessonId };
     console.log(`load ${lessonId}`);
-    fetchSessionsData(filter, 500, cookies.accessToken)
+    fetchSessionsData(filter, 500, cookies.accessToken, lessonId)
       .then((data) => {
         console.log(data);
         if (data) {

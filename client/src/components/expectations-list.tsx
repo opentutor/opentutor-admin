@@ -178,6 +178,7 @@ const ExpectationCard = (props: {
           {JSONEditor()}
         </Collapse>
         <Button
+          data-cy={`view-expectation-${expIdx}-data-button`}
           style={{ marginLeft: 15, marginTop: 10 }}
           variant="contained"
           endIcon={<LaunchIcon />}
