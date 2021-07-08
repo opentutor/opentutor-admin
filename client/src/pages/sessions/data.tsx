@@ -403,7 +403,7 @@ function EnhancedTable(props: { lessonId: string; expectation: number }) {
           setRows={setRows}
           rowsUnfiltered={data.rows}
           setPage={setPage}
-          expectation={data.expectationTitle || ""}
+          expectation={data.expectationTitle}
         />
         <TableContainer>
           <Table

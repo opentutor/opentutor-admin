@@ -21,7 +21,13 @@ export interface SessionData {
   accurate: string;
 }
 
-export function useWithSessionData(lessonId: string, expectation: number) {
+export function useWithSessionData(
+  lessonId: string,
+  expectation: number
+): {
+  rows: SessionData[];
+  expectationTitle: string;
+} {
   const [cookies] = useCookies(["accessToken"]);
   const [sessions, setSessions] = useState<Connection<Session>>();
   const [lesson, setLesson] = useState<Lesson>();
@@ -77,6 +83,6 @@ export function useWithSessionData(lessonId: string, expectation: number) {
 
   return {
     rows: rows,
-    expectationTitle: lesson?.expectations[expectation].expectation,
+    expectationTitle: lesson?.expectations[expectation].expectation || "",
   };
 }
