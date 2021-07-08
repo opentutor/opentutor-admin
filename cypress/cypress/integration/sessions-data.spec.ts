@@ -9,104 +9,104 @@ import { users } from "../fixtures/users";
 
 export const me = {
   sessions: {
-    "edges": [
+    edges: [
       {
-        "node": {
-          "sessionId": "session1",
-          "createdAt": "6/28/2021, 8:11:31 PM",
-          "username": "Daniel Budziwojski",
-          "userResponses": [
+        node: {
+          sessionId: "session1",
+          createdAt: "6/28/2021, 8:11:31 PM",
+          username: "Daniel Budziwojski",
+          userResponses: [
             {
-              "text": "PAL3",
-              "expectationScores": [
+              text: "PAL3",
+              expectationScores: [
                 {
-                  "graderGrade": "Good",
-                  "classifierGrade": "Bad"
+                  graderGrade: "Good",
+                  classifierGrade: "Bad",
                 },
                 {
-                  "graderGrade": "Good",
-                  "classifierGrade": "Good"
-                }
-              ]
+                  graderGrade: "Good",
+                  classifierGrade: "Good",
+                },
+              ],
             },
             {
-              "text": "PAL3",
-              "expectationScores": [
+              text: "PAL3",
+              expectationScores: [
                 {
-                  "graderGrade": "Good",
-                  "classifierGrade": "Bad"
+                  graderGrade: "Good",
+                  classifierGrade: "Bad",
                 },
                 {
-                  "graderGrade": "Good",
-                  "classifierGrade": "Good"
-                }
-              ]
-            }
-          ]
-        }
+                  graderGrade: "Good",
+                  classifierGrade: "Good",
+                },
+              ],
+            },
+          ],
+        },
       },
       {
-        "node": {
-          "sessionId": "session2",
-          "createdAt": "6/28/2021, 8:09:45 PM",
-          "username": "Daniel Budziwojski",
-          "userResponses": [
+        node: {
+          sessionId: "session2",
+          createdAt: "6/28/2021, 8:09:45 PM",
+          username: "Daniel Budziwojski",
+          userResponses: [
             {
-              "text": "Hello",
-              "expectationScores": [
+              text: "Hello",
+              expectationScores: [
                 {
-                  "graderGrade": "",
-                  "classifierGrade": "Bad"
+                  graderGrade: "",
+                  classifierGrade: "Bad",
                 },
                 {
-                  "graderGrade": "",
-                  "classifierGrade": "Bad"
-                }
-              ]
+                  graderGrade: "",
+                  classifierGrade: "Bad",
+                },
+              ],
             },
             {
-              "text": "not sure",
-              "expectationScores": [
+              text: "not sure",
+              expectationScores: [
                 {
-                  "graderGrade": "",
-                  "classifierGrade": "Bad"
+                  graderGrade: "",
+                  classifierGrade: "Bad",
                 },
                 {
-                  "graderGrade": "",
-                  "classifierGrade": "Bad"
-                }
-              ]
+                  graderGrade: "",
+                  classifierGrade: "Bad",
+                },
+              ],
             },
             {
-              "text": "human resource",
-              "expectationScores": [
+              text: "human resource",
+              expectationScores: [
                 {
-                  "graderGrade": "",
-                  "classifierGrade": "Good"
+                  graderGrade: "",
+                  classifierGrade: "Good",
                 },
                 {
-                  "graderGrade": "",
-                  "classifierGrade": "Bad"
-                }
-              ]
+                  graderGrade: "",
+                  classifierGrade: "Bad",
+                },
+              ],
             },
             {
-              "text": "OpenTutor?",
-              "expectationScores": [
+              text: "OpenTutor?",
+              expectationScores: [
                 {
-                  "graderGrade": "",
-                  "classifierGrade": "Bad"
+                  graderGrade: "",
+                  classifierGrade: "Bad",
                 },
                 {
-                  "graderGrade": "",
-                  "classifierGrade": "Bad"
-                }
-              ]
-            }
-          ]
-        }
-      }
-    ]
+                  graderGrade: "",
+                  classifierGrade: "Bad",
+                },
+              ],
+            },
+          ],
+        },
+      },
+    ],
   },
   lesson: {
     lessonId: "q1",
@@ -141,7 +141,7 @@ export const me = {
     ],
     createdBy: "opentutor",
     createdByName: "OpenTutor",
-  }
+  },
 };
 
 describe("expectation data page", () => {
@@ -194,6 +194,6 @@ describe("expectation data page", () => {
     ].map((header) => {
       cy.get(header).should("exist");
     });
-    cy.contains("PAL3")
+    cy.contains("PAL3");
   });
 });

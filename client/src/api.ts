@@ -200,7 +200,7 @@ export async function fetchSessionsData(
       variables: {
         filter: JSON.stringify(filter),
         limit,
-        lessonId
+        lessonId,
       },
     },
     { headers: headers }

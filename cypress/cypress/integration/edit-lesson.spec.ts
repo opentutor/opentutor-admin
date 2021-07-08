@@ -489,7 +489,9 @@ describe("edit lesson screen", () => {
       userRole: "admin",
     });
     cy.visit("/lessons/edit?lessonId=q1");
-    cy.get("[data-cy=view-expectation-0-data-button]").trigger("mouseover").click();
+    cy.get("[data-cy=view-expectation-0-data-button]")
+      .trigger("mouseover")
+      .click();
     cy.location("pathname").should("contain", "/sessions/data");
     cy.location("search").should("eq", "?lessonId=q1&expectation=0");
   });
