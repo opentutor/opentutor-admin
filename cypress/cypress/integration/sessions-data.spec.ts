@@ -178,7 +178,7 @@ describe("expectation data page", () => {
     cySetup(cy);
     cyMockDefault(cy, {
       userRole: "admin",
-      gqlQueries: [mockGQL("me", { me }, false)],
+      gqlQueries: [mockGQL("FetchSessions", { me }, false, true)],
     });
     cy.visit("/sessions/data?lessonId=q1&expectation=0");
     cy.get("[data-cy=malformed-link]").should("not.exist");

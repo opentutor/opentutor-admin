@@ -11,6 +11,17 @@ interface MockGraphQLQuery {
   query: string;
   data: any | any[];
   me: boolean;
+  // The original mockGql framework always stuffs the
+  // provided 'data' one level down in the response,
+  // one of two ways:
+  //  - { $query: $data }
+  // ...or
+  // - { me: $data}
+  //
+  // This is hard to work with...
+  // Over time we should migrate to ALWAYS returnBodyAsIs,
+  // but for now we need to be backwards compatible.
+  returnBodyAsIs?: boolean;
 }
 
 interface StaticResponse {
@@ -92,18 +103,22 @@ export function cyInterceptGraphQL(cy, mocks: MockGraphQLQuery[]): void {
     let handled = false;
     for (const mock of mocks) {
       if (
+        queryBody.match(new RegExp(`^(mutation|query) ${mock.query}[(\s]`)) ||
         queryBody.indexOf(`{ ${mock.query}(`) !== -1 ||
         queryBody.indexOf(`{ ${mock.query} {`) !== -1
       ) {
         const data = Array.isArray(mock.data) ? mock.data : [mock.data];
-        const val = data[Math.min(queryCalls[mock.query], data.length - 1)];
-        const body = {};
-        if (mock.me) {
+        const bodyContent =
+          data[Math.min(queryCalls[mock.query], data.length - 1)];
+        let body = {};
+        if (mock.returnBodyAsIs) {
+          body = bodyContent;
+        } else if (mock.me) {
           const _inner = {};
-          _inner[mock.query] = val;
+          _inner[mock.query] = bodyContent;
           body["me"] = _inner;
         } else {
-          body[mock.query] = val;
+          body[mock.query] = bodyContent;
         }
         req.alias = mock.query;
         req.reply(
@@ -129,12 +144,14 @@ export function cyInterceptGraphQL(cy, mocks: MockGraphQLQuery[]): void {
 export function mockGQL(
   query: string,
   data: any | any[],
-  me = false
+  me = false,
+  returnBodyAsIs = false
 ): MockGraphQLQuery {
   return {
     query,
     data,
     me,
+    returnBodyAsIs,
   };
 }
 
