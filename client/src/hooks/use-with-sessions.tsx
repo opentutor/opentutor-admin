@@ -28,7 +28,14 @@ export function useWithSessions(
     sortAscending: false,
     filter: {},
   }
-) {
+): {
+  sessions: Connection<Session> | undefined;
+  sortBy: string;
+  sortAsc: boolean;
+  sort: (id: string) => void;
+  nextPage: () => void;
+  prevPage: () => void;
+} {
   const context = useContext(SessionContext);
   const [cookies] = useCookies(["accessToken"]);
   const [sessions, setSessions] = useState<Connection<Session>>();
