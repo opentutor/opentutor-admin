@@ -261,13 +261,21 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
         {numSelected > 0 ? (
           <>
             <Tooltip title="Include" arrow>
-              <IconButton aria-label="include" data-cy="include-button">
-                <CheckIcon onClick={() => props.onInvalidate(false)} />
+              <IconButton
+                aria-label="include"
+                data-cy="include-button"
+                onClick={() => props.onInvalidate(false)}
+              >
+                <CheckIcon />
               </IconButton>
             </Tooltip>
             <Tooltip title="Exclude" arrow>
-              <IconButton aria-label="exclude" data-cy="exclude-button">
-                <NotInterestedIcon onClick={() => props.onInvalidate(true)} />
+              <IconButton
+                aria-label="exclude"
+                data-cy="exclude-button"
+                onClick={() => props.onInvalidate(true)}
+              >
+                <NotInterestedIcon />
               </IconButton>
             </Tooltip>
           </>

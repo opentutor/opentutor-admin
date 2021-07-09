@@ -259,7 +259,7 @@ describe("expectation data page", () => {
     });
   });
 
-  it("can invalidate lessons", () => {
+  it.only("can invalidate lessons", () => {
     const expectationToTest = 0;
     const rowToTest = 0;
     cySetup(cy);
