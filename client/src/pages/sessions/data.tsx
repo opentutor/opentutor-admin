@@ -548,6 +548,7 @@ function EnhancedTable(props: { lessonId: string; expectation: number }) {
                           onClick={() => {
                             navigate(`../session?sessionId=${row.session}`);
                           }}
+                          href={`session?sessionId=${row.session}`}
                         >
                           <AssessmentIcon />
                         </IconButton>
