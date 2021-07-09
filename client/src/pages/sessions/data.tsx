@@ -255,6 +255,7 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
             variant="h6"
             id="tableTitle"
             component="div"
+            data-cy="table-title"
           >
             Training Data: {expectation}
           </Typography>
@@ -267,7 +268,11 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
           </Tooltip>
         ) : (
           <Tooltip title="Filter list">
-            <IconButton aria-label="filter list" onClick={handleFilterViewOpen}>
+            <IconButton
+              aria-label="filter list"
+              onClick={handleFilterViewOpen}
+              data-cy="filter-button"
+            >
               <FilterListIcon />
             </IconButton>
           </Tooltip>
@@ -438,6 +443,7 @@ function EnhancedTable(props: { lessonId: string; expectation: number }) {
                       tabIndex={-1}
                       key={row.id}
                       selected={isItemSelected}
+                      data-cy={`table-row-${index}`}
                     >
                       <TableCell padding="checkbox">
                         <Checkbox
