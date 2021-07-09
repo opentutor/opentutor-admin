@@ -34,7 +34,8 @@ import {
   FormControlLabel,
   Switch,
 } from "@material-ui/core";
-import DeleteIcon from "@material-ui/icons/Delete";
+import NotInterestedIcon from "@material-ui/icons/NotInterested";
+import CheckIcon from "@material-ui/icons/Check";
 import AssessmentIcon from "@material-ui/icons/Assessment";
 import FilterListIcon from "@material-ui/icons/FilterList";
 import NavBar from "components/nav-bar";
@@ -56,6 +57,7 @@ interface Data {
   grade: string; //dropdown
   session: string;
   accurate: string;
+  invalid: boolean;
 }
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
@@ -75,10 +77,9 @@ function getComparator<Key extends keyof any>(
   order: Order,
   orderBy: Key
 ): (
-  a: { [key in Key]: number | string },
-  b: { [key in Key]: number | string }
+  a: { [key in Key]: number | string | boolean },
+  b: { [key in Key]: number | string | boolean }
 ) => number {
-  //Added date to sorting
   return order === "desc"
     ? (a, b) => descendingComparator(a, b, orderBy)
     : (a, b) => -descendingComparator(a, b, orderBy);
@@ -270,13 +271,20 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
           </Typography>
         )}
         {numSelected > 0 ? (
-          <Tooltip title="Delete">
-            <IconButton aria-label="delete">
-              <DeleteIcon />
-            </IconButton>
-          </Tooltip>
+          <>
+            <Tooltip title="Include" arrow>
+              <IconButton aria-label="include">
+                <CheckIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Exclude" arrow>
+              <IconButton aria-label="exclude">
+                <NotInterestedIcon />
+              </IconButton>
+            </Tooltip>
+          </>
         ) : (
-          <Tooltip title="Filter list">
+          <Tooltip title="Filter list" arrow>
             <IconButton
               aria-label="filter list"
               onClick={handleFilterViewOpen}
@@ -331,6 +339,11 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     tableHeader: {
       fontWeight: 600,
+    },
+    normalButton: {
+      "&:hover": {
+        color: theme.palette.primary.main,
+      },
     },
   })
 );
@@ -460,17 +473,74 @@ function EnhancedTable(props: { lessonId: string; expectation: number }) {
                           inputProps={{ "aria-labelledby": labelId }}
                         />
                       </TableCell>
-                      <TableCell component="th" id={labelId} scope="row">
+                      <TableCell
+                        component="th"
+                        id={labelId}
+                        scope="row"
+                        style={row.invalid ? { color: "grey" } : {}}
+                      >
                         {row.date}
                       </TableCell>
-                      <TableCell align="left">{row.username}</TableCell>
-                      <TableCell align="left">{row.userAnswer}</TableCell>
-                      <TableCell align="left">{row.grade}</TableCell>
-                      <TableCell align="left">{row.classifierGrade}</TableCell>
-                      <TableCell align="left">{row.confidence}</TableCell>
-                      <TableCell align="left">{row.accurate}</TableCell>
+                      <TableCell
+                        align="left"
+                        style={row.invalid ? { color: "grey" } : {}}
+                      >
+                        {row.username}
+                      </TableCell>
+                      <TableCell align="left">
+                        {row.invalid ? (
+                          <div
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              flexWrap: "wrap",
+                            }}
+                          >
+                            <span style={{ color: "grey" }}>
+                              {row.userAnswer}
+                            </span>
+                            <Tooltip
+                              title="This answer is not included in training"
+                              arrow
+                            >
+                              <NotInterestedIcon
+                                style={{ color: "orange", marginLeft: 5 }}
+                                fontSize="small"
+                              />
+                            </Tooltip>
+                          </div>
+                        ) : (
+                          <>{row.userAnswer}</>
+                        )}
+                      </TableCell>
+                      <TableCell
+                        align="left"
+                        style={row.invalid ? { color: "grey" } : {}}
+                      >
+                        {row.grade}
+                      </TableCell>
+                      <TableCell
+                        align="left"
+                        style={row.invalid ? { color: "grey" } : {}}
+                      >
+                        {row.classifierGrade}
+                      </TableCell>
+                      <TableCell
+                        align="left"
+                        style={row.invalid ? { color: "grey" } : {}}
+                      >
+                        {row.confidence}
+                      </TableCell>
+                      <TableCell
+                        align="left"
+                        style={row.invalid ? { color: "grey" } : {}}
+                      >
+                        {row.accurate}
+                      </TableCell>
                       <TableCell align="right">
                         <IconButton
+                          size="small"
+                          className={classes.normalButton}
                           onClick={() => {
                             navigate(`../session?sessionId=${row.session}`);
                           }}

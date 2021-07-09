@@ -83,6 +83,7 @@ interface Data {
   grade: string;
   session: string;
   accurate: string;
+  invalid: boolean;
 }
 
 interface FilteringProps {
