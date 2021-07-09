@@ -345,7 +345,7 @@ describe("expectation data page", () => {
     cy.get(`[data-cy=table-row-${rowToTest}]`).find("[data-cy=invalid-answer]");
   });
 
-  it.only("can revalidate lessons", () => {
+  it("can revalidate lessons", () => {
     const expectationToTest = 0;
     const rowToTest = 2;
     cySetup(cy);
