@@ -224,14 +224,15 @@ export async function invalidateResponses(
   responses: InvalidateResponseInput[],
   accessToken: string
 ): Promise<Session[]> {
+  console.log(expectation);
   const headers = { Authorization: `bearer ${accessToken}` };
   const result = await axios.post<GQLResponse<InvalidateResponses>>(
     GRAPHQL_ENDPOINT,
     {
       query: `
-        mutation InvalidateResponse($expectation: Int!, $invalid: Boolean!, $invalidateResponses: [InvalidateResponseInputType!]) {
+        mutation InvalidateResponse($expIndex: Int!, $invalid: Boolean!, $invalidateResponses: [InvalidateResponseInputType!]) {
           me {
-            invalidateResponses(expectation: $expectation, invalid: $invalid, invalidateResponses: $invalidateResponses) { 
+            invalidateResponses(expectation: $expIndex, invalid: $invalid, invalidateResponses: $invalidateResponses) { 
               sessionId
               createdAt
               username
@@ -249,7 +250,7 @@ export async function invalidateResponses(
         }
       `,
       variables: {
-        expectation,
+        expIndex: parseInt(expectation.toString()),
         invalid,
         invalidateResponses: responses,
       },
