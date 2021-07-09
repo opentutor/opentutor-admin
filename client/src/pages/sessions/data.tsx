@@ -415,6 +415,7 @@ function EnhancedTable(props: { lessonId: string; expectation: number }) {
 
   function handleInvalidate(invalid: boolean) {
     useSessionData.toggleInvalids(selected, invalid);
+    setSelected([]);
   }
 
   const isSelected = (id: string) => selected.indexOf(id) !== -1; //used to be name
