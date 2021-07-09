@@ -177,11 +177,67 @@ const revalidationResponse = {
       username: "Daniel Budziwojski",
       userResponses: [
         {
+          _id: "id2",
+          text: "Hello",
+          expectationScores: [
+            {
+              invalidated: false,
+              graderGrade: "",
+              classifierGrade: "Bad",
+            },
+            {
+              invalidated: true,
+              graderGrade: "",
+              classifierGrade: "Bad",
+            },
+          ],
+        },
+        {
           _id: "id3",
           text: "not sure",
           expectationScores: [
-            { invalidated: false, graderGrade: "", classifierGrade: "Bad" },
-            { invalidated: false, graderGrade: "", classifierGrade: "Bad" },
+            {
+              invalidated: false,
+              graderGrade: "",
+              classifierGrade: "Bad",
+            },
+            {
+              invalidated: false,
+              graderGrade: "",
+              classifierGrade: "Bad",
+            },
+          ],
+        },
+        {
+          _id: "id4",
+          text: "human resource",
+          expectationScores: [
+            {
+              invalidated: false,
+              graderGrade: "",
+              classifierGrade: "Good",
+            },
+            {
+              invalidated: false,
+              graderGrade: "",
+              classifierGrade: "Bad",
+            },
+          ],
+        },
+        {
+          _id: "id5",
+          text: "OpenTutor?",
+          expectationScores: [
+            {
+              invalidated: false,
+              graderGrade: "",
+              classifierGrade: "Bad",
+            },
+            {
+              invalidated: false,
+              graderGrade: "",
+              classifierGrade: "Bad",
+            },
           ],
         },
       ],
@@ -289,7 +345,7 @@ describe("expectation data page", () => {
     cy.get(`[data-cy=table-row-${rowToTest}]`).find("[data-cy=invalid-answer]");
   });
 
-  it("can revalidate lessons", () => {
+  it.only("can revalidate lessons", () => {
     const expectationToTest = 0;
     const rowToTest = 2;
     cySetup(cy);
