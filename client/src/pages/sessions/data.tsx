@@ -243,6 +243,7 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
             color="inherit"
             variant="subtitle1"
             component="div"
+            data-cy="selected-title"
           >
             {numSelected} selected
           </Typography>
@@ -260,12 +261,12 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
         {numSelected > 0 ? (
           <>
             <Tooltip title="Include" arrow>
-              <IconButton aria-label="include">
+              <IconButton aria-label="include" data-cy="include-button">
                 <CheckIcon onClick={() => props.onInvalidate(false)} />
               </IconButton>
             </Tooltip>
             <Tooltip title="Exclude" arrow>
-              <IconButton aria-label="exclude">
+              <IconButton aria-label="exclude" data-cy="exclude-button">
                 <NotInterestedIcon onClick={() => props.onInvalidate(true)} />
               </IconButton>
             </Tooltip>
@@ -461,6 +462,7 @@ function EnhancedTable(props: { lessonId: string; expectation: number }) {
                     >
                       <TableCell padding="checkbox">
                         <Checkbox
+                          data-cy="checkbox"
                           checked={isItemSelected}
                           inputProps={{ "aria-labelledby": labelId }}
                         />
@@ -482,6 +484,7 @@ function EnhancedTable(props: { lessonId: string; expectation: number }) {
                       <TableCell align="left">
                         {row.invalid ? (
                           <div
+                            data-cy="invalid-answer"
                             style={{
                               display: "flex",
                               alignItems: "center",

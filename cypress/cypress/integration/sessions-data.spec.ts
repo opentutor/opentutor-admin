@@ -6,7 +6,7 @@ The full terms of this copyright and license should always be found in the root 
 */
 import { cySetup, cyMockDefault, mockGQL } from "../support/functions";
 
-export const me = {
+export const expectationDataResponse = {
   sessions: {
     edges: [
       {
@@ -16,13 +16,16 @@ export const me = {
           username: "Daniel Budziwojski",
           userResponses: [
             {
+              _id: "id1",
               text: "PAL3",
               expectationScores: [
                 {
+                  invalidated: false,
                   graderGrade: "Good",
                   classifierGrade: "Bad",
                 },
                 {
+                  invalidated: false,
                   graderGrade: "Good",
                   classifierGrade: "Good",
                 },
@@ -38,52 +41,64 @@ export const me = {
           username: "Daniel Budziwojski",
           userResponses: [
             {
+              _id: "id2",
               text: "Hello",
               expectationScores: [
                 {
+                  invalidated: false,
                   graderGrade: "",
                   classifierGrade: "Bad",
                 },
                 {
+                  invalidated: true,
                   graderGrade: "",
                   classifierGrade: "Bad",
                 },
               ],
             },
             {
+              _id: "id3",
               text: "not sure",
               expectationScores: [
                 {
+                  invalidated: true,
                   graderGrade: "",
                   classifierGrade: "Bad",
                 },
                 {
+                  invalidated: false,
                   graderGrade: "",
                   classifierGrade: "Bad",
                 },
               ],
             },
             {
+              _id: "id4",
               text: "human resource",
               expectationScores: [
                 {
+                  invalidated: false,
                   graderGrade: "",
                   classifierGrade: "Good",
                 },
                 {
+                  invalidated: false,
                   graderGrade: "",
                   classifierGrade: "Bad",
                 },
               ],
             },
             {
+              _id: "id5",
               text: "OpenTutor?",
               expectationScores: [
                 {
+                  invalidated: false,
                   graderGrade: "",
                   classifierGrade: "Bad",
                 },
                 {
+                  invalidated: false,
                   graderGrade: "",
                   classifierGrade: "Bad",
                 },
@@ -130,6 +145,50 @@ export const me = {
   },
 };
 
+const invalidationResponse = {
+  invalidateResponses: [
+    {
+      sessionId: "session1",
+      createdAt: "6/28/2021, 8:11:31 PM",
+      username: "Daniel Budziwojski",
+      userResponses: [
+        {
+          _id: "id1",
+          text: "PAL3",
+          expectationScores: [
+            { invalidated: true, graderGrade: "Good", classifierGrade: "Bad" },
+            {
+              invalidated: false,
+              graderGrade: "Good",
+              classifierGrade: "Good",
+            },
+          ],
+        },
+      ],
+    },
+  ],
+};
+
+const revalidationResponse = {
+  invalidateResponses: [
+    {
+      sessionId: "session2",
+      createdAt: "6/28/2021, 8:09:45 PM",
+      username: "Daniel Budziwojski",
+      userResponses: [
+        {
+          _id: "id3",
+          text: "not sure",
+          expectationScores: [
+            { invalidated: false, graderGrade: "", classifierGrade: "Bad" },
+            { invalidated: false, graderGrade: "", classifierGrade: "Bad" },
+          ],
+        },
+      ],
+    },
+  ],
+};
+
 describe("expectation data page", () => {
   it("hides settings if not logged in", () => {
     cySetup(cy);
@@ -163,11 +222,12 @@ describe("expectation data page", () => {
   it("shows a populated table to an admin", () => {
     const expectationToTest = 0;
     let counter = 0;
-
     cySetup(cy);
     cyMockDefault(cy, {
       userRole: "admin",
-      gqlQueries: [mockGQL("FetchSessions", { me }, false, true)],
+      gqlQueries: [
+        mockGQL("FetchSessions", { me: expectationDataResponse }, false, true),
+      ],
     });
     cy.visit(`/sessions/data?lessonId=q1&expectation=${expectationToTest}`);
     cy.get("[data-cy=malformed-link]").should("not.exist");
@@ -184,21 +244,88 @@ describe("expectation data page", () => {
       cy.get(header).should("exist");
     });
     cy.get("[data-cy=table-title]").contains(
-      me.lesson.expectations[expectationToTest].expectation
+      expectationDataResponse.lesson.expectations[expectationToTest].expectation
     );
-    me.sessions.edges.map((session) => {
+    expectationDataResponse.sessions.edges.map((session) => {
       session.node.userResponses.map((userResponse, index) => {
         cy.get(`[data-cy=table-row-${counter}]`).contains(userResponse.text);
+        if (userResponse.expectationScores[expectationToTest].invalidated) {
+          cy.get(`[data-cy=table-row-${counter}]`).find(
+            "[data-cy=invalid-answer]"
+          );
+        }
         counter++;
       });
     });
+  });
+
+  it("can invalidate lessons", () => {
+    const expectationToTest = 0;
+    const rowToTest = 0;
+    cySetup(cy);
+    cyMockDefault(cy, {
+      userRole: "admin",
+      gqlQueries: [
+        mockGQL("FetchSessions", { me: expectationDataResponse }, false, true),
+        mockGQL(
+          "InvalidateResponse",
+          { me: invalidationResponse },
+          false,
+          true
+        ),
+      ],
+    });
+    cy.visit(`/sessions/data?lessonId=q1&expectation=${expectationToTest}`);
+    cy.get(`[data-cy=table-row-${rowToTest}]`)
+      .find("[data-cy=invalid-answer]")
+      .should("not.exist");
+    cy.get(`[data-cy=table-row-${rowToTest}]`)
+      .find("[data-cy=checkbox]")
+      .trigger("mouseover")
+      .click();
+    cy.get("[data-cy=selected-title]").contains("1 selected");
+    cy.get("[data-cy=include-button]").should("exist");
+    cy.get("[data-cy=exclude-button]").trigger("mouseover").click();
+    cy.get(`[data-cy=table-row-${rowToTest}]`).find("[data-cy=invalid-answer]");
+  });
+
+  it.only("can revalidate lessons", () => {
+    const expectationToTest = 0;
+    const rowToTest = 2;
+    cySetup(cy);
+    cyMockDefault(cy, {
+      userRole: "admin",
+      gqlQueries: [
+        mockGQL("FetchSessions", { me: expectationDataResponse }, false, true),
+        mockGQL(
+          "InvalidateResponse",
+          { me: revalidationResponse },
+          false,
+          true
+        ),
+      ],
+    });
+    cy.visit(`/sessions/data?lessonId=q1&expectation=${expectationToTest}`);
+    cy.get(`[data-cy=table-row-${rowToTest}]`).find("[data-cy=invalid-answer]");
+    cy.get(`[data-cy=table-row-${rowToTest}]`)
+      .find("[data-cy=checkbox]")
+      .trigger("mouseover")
+      .click();
+    cy.get("[data-cy=selected-title]").contains("1 selected");
+    cy.get("[data-cy=exclude-button]").should("exist");
+    cy.get("[data-cy=include-button]").trigger("mouseover").click();
+    cy.get(`[data-cy=table-row-${rowToTest}]`)
+      .find("[data-cy=invalid-answer]")
+      .should("not.exist");
   });
 
   it("filters", () => {
     cySetup(cy);
     cyMockDefault(cy, {
       userRole: "admin",
-      gqlQueries: [mockGQL("FetchSessions", { me }, false, true)],
+      gqlQueries: [
+        mockGQL("FetchSessions", { me: expectationDataResponse }, false, true),
+      ],
     });
     cy.visit("/sessions/data?lessonId=q1&expectation=0");
     cy.get("[data-cy=filter-button]").should("exist");
@@ -208,7 +335,9 @@ describe("expectation data page", () => {
     cySetup(cy);
     cyMockDefault(cy, {
       userRole: "admin",
-      gqlQueries: [mockGQL("FetchSessions", { me }, false, true)],
+      gqlQueries: [
+        mockGQL("FetchSessions", { me: expectationDataResponse }, false, true),
+      ],
     });
     cy.visit("/sessions/data?lessonId=q1&expectation=0");
     cy.contains("Rows per page");
