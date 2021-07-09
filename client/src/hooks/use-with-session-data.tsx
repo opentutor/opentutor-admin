@@ -112,13 +112,6 @@ export function useWithSessionData(
       sessionId: r[0],
       responseIds: r[1],
     }));
-    console.log(
-      `invalidate responses: ${expectation}, ${invalid} ${JSON.stringify(
-        responses,
-        null,
-        " "
-      )}`
-    );
     invalidateResponses(expectation, invalid, responses, cookies.accessToken)
       .then((s) => {
         let updatedSessions = sessions;

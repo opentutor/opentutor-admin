@@ -162,7 +162,6 @@ export async function fetchSessionsData(
   accessToken: string,
   lessonId: string
 ): Promise<SessionsData> {
-  console.log(`LessonId: ${lessonId}`);
   const headers = { Authorization: `bearer ${accessToken}` };
   const result = await axios.post<GQLResponse<FetchSessionsData>>(
     GRAPHQL_ENDPOINT,
@@ -224,7 +223,6 @@ export async function invalidateResponses(
   responses: InvalidateResponseInput[],
   accessToken: string
 ): Promise<Session[]> {
-  console.log(expectation);
   const headers = { Authorization: `bearer ${accessToken}` };
   const result = await axios.post<GQLResponse<InvalidateResponses>>(
     GRAPHQL_ENDPOINT,
@@ -257,7 +255,6 @@ export async function invalidateResponses(
     },
     { headers: headers }
   );
-  console.log(result);
   return findOrThrow<InvalidateResponses>(result).me.invalidateResponses;
 }
 

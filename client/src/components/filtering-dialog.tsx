@@ -98,7 +98,6 @@ export default function FilteringDialog(props: FilteringProps): JSX.Element {
   const [filter, setFilter] = React.useState(defaultFilter);
 
   const handleClose = () => {
-    console.log(filter);
     if (filter.dirty) {
       //Update the rows
       const tempRows: SessionData[] = [];
@@ -126,7 +125,6 @@ export default function FilteringDialog(props: FilteringProps): JSX.Element {
       props.setRows(tempRows);
       props.setPage(0);
       setFilter({ ...filter, dirty: false });
-      console.log(tempRows);
     }
     props.setOpen(false);
   };
@@ -146,7 +144,6 @@ export default function FilteringDialog(props: FilteringProps): JSX.Element {
             <Switch
               checked={filter.hideUngraded}
               onChange={() => {
-                console.log("Toggled");
                 setFilter({
                   ...filter,
                   hideUngraded: !filter.hideUngraded,
@@ -162,7 +159,6 @@ export default function FilteringDialog(props: FilteringProps): JSX.Element {
             <Switch
               checked={filter.hideInvalid}
               onChange={() => {
-                console.log("Toggled");
                 setFilter({
                   ...filter,
                   hideInvalid: !filter.hideInvalid,
