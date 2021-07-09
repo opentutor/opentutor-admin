@@ -86,43 +86,50 @@ interface FilteringProps {
 interface Filter {
   dirty: boolean;
   hideUngraded: boolean;
+  hideInvalid: boolean;
 }
 
 export default function FilteringDialog(props: FilteringProps): JSX.Element {
-  const defaultFilter: Filter = { hideUngraded: false, dirty: false };
+  const defaultFilter: Filter = {
+    hideUngraded: false,
+    hideInvalid: false,
+    dirty: false,
+  };
   const [filter, setFilter] = React.useState(defaultFilter);
 
   const handleClose = () => {
     console.log(filter);
-    //Update the rows
-    // TODO: Only update on change, i.e. only setPage(0) on change
-    const tempRows: SessionData[] = [];
-    props.rowsUnfiltered.forEach((row: SessionData) => {
-      console.log(row);
-      if (filter.hideUngraded) {
-        console.log("Requested hiding ungraded");
-        if (row.grade) {
-          console.log("Adding log");
-          tempRows.push(row);
-        }
-      } else {
-        console.log("Adding log");
-        tempRows.push(row);
-      }
-    });
-    props.setRows(tempRows);
     if (filter.dirty) {
+      //Update the rows
+      const tempRows: SessionData[] = [];
+      props.rowsUnfiltered.forEach((row: SessionData) => {
+        if (filter.hideUngraded) {
+          if (row.grade) {
+            if (filter.hideInvalid) {
+              if (!row.invalid) {
+                tempRows.push(row);
+              }
+            } else {
+              tempRows.push(row);
+            }
+          }
+        } else {
+          if (filter.hideInvalid) {
+            if (!row.invalid) {
+              tempRows.push(row);
+            }
+          } else {
+            tempRows.push(row);
+          }
+        }
+      });
+      props.setRows(tempRows);
       props.setPage(0);
       setFilter({ ...filter, dirty: false });
+      console.log(tempRows);
     }
-    console.log(tempRows);
     props.setOpen(false);
   };
-
-  // const handleSave = () => {
-  //   setFilter({})
-  //   handleClose();
-  // }
 
   return (
     <Dialog
@@ -150,6 +157,22 @@ export default function FilteringDialog(props: FilteringProps): JSX.Element {
           }
           label="Hide Ungraded"
         />
+        <FormControlLabel
+          control={
+            <Switch
+              checked={filter.hideInvalid}
+              onChange={() => {
+                console.log("Toggled");
+                setFilter({
+                  ...filter,
+                  hideInvalid: !filter.hideInvalid,
+                  dirty: true,
+                });
+              }}
+            />
+          }
+          label="Hide Invalidated Data"
+        />
       </DialogContent>
       <DialogActions>
         <Button autoFocus onClick={handleClose} color="primary">
@@ -159,46 +182,3 @@ export default function FilteringDialog(props: FilteringProps): JSX.Element {
     </Dialog>
   );
 }
-
-// import React from 'react';
-// import Button from '@material-ui/core/Button';
-// import Dialog from '@material-ui/core/Dialog';
-// import DialogActions from '@material-ui/core/DialogActions';
-// import DialogContent from '@material-ui/core/DialogContent';
-// import DialogContentText from '@material-ui/core/DialogContentText';
-// import DialogTitle from '@material-ui/core/DialogTitle';
-
-// interface FilteringProps {
-//   open: boolean,
-//   setOpen: React.Dispatch<React.SetStateAction<boolean>>
-// }
-
-// export default function FilteringDialog(props:FilteringProps): JSX.Element {
-//   const handleClose = () => {
-//     props.setOpen(false);
-//   };
-
-//   return (
-//     // <div>
-//       <Dialog
-//         open={props.open}
-//         onClose={handleClose}
-//         aria-labelledby="alert-dialog-title"
-//         aria-describedby="alert-dialog-description"
-//       >
-//         <DialogTitle id="alert-dialog-title">{"Use Google's location service?"}</DialogTitle>
-//         <DialogContent>
-//           <DialogContentText id="alert-dialog-description">
-//             Let Google help apps determine location. This means sending anonymous location data to
-//             Google, even when no apps are running.
-//           </DialogContentText>
-//         </DialogContent>
-//         <DialogActions>
-//           <Button onClick={handleClose} color="primary">
-//             Disagree
-//           </Button>
-//         </DialogActions>
-//       </Dialog>
-//     // </div>
-//   );
-// }

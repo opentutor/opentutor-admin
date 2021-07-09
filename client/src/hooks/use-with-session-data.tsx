@@ -28,7 +28,7 @@ export interface SessionData {
   grade: string; //dropdown
   session: string;
   accurate: string;
-  isInvalid: boolean;
+  invalid: boolean;
 }
 
 export function useWithSessionData(
@@ -85,7 +85,7 @@ export function useWithSessionData(
               ? "Yes"
               : "No"
             : "Ungraded",
-          isInvalid: exp.invalidated,
+          invalid: exp.invalidated,
         });
       }
     });
