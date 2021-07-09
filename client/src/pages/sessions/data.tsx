@@ -4,7 +4,7 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import { navigate } from "gatsby";
+import { navigate, withPrefix } from "gatsby";
 import React, { useContext } from "react";
 import { useCookies } from "react-cookie";
 import clsx from "clsx";
@@ -545,7 +545,9 @@ function EnhancedTable(props: { lessonId: string; expectation: number }) {
                         <IconButton
                           size="small"
                           className={classes.normalButton}
-                          href={`session?sessionId=${row.session}`}
+                          href={withPrefix(
+                            `/sessions/session?sessionId=${row.session}`
+                          )}
                         >
                           <AssessmentIcon />
                         </IconButton>
