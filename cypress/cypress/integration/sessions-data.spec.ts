@@ -315,6 +315,37 @@ describe("expectation data page", () => {
     });
   });
 
+  it("can navigate to a session", () => {
+    const expectationToTest = 0;
+    const rowToTest = 0;
+    cySetup(cy);
+    cyMockDefault(cy, {
+      userRole: "admin",
+      gqlQueries: [
+        mockGQL("FetchSessions", { me: expectationDataResponse }, false, true),
+        mockGQL(
+          "InvalidateResponse",
+          { me: invalidationResponse },
+          false,
+          true
+        ),
+      ],
+    });
+    cy.visit(`/sessions/data?lessonId=q1&expectation=${expectationToTest}`);
+    cy.get(`[data-cy=table-row-${rowToTest}]`)
+      .find("[data-cy=grade-button]")
+      .trigger("mouseover")
+      .click();
+    // cy.location("pathname").should("eq", "/sessions/session");
+    cy.location("pathname").then(($el) =>
+      assert($el.replace("/admin", ""), "/sessions/session")
+    );
+    cy.location("search").should(
+      "eq",
+      `?sessionId=${expectationDataResponse.sessions.edges[0].node.sessionId}`
+    );
+  });
+
   it("can invalidate lessons", () => {
     const expectationToTest = 0;
     const rowToTest = 0;

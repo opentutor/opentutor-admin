@@ -543,6 +543,7 @@ function EnhancedTable(props: { lessonId: string; expectation: number }) {
                       </TableCell>
                       <TableCell align="right">
                         <IconButton
+                          data-cy="grade-button"
                           size="small"
                           className={classes.normalButton}
                           href={withPrefix(
