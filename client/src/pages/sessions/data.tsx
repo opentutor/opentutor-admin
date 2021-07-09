@@ -469,9 +469,15 @@ function EnhancedTable(props: { lessonId: string; expectation: number }) {
                       <TableCell align="left">{row.classifierGrade}</TableCell>
                       <TableCell align="left">{row.confidence}</TableCell>
                       <TableCell align="left">{row.accurate}</TableCell>
-                      <TableCell align="right"><IconButton onClick={() => {
-                        navigate(`../session?sessionId=${row.session}`)
-                      }}><AssessmentIcon/></IconButton></TableCell>
+                      <TableCell align="right">
+                        <IconButton
+                          onClick={() => {
+                            navigate(`../session?sessionId=${row.session}`);
+                          }}
+                        >
+                          <AssessmentIcon />
+                        </IconButton>
+                      </TableCell>
                     </TableRow>
                   );
                 })}
