@@ -180,11 +180,13 @@ export async function fetchSessionsData(
                 createdAt
                 username
                 userResponses {
-                    text
-                    expectationScores {
-                        graderGrade
-                        classifierGrade
-                    }
+                  _id
+                  text
+                  expectationScores {
+                    invalidated
+                    graderGrade
+                    classifierGrade
+                  }
                 }
               }
             }
@@ -206,6 +208,55 @@ export async function fetchSessionsData(
     { headers: headers }
   );
   return findOrThrow<FetchSessionsData>(result).me;
+}
+export interface InvalidateResponseInput {
+  sessionId: string;
+  responseIds: string[];
+}
+interface InvalidateResponses {
+  me: {
+    invalidateResponses: Session[];
+  };
+}
+export async function invalidateResponses(
+  expectation: number,
+  invalid: boolean,
+  responses: InvalidateResponseInput[],
+  accessToken: string
+): Promise<Session[]> {
+  const headers = { Authorization: `bearer ${accessToken}` };
+  const result = await axios.post<GQLResponse<InvalidateResponses>>(
+    GRAPHQL_ENDPOINT,
+    {
+      query: `
+        mutation InvalidateResponse($expectation: Int!, $invalid: Boolean!, $invalidateResponses: [InvalidateResponseInputType!]) {
+          me {
+            invalidateResponses(expectation: $expectation, invalid: $invalid, invalidateResponses: $invalidateResponses) { 
+              sessionId
+              createdAt
+              username
+              userResponses {
+                _id
+                text
+                expectationScores {
+                  invalidated
+                  graderGrade
+                  classifierGrade
+                }
+              }
+            }
+          }
+        }
+      `,
+      variables: {
+        expectation,
+        invalid,
+        invalidateResponses: responses,
+      },
+    },
+    { headers: headers }
+  );
+  return findOrThrow<InvalidateResponses>(result).me.invalidateResponses;
 }
 
 export async function fetchSession(

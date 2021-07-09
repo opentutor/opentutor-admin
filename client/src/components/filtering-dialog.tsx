@@ -21,6 +21,7 @@ import CloseIcon from "@material-ui/icons/Close";
 import Typography from "@material-ui/core/Typography";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Switch from "@material-ui/core/Switch";
+import { SessionData } from "hooks/use-with-session-data";
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -73,24 +74,12 @@ const DialogActions = withStyles((theme: Theme) => ({
   },
 }))(MuiDialogActions);
 
-interface Data {
-  id: string;
-  date: string;
-  username: string;
-  userAnswer: string;
-  classifierGrade: string;
-  confidence: string;
-  grade: string;
-  session: string;
-  accurate: string;
-}
-
 interface FilteringProps {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  rows: Data[];
-  setRows: React.Dispatch<React.SetStateAction<Data[]>>;
-  rowsUnfiltered: Data[];
+  rows: SessionData[];
+  setRows: React.Dispatch<React.SetStateAction<SessionData[]>>;
+  rowsUnfiltered: SessionData[];
   setPage: (value: React.SetStateAction<number>) => void;
 }
 
@@ -107,8 +96,8 @@ export default function FilteringDialog(props: FilteringProps): JSX.Element {
     console.log(filter);
     //Update the rows
     // TODO: Only update on change, i.e. only setPage(0) on change
-    const tempRows: Data[] = [];
-    props.rowsUnfiltered.forEach((row: Data) => {
+    const tempRows: SessionData[] = [];
+    props.rowsUnfiltered.forEach((row: SessionData) => {
       console.log(row);
       if (filter.hideUngraded) {
         console.log("Requested hiding ungraded");

@@ -6,27 +6,39 @@ The full terms of this copyright and license should always be found in the root 
 */
 import React, { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
-import { fetchSessionsData } from "api";
+import {
+  fetchSessionsData,
+  InvalidateResponseInput,
+  invalidateResponses,
+} from "api";
 import { Connection, Lesson, Session } from "types";
+
+export function copyAndSet<T>(a: T[], i: number, item: T): T[] {
+  return [...a.slice(0, i), item, ...a.slice(i + 1)];
+}
 
 export interface SessionData {
   id: string;
   date: string;
   username: string;
   userAnswer: string;
+  userAnswerId: string;
   classifierGrade: string;
   confidence: string;
   grade: string; //dropdown
   session: string;
   accurate: string;
+  isInvalid: boolean;
 }
 
 export function useWithSessionData(
   lessonId: string,
-  expectation: number
+  expectation: number,
+  limit = 500
 ): {
   rows: SessionData[];
   expectationTitle: string;
+  toggleInvalids: (responseIds: string[], invalid: boolean) => void;
 } {
   const [cookies] = useCookies(["accessToken"]);
   const [sessions, setSessions] = useState<Connection<Session>>();
@@ -34,7 +46,19 @@ export function useWithSessionData(
   const [rows, setRows] = React.useState<SessionData[]>([]);
 
   useEffect(() => {
-    load();
+    let mounted = true;
+    const filter = { lessonId };
+    fetchSessionsData(filter, limit, cookies.accessToken, lessonId)
+      .then((data) => {
+        if (mounted && data) {
+          setSessions(data.sessions);
+          setLesson(data.lesson);
+        }
+      })
+      .catch((err) => console.error(err));
+    return () => {
+      mounted = false;
+    };
   }, [lessonId, expectation]);
 
   useEffect(() => {
@@ -52,6 +76,7 @@ export function useWithSessionData(
           date: session.createdAt,
           username: session.username,
           userAnswer: response.text,
+          userAnswerId: response._id,
           classifierGrade: exp.classifierGrade,
           grade: exp.graderGrade || "",
           confidence: "",
@@ -60,29 +85,60 @@ export function useWithSessionData(
               ? "Yes"
               : "No"
             : "Ungraded",
+          isInvalid: exp.invalidated,
         });
       }
     });
     setRows(data);
-    console.log(data);
   }, [sessions, lesson]);
 
-  function load() {
-    const filter = { lessonId: lessonId };
-    console.log(`load ${lessonId}`);
-    fetchSessionsData(filter, 500, cookies.accessToken, lessonId)
-      .then((data) => {
-        console.log(data);
-        if (data) {
-          setSessions(data.sessions);
-          setLesson(data.lesson);
+  async function toggleInvalids(responseIds: string[], invalid: boolean) {
+    if (!sessions) {
+      return;
+    }
+    const responseDict: Record<string, string[]> = {};
+    rows
+      .filter((r) => responseIds.includes(r.id))
+      .forEach((r) => {
+        if (r.session in responseDict) {
+          responseDict[r.session].push(r.userAnswerId);
+        } else {
+          responseDict[r.session] = [r.userAnswerId];
         }
+      });
+    const responses: InvalidateResponseInput[] = Object.entries(
+      responseDict
+    ).map((r) => ({
+      sessionId: r[0],
+      responseIds: r[1],
+    }));
+    invalidateResponses(expectation, invalid, responses, cookies.accessToken)
+      .then((s) => {
+        let updatedSessions = sessions;
+        for (const session of s) {
+          const sIdx = updatedSessions.edges.findIndex(
+            (e) => e.node.sessionId === session.sessionId
+          );
+          if (sIdx !== -1) {
+            updatedSessions = {
+              ...updatedSessions,
+              edges: copyAndSet(updatedSessions.edges, sIdx, {
+                ...updatedSessions.edges[sIdx],
+                node: session,
+              }),
+            };
+          }
+        }
+        setSessions(updatedSessions);
       })
-      .catch((err) => console.error(err));
+      .catch((e) => {
+        console.error(e);
+      });
   }
 
   return {
     rows: rows,
     expectationTitle: lesson?.expectations[expectation].expectation || "",
+    toggleInvalids,
   };
 }

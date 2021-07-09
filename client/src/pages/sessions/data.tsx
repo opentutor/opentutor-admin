@@ -44,19 +44,7 @@ import withLocation from "wrap-with-location";
 import { Helmet } from "react-helmet";
 import { useState } from "react";
 import FilteringDialog from "components/filtering-dialog";
-import { useWithSessionData } from "hooks/use-with-session-data";
-
-interface Data {
-  id: string;
-  date: string;
-  username: string;
-  userAnswer: string;
-  classifierGrade: string;
-  confidence: string;
-  grade: string; //dropdown
-  session: string;
-  accurate: string;
-}
+import { SessionData, useWithSessionData } from "hooks/use-with-session-data";
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   if (b[orderBy] < a[orderBy]) {
@@ -96,7 +84,7 @@ function stableSort<T>(array: T[], comparator: (a: T, b: T) => number) {
 
 interface HeadCell {
   disablePadding: boolean;
-  id: keyof Data | "actions";
+  id: keyof SessionData | "actions";
   label: string;
   numeric: boolean;
 }
@@ -132,7 +120,7 @@ interface EnhancedTableProps {
   numSelected: number;
   onRequestSort: (
     event: React.MouseEvent<unknown>,
-    property: keyof Data
+    property: keyof SessionData
   ) => void;
   onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
   order: Order;
@@ -151,7 +139,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
     onRequestSort,
   } = props;
   const createSortHandler =
-    (property: keyof Data) => (event: React.MouseEvent<unknown>) => {
+    (property: keyof SessionData) => (event: React.MouseEvent<unknown>) => {
       onRequestSort(event, property);
     };
 
@@ -225,17 +213,17 @@ const useToolbarStyles = makeStyles((theme: Theme) =>
 
 interface EnhancedTableToolbarProps {
   numSelected: number;
-  rows: Data[];
-  setRows: React.Dispatch<React.SetStateAction<Data[]>>;
-  rowsUnfiltered: Data[];
-  setPage: (value: React.SetStateAction<number>) => void;
+  rows: SessionData[];
+  rowsUnfiltered: SessionData[];
   expectation: string;
+  setRows: React.Dispatch<React.SetStateAction<SessionData[]>>;
+  setPage: (value: React.SetStateAction<number>) => void;
+  onInvalidate: () => void;
 }
 
 const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
   const classes = useToolbarStyles();
   const { numSelected, expectation } = props;
-
   const [openFilterView, setOpenFilterView] = useState(false);
 
   const handleFilterViewOpen = () => {
@@ -272,7 +260,7 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
         {numSelected > 0 ? (
           <Tooltip title="Delete">
             <IconButton aria-label="delete">
-              <DeleteIcon />
+              <DeleteIcon onClick={props.onInvalidate} />
             </IconButton>
           </Tooltip>
         ) : (
@@ -339,21 +327,21 @@ function EnhancedTable(props: { lessonId: string; expectation: number }) {
   const classes = useStyles();
   const [selected, setSelected] = React.useState<string[]>([]);
   const [dense, setDense] = React.useState(false);
-  const data = useWithSessionData(props.lessonId, props.expectation);
+  const useSessionData = useWithSessionData(props.lessonId, props.expectation);
 
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [order, setOrder] = React.useState<Order>("desc");
-  const [orderBy, setOrderBy] = React.useState<keyof Data>("date");
-  const [rows, setRows] = React.useState(data.rows);
+  const [orderBy, setOrderBy] = React.useState<keyof SessionData>("date");
+  const [rows, setRows] = React.useState(useSessionData.rows);
 
   React.useEffect(() => {
-    setRows(data.rows);
-  }, [data.rows]);
+    setRows(useSessionData.rows);
+  }, [useSessionData.rows]);
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
-    property: keyof Data
+    property: keyof SessionData
   ) => {
     const isAsc = orderBy === property && order === "asc";
     setOrder(isAsc ? "desc" : "asc");
@@ -404,6 +392,10 @@ function EnhancedTable(props: { lessonId: string; expectation: number }) {
     setDense(event.target.checked);
   };
 
+  function handleInvalidate() {
+    useSessionData.toggleInvalids(selected, true);
+  }
+
   const isSelected = (id: string) => selected.indexOf(id) !== -1; //used to be name
 
   const emptyRows =
@@ -415,10 +407,11 @@ function EnhancedTable(props: { lessonId: string; expectation: number }) {
         <EnhancedTableToolbar
           numSelected={selected.length}
           rows={rows}
-          setRows={setRows}
-          rowsUnfiltered={data.rows}
+          rowsUnfiltered={useSessionData.rows}
           setPage={setPage}
-          expectation={data.expectationTitle}
+          setRows={setRows}
+          onInvalidate={handleInvalidate}
+          expectation={useSessionData.expectationTitle}
         />
         <TableContainer>
           <Table
@@ -515,7 +508,6 @@ export interface LessonExpectationSearch {
 // eslint-disable-next-line  @typescript-eslint/no-unused-vars
 function Data(props: { search: LessonExpectationSearch }): JSX.Element {
   const { lessonId, expectation } = props.search;
-  console.log(props.search);
   const context = useContext(SessionContext);
   const [cookies] = useCookies(["accessToken"]);
   const styles = useStyles();
