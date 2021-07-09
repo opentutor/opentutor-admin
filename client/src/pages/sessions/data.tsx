@@ -4,6 +4,7 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
+import { navigate } from "gatsby";
 import React, { useContext } from "react";
 import { useCookies } from "react-cookie";
 import clsx from "clsx";
@@ -34,6 +35,7 @@ import {
   Switch,
 } from "@material-ui/core";
 import DeleteIcon from "@material-ui/icons/Delete";
+import AssessmentIcon from "@material-ui/icons/Assessment";
 import FilterListIcon from "@material-ui/icons/FilterList";
 import NavBar from "components/nav-bar";
 import { UserRole } from "types";
@@ -94,7 +96,7 @@ function stableSort<T>(array: T[], comparator: (a: T, b: T) => number) {
 
 interface HeadCell {
   disablePadding: boolean;
-  id: keyof Data;
+  id: keyof Data | "actions";
   label: string;
   numeric: boolean;
 }
@@ -122,6 +124,7 @@ const headCells: HeadCell[] = [
     label: "Confidence",
   },
   { id: "accurate", numeric: false, disablePadding: false, label: "Accurate" },
+  { id: "actions", numeric: false, disablePadding: true, label: "" },
 ];
 
 interface EnhancedTableProps {
@@ -171,19 +174,25 @@ function EnhancedTableHead(props: EnhancedTableProps) {
             padding={headCell.disablePadding ? "none" : "normal"}
             sortDirection={orderBy === headCell.id ? order : false}
           >
-            <TableSortLabel
-              active={orderBy === headCell.id}
-              direction={orderBy === headCell.id ? order : "asc"}
-              onClick={createSortHandler(headCell.id)}
-              className={classes.tableHeader}
-            >
-              {headCell.label}
-              {orderBy === headCell.id ? (
-                <span className={classes.visuallyHidden}>
-                  {order === "desc" ? "sorted descending" : "sorted ascending"}
-                </span>
-              ) : null}
-            </TableSortLabel>
+            {headCell.id !== "actions" ? (
+              <TableSortLabel
+                active={orderBy === headCell.id}
+                direction={orderBy === headCell.id ? order : "asc"}
+                onClick={createSortHandler(headCell.id)}
+                className={classes.tableHeader}
+              >
+                {headCell.label}
+                {orderBy === headCell.id ? (
+                  <span className={classes.visuallyHidden}>
+                    {order === "desc"
+                      ? "sorted descending"
+                      : "sorted ascending"}
+                  </span>
+                ) : null}
+              </TableSortLabel>
+            ) : (
+              <></>
+            )}
           </TableCell>
         ))}
       </TableRow>
@@ -460,12 +469,21 @@ function EnhancedTable(props: { lessonId: string; expectation: number }) {
                       <TableCell align="left">{row.classifierGrade}</TableCell>
                       <TableCell align="left">{row.confidence}</TableCell>
                       <TableCell align="left">{row.accurate}</TableCell>
+                      <TableCell align="right">
+                        <IconButton
+                          onClick={() => {
+                            navigate(`../session?sessionId=${row.session}`);
+                          }}
+                        >
+                          <AssessmentIcon />
+                        </IconButton>
+                      </TableCell>
                     </TableRow>
                   );
                 })}
               {emptyRows > 0 && (
                 <TableRow style={{ height: (dense ? 33 : 53) * emptyRows }}>
-                  <TableCell colSpan={8} />
+                  <TableCell colSpan={9} />
                 </TableRow>
               )}
             </TableBody>
