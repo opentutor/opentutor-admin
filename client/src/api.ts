@@ -256,6 +256,7 @@ export async function invalidateResponses(
     },
     { headers: headers }
   );
+  console.log(result);
   return findOrThrow<InvalidateResponses>(result).me.invalidateResponses;
 }
 
