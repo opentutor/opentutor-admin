@@ -102,6 +102,11 @@ export async function fetchSessions(
             edges {
               cursor
               node {
+                userResponses {
+                  expectationScores {
+                    classifierGrade
+                  }
+                }
                 username
                 sessionId
                 classifierGrade
@@ -138,6 +143,119 @@ export async function fetchSessions(
     { headers: headers }
   );
   return findOrThrow<FetchSessions>(result).me.sessions;
+}
+
+interface FetchSessionsData {
+  me: {
+    sessions: Connection<Session>;
+    lesson: Lesson;
+  };
+}
+interface SessionsData {
+  sessions: Connection<Session>;
+  lesson: Lesson;
+}
+export async function fetchSessionsData(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
+  filter: any,
+  limit: number,
+  accessToken: string,
+  lessonId: string
+): Promise<SessionsData> {
+  const headers = { Authorization: `bearer ${accessToken}` };
+  const result = await axios.post<GQLResponse<FetchSessionsData>>(
+    GRAPHQL_ENDPOINT,
+    {
+      query: `
+      query FetchSessions($filter: String!, $limit: Int!, $lessonId: String!) {
+        me {
+          sessions(
+            filter: $filter,
+            limit: $limit,
+          ) {
+            edges {
+              node {
+                sessionId
+                createdAt
+                username
+                userResponses {
+                  _id
+                  text
+                  expectationScores {
+                    invalidated
+                    graderGrade
+                    classifierGrade
+                  }
+                }
+              }
+            }
+          }
+          lesson(lessonId: $lessonId) {
+            expectations {
+              expectation
+            }
+          }
+        }
+      }
+      `,
+      variables: {
+        filter: JSON.stringify(filter),
+        limit,
+        lessonId,
+      },
+    },
+    { headers: headers }
+  );
+  return findOrThrow<FetchSessionsData>(result).me;
+}
+export interface InvalidateResponseInput {
+  sessionId: string;
+  responseIds: string[];
+}
+interface InvalidateResponses {
+  me: {
+    invalidateResponses: Session[];
+  };
+}
+export async function invalidateResponses(
+  expectation: number,
+  invalid: boolean,
+  responses: InvalidateResponseInput[],
+  accessToken: string
+): Promise<Session[]> {
+  const headers = { Authorization: `bearer ${accessToken}` };
+  const result = await axios.post<GQLResponse<InvalidateResponses>>(
+    GRAPHQL_ENDPOINT,
+    {
+      query: `
+        mutation InvalidateResponse($expIndex: Int!, $invalid: Boolean!, $invalidateResponses: [InvalidateResponseInputType!]) {
+          me {
+            invalidateResponses(expectation: $expIndex, invalid: $invalid, invalidateResponses: $invalidateResponses) { 
+              sessionId
+              createdAt
+              username
+              userResponses {
+                _id
+                text
+                expectationScores {
+                  invalidated
+                  graderGrade
+                  classifierGrade
+                }
+              }
+            }
+          }
+        }
+      `,
+      variables: {
+        expIndex: parseInt(expectation.toString()),
+        invalid,
+        invalidateResponses: responses,
+      },
+    },
+    { headers: headers }
+  );
+  return findOrThrow<InvalidateResponses>(result).me.invalidateResponses;
 }
 
 export async function fetchSession(

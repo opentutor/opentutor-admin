@@ -15,6 +15,9 @@ module.exports = {
       resolve: "gatsby-plugin-material-ui",
     },
     {
+      resolve: "gatsby-plugin-react-helmet",
+    },
+    {
       resolve: "gatsby-plugin-eslint",
       options: {
         test: /\.js$|\.jsx$|\.ts$|\.tsx$/,

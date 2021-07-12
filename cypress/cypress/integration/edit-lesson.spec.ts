@@ -482,6 +482,20 @@ describe("edit lesson screen", () => {
     cy.get("[data-cy=expectations]").children().should("have.length", 1);
   });
 
+  it("can navigate to expectation data page from expectation card", () => {
+    cySetup(cy);
+    cyMockDefault(cy, {
+      gqlQueries: [mockGQL("lesson", lesson, true)],
+      userRole: "admin",
+    });
+    cy.visit("/lessons/edit?lessonId=q1");
+    cy.get("[data-cy=view-expectation-0-data-button]")
+      .trigger("mouseover")
+      .click();
+    cy.location("pathname").should("contain", "/sessions/data");
+    cy.location("search").should("eq", "?lessonId=q1&expectation=0");
+  });
+
   it("adds and deletes a hint", () => {
     cySetup(cy);
     cyMockDefault(cy);

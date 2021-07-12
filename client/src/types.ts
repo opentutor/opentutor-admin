@@ -51,11 +51,13 @@ export interface Expectation {
 }
 
 export interface UserResponse {
+  _id: string;
   text: string;
   expectationScores: ExpectationScore[];
 }
 
 export interface ExpectationScore {
+  invalidated: boolean;
   classifierGrade: string;
   graderGrade?: string;
 }

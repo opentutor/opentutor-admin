@@ -512,6 +512,7 @@ const LessonEdit = (props: {
         <Divider style={{ marginTop: 20 }} />
         <ExpectationsList
           classes={classes}
+          lessonId={lessonId}
           expectations={lessonUnderEdit.lesson?.expectations}
           updateExpectations={(exp: LessonExpectation[]) =>
             setLesson(

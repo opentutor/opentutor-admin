@@ -6,7 +6,7 @@
     "cypress-fill-command": "^1.0.2",
     "cypress-image-snapshot": "^4.0.1",
     "typescript": "^4.3.5",
-    "cypress": "^7.6.0"
+    "cypress": "^7.7.0"
   },
   "scripts": {
     "cy:open": "npx cypress open --env failOnSnapshotDiff=false",
