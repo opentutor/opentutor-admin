@@ -88,7 +88,6 @@ export function cyInterceptGraphQL(cy, mocks: MockGraphQLQuery[]): void {
     const queryBody = body.query.replace(/\s+/g, " ").replace("\n", "").trim();
     let handled = false;
     for (const mock of mocks) {
-      console.log(queryBody);
       if (
         queryBody.match(new RegExp(`^(mutation|query) ${mock.query}[{(\\s]`)) ||
         queryBody.indexOf(`{ ${mock.query}(`) !== -1 ||
