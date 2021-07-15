@@ -17,7 +17,7 @@ describe("session screen", () => {
 
     it("cannot view session if user does not have permission to edit", () => {
       cySetup(cy);
-      cyMockDefault(cy, { gqlQueries: [mockGQL("session", session, true)] });
+      cyMockDefault(cy, { gqlQueries: [mockGQL("FetchSession", { me: { session } }, false, true)] });
       cy.visit("/sessions/session?sessionId=session1");
       cy.contains("You do not have permission to grade this session.");
     });
@@ -25,7 +25,7 @@ describe("session screen", () => {
     it("can view session if user is admin", () => {
       cySetup(cy);
       cyMockDefault(cy, {
-        gqlQueries: [mockGQL("session", session, true)],
+        gqlQueries: [mockGQL("FetchSession", { me: { session } }, false, true)],
         userRole: "admin",
       });
       cy.visit("/sessions/session?sessionId=session1");
@@ -35,7 +35,7 @@ describe("session screen", () => {
     it("can view session if user is contentManager", () => {
       cySetup(cy);
       cyMockDefault(cy, {
-        gqlQueries: [mockGQL("session", session, true)],
+        gqlQueries: [mockGQL("FetchSession", { me: { session } }, false, true)],
         userRole: "contentManager",
       });
       cy.visit("/sessions/session?sessionId=session1");
@@ -47,8 +47,8 @@ describe("session screen", () => {
       cyMockDefault(cy, {
         gqlQueries: [
           mockGQL(
-            "session",
-            {
+            "FetchSession",
+            { me: { session: {
               username: "username1",
               sessionId: "session1",
               createdAt: "1/1/2001",
@@ -92,8 +92,8 @@ describe("session screen", () => {
                   ],
                 },
               ],
-            },
-            true
+            }}},
+            false, true
           ),
         ],
       });
@@ -105,7 +105,7 @@ describe("session screen", () => {
   it("shows lesson name", () => {
     cySetup(cy);
     cyMockDefault(cy, {
-      gqlQueries: [mockGQL("session", session, true)],
+      gqlQueries: [mockGQL("FetchSession", { me: { session } }, false, true)],
       userRole: "admin",
     });
     cy.visit("/sessions/session?sessionId=session1");
@@ -115,7 +115,7 @@ describe("session screen", () => {
   it("shows session username", () => {
     cySetup(cy);
     cyMockDefault(cy, {
-      gqlQueries: [mockGQL("session", session, true)],
+      gqlQueries: [mockGQL("FetchSession", { me: { session } }, false, true)],
       userRole: "admin",
     });
     cy.visit("/sessions/session?sessionId=session1");
@@ -125,7 +125,7 @@ describe("session screen", () => {
   it("shows session date", () => {
     cySetup(cy);
     cyMockDefault(cy, {
-      gqlQueries: [mockGQL("session", session, true)],
+      gqlQueries: [mockGQL("FetchSession", { me: { session } }, false, true)],
       userRole: "admin",
     });
     cy.visit("/sessions/session?sessionId=session1");
@@ -135,7 +135,7 @@ describe("session screen", () => {
   it("shows lesson question", () => {
     cySetup(cy);
     cyMockDefault(cy, {
-      gqlQueries: [mockGQL("session", session, true)],
+      gqlQueries: [mockGQL("FetchSession", { me: { session } }, false, true)],
       userRole: "admin",
     });
     cy.visit("/sessions/session?sessionId=session1");
@@ -145,7 +145,7 @@ describe("session screen", () => {
   it("shows session score", () => {
     cySetup(cy);
     cyMockDefault(cy, {
-      gqlQueries: [mockGQL("session", session, true)],
+      gqlQueries: [mockGQL("FetchSession", { me: { session } }, false, true)],
       userRole: "admin",
     });
     cy.visit("/sessions/session?sessionId=session1");
@@ -155,7 +155,7 @@ describe("session screen", () => {
   it("shows user responses", () => {
     cySetup(cy);
     cyMockDefault(cy, {
-      gqlQueries: [mockGQL("session", session, true)],
+      gqlQueries: [mockGQL("FetchSession", { me: { session } }, false, true)],
       userRole: "admin",
     });
     cy.visit("/sessions/session?sessionId=session1");
@@ -186,7 +186,7 @@ describe("session screen", () => {
   it("grades first response", () => {
     cySetup(cy);
     cyMockDefault(cy, {
-      gqlQueries: [mockGQL("session", session, true)],
+      gqlQueries: [mockGQL("FetchSession", { me: { session } }, false, true)],
       userRole: "admin",
     });
     cy.visit("/sessions/session?sessionId=session1");

@@ -103,9 +103,9 @@ describe("Navigation bar", () => {
     cyMockDefault(cy, {
       userRole: "admin",
       gqlQueries: [
-        mockGQL("lessons", lessons, true),
-        mockGQL("sessions", sessions, true),
-        mockGQL("users", users, true),
+        mockGQL("FetchLessons", { me: { lessons } }, false, true),
+        mockGQL("FetchSessions", { me: { sessions } }, false, true),
+        mockGQL("FetchUsers", { me: { users } }, false, true),
       ],
     });
     cy.visit("/lessons");
@@ -144,8 +144,8 @@ describe("Navigation bar", () => {
     cyMockDefault(cy, {
       gqlQueries: [
         mockGQL(
-          "session",
-          {
+          "FetchSession",
+          { me: { session: {
             username: "username1",
             sessionId: "session1",
             createdAt: "1/1/2001",
@@ -168,8 +168,8 @@ describe("Navigation bar", () => {
                 ],
               },
             ],
-          },
-          true
+          }}},
+          false, true
         ),
       ],
       userRole: "admin",

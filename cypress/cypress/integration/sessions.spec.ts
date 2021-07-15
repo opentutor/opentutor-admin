@@ -18,7 +18,7 @@ describe("sessions screen", () => {
     it("disables edit and grade if user does not have edit permissions", () => {
       cySetup(cy);
       cyMockDefault(cy, {
-        gqlQueries: [mockGQL("sessions", sessions, true)],
+        gqlQueries: [mockGQL("FetchSessions", { me: { sessions } }, false, true)],
       });
       cy.visit("/sessions");
       cy.get("[data-cy=session-0]")
@@ -32,7 +32,7 @@ describe("sessions screen", () => {
     it("enables edit if user is admin", () => {
       cySetup(cy);
       cyMockDefault(cy, {
-        gqlQueries: [mockGQL("sessions", sessions, true)],
+        gqlQueries: [mockGQL("FetchSessions", { me: { sessions } }, false, true)],
         userRole: "admin",
       });
       cy.visit("/sessions");
@@ -47,12 +47,12 @@ describe("sessions screen", () => {
     it("enables edit if user is contentManager", () => {
       cySetup(cy);
       cyMockDefault(cy, {
-        gqlQueries: [mockGQL("sessions", sessions, true)],
+        gqlQueries: [mockGQL("FetchSessions", { me: { sessions } }, false, true)],
         userRole: "contentManager",
       });
       cy.visit("/sessions");
       cy.wait("@login");
-      cy.wait("@sessions");
+      cy.wait("@FetchSessions");
       cy.get("[data-cy=session-0]")
         .find("[data-cy=grade-button]")
         .should("not.be.disabled");
@@ -66,8 +66,8 @@ describe("sessions screen", () => {
       cyMockDefault(cy, {
         gqlQueries: [
           mockGQL(
-            "sessions",
-            {
+            "FetchSessions",
+            { me: { sessions: {
               edges: [
                 {
                   cursor: "cursor 1",
@@ -106,8 +106,8 @@ describe("sessions screen", () => {
                 hasNextPage: false,
                 endCursor: "cursor 2 ",
               },
-            },
-            true
+            }}},
+            false, true
           ),
         ],
       });
@@ -124,7 +124,7 @@ describe("sessions screen", () => {
   it("displays session table with headers", () => {
     cySetup(cy);
     cyMockDefault(cy, {
-      gqlQueries: [mockGQL("sessions", sessions, true)],
+      gqlQueries: [mockGQL("FetchSessions", { me: { sessions } }, false, true)],
       userRole: "admin",
     });
     cy.visit("/sessions");
@@ -155,7 +155,7 @@ describe("sessions screen", () => {
   it("displays a list of sessions", () => {
     cySetup(cy);
     cyMockDefault(cy, {
-      gqlQueries: [mockGQL("sessions", sessions, true)],
+      gqlQueries: [mockGQL("FetchSessions", { me: { sessions } }, false, true)],
       userRole: "admin",
     });
     cy.visit("/sessions");
@@ -198,7 +198,7 @@ describe("sessions screen", () => {
   it("opens edit for a session", () => {
     cySetup(cy);
     cyMockDefault(cy, {
-      gqlQueries: [mockGQL("sessions", sessions, true)],
+      gqlQueries: [mockGQL("FetchSessions", { me: { sessions } }, false, true)],
       userRole: "admin",
     });
     cy.visit("/sessions");
@@ -214,7 +214,7 @@ describe("sessions screen", () => {
   it("opens grade for a session", () => {
     cySetup(cy);
     cyMockDefault(cy, {
-      gqlQueries: [mockGQL("sessions", sessions, true)],
+      gqlQueries: [mockGQL("FetchSessions", { me: { sessions } }, false, true)],
       userRole: "admin",
     });
     cy.visit("/sessions");
@@ -229,7 +229,7 @@ describe("sessions screen", () => {
   it("displays an option to view already graded sessions", () => {
     cySetup(cy);
     cyMockDefault(cy, {
-      gqlQueries: [mockGQL("sessions", sessions, true)],
+      gqlQueries: [mockGQL("FetchSessions", { me: { sessions } }, false, true)],
       userRole: "admin",
     });
     cy.visit("/sessions");

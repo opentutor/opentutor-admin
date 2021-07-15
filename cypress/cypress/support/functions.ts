@@ -86,9 +86,9 @@ export const CONFIG_DEFAULT: AppConfig = {
 
 export function mockGQLConfig(appConfig: Partial<AppConfig>): MockGraphQLQuery {
   return mockGQL(
-    "appConfig",
-    { ...CONFIG_DEFAULT, ...(appConfig || {}) },
-    false
+    "FetchConfig",
+    { appConfig: { ...CONFIG_DEFAULT, ...(appConfig || {}) }},
+    false, true
   );
 }
 
@@ -102,8 +102,9 @@ export function cyInterceptGraphQL(cy, mocks: MockGraphQLQuery[]): void {
     const queryBody = body.query.replace(/\s+/g, " ").replace("\n", "").trim();
     let handled = false;
     for (const mock of mocks) {
+      console.log(queryBody);
       if (
-        queryBody.match(new RegExp(`^(mutation|query) ${mock.query}[(\s]`)) ||
+        queryBody.match(new RegExp(`^[\s]*(mutation|query)[\s]+${mock.query}[^a-zA-Z0-9_]`)) ||
         queryBody.indexOf(`{ ${mock.query}(`) !== -1 ||
         queryBody.indexOf(`{ ${mock.query} {`) !== -1
       ) {
@@ -175,7 +176,7 @@ export function cyMockDefault(
   }
   cyInterceptGraphQL(cy, [
     mockGQLConfig(appConfig),
-    mockGQL("login", {
+    mockGQL("Login", { login: {
       user: {
         id: "kayla",
         name: "Kayla",
@@ -183,7 +184,7 @@ export function cyMockDefault(
         userRole: args.userRole || "author",
       },
       accessToken: "accessToken",
-    }),
+    }}, false, true),
     ...gqlQueries,
   ]);
 }

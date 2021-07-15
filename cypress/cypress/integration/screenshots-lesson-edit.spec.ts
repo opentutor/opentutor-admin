@@ -16,8 +16,8 @@ describe("screenshots - lesson edit", () => {
     cyMockDefault(cy, {
       gqlQueries: [
         mockGQL(
-          "lesson",
-          {
+          "FetchLesson",
+          { me: { lesson: {
             lessonId: "lesson",
             name: "lesson",
             intro: "intro",
@@ -37,8 +37,8 @@ describe("screenshots - lesson edit", () => {
             features: {},
             lastTrainedAt: "",
             isTrainable: true,
-          },
-          true
+          }}},
+          false, true
         ),
       ],
       userRole: "admin",
@@ -55,8 +55,8 @@ describe("screenshots - lesson edit", () => {
     cyMockDefault(cy, {
       gqlQueries: [
         mockGQL(
-          "lesson",
-          {
+          "FetchLesson",
+          { me: { lesson: {
             lessonId: "lesson",
             name: "lesson",
             question: "question",
@@ -74,8 +74,8 @@ describe("screenshots - lesson edit", () => {
             ],
             lastTrainedAt: "",
             isTrainable: true,
-          },
-          true
+          }}},
+          false, true
         ),
       ],
       userRole: "admin",

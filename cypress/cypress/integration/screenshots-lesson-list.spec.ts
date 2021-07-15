@@ -16,8 +16,8 @@ describe("screenshots - lesson list", () => {
     cyMockDefault(cy, {
       gqlQueries: [
         mockGQL(
-          "lessons",
-          {
+          "FetchLessons",
+          { me: { lessons: {
             edges: [
               {
                 cursor: "cursor 1",
@@ -40,8 +40,8 @@ describe("screenshots - lesson list", () => {
               hasNextPage: false,
               endCursor: "cursor 2 ",
             },
-          },
-          true
+          }}},
+          false, true
         ),
       ],
       userRole: "admin",

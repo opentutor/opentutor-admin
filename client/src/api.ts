@@ -52,7 +52,7 @@ export async function fetchAppConfig(): Promise<AppConfig> {
     GRAPHQL_ENDPOINT,
     {
       query: `
-      query {
+      query FetchConfig {
         appConfig {
           googleClientId
         }
@@ -606,7 +606,7 @@ export async function fetchUsers(
     GRAPHQL_ENDPOINT,
     {
       query: `
-      query FetchUsers ($filter: String!, $limit: Int!, $cursor: String!, $sortBy: String!, $sortAscending: Boolean!) {
+      query FetchUsers($filter: String!, $limit: Int!, $cursor: String!, $sortBy: String!, $sortAscending: Boolean!) {
         me {
           users(
             filter: $filter,
@@ -657,11 +657,11 @@ export async function updateUserPermissions(
     GRAPHQL_ENDPOINT,
     {
       query: `
-      mutation {
+      mutation UpdateUserPermissions($userId: String!, $permissionLevel: String!) {
         me {
           updateUserPermissions(
-            userId:"${userId}",
-            permissionLevel:"${permissionLevel}"
+            userId:$userId,
+            permissionLevel:$permissionLevel
           ) {
             id
             name
@@ -671,6 +671,7 @@ export async function updateUserPermissions(
         }
       }
     `,
+    variables: { userId, permissionLevel},
     },
     { headers: headers }
   );

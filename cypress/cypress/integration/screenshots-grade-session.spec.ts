@@ -16,8 +16,8 @@ describe("screenshots - grade session", () => {
     cyMockDefault(cy, {
       gqlQueries: [
         mockGQL(
-          "session",
-          {
+          "FetchSession",
+          { me: { session: {
             sessionId: "session1",
             lesson: {
               name: "lesson 1",
@@ -85,8 +85,8 @@ describe("screenshots - grade session", () => {
                 ],
               },
             ],
-          },
-          true
+          }}},
+          false, true
         ),
       ],
       userRole: "admin",

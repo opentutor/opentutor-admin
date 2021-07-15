@@ -16,8 +16,8 @@ describe("screenshots - grade session list", () => {
     cyMockDefault(cy, {
       gqlQueries: [
         mockGQL(
-          "sessions",
-          {
+          "FetchSessions",
+          { me: { sessions: {
             edges: [
               {
                 cursor: "cursor 2",
@@ -36,8 +36,8 @@ describe("screenshots - grade session list", () => {
               hasNextPage: false,
               endCursor: "cursor 2 ",
             },
-          },
-          true
+          }}},
+          false, true
         ),
       ],
     });
@@ -53,8 +53,8 @@ describe("screenshots - grade session list", () => {
     cyMockDefault(cy, {
       gqlQueries: [
         mockGQL(
-          "sessions",
-          {
+          "FetchSessions",
+          { me: { sessions: {
             edges: [
               {
                 cursor: "cursor 1",
@@ -85,8 +85,8 @@ describe("screenshots - grade session list", () => {
               hasNextPage: false,
               endCursor: "cursor 2 ",
             },
-          },
-          true
+          }}},
+          false, true
         ),
       ],
     });

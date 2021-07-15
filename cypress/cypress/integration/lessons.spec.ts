@@ -18,7 +18,7 @@ describe("lessons screen", () => {
     it("disables edit, grade, and delete if user does not have edit permissions", () => {
       cySetup(cy);
       cyMockDefault(cy, {
-        gqlQueries: [mockGQL("lessons", lessons, true)],
+        gqlQueries: [mockGQL("FetchLessons", { me: { lessons } }, false, true)],
       });
       cy.visit("/lessons");
       cy.get("[data-cy=lesson-0]")
@@ -44,7 +44,7 @@ describe("lessons screen", () => {
     it("enables edit, grade, and delete if user is an admin", () => {
       cySetup(cy);
       cyMockDefault(cy, {
-        gqlQueries: [mockGQL("lessons", lessons, true)],
+        gqlQueries: [mockGQL("FetchLessons", { me: { lessons } }, false, true)],
         userRole: "admin",
       });
       cy.visit("/lessons");
@@ -59,7 +59,7 @@ describe("lessons screen", () => {
     it("enables edit, grade, and delete if user is a contentManager", () => {
       cySetup(cy);
       cyMockDefault(cy, {
-        gqlQueries: [mockGQL("lessons", lessons, true)],
+        gqlQueries: [mockGQL("FetchLessons", { me: { lessons } }, false, true)],
         userRole: "contentManager",
       });
       cy.visit("/lessons");
@@ -76,8 +76,7 @@ describe("lessons screen", () => {
       cyMockDefault(cy, {
         gqlQueries: [
           mockGQL(
-            "lessons",
-            {
+            "FetchLessons",{ me: {lessons: {
               edges: [
                 {
                   cursor: "cursor 1",
@@ -98,8 +97,8 @@ describe("lessons screen", () => {
                 hasNextPage: false,
                 endCursor: "cursor 2",
               },
-            },
-            true
+            }}},
+            false, true
           ),
         ],
       });
@@ -116,7 +115,7 @@ describe("lessons screen", () => {
   it("displays lesson table with headers", () => {
     cySetup(cy);
     cyMockDefault(cy, {
-      gqlQueries: [mockGQL("lessons", lessons, true)],
+      gqlQueries: [mockGQL("FetchLessons", { me: { lessons } }, false, true)],
       userRole: "admin",
     });
     cy.visit("/lessons");
@@ -133,7 +132,7 @@ describe("lessons screen", () => {
   it("displays a list of lessons", () => {
     cySetup(cy);
     cyMockDefault(cy, {
-      gqlQueries: [mockGQL("lessons", lessons, true)],
+      gqlQueries: [mockGQL("FetchLessons", { me: { lessons } }, false, true)],
       userRole: "admin",
     });
     cy.visit("/lessons");
@@ -193,7 +192,7 @@ describe("lessons screen", () => {
   it("opens edit for a lesson", () => {
     cySetup(cy);
     cyMockDefault(cy, {
-      gqlQueries: [mockGQL("lessons", lessons, true)],
+      gqlQueries: [mockGQL("FetchLessons", { me: { lessons } }, false, true)],
       userRole: "admin",
     });
     cy.visit("/lessons");
@@ -209,7 +208,7 @@ describe("lessons screen", () => {
   it("opens grade for a lesson", () => {
     cySetup(cy);
     cyMockDefault(cy, {
-      gqlQueries: [mockGQL("lessons", lessons, true)],
+      gqlQueries: [mockGQL("FetchLessons", { me: { lessons } }, false, true)],
       userRole: "admin",
     });
     cy.visit("/lessons");
@@ -224,7 +223,7 @@ describe("lessons screen", () => {
   it("opens copy for a lesson", () => {
     cySetup(cy);
     cyMockDefault(cy, {
-      gqlQueries: [mockGQL("lessons", lessons, true)],
+      gqlQueries: [mockGQL("FetchLessons", { me: { lessons } }, false, true)],
       userRole: "admin",
     });
     cy.visit("/lessons");
@@ -239,7 +238,7 @@ describe("lessons screen", () => {
   it("launches a lesson", () => {
     cySetup(cy);
     cyMockDefault(cy, {
-      gqlQueries: [mockGQL("lessons", lessons, true)],
+      gqlQueries: [mockGQL("FetchLessons", { me: { lessons } }, false, true)],
       userRole: "admin",
     });
     cy.visit("/lessons");
@@ -256,7 +255,7 @@ describe("lessons screen", () => {
   it("clicks on create lesson and opens to an edit page for new lesson", () => {
     cySetup(cy);
     cyMockDefault(cy, {
-      gqlQueries: [mockGQL("lessons", lessons, true)],
+      gqlQueries: [mockGQL("FetchLessons", { me: { lessons } }, false, true)],
       userRole: "admin",
     });
     cy.visit("/lessons");

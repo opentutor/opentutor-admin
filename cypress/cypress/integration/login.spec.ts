@@ -7,7 +7,7 @@ The full terms of this copyright and license should always be found in the root 
 import { lessons } from "../fixtures/lesson";
 import { cySetup, cyMockDefault, mockGQL } from "../support/functions";
 
-describe("Login", () => {
+describe.only("Login", () => {
   it("loads home page", () => {
     cySetup(cy);
     cy.visit("/");
@@ -23,7 +23,7 @@ describe("Login", () => {
       .should("be.disabled");
   });
 
-  it("login enabled if GOOGLE_CLIENT_ID is set", () => {
+  it.only("login enabled if GOOGLE_CLIENT_ID is set", () => {
     cySetup(cy);
     cyMockDefault(cy, {
       noLogin: true,
@@ -37,7 +37,7 @@ describe("Login", () => {
   it("redirects to lesson page after logging in", () => {
     cySetup(cy);
     cyMockDefault(cy, {
-      gqlQueries: [mockGQL("lessons", lessons, true)],
+      gqlQueries: [mockGQL("FetchLessons", { me: { lessons} }, false, true)],
     });
     cy.visit("/");
     cy.location("pathname").should("contain", "lessons");
@@ -47,7 +47,7 @@ describe("Login", () => {
   it("redirects to home page after logging out", () => {
     cySetup(cy);
     cyMockDefault(cy, {
-      gqlQueries: [mockGQL("lessons", lessons, true)],
+      gqlQueries: [mockGQL("FetchLessons", { me: { lessons} }, false, true)],
     });
     cy.visit("/");
     cy.location("pathname").should("contain", "lessons");

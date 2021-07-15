@@ -11,7 +11,7 @@ describe("users screen", () => {
   it("displays a list of users to an admin", () => {
     cySetup(cy);
     cyMockDefault(cy, {
-      gqlQueries: [mockGQL("users", users, true)],
+      gqlQueries: [mockGQL("FetchUsers", { me: {users}}, false,true)],
       userRole: "admin",
     });
     cy.visit("/users");
@@ -40,7 +40,7 @@ describe("users screen", () => {
   it("displays a list of users to a content manager", () => {
     cySetup(cy);
     cyMockDefault(cy, {
-      gqlQueries: [mockGQL("users", users, true)],
+      gqlQueries: [mockGQL("FetchUsers", { me: {users}}, false,true)],
       userRole: "contentManager",
     });
     cy.visit("/users");
@@ -70,7 +70,7 @@ describe("users screen", () => {
     cySetup(cy);
     cyMockDefault(cy, {
       noLogin: true,
-      gqlQueries: [mockGQL("users", users, true)],
+      gqlQueries: [mockGQL("FetchUsers", { me: {users}}, false,true)],
     });
     cy.visit("/users");
     cy.contains("Please login to view users.");
@@ -79,7 +79,7 @@ describe("users screen", () => {
   it("hides users if not admin or content manager", () => {
     cySetup(cy);
     cyMockDefault(cy, {
-      gqlQueries: [mockGQL("users", users, true)],
+      gqlQueries: [mockGQL("FetchUsers", { me: {users}}, false,true)],
     });
     cy.visit("/users");
     cy.contains("You must be an admin or content manager to view this page.");
