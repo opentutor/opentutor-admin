@@ -89,9 +89,7 @@ export function cyInterceptGraphQL(cy, mocks: MockGraphQLQuery[]): void {
     let handled = false;
     for (const mock of mocks) {
       if (
-        queryBody.match(new RegExp(`^(mutation|query) ${mock.query}[{(\\s]`)) ||
-        queryBody.indexOf(`{ ${mock.query}(`) !== -1 ||
-        queryBody.indexOf(`{ ${mock.query} {`) !== -1
+        queryBody.match(new RegExp(`^(mutation|query) ${mock.query}[{(\\s]`))
       ) {
         const data = Array.isArray(mock.data) ? mock.data : [mock.data];
         const bodyContent =
