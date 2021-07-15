@@ -22,7 +22,7 @@ describe("Login", () => {
       .find("[data-cy=login-button]")
       .should("be.disabled");
   });
-  
+
   it("login enabled if GOOGLE_CLIENT_ID is set", () => {
     cySetup(cy);
     cyMockDefault(cy, {
