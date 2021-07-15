@@ -52,7 +52,7 @@ export async function fetchAppConfig(): Promise<AppConfig> {
     GRAPHQL_ENDPOINT,
     {
       query: `
-      query FetchConfig{
+      query FetchConfig {
         appConfig {
           googleClientId
         }

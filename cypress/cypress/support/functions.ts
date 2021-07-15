@@ -90,23 +90,14 @@ export function cyInterceptGraphQL(cy, mocks: MockGraphQLQuery[]): void {
     for (const mock of mocks) {
       console.log(queryBody);
       if (
-        queryBody.match(new RegExp(`^(mutation|query) ${mock.query}[{(\s]`)) ||
+        queryBody.match(new RegExp(`^(mutation|query) ${mock.query}[{(\\s]`)) ||
         queryBody.indexOf(`{ ${mock.query}(`) !== -1 ||
         queryBody.indexOf(`{ ${mock.query} {`) !== -1
       ) {
         const data = Array.isArray(mock.data) ? mock.data : [mock.data];
         const bodyContent =
           data[Math.min(queryCalls[mock.query], data.length - 1)];
-        let body = {};
-        // if (mock.returnBodyAsIs) {
-        body = bodyContent;
-        // } else if (mock.me) {
-        //   const _inner = {};
-        //   _inner[mock.query] = bodyContent;
-        //   body["me"] = _inner;
-        // } else {
-        //   body[mock.query] = bodyContent;
-        // }
+        let body = bodyContent;
         req.alias = mock.query;
         req.reply(
           staticResponse({
