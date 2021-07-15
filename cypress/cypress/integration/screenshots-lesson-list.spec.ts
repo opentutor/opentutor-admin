@@ -15,34 +15,34 @@ describe("screenshots - lesson list", () => {
     cySetup(cy);
     cyMockDefault(cy, {
       gqlQueries: [
-        mockGQL(
-          "FetchLessons",
-          { me: { lessons: {
-            edges: [
-              {
-                cursor: "cursor 1",
-                node: {
-                  lessonId: "lesson1",
-                  name: "lesson 1",
-                  updatedAt: "1/1/20000, 12:00:00 AM",
+        mockGQL("FetchLessons", {
+          me: {
+            lessons: {
+              edges: [
+                {
+                  cursor: "cursor 1",
+                  node: {
+                    lessonId: "lesson1",
+                    name: "lesson 1",
+                    updatedAt: "1/1/20000, 12:00:00 AM",
+                  },
                 },
-              },
-              {
-                cursor: "cursor 2",
-                node: {
-                  lessonId: "lesson2",
-                  name: "lesson 2",
-                  updatedAt: "1/1/20000, 12:00:00 AM",
+                {
+                  cursor: "cursor 2",
+                  node: {
+                    lessonId: "lesson2",
+                    name: "lesson 2",
+                    updatedAt: "1/1/20000, 12:00:00 AM",
+                  },
                 },
+              ],
+              pageInfo: {
+                hasNextPage: false,
+                endCursor: "cursor 2 ",
               },
-            ],
-            pageInfo: {
-              hasNextPage: false,
-              endCursor: "cursor 2 ",
             },
-          }}},
-          false, true
-        ),
+          },
+        }),
       ],
       userRole: "admin",
     });

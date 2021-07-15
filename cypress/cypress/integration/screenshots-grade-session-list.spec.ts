@@ -15,30 +15,30 @@ describe("screenshots - grade session list", () => {
     cySetup(cy);
     cyMockDefault(cy, {
       gqlQueries: [
-        mockGQL(
-          "FetchSessions",
-          { me: { sessions: {
-            edges: [
-              {
-                cursor: "cursor 2",
-                node: {
-                  lesson: {
-                    name: "lesson 2",
+        mockGQL("FetchSessions", {
+          me: {
+            sessions: {
+              edges: [
+                {
+                  cursor: "cursor 2",
+                  node: {
+                    lesson: {
+                      name: "lesson 2",
+                    },
+                    sessionId: "session 2",
+                    classifierGrade: 0.5,
+                    graderGrade: null,
+                    createdAt: "1/1/2000, 12:00:00 AM",
                   },
-                  sessionId: "session 2",
-                  classifierGrade: 0.5,
-                  graderGrade: null,
-                  createdAt: "1/1/2000, 12:00:00 AM",
                 },
+              ],
+              pageInfo: {
+                hasNextPage: false,
+                endCursor: "cursor 2 ",
               },
-            ],
-            pageInfo: {
-              hasNextPage: false,
-              endCursor: "cursor 2 ",
             },
-          }}},
-          false, true
-        ),
+          },
+        }),
       ],
     });
     cy.visit("/sessions");
@@ -52,42 +52,42 @@ describe("screenshots - grade session list", () => {
     cySetup(cy);
     cyMockDefault(cy, {
       gqlQueries: [
-        mockGQL(
-          "FetchSessions",
-          { me: { sessions: {
-            edges: [
-              {
-                cursor: "cursor 1",
-                node: {
-                  lesson: {
-                    name: "lesson 1",
+        mockGQL("FetchSessions", {
+          me: {
+            sessions: {
+              edges: [
+                {
+                  cursor: "cursor 1",
+                  node: {
+                    lesson: {
+                      name: "lesson 1",
+                    },
+                    sessionId: "session 1",
+                    classifierGrade: 1,
+                    graderGrade: 1,
+                    createdAt: "1/1/2000, 12:00:00 AM",
                   },
-                  sessionId: "session 1",
-                  classifierGrade: 1,
-                  graderGrade: 1,
-                  createdAt: "1/1/2000, 12:00:00 AM",
                 },
-              },
-              {
-                cursor: "cursor 2",
-                node: {
-                  lesson: {
-                    name: "lesson 2",
+                {
+                  cursor: "cursor 2",
+                  node: {
+                    lesson: {
+                      name: "lesson 2",
+                    },
+                    sessionId: "session 2",
+                    classifierGrade: 0.5,
+                    graderGrade: null,
+                    createdAt: "1/1/2000, 12:00:00 AM",
                   },
-                  sessionId: "session 2",
-                  classifierGrade: 0.5,
-                  graderGrade: null,
-                  createdAt: "1/1/2000, 12:00:00 AM",
                 },
+              ],
+              pageInfo: {
+                hasNextPage: false,
+                endCursor: "cursor 2 ",
               },
-            ],
-            pageInfo: {
-              hasNextPage: false,
-              endCursor: "cursor 2 ",
             },
-          }}},
-          false, true
-        ),
+          },
+        }),
       ],
     });
     cy.visit("/sessions");

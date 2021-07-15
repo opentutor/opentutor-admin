@@ -10,18 +10,6 @@ import { TrainStatus } from "./dtos";
 interface MockGraphQLQuery {
   query: string;
   data: any | any[];
-  me: boolean;
-  // The original mockGql framework always stuffs the
-  // provided 'data' one level down in the response,
-  // one of two ways:
-  //  - { $query: $data }
-  // ...or
-  // - { me: $data}
-  //
-  // This is hard to work with...
-  // Over time we should migrate to ALWAYS returnBodyAsIs,
-  // but for now we need to be backwards compatible.
-  returnBodyAsIs?: boolean;
 }
 
 interface StaticResponse {
@@ -85,11 +73,9 @@ export const CONFIG_DEFAULT: AppConfig = {
 };
 
 export function mockGQLConfig(appConfig: Partial<AppConfig>): MockGraphQLQuery {
-  return mockGQL(
-    "FetchConfig",
-    { appConfig: { ...CONFIG_DEFAULT, ...(appConfig || {}) }},
-    false, true
-  );
+  return mockGQL("FetchConfig", {
+    appConfig: { ...CONFIG_DEFAULT, ...(appConfig || {}) },
+  });
 }
 
 export function cyInterceptGraphQL(cy, mocks: MockGraphQLQuery[]): void {
@@ -104,7 +90,7 @@ export function cyInterceptGraphQL(cy, mocks: MockGraphQLQuery[]): void {
     for (const mock of mocks) {
       console.log(queryBody);
       if (
-        queryBody.match(new RegExp(`^[\s]*(mutation|query)[\s]+${mock.query}[^a-zA-Z0-9_]`)) ||
+        queryBody.match(new RegExp(`^(mutation|query) ${mock.query}[{(\s]`)) ||
         queryBody.indexOf(`{ ${mock.query}(`) !== -1 ||
         queryBody.indexOf(`{ ${mock.query} {`) !== -1
       ) {
@@ -112,15 +98,15 @@ export function cyInterceptGraphQL(cy, mocks: MockGraphQLQuery[]): void {
         const bodyContent =
           data[Math.min(queryCalls[mock.query], data.length - 1)];
         let body = {};
-        if (mock.returnBodyAsIs) {
-          body = bodyContent;
-        } else if (mock.me) {
-          const _inner = {};
-          _inner[mock.query] = bodyContent;
-          body["me"] = _inner;
-        } else {
-          body[mock.query] = bodyContent;
-        }
+        // if (mock.returnBodyAsIs) {
+        body = bodyContent;
+        // } else if (mock.me) {
+        //   const _inner = {};
+        //   _inner[mock.query] = bodyContent;
+        //   body["me"] = _inner;
+        // } else {
+        //   body[mock.query] = bodyContent;
+        // }
         req.alias = mock.query;
         req.reply(
           staticResponse({
@@ -142,17 +128,10 @@ export function cyInterceptGraphQL(cy, mocks: MockGraphQLQuery[]): void {
   });
 }
 
-export function mockGQL(
-  query: string,
-  data: any | any[],
-  me = false,
-  returnBodyAsIs = false
-): MockGraphQLQuery {
+export function mockGQL(query: string, data: any | any[]): MockGraphQLQuery {
   return {
     query,
     data,
-    me,
-    returnBodyAsIs,
   };
 }
 
@@ -176,15 +155,17 @@ export function cyMockDefault(
   }
   cyInterceptGraphQL(cy, [
     mockGQLConfig(appConfig),
-    mockGQL("Login", { login: {
-      user: {
-        id: "kayla",
-        name: "Kayla",
-        email: "kayla@opentutor.com",
-        userRole: args.userRole || "author",
+    mockGQL("Login", {
+      login: {
+        user: {
+          id: "kayla",
+          name: "Kayla",
+          email: "kayla@opentutor.com",
+          userRole: args.userRole || "author",
+        },
+        accessToken: "accessToken",
       },
-      accessToken: "accessToken",
-    }}, false, true),
+    }),
     ...gqlQueries,
   ]);
 }

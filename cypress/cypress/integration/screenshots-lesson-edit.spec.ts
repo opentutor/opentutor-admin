@@ -15,31 +15,31 @@ describe("screenshots - lesson edit", () => {
     cySetup(cy);
     cyMockDefault(cy, {
       gqlQueries: [
-        mockGQL(
-          "FetchLesson",
-          { me: { lesson: {
-            lessonId: "lesson",
-            name: "lesson",
-            intro: "intro",
-            question: "question",
-            conclusion: ["conclusion"],
-            expectations: [
-              {
-                expectation: "expectation 1",
-                hints: [
-                  {
-                    text: "hint 1.1",
-                  },
-                ],
-                features: {},
-              },
-            ],
-            features: {},
-            lastTrainedAt: "",
-            isTrainable: true,
-          }}},
-          false, true
-        ),
+        mockGQL("FetchLesson", {
+          me: {
+            lesson: {
+              lessonId: "lesson",
+              name: "lesson",
+              intro: "intro",
+              question: "question",
+              conclusion: ["conclusion"],
+              expectations: [
+                {
+                  expectation: "expectation 1",
+                  hints: [
+                    {
+                      text: "hint 1.1",
+                    },
+                  ],
+                  features: {},
+                },
+              ],
+              features: {},
+              lastTrainedAt: "",
+              isTrainable: true,
+            },
+          },
+        }),
       ],
       userRole: "admin",
     });
@@ -54,29 +54,29 @@ describe("screenshots - lesson edit", () => {
     cySetup(cy);
     cyMockDefault(cy, {
       gqlQueries: [
-        mockGQL(
-          "FetchLesson",
-          { me: { lesson: {
-            lessonId: "lesson",
-            name: "lesson",
-            question: "question",
-            intro: "intro",
-            conclusion: ["conclusion"],
-            expectations: [
-              {
-                expectation: "expectation 1",
-                hints: [
-                  {
-                    text: "hint 1.1",
-                  },
-                ],
-              },
-            ],
-            lastTrainedAt: "",
-            isTrainable: true,
-          }}},
-          false, true
-        ),
+        mockGQL("FetchLesson", {
+          me: {
+            lesson: {
+              lessonId: "lesson",
+              name: "lesson",
+              question: "question",
+              intro: "intro",
+              conclusion: ["conclusion"],
+              expectations: [
+                {
+                  expectation: "expectation 1",
+                  hints: [
+                    {
+                      text: "hint 1.1",
+                    },
+                  ],
+                },
+              ],
+              lastTrainedAt: "",
+              isTrainable: true,
+            },
+          },
+        }),
       ],
       userRole: "admin",
     });

@@ -18,7 +18,7 @@ describe("sessions screen", () => {
     it("disables edit and grade if user does not have edit permissions", () => {
       cySetup(cy);
       cyMockDefault(cy, {
-        gqlQueries: [mockGQL("FetchSessions", { me: { sessions } }, false, true)],
+        gqlQueries: [mockGQL("FetchSessions", { me: { sessions } })],
       });
       cy.visit("/sessions");
       cy.get("[data-cy=session-0]")
@@ -32,7 +32,7 @@ describe("sessions screen", () => {
     it("enables edit if user is admin", () => {
       cySetup(cy);
       cyMockDefault(cy, {
-        gqlQueries: [mockGQL("FetchSessions", { me: { sessions } }, false, true)],
+        gqlQueries: [mockGQL("FetchSessions", { me: { sessions } })],
         userRole: "admin",
       });
       cy.visit("/sessions");
@@ -47,11 +47,11 @@ describe("sessions screen", () => {
     it("enables edit if user is contentManager", () => {
       cySetup(cy);
       cyMockDefault(cy, {
-        gqlQueries: [mockGQL("FetchSessions", { me: { sessions } }, false, true)],
+        gqlQueries: [mockGQL("FetchSessions", { me: { sessions } })],
         userRole: "contentManager",
       });
       cy.visit("/sessions");
-      cy.wait("@login");
+      cy.wait("@Login");
       cy.wait("@FetchSessions");
       cy.get("[data-cy=session-0]")
         .find("[data-cy=grade-button]")
@@ -65,50 +65,50 @@ describe("sessions screen", () => {
       cySetup(cy);
       cyMockDefault(cy, {
         gqlQueries: [
-          mockGQL(
-            "FetchSessions",
-            { me: { sessions: {
-              edges: [
-                {
-                  cursor: "cursor 1",
-                  node: {
-                    lesson: {
-                      lessonId: "lesson1",
-                      name: "lesson 1",
-                      createdBy: "kayla",
+          mockGQL("FetchSessions", {
+            me: {
+              sessions: {
+                edges: [
+                  {
+                    cursor: "cursor 1",
+                    node: {
+                      lesson: {
+                        lessonId: "lesson1",
+                        name: "lesson 1",
+                        createdBy: "kayla",
+                      },
+                      lessonCreatedBy: "teacher 1",
+                      sessionId: "session1",
+                      classifierGrade: 1,
+                      graderGrade: 1,
+                      createdAt: "1/1/20000, 12:00:00 AM",
+                      username: "user 1",
                     },
-                    lessonCreatedBy: "teacher 1",
-                    sessionId: "session1",
-                    classifierGrade: 1,
-                    graderGrade: 1,
-                    createdAt: "1/1/20000, 12:00:00 AM",
-                    username: "user 1",
                   },
-                },
-                {
-                  cursor: "cursor 2",
-                  node: {
-                    lesson: {
-                      lessonId: "lesson2",
-                      name: "lesson 2",
-                      createdBy: "kayla",
+                  {
+                    cursor: "cursor 2",
+                    node: {
+                      lesson: {
+                        lessonId: "lesson2",
+                        name: "lesson 2",
+                        createdBy: "kayla",
+                      },
+                      lessonCreatedBy: "teacher 2",
+                      sessionId: "session2",
+                      classifierGrade: 0.5,
+                      graderGrade: null,
+                      createdAt: "1/1/20000, 12:00:00 AM",
+                      username: "user 2",
                     },
-                    lessonCreatedBy: "teacher 2",
-                    sessionId: "session2",
-                    classifierGrade: 0.5,
-                    graderGrade: null,
-                    createdAt: "1/1/20000, 12:00:00 AM",
-                    username: "user 2",
                   },
+                ],
+                pageInfo: {
+                  hasNextPage: false,
+                  endCursor: "cursor 2 ",
                 },
-              ],
-              pageInfo: {
-                hasNextPage: false,
-                endCursor: "cursor 2 ",
               },
-            }}},
-            false, true
-          ),
+            },
+          }),
         ],
       });
       cy.visit("/sessions");
@@ -124,7 +124,7 @@ describe("sessions screen", () => {
   it("displays session table with headers", () => {
     cySetup(cy);
     cyMockDefault(cy, {
-      gqlQueries: [mockGQL("FetchSessions", { me: { sessions } }, false, true)],
+      gqlQueries: [mockGQL("FetchSessions", { me: { sessions } })],
       userRole: "admin",
     });
     cy.visit("/sessions");
@@ -155,7 +155,7 @@ describe("sessions screen", () => {
   it("displays a list of sessions", () => {
     cySetup(cy);
     cyMockDefault(cy, {
-      gqlQueries: [mockGQL("FetchSessions", { me: { sessions } }, false, true)],
+      gqlQueries: [mockGQL("FetchSessions", { me: { sessions } })],
       userRole: "admin",
     });
     cy.visit("/sessions");
@@ -198,7 +198,7 @@ describe("sessions screen", () => {
   it("opens edit for a session", () => {
     cySetup(cy);
     cyMockDefault(cy, {
-      gqlQueries: [mockGQL("FetchSessions", { me: { sessions } }, false, true)],
+      gqlQueries: [mockGQL("FetchSessions", { me: { sessions } })],
       userRole: "admin",
     });
     cy.visit("/sessions");
@@ -214,7 +214,7 @@ describe("sessions screen", () => {
   it("opens grade for a session", () => {
     cySetup(cy);
     cyMockDefault(cy, {
-      gqlQueries: [mockGQL("FetchSessions", { me: { sessions } }, false, true)],
+      gqlQueries: [mockGQL("FetchSessions", { me: { sessions } })],
       userRole: "admin",
     });
     cy.visit("/sessions");
@@ -229,7 +229,7 @@ describe("sessions screen", () => {
   it("displays an option to view already graded sessions", () => {
     cySetup(cy);
     cyMockDefault(cy, {
-      gqlQueries: [mockGQL("FetchSessions", { me: { sessions } }, false, true)],
+      gqlQueries: [mockGQL("FetchSessions", { me: { sessions } })],
       userRole: "admin",
     });
     cy.visit("/sessions");

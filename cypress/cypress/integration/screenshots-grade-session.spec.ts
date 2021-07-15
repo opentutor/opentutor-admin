@@ -15,79 +15,79 @@ describe("screenshots - grade session", () => {
     cySetup(cy);
     cyMockDefault(cy, {
       gqlQueries: [
-        mockGQL(
-          "FetchSession",
-          { me: { session: {
-            sessionId: "session1",
-            lesson: {
-              name: "lesson 1",
-              createdByName: "username1",
-            },
-            graderGrade: null,
-            question: {
-              text: "question?",
-              expectations: [
-                { text: "expected text 1" },
-                { text: "expected text 2" },
+        mockGQL("FetchSession", {
+          me: {
+            session: {
+              sessionId: "session1",
+              lesson: {
+                name: "lesson 1",
+                createdByName: "username1",
+              },
+              graderGrade: null,
+              question: {
+                text: "question?",
+                expectations: [
+                  { text: "expected text 1" },
+                  { text: "expected text 2" },
+                ],
+              },
+              userResponses: [
+                {
+                  text: "answer 1",
+                  expectationScores: [
+                    {
+                      classifierGrade: "Good",
+                      graderGrade: "Good",
+                    },
+                    {
+                      classifierGrade: "Bad",
+                      graderGrade: "",
+                    },
+                  ],
+                },
+                {
+                  text: "answer 2",
+                  expectationScores: [
+                    {
+                      classifierGrade: "Bad",
+                      graderGrade: "",
+                    },
+                    {
+                      classifierGrade: "Good",
+                      graderGrade: "",
+                    },
+                  ],
+                },
+                {
+                  text: "answer 3",
+                  expectationScores: [
+                    {
+                      classifierGrade: "Bad",
+                      graderGrade: "",
+                    },
+                    {
+                      classifierGrade: "Bad",
+                      graderGrade: "Bad",
+                    },
+                  ],
+                },
+                {
+                  text: "answer 4",
+                  expectationScores: [
+                    {
+                      classifierGrade: "Good",
+                      graderGrade: "Good",
+                    },
+                    {
+                      classifierGrade: "Bad",
+                      graderGrade: "Bad",
+                    },
+                  ],
+                },
               ],
             },
-            userResponses: [
-              {
-                text: "answer 1",
-                expectationScores: [
-                  {
-                    classifierGrade: "Good",
-                    graderGrade: "Good",
-                  },
-                  {
-                    classifierGrade: "Bad",
-                    graderGrade: "",
-                  },
-                ],
-              },
-              {
-                text: "answer 2",
-                expectationScores: [
-                  {
-                    classifierGrade: "Bad",
-                    graderGrade: "",
-                  },
-                  {
-                    classifierGrade: "Good",
-                    graderGrade: "",
-                  },
-                ],
-              },
-              {
-                text: "answer 3",
-                expectationScores: [
-                  {
-                    classifierGrade: "Bad",
-                    graderGrade: "",
-                  },
-                  {
-                    classifierGrade: "Bad",
-                    graderGrade: "Bad",
-                  },
-                ],
-              },
-              {
-                text: "answer 4",
-                expectationScores: [
-                  {
-                    classifierGrade: "Good",
-                    graderGrade: "Good",
-                  },
-                  {
-                    classifierGrade: "Bad",
-                    graderGrade: "Bad",
-                  },
-                ],
-              },
-            ],
-          }}},
-          false, true
-        ),
+          },
+        }),
       ],
       userRole: "admin",
     });

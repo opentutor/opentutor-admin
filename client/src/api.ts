@@ -52,7 +52,7 @@ export async function fetchAppConfig(): Promise<AppConfig> {
     GRAPHQL_ENDPOINT,
     {
       query: `
-      query FetchConfig {
+      query FetchConfig{
         appConfig {
           googleClientId
         }
@@ -671,7 +671,7 @@ export async function updateUserPermissions(
         }
       }
     `,
-    variables: { userId, permissionLevel},
+      variables: { userId, permissionLevel },
     },
     { headers: headers }
   );

@@ -103,9 +103,9 @@ describe("Navigation bar", () => {
     cyMockDefault(cy, {
       userRole: "admin",
       gqlQueries: [
-        mockGQL("FetchLessons", { me: { lessons } }, false, true),
-        mockGQL("FetchSessions", { me: { sessions } }, false, true),
-        mockGQL("FetchUsers", { me: { users } }, false, true),
+        mockGQL("FetchLessons", { me: { lessons } }),
+        mockGQL("FetchSessions", { me: { sessions } }),
+        mockGQL("FetchUsers", { me: { users } }),
       ],
     });
     cy.visit("/lessons");
@@ -143,34 +143,34 @@ describe("Navigation bar", () => {
     cySetup(cy);
     cyMockDefault(cy, {
       gqlQueries: [
-        mockGQL(
-          "FetchSession",
-          { me: { session: {
-            username: "username1",
-            sessionId: "session1",
-            createdAt: "1/1/2001",
-            lesson: {
-              name: "lesson 1",
-            },
-            graderGrade: null,
-            question: {
-              text: "question?",
-              expectations: [{ text: "expected text 1" }],
-            },
-            userResponses: [
-              {
-                text: "answer 1",
-                expectationScores: [
-                  {
-                    classifierGrade: "Good",
-                    graderGrade: "",
-                  },
-                ],
+        mockGQL("FetchSession", {
+          me: {
+            session: {
+              username: "username1",
+              sessionId: "session1",
+              createdAt: "1/1/2001",
+              lesson: {
+                name: "lesson 1",
               },
-            ],
-          }}},
-          false, true
-        ),
+              graderGrade: null,
+              question: {
+                text: "question?",
+                expectations: [{ text: "expected text 1" }],
+              },
+              userResponses: [
+                {
+                  text: "answer 1",
+                  expectationScores: [
+                    {
+                      classifierGrade: "Good",
+                      graderGrade: "",
+                    },
+                  ],
+                },
+              ],
+            },
+          },
+        }),
       ],
       userRole: "admin",
     });
