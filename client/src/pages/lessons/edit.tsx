@@ -126,6 +126,7 @@ const newLesson: Lesson = {
   expectations: [
     {
       expectation: "Add a short ideal answer for an expectation, e.g. 'Red'",
+      expectationId: uuid().toString(),
       hints: [
         {
           text: "Add a hint to help for the expectation, e.g. 'One of them starts with R'",
@@ -189,6 +190,7 @@ const LessonEdit = (props: {
     if (lessonId) {
       fetchLesson(lessonId, cookies.accessToken)
         .then((lesson: Lesson) => {
+          console.log(lesson)
           setLesson(lesson);
         })
         .catch((err: string) => console.error(err));
