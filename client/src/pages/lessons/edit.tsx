@@ -190,7 +190,7 @@ const LessonEdit = (props: {
     if (lessonId) {
       fetchLesson(lessonId, cookies.accessToken)
         .then((lesson: Lesson) => {
-          console.log(lesson)
+          console.log(lesson);
           setLesson(lesson);
         })
         .catch((err: string) => console.error(err));
