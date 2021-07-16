@@ -37,7 +37,7 @@ describe("Login", () => {
   it("redirects to lesson page after logging in", () => {
     cySetup(cy);
     cyMockDefault(cy, {
-      gqlQueries: [mockGQL("lessons", lessons, true)],
+      gqlQueries: [mockGQL("FetchLessons", { me: { lessons } })],
     });
     cy.visit("/");
     cy.location("pathname").should("contain", "lessons");
@@ -47,7 +47,7 @@ describe("Login", () => {
   it("redirects to home page after logging out", () => {
     cySetup(cy);
     cyMockDefault(cy, {
-      gqlQueries: [mockGQL("lessons", lessons, true)],
+      gqlQueries: [mockGQL("FetchLessons", { me: { lessons } })],
     });
     cy.visit("/");
     cy.location("pathname").should("contain", "lessons");

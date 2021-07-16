@@ -54,7 +54,7 @@ describe("edit lesson screen", () => {
     it("cannot view lesson page if user does not have permission to edit", () => {
       cySetup(cy);
       cyMockDefault(cy, {
-        gqlQueries: [mockGQL("lesson", lesson, true)],
+        gqlQueries: [mockGQL("FetchLesson", { me: { lesson } })],
       });
       cy.visit("/lessons/edit?lessonId=q1");
       cy.contains("You do not have permission to view this lesson.");
@@ -64,15 +64,15 @@ describe("edit lesson screen", () => {
       cySetup(cy);
       cyMockDefault(cy, {
         gqlQueries: [
-          mockGQL(
-            "lesson",
-            {
-              ...lesson,
-              createdBy: "kayla",
-              createdByName: "Kayla",
+          mockGQL("FetchLesson", {
+            me: {
+              lesson: {
+                ...lesson,
+                createdBy: "kayla",
+                createdByName: "Kayla",
+              },
             },
-            true
-          ),
+          }),
         ],
       });
       cy.visit("/lessons/edit?lessonId=q1");
@@ -84,7 +84,7 @@ describe("edit lesson screen", () => {
     it("can view lesson page if user is admin", () => {
       cySetup(cy);
       cyMockDefault(cy, {
-        gqlQueries: [mockGQL("lesson", lesson, true)],
+        gqlQueries: [mockGQL("FetchLesson", { me: { lesson } })],
         userRole: "admin",
       });
       cy.visit("/lessons/edit?lessonId=q1");
@@ -96,7 +96,7 @@ describe("edit lesson screen", () => {
     it("can view lesson page if user is content manager", () => {
       cySetup(cy);
       cyMockDefault(cy, {
-        gqlQueries: [mockGQL("lesson", lesson, true)],
+        gqlQueries: [mockGQL("FetchLesson", { me: { lesson } })],
         userRole: "contentManager",
       });
       cy.visit("/lessons/edit?lessonId=q1");
@@ -275,7 +275,7 @@ describe("edit lesson screen", () => {
     it("loads a copy of the lesson", () => {
       cySetup(cy);
       cyMockDefault(cy, {
-        gqlQueries: [mockGQL("lesson", lesson, true)],
+        gqlQueries: [mockGQL("FetchLesson", { me: { lesson } })],
         userRole: "admin",
       });
       cy.visit("/lessons/edit?copyLesson=q1");
@@ -314,7 +314,7 @@ describe("edit lesson screen", () => {
     it("lesson copy has a new id, name, and creator", () => {
       cySetup(cy);
       cyMockDefault(cy, {
-        gqlQueries: [mockGQL("lesson", lesson, true)],
+        gqlQueries: [mockGQL("FetchLesson", { me: { lesson } })],
         userRole: "admin",
       });
       cy.visit("/lessons/edit?copyLesson=q1");
@@ -330,7 +330,7 @@ describe("edit lesson screen", () => {
     it("lessonId is invalid if it contains symbols", () => {
       cySetup(cy);
       cyMockDefault(cy, {
-        gqlQueries: [mockGQL("lesson", lesson, true)],
+        gqlQueries: [mockGQL("FetchLesson", { me: { lesson } })],
         userRole: "admin",
       });
       cy.visit("/lessons/edit?lessonId=q1");
@@ -345,7 +345,7 @@ describe("edit lesson screen", () => {
     it("lessonId is invalid if it contains capital letters", () => {
       cySetup(cy);
       cyMockDefault(cy, {
-        gqlQueries: [mockGQL("lesson", lesson, true)],
+        gqlQueries: [mockGQL("FetchLesson", { me: { lesson } })],
         userRole: "admin",
       });
       cy.visit("/lessons/edit?lessonId=q1");
@@ -360,10 +360,7 @@ describe("edit lesson screen", () => {
     it("lessonId is invalid if another lesson is already using the lessonId", () => {
       cySetup(cy);
       cyMockDefault(cy, {
-        gqlQueries: [
-          mockGQL("lesson", lesson, true),
-          mockGQL("lessons", lessons, true),
-        ],
+        gqlQueries: [mockGQL("FetchLessons", { me: { lessons } })],
         userRole: "admin",
       });
       cy.visit("/lessons/edit");
@@ -390,7 +387,7 @@ describe("edit lesson screen", () => {
   it("loads a lesson", () => {
     cySetup(cy);
     cyMockDefault(cy, {
-      gqlQueries: [mockGQL("lesson", lesson, true)],
+      gqlQueries: [mockGQL("FetchLesson", { me: { lesson } })],
       userRole: "admin",
     });
     cy.visit("/lessons/edit?lessonId=q1");
@@ -485,7 +482,7 @@ describe("edit lesson screen", () => {
   it("can navigate to expectation data page from expectation card", () => {
     cySetup(cy);
     cyMockDefault(cy, {
-      gqlQueries: [mockGQL("lesson", lesson, true)],
+      gqlQueries: [mockGQL("FetchLesson", { me: { lesson } })],
       userRole: "admin",
     });
     cy.visit("/lessons/edit?lessonId=q1");
@@ -535,7 +532,7 @@ describe("edit lesson screen", () => {
   it("save button is hidden if no edits were made", () => {
     cySetup(cy);
     cyMockDefault(cy, {
-      gqlQueries: [mockGQL("lesson", lesson, true)],
+      gqlQueries: [mockGQL("FetchLesson", { me: { lesson } })],
       userRole: "admin",
     });
     cy.visit("/lessons/edit?lessonId=q1");
@@ -545,7 +542,7 @@ describe("edit lesson screen", () => {
   it("save button is visible after making an edit", () => {
     cySetup(cy);
     cyMockDefault(cy, {
-      gqlQueries: [mockGQL("lesson", lesson, true)],
+      gqlQueries: [mockGQL("FetchLesson", { me: { lesson } })],
       userRole: "admin",
     });
     cy.visit("/lessons/edit?lessonId=q1");
@@ -556,7 +553,7 @@ describe("edit lesson screen", () => {
   it("makes an edit and clicks on save", () => {
     cySetup(cy);
     cyMockDefault(cy, {
-      gqlQueries: [mockGQL("lesson", lesson, true)],
+      gqlQueries: [mockGQL("FetchLesson", { me: { lesson } })],
       userRole: "admin",
     });
     cy.visit("/lessons/edit?lessonId=q1");
@@ -567,7 +564,7 @@ describe("edit lesson screen", () => {
   it("launches lesson", () => {
     cySetup(cy);
     cyMockDefault(cy, {
-      gqlQueries: [mockGQL("lesson", lesson, true)],
+      gqlQueries: [mockGQL("FetchLesson", { me: { lesson } })],
       userRole: "admin",
     });
     cy.visit("/lessons/edit?lessonId=q1");

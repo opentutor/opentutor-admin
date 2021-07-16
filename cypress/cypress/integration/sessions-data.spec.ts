@@ -281,9 +281,7 @@ describe("expectation data page", () => {
     cySetup(cy);
     cyMockDefault(cy, {
       userRole: "admin",
-      gqlQueries: [
-        mockGQL("FetchSessions", { me: expectationDataResponse }, false, true),
-      ],
+      gqlQueries: [mockGQL("FetchSessions", { me: expectationDataResponse })],
     });
     cy.visit(`/sessions/data?lessonId=q1&expectation=${expectationToTest}`);
     cy.get("[data-cy=malformed-link]").should("not.exist");
@@ -322,13 +320,8 @@ describe("expectation data page", () => {
     cyMockDefault(cy, {
       userRole: "admin",
       gqlQueries: [
-        mockGQL("FetchSessions", { me: expectationDataResponse }, false, true),
-        mockGQL(
-          "InvalidateResponse",
-          { me: invalidationResponse },
-          false,
-          true
-        ),
+        mockGQL("FetchSessions", { me: expectationDataResponse }),
+        mockGQL("InvalidateResponse", { me: invalidationResponse }),
       ],
     });
     cy.visit(`/sessions/data?lessonId=q1&expectation=${expectationToTest}`);
@@ -353,13 +346,8 @@ describe("expectation data page", () => {
     cyMockDefault(cy, {
       userRole: "admin",
       gqlQueries: [
-        mockGQL("FetchSessions", { me: expectationDataResponse }, false, true),
-        mockGQL(
-          "InvalidateResponse",
-          { me: invalidationResponse },
-          false,
-          true
-        ),
+        mockGQL("FetchSessions", { me: expectationDataResponse }),
+        mockGQL("InvalidateResponse", { me: invalidationResponse }),
       ],
     });
     cy.visit(`/sessions/data?lessonId=q1&expectation=${expectationToTest}`);
@@ -383,13 +371,8 @@ describe("expectation data page", () => {
     cyMockDefault(cy, {
       userRole: "admin",
       gqlQueries: [
-        mockGQL("FetchSessions", { me: expectationDataResponse }, false, true),
-        mockGQL(
-          "InvalidateResponse",
-          { me: revalidationResponse },
-          false,
-          true
-        ),
+        mockGQL("FetchSessions", { me: expectationDataResponse }),
+        mockGQL("InvalidateResponse", { me: revalidationResponse }),
       ],
     });
     cy.visit(`/sessions/data?lessonId=q1&expectation=${expectationToTest}`);
@@ -410,9 +393,7 @@ describe("expectation data page", () => {
     cySetup(cy);
     cyMockDefault(cy, {
       userRole: "admin",
-      gqlQueries: [
-        mockGQL("FetchSessions", { me: expectationDataResponse }, false, true),
-      ],
+      gqlQueries: [mockGQL("FetchSessions", { me: expectationDataResponse })],
     });
     cy.visit("/sessions/data?lessonId=q1&expectation=0");
     cy.get("[data-cy=filter-button]").should("exist");
@@ -422,9 +403,7 @@ describe("expectation data page", () => {
     cySetup(cy);
     cyMockDefault(cy, {
       userRole: "admin",
-      gqlQueries: [
-        mockGQL("FetchSessions", { me: expectationDataResponse }, false, true),
-      ],
+      gqlQueries: [mockGQL("FetchSessions", { me: expectationDataResponse })],
     });
     cy.visit("/sessions/data?lessonId=q1&expectation=0");
     cy.contains("Rows per page");

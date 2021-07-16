@@ -80,7 +80,7 @@ describe("lesson screen - training", () => {
     )}`, () => {
       cySetup(cy);
       cyMockDefault(cy, {
-        gqlQueries: [mockGQL("lesson", lesson, true)],
+        gqlQueries: [mockGQL("FetchLesson", { me: { lesson } })],
         userRole: "admin",
       });
       const waitTrainLesson = cyMockTrain(cy);
@@ -117,7 +117,7 @@ describe("lesson screen - training", () => {
   it("train lesson fails for state FAILURE", () => {
     cySetup(cy);
     cyMockDefault(cy, {
-      gqlQueries: [mockGQL("lesson", lesson, true)],
+      gqlQueries: [mockGQL("FetchLesson", { me: { lesson } })],
       userRole: "admin",
     });
     cy.visit("/lessons/edit?lessonId=lesson&trainStatusPollInterval=10");
@@ -140,7 +140,7 @@ describe("lesson screen - training", () => {
   it("train lesson fails for http error on start", () => {
     cySetup(cy);
     cyMockDefault(cy, {
-      gqlQueries: [mockGQL("lesson", lesson, true)],
+      gqlQueries: [mockGQL("FetchLesson", { me: { lesson } })],
       userRole: "admin",
     });
     cy.visit("/lessons/edit?lessonId=lesson&trainStatusPollInterval=10");
@@ -153,7 +153,7 @@ describe("lesson screen - training", () => {
   it("train lesson fails for http error on poll status", () => {
     cySetup(cy);
     cyMockDefault(cy, {
-      gqlQueries: [mockGQL("lesson", lesson, true)],
+      gqlQueries: [mockGQL("FetchLesson", { me: { lesson } })],
       userRole: "admin",
     });
     cy.visit("/lessons/edit?lessonId=lesson&trainStatusPollInterval=10");
