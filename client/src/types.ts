@@ -85,6 +85,7 @@ export interface Lesson {
 }
 
 export interface LessonExpectation {
+  expectationId: string;
   expectation: string;
   features: Features;
   hints: Hint[];

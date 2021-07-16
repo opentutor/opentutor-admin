@@ -436,6 +436,7 @@ export async function fetchLesson(
             image
             conclusion
             expectations {
+              expectationId
               expectation
               features
               hints {
