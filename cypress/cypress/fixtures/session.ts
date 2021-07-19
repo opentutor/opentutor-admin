@@ -14,17 +14,19 @@ export const session = {
   graderGrade: null,
   question: {
     text: "question?",
-    expectations: [{ text: "expected text 1" }, { text: "expected text 2" }],
+    expectations: [{ expectationId: "0", text: "expected text 1" }, { expectationId: "1", text: "expected text 2" }],
   },
   userResponses: [
     {
       text: "answer 1",
       expectationScores: [
         {
+          expectationId:"0",
           classifierGrade: "Good",
           graderGrade: "",
         },
         {
+          expectationId:"1",
           classifierGrade: "Bad",
           graderGrade: "",
         },
@@ -34,10 +36,12 @@ export const session = {
       text: "answer 2",
       expectationScores: [
         {
+          expectationId:"0",
           classifierGrade: "Bad",
           graderGrade: "",
         },
         {
+          expectationId:"1",
           classifierGrade: "Good",
           graderGrade: "",
         },

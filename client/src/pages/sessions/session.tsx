@@ -110,6 +110,8 @@ const SessionTable = (props: { search: { sessionId: string } }) => {
     return <div>You do not have permission to grade this session.</div>;
   }
 
+  const expectationIdToColumnMap : Map<string, number> = new Map<string, number>();
+
   return (
     <Paper className={classes.root}>
       <div data-cy="lesson">{session.lesson?.name || "No Lesson Name"}</div>
@@ -129,8 +131,9 @@ const SessionTable = (props: { search: { sessionId: string } }) => {
               <TableCell align="center" style={{ width: 100 }}>
                 User Answer
               </TableCell>
-              {session.question?.expectations.map((column, i: number) => (
-                <TableCell
+              {session.question?.expectations.map((column, i: number) => {
+                expectationIdToColumnMap.set(column.expectationId, i);
+                return <TableCell
                   key={`expectation-${i}`}
                   data-cy={`expectation-${i}`}
                   align="center"
@@ -138,7 +141,7 @@ const SessionTable = (props: { search: { sessionId: string } }) => {
                 >
                   {column.text}
                 </TableCell>
-              ))}
+              })}
             </TableRow>
           </TableHead>
           <TableBody>
@@ -152,8 +155,12 @@ const SessionTable = (props: { search: { sessionId: string } }) => {
                   tabIndex={-1}
                 >
                   <TableCell data-cy="answer">{row.text}</TableCell>
-                  {session?.question?.expectations.map((column, j: number) => (
-                    <TableCell
+                  {session?.question?.expectations.map((column) => {
+                    const j = expectationIdToColumnMap.get(column.expectationId)
+                    if (!j && j != 0)
+                      return
+
+                    return <TableCell
                       style={{
                         backgroundColor:
                           row.expectationScores[j].graderGrade === "Good"
@@ -219,7 +226,7 @@ const SessionTable = (props: { search: { sessionId: string } }) => {
                         </Select>
                       </Typography>
                     </TableCell>
-                  ))}
+                })}
                 </TableRow>
               );
             })}

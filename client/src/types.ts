@@ -47,6 +47,7 @@ export interface Question {
 }
 
 export interface Expectation {
+  expectationId: string;
   text: string;
 }
 
@@ -57,6 +58,7 @@ export interface UserResponse {
 }
 
 export interface ExpectationScore {
+  expectationId: string;
   invalidated: boolean;
   classifierGrade: string;
   graderGrade?: string;

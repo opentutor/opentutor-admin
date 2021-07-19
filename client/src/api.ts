@@ -276,12 +276,14 @@ export async function fetchSession(
             question {
               text
               expectations {
+                expectationId
                 text
               }
             }
             userResponses {
               text
               expectationScores {
+                expectationId
                 classifierGrade
                 graderGrade
               }
