@@ -482,6 +482,7 @@ export async function updateLesson(
             image
             conclusion
             expectations {
+              expectationId
               expectation
               features
               hints {

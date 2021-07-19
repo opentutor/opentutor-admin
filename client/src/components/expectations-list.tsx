@@ -7,6 +7,7 @@ The full terms of this copyright and license should always be found in the root 
 import Ajv from "ajv";
 import clsx from "clsx";
 import React from "react";
+import { v4 as uuid } from "uuid";
 import { navigate } from "gatsby";
 import {
   DragDropContext,
@@ -180,7 +181,6 @@ const ExpectationCard = (props: {
         <Button
           data-cy={`view-expectation-${expIdx}-data-button`}
           style={{ marginLeft: 15, marginTop: 10 }}
-          variant="contained"
           endIcon={<LaunchIcon />}
           onClick={() => {
             navigate(
@@ -252,6 +252,7 @@ function ExpectationsList(props: {
       ...expectations,
       {
         expectation: "Add a short ideal answer for an expectation, e.g. 'Red'",
+        expectationId: uuid().toString(),
         hints: [
           {
             text: "Add a hint to help for the expectation, e.g. 'One of them starts with R'",

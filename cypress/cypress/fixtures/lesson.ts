@@ -15,6 +15,7 @@ export const lesson = {
   expectations: [
     {
       expectation: "expectation 1",
+      expectationId: "1",
       hints: [
         {
           text: "hint 1.1",
