@@ -81,7 +81,7 @@ describe("edit lesson screen", () => {
       });
     });
 
-    it.only("can view lesson page if user is admin", () => {
+    it("can view lesson page if user is admin", () => {
       cySetup(cy);
       cyMockDefault(cy, {
         gqlQueries: [mockGQL("FetchLesson", { me: { lesson } })],

@@ -164,7 +164,7 @@ const SessionTable = (props: { search: { sessionId: string } }) => {
                     const j = expectationIdToColumnMap.get(
                       column.expectationId
                     );
-                    if (!j && j != 0) return;
+                    if(isNaN(Number(j))) { return; }
 
                     return (
                       <TableCell
