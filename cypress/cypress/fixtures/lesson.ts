@@ -10,7 +10,43 @@ export const lesson = {
   name: "lesson",
   intro: "introduction",
   question: "question",
+  mediaType: "none",
   image: null,
+  video: {
+    link: null,
+    start: null,
+    end: null,
+  },
+  conclusion: ["conclusion"],
+  expectations: [
+    {
+      expectation: "expectation 1",
+      hints: [
+        {
+          text: "hint 1.1",
+        },
+      ],
+      features: {
+        bad: ["bad1", "bad2"],
+      },
+    },
+  ],
+  createdBy: "opentutor",
+  createdByName: "OpenTutor",
+};
+
+export const videoLesson = {
+  lessonId: "q1",
+  name: "lesson",
+  intro: "introduction",
+  question: "question",
+  mediaType: "video",
+  image: null,
+  video: {
+    link: "https://youtube.come/?w=apple",
+    start: 0,
+    end: 100,
+  },
   conclusion: ["conclusion"],
   expectations: [
     {

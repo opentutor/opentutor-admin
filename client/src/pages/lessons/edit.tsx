@@ -36,7 +36,7 @@ import NavBar from "components/nav-bar";
 import ConclusionsList from "components/conclusions-list";
 import ExpectationsList from "components/expectations-list";
 import { validateExpectationFeatures } from "schemas/validation";
-import { Lesson, LessonExpectation, TrainState } from "types";
+import { Lesson, LessonExpectation, MediaType, TrainState } from "types";
 import withLocation from "wrap-with-location";
 import { useWithTraining } from "hooks/use-with-training";
 import "styles/layout.css";
@@ -98,6 +98,11 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
     alignItems: "center",
   },
+  video: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  },
   thumbnail: {
     padding: 10,
   },
@@ -109,6 +114,10 @@ const useStyles = makeStyles((theme) => ({
   },
   selectEmpty: {
     marginTop: theme.spacing(2),
+  },
+  selectForm: {
+    margin: theme.spacing(1),
+    minWidth: 120,
   },
 }));
 
@@ -137,7 +146,13 @@ const newLesson: Lesson = {
   createdAt: "",
   createdBy: "",
   createdByName: "",
+  mediaType: MediaType.NONE,
   image: "",
+  video: {
+    link: "",
+    start: 0.0,
+    end: 0.0,
+  },
   features: {},
   lastTrainedAt: "",
   updatedAt: "",
@@ -388,8 +403,12 @@ const LessonEdit = (props: {
           />
           {/* Dropdown */}
 
-          <FormControl style={{ width: 800, marginLeft: 8 }}>
-            <InputLabel shrink id="demo-simple-select-placeholder-label-label">
+          <FormControl
+            style={{ width: 800 }}
+            className={classes.selectForm}
+            variant="outlined"
+          >
+            <InputLabel shrink id="dialog-category-label">
               Dialog Category
             </InputLabel>
             <Select
@@ -475,39 +494,173 @@ const LessonEdit = (props: {
             }}
             variant="outlined"
           />
-          <div className={classes.image}>
-            <TextField
-              data-cy="image"
-              label="Image"
-              placeholder="Link to image url"
-              multiline
-              rowsMax={4}
-              fullWidth
-              InputLabelProps={{
-                shrink: true,
-              }}
-              value={lessonUnderEdit.lesson?.image || ""}
-              onChange={(e) => {
+          <FormControl
+            style={{ width: 800 }}
+            className={classes.selectForm}
+            variant="outlined"
+          >
+            <InputLabel shrink id="media-label">
+              Media Type
+            </InputLabel>
+            <Select
+              labelId="media-label"
+              data-cy="media-type"
+              value={lessonUnderEdit.lesson.mediaType ?? "none"}
+              onChange={(e: React.ChangeEvent<{ value: unknown }>) => {
                 setLesson(
                   {
                     ...(lessonUnderEdit.lesson || newLesson),
-                    image: e.target.value || "",
+                    mediaType: (e.target.value as string) || "",
                   },
                   true
                 );
               }}
-              variant="outlined"
-            />
-            <img
-              className={classes.thumbnail}
-              data-cy="image-thumbnail"
-              src={lessonUnderEdit.lesson?.image}
-              style={{ height: 50 }}
-              onClick={() => {
-                window.open(lessonUnderEdit.lesson?.image, "_blank");
-              }}
-            />
-          </div>
+            >
+              <MenuItem data-cy="media-none" value={MediaType.NONE}>
+                None
+              </MenuItem>
+              <MenuItem data-cy="media-image" value={MediaType.IMAGE}>
+                Image
+              </MenuItem>
+              <MenuItem data-cy="media-video" value={MediaType.VIDEO}>
+                Video
+              </MenuItem>
+            </Select>
+            {/* <FormHelperText>Select a Media Type</FormHelperText> */}
+          </FormControl>
+          {lessonUnderEdit.lesson.mediaType === MediaType.IMAGE ? (
+            <div className={classes.image}>
+              <TextField
+                data-cy="image"
+                label="Image"
+                placeholder="Link to image url"
+                required
+                multiline
+                rowsMax={4}
+                fullWidth
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                value={lessonUnderEdit.lesson?.image || ""}
+                onChange={(e) => {
+                  setLesson(
+                    {
+                      ...(lessonUnderEdit.lesson || newLesson),
+                      image: e.target.value || "",
+                    },
+                    true
+                  );
+                }}
+                variant="outlined"
+              />
+              <img
+                className={classes.thumbnail}
+                data-cy="image-thumbnail"
+                src={lessonUnderEdit.lesson?.image}
+                style={{ height: 50 }}
+                onClick={() => {
+                  window.open(lessonUnderEdit.lesson?.image, "_blank");
+                }}
+              />
+            </div>
+          ) : (
+            <></>
+          )}
+          {lessonUnderEdit.lesson.mediaType === MediaType.VIDEO ? (
+            <>
+              <TextField
+                data-cy="video-link"
+                label="Video"
+                placeholder="Link to YouTube video"
+                required
+                multiline
+                rowsMax={4}
+                fullWidth
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                value={lessonUnderEdit.lesson?.video.link || ""}
+                onChange={(e) => {
+                  setLesson(
+                    {
+                      ...(lessonUnderEdit.lesson || newLesson),
+                      video: {
+                        ...(lessonUnderEdit.lesson || newLesson).video,
+                        link: e.target.value || "",
+                      },
+                    },
+                    true
+                  );
+                }}
+                variant="outlined"
+              />
+              <div className={classes.video}>
+                <div style={{ display: "flex" }}>
+                  <TextField
+                    data-cy="video-start"
+                    label="Video Start Time"
+                    placeholder="0.0"
+                    type="number"
+                    required
+                    multiline
+                    rowsMax={1}
+                    style={{ width: "50%" }}
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    value={lessonUnderEdit.lesson?.video.start || 0}
+                    onChange={(e) => {
+                      setLesson(
+                        {
+                          ...(lessonUnderEdit.lesson || newLesson),
+                          video: {
+                            ...(lessonUnderEdit.lesson || newLesson).video,
+                            start: parseFloat(e.target.value) || 0,
+                          },
+                        },
+                        true
+                      );
+                    }}
+                    variant="outlined"
+                  />
+                  <TextField
+                    data-cy="video-end"
+                    label="Video End Time"
+                    placeholder="180.0"
+                    type="number"
+                    required
+                    multiline
+                    rowsMax={1}
+                    style={{ width: "50%" }}
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    value={
+                      lessonUnderEdit.lesson?.video.end ||
+                      Number.MAX_SAFE_INTEGER
+                    }
+                    onChange={(e) => {
+                      setLesson(
+                        {
+                          ...(lessonUnderEdit.lesson || newLesson),
+                          video: {
+                            ...(lessonUnderEdit.lesson || newLesson).video,
+                            end:
+                              parseFloat(e.target.value) ||
+                              Number.MAX_SAFE_INTEGER,
+                          },
+                        },
+                        true
+                      );
+                    }}
+                    variant="outlined"
+                  />
+                </div>
+              </div>
+            </>
+          ) : (
+            <></>
+          )}
         </Grid>
         <Divider style={{ marginTop: 20 }} />
         <ExpectationsList
