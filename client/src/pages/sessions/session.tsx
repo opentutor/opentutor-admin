@@ -172,14 +172,17 @@ const SessionTable = (props: { search: { sessionId: string } }) => {
                       <TableCell
                         style={{
                           backgroundColor:
-                            row.expectationScores[j].graderGrade === "Good"
+                            row.expectationScores[Number(j)].graderGrade ===
+                            "Good"
                               ? "#90EE90"
-                              : row.expectationScores[j].graderGrade === "Bad"
+                              : row.expectationScores[Number(j)].graderGrade ===
+                                "Bad"
                               ? "#F08080"
-                              : row.expectationScores[j].graderGrade ===
+                              : row.expectationScores[Number(j)].graderGrade ===
                                 "Neutral"
                               ? "#D3D3D3"
-                              : row.expectationScores[j].graderGrade === "" &&
+                              : row.expectationScores[Number(j)].graderGrade ===
+                                  "" &&
                                 row.expectationScores.some(
                                   (score) =>
                                     score.graderGrade === "Good" ||
@@ -199,8 +202,8 @@ const SessionTable = (props: { search: { sessionId: string } }) => {
                           component={"span"}
                         >
                           Classifier Grade:{" "}
-                          {row.expectationScores[j]
-                            ? row.expectationScores[j].classifierGrade
+                          {row.expectationScores[Number(j)]
+                            ? row.expectationScores[Number(j)].classifierGrade
                             : ""}
                         </Typography>
                         <br />
@@ -214,8 +217,8 @@ const SessionTable = (props: { search: { sessionId: string } }) => {
                             data-cy="select-grade"
                             labelId={`set-grade-${i}-${j}`}
                             value={
-                              row.expectationScores[j]
-                                ? row.expectationScores[j].graderGrade
+                              row.expectationScores[Number(j)]
+                                ? row.expectationScores[Number(j)].graderGrade
                                 : ""
                             }
                             name={`${i} ${j}`}
