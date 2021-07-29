@@ -438,7 +438,7 @@ export async function fetchLesson(
             video {
               link
               start
-              stop
+              end
             }
             conclusion
             expectations {
@@ -487,7 +487,7 @@ export async function updateLesson(
             video {
               link
               start
-              stop
+              end
             }
             conclusion
             expectations {
@@ -516,6 +516,7 @@ export async function updateLesson(
           question: lesson.question,
           mediaType: lesson.mediaType,
           image: lesson.image,
+          video: lesson.video,
           expectations: lesson.expectations,
           conclusion: lesson.conclusion,
           lastTrainedAt: lesson.lastTrainedAt,
