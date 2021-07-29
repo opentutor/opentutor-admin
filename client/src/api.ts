@@ -433,7 +433,13 @@ export async function fetchLesson(
             dialogCategory
             name
             question
+            mediaType
             image
+            video {
+              link
+              start
+              stop
+            }
             conclusion
             expectations {
               expectation
@@ -476,7 +482,13 @@ export async function updateLesson(
             dialogCategory
             name
             question
+            mediaType
             image
+            video {
+              link
+              start
+              stop
+            }
             conclusion
             expectations {
               expectation
@@ -502,6 +514,7 @@ export async function updateLesson(
           intro: lesson.intro,
           dialogCategory: lesson.dialogCategory,
           question: lesson.question,
+          mediaType: lesson.mediaType,
           image: lesson.image,
           expectations: lesson.expectations,
           conclusion: lesson.conclusion,
