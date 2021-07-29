@@ -276,12 +276,14 @@ export async function fetchSession(
             question {
               text
               expectations {
+                expectationId
                 text
               }
             }
             userResponses {
               text
               expectationScores {
+                expectationId
                 classifierGrade
                 graderGrade
               }
@@ -442,6 +444,7 @@ export async function fetchLesson(
             }
             conclusion
             expectations {
+              expectationId
               expectation
               features
               hints {
@@ -491,6 +494,7 @@ export async function updateLesson(
             }
             conclusion
             expectations {
+              expectationId
               expectation
               features
               hints {

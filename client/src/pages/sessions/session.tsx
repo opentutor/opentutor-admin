@@ -110,6 +110,11 @@ const SessionTable = (props: { search: { sessionId: string } }) => {
     return <div>You do not have permission to grade this session.</div>;
   }
 
+  const expectationIdToColumnMap: Map<string, number> = new Map<
+    string,
+    number
+  >();
+
   return (
     <Paper className={classes.root}>
       <div data-cy="lesson">{session.lesson?.name || "No Lesson Name"}</div>
@@ -129,16 +134,19 @@ const SessionTable = (props: { search: { sessionId: string } }) => {
               <TableCell align="center" style={{ width: 100 }}>
                 User Answer
               </TableCell>
-              {session.question?.expectations.map((column, i: number) => (
-                <TableCell
-                  key={`expectation-${i}`}
-                  data-cy={`expectation-${i}`}
-                  align="center"
-                  style={{ width: 170 }}
-                >
-                  {column.text}
-                </TableCell>
-              ))}
+              {session.question?.expectations.map((column, i: number) => {
+                expectationIdToColumnMap.set(column.expectationId, i);
+                return (
+                  <TableCell
+                    key={`expectation-${i}`}
+                    data-cy={`expectation-${i}`}
+                    align="center"
+                    style={{ width: 170 }}
+                  >
+                    {column.text}
+                  </TableCell>
+                );
+              })}
             </TableRow>
           </TableHead>
           <TableBody>
@@ -152,74 +160,87 @@ const SessionTable = (props: { search: { sessionId: string } }) => {
                   tabIndex={-1}
                 >
                   <TableCell data-cy="answer">{row.text}</TableCell>
-                  {session?.question?.expectations.map((column, j: number) => (
-                    <TableCell
-                      style={{
-                        backgroundColor:
-                          row.expectationScores[j].graderGrade === "Good"
-                            ? "#90EE90"
-                            : row.expectationScores[j].graderGrade === "Bad"
-                            ? "#F08080"
-                            : row.expectationScores[j].graderGrade === "Neutral"
-                            ? "#D3D3D3"
-                            : row.expectationScores[j].graderGrade === "" &&
-                              row.expectationScores.some(
-                                (score) =>
-                                  score.graderGrade === "Good" ||
-                                  score.graderGrade === "Bad" ||
-                                  score.graderGrade === "Neutral"
-                              )
-                            ? "#D3D3D3"
-                            : "white",
-                      }}
-                      key={`grade-${j}`}
-                      data-cy={`grade-${j}`}
-                      align="left"
-                    >
-                      <Typography
-                        data-cy="classifier-grade"
-                        align="right"
-                        component={"span"}
+                  {session?.question?.expectations.map((column) => {
+                    const j = expectationIdToColumnMap.get(
+                      column.expectationId
+                    );
+                    if (isNaN(Number(j))) {
+                      return;
+                    }
+
+                    return (
+                      <TableCell
+                        style={{
+                          backgroundColor:
+                            row.expectationScores[Number(j)].graderGrade ===
+                            "Good"
+                              ? "#90EE90"
+                              : row.expectationScores[Number(j)].graderGrade ===
+                                "Bad"
+                              ? "#F08080"
+                              : row.expectationScores[Number(j)].graderGrade ===
+                                "Neutral"
+                              ? "#D3D3D3"
+                              : row.expectationScores[Number(j)].graderGrade ===
+                                  "" &&
+                                row.expectationScores.some(
+                                  (score) =>
+                                    score.graderGrade === "Good" ||
+                                    score.graderGrade === "Bad" ||
+                                    score.graderGrade === "Neutral"
+                                )
+                              ? "#D3D3D3"
+                              : "white",
+                        }}
+                        key={`grade-${j}`}
+                        data-cy={`grade-${j}`}
+                        align="left"
                       >
-                        Classifier Grade:{" "}
-                        {row.expectationScores[j]
-                          ? row.expectationScores[j].classifierGrade
-                          : ""}
-                      </Typography>
-                      <br />
-                      <Typography
-                        data-cy="instructor-grade"
-                        align="right"
-                        component={"span"}
-                      >
-                        Grade:
-                        <Select
-                          data-cy="select-grade"
-                          labelId={`set-grade-${i}-${j}`}
-                          value={
-                            row.expectationScores[j]
-                              ? row.expectationScores[j].graderGrade
-                              : ""
-                          }
-                          name={`${i} ${j}`}
-                          onChange={handleGradeExpectationChange}
+                        <Typography
+                          data-cy="classifier-grade"
+                          align="right"
+                          component={"span"}
                         >
-                          <MenuItem data-cy="none" value="">
-                            <em>Empty</em>
-                          </MenuItem>
-                          <MenuItem data-cy="good" value={"Good"}>
-                            Good
-                          </MenuItem>
-                          <MenuItem data-cy="bad" value={"Bad"}>
-                            Bad
-                          </MenuItem>
-                          <MenuItem data-cy="neutral" value={"Neutral"}>
-                            Neutral
-                          </MenuItem>
-                        </Select>
-                      </Typography>
-                    </TableCell>
-                  ))}
+                          Classifier Grade:{" "}
+                          {row.expectationScores[Number(j)]
+                            ? row.expectationScores[Number(j)].classifierGrade
+                            : ""}
+                        </Typography>
+                        <br />
+                        <Typography
+                          data-cy="instructor-grade"
+                          align="right"
+                          component={"span"}
+                        >
+                          Grade:
+                          <Select
+                            data-cy="select-grade"
+                            labelId={`set-grade-${i}-${j}`}
+                            value={
+                              row.expectationScores[Number(j)]
+                                ? row.expectationScores[Number(j)].graderGrade
+                                : ""
+                            }
+                            name={`${i} ${j}`}
+                            onChange={handleGradeExpectationChange}
+                          >
+                            <MenuItem data-cy="none" value="">
+                              <em>Empty</em>
+                            </MenuItem>
+                            <MenuItem data-cy="good" value={"Good"}>
+                              Good
+                            </MenuItem>
+                            <MenuItem data-cy="bad" value={"Bad"}>
+                              Bad
+                            </MenuItem>
+                            <MenuItem data-cy="neutral" value={"Neutral"}>
+                              Neutral
+                            </MenuItem>
+                          </Select>
+                        </Typography>
+                      </TableCell>
+                    );
+                  })}
                 </TableRow>
               );
             })}
