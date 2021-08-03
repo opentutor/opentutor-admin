@@ -276,12 +276,14 @@ export async function fetchSession(
             question {
               text
               expectations {
+                expectationId
                 text
               }
             }
             userResponses {
               text
               expectationScores {
+                expectationId
                 classifierGrade
                 graderGrade
               }
@@ -328,12 +330,14 @@ export async function setGrade(
             question {
               text
               expectations {
+                expectationId
                 text
               }
             }
             userResponses {
               text
               expectationScores {
+                expectationId
                 classifierGrade
                 graderGrade
               }
@@ -436,6 +440,7 @@ export async function fetchLesson(
             image
             conclusion
             expectations {
+              expectationId
               expectation
               features
               hints {
@@ -468,7 +473,7 @@ export async function updateLesson(
     GRAPHQL_ENDPOINT,
     {
       query: `
-      mutation UpdateLesson($lessonId: String!, $lesson: UpdateLessonInputType!) {
+      mutation UpdateLesson($lessonId: ID!, $lesson: UpdateLessonInputType!) {
         me {
           updateLesson(lessonId: $lessonId, lesson: $lesson){
             lessonId
@@ -479,6 +484,7 @@ export async function updateLesson(
             image
             conclusion
             expectations {
+              expectationId
               expectation
               features
               hints {
