@@ -330,12 +330,14 @@ export async function setGrade(
             question {
               text
               expectations {
+                expectationId
                 text
               }
             }
             userResponses {
               text
               expectationScores {
+                expectationId
                 classifierGrade
                 graderGrade
               }
@@ -477,7 +479,7 @@ export async function updateLesson(
     GRAPHQL_ENDPOINT,
     {
       query: `
-      mutation UpdateLesson($lessonId: String!, $lesson: UpdateLessonInputType!) {
+      mutation UpdateLesson($lessonId: ID!, $lesson: UpdateLessonInputType!) {
         me {
           updateLesson(lessonId: $lessonId, lesson: $lesson){
             lessonId
