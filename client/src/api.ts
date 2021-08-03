@@ -330,12 +330,14 @@ export async function setGrade(
             question {
               text
               expectations {
+                expectationId
                 text
               }
             }
             userResponses {
               text
               expectationScores {
+                expectationId
                 classifierGrade
                 graderGrade
               }
