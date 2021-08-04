@@ -17,12 +17,10 @@ const lessons = {
         name: "lesson",
         intro: "introduction",
         question: "question",
-        mediaType: "image",
-        image: "",
-        video: {
-          link: null,
-          start: null,
-          end: null,
+        media: {
+          link: "",
+          type: "image",
+          props: [],
         },
         conclusion: ["conclusion"],
         expectations: [

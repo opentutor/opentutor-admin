@@ -10,12 +10,10 @@ export const lesson = {
   name: "lesson",
   intro: "introduction",
   question: "question",
-  mediaType: "none",
-  image: null,
-  video: {
-    link: null,
-    start: null,
-    end: null,
+  media: {
+    link: "",
+    type: "none",
+    props: [],
   },
   conclusion: ["conclusion"],
   expectations: [
@@ -40,12 +38,13 @@ export const videoLesson = {
   name: "lesson",
   intro: "introduction",
   question: "question",
-  mediaType: "video",
-  image: null,
-  video: {
+  media: {
     link: "https://youtube.come/?w=apple",
-    start: 0,
-    end: 100,
+    type: "video",
+    props: [
+      { name: "start", value: "0" },
+      { name: "end", value: "100" },
+    ],
   },
   conclusion: ["conclusion"],
   expectations: [

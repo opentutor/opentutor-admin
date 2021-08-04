@@ -73,9 +73,7 @@ export interface Lesson {
   intro: string;
   dialogCategory: string;
   question: string;
-  mediaType: string;
-  image: string;
-  video: Video;
+  media: Media;
   expectations: LessonExpectation[];
   conclusion: string[];
   lastTrainedAt: string;
@@ -88,10 +86,10 @@ export interface Lesson {
   deleted?: boolean;
 }
 
-export interface Video {
+export interface Media {
   link: string;
-  start: number;
-  end: number;
+  type: string;
+  props: Array<{ name: string; value: string }>;
 }
 
 export enum MediaType {

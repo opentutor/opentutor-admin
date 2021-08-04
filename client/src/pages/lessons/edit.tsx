@@ -147,12 +147,10 @@ const newLesson: Lesson = {
   createdAt: "",
   createdBy: "",
   createdByName: "",
-  mediaType: MediaType.NONE,
-  image: "",
-  video: {
+  media: {
     link: "",
-    start: 0.0,
-    end: 0.0,
+    type: MediaType.NONE,
+    props: [],
   },
   features: {},
   lastTrainedAt: "",
@@ -341,6 +339,26 @@ const LessonEdit = (props: {
     navigate(`/lessons`);
   }
 
+  function parseProps(
+    props: Array<{ name: string; value: string }>,
+    key: string
+  ): string {
+    return props.find((p) => p.name === key)?.value ?? "";
+  }
+
+  function updateProps(
+    props: Array<{ name: string; value: string }>,
+    key: string,
+    value: string
+  ): Array<{ name: string; value: string }> {
+    for (let i = 0; i < props.length; i++) {
+      if (props[i].name === key) {
+        props[i].value = value;
+      }
+    }
+    return props;
+  }
+
   if (!lessonUnderEdit.lesson) {
     return <CircularProgress className={classes.progress} />;
   }
@@ -506,12 +524,16 @@ const LessonEdit = (props: {
             <Select
               labelId="media-label"
               data-cy="media-type"
-              value={lessonUnderEdit.lesson.mediaType ?? "none"}
+              value={lessonUnderEdit.lesson.media.type ?? MediaType.NONE}
               onChange={(e: React.ChangeEvent<{ value: unknown }>) => {
                 setLesson(
                   {
                     ...(lessonUnderEdit.lesson || newLesson),
-                    mediaType: (e.target.value as string) || "",
+                    media: {
+                      type: (e.target.value as string) || "",
+                      link: "",
+                      props: [],
+                    },
                   },
                   true
                 );
@@ -529,7 +551,7 @@ const LessonEdit = (props: {
             </Select>
             {/* <FormHelperText>Select a Media Type</FormHelperText> */}
           </FormControl>
-          {lessonUnderEdit.lesson.mediaType === MediaType.IMAGE ? (
+          {lessonUnderEdit.lesson.media.type === MediaType.IMAGE ? (
             <div className={classes.image}>
               <TextField
                 data-cy="image"
@@ -542,12 +564,15 @@ const LessonEdit = (props: {
                 InputLabelProps={{
                   shrink: true,
                 }}
-                value={lessonUnderEdit.lesson?.image || ""}
+                value={lessonUnderEdit.lesson.media.link || ""}
                 onChange={(e) => {
                   setLesson(
                     {
                       ...(lessonUnderEdit.lesson || newLesson),
-                      image: e.target.value || "",
+                      media: {
+                        ...(lessonUnderEdit.lesson || newLesson).media,
+                        link: (e.target.value as string) || "",
+                      },
                     },
                     true
                   );
@@ -557,17 +582,20 @@ const LessonEdit = (props: {
               <img
                 className={classes.thumbnail}
                 data-cy="image-thumbnail"
-                src={lessonUnderEdit.lesson?.image}
+                src={lessonUnderEdit.lesson.media.link}
                 style={{ height: 50 }}
                 onClick={() => {
-                  window.open(lessonUnderEdit.lesson?.image, "_blank");
+                  window.open(
+                    lessonUnderEdit.lesson?.media.link ?? "",
+                    "_blank"
+                  );
                 }}
               />
             </div>
           ) : (
             <></>
           )}
-          {lessonUnderEdit.lesson.mediaType === MediaType.VIDEO ? (
+          {lessonUnderEdit.lesson.media.type === MediaType.VIDEO ? (
             <>
               <TextField
                 data-cy="video-link"
@@ -580,14 +608,14 @@ const LessonEdit = (props: {
                 InputLabelProps={{
                   shrink: true,
                 }}
-                value={lessonUnderEdit.lesson?.video.link || ""}
+                value={lessonUnderEdit.lesson.media.link || ""}
                 onChange={(e) => {
                   setLesson(
                     {
                       ...(lessonUnderEdit.lesson || newLesson),
-                      video: {
-                        ...(lessonUnderEdit.lesson || newLesson).video,
-                        link: e.target.value || "",
+                      media: {
+                        ...(lessonUnderEdit.lesson || newLesson).media,
+                        link: (e.target.value as string) || "",
                       },
                     },
                     true
@@ -609,14 +637,23 @@ const LessonEdit = (props: {
                     InputLabelProps={{
                       shrink: true,
                     }}
-                    value={lessonUnderEdit.lesson?.video.start || 0}
+                    // value={lessonUnderEdit.lesson.media.start || 0}
+                    value={
+                      parseFloat(
+                        parseProps(lessonUnderEdit.lesson.media.props, "start")
+                      ) || 0
+                    }
                     onChange={(e) => {
                       setLesson(
                         {
                           ...(lessonUnderEdit.lesson || newLesson),
-                          video: {
-                            ...(lessonUnderEdit.lesson || newLesson).video,
-                            start: parseFloat(e.target.value) || 0,
+                          media: {
+                            ...(lessonUnderEdit.lesson || newLesson).media,
+                            props: updateProps(
+                              (lessonUnderEdit.lesson || newLesson).media.props,
+                              "start",
+                              String(parseFloat(e.target.value) || 0) || ""
+                            ),
                           },
                         },
                         true
@@ -637,18 +674,24 @@ const LessonEdit = (props: {
                       shrink: true,
                     }}
                     value={
-                      lessonUnderEdit.lesson?.video.end ||
-                      Number.MAX_SAFE_INTEGER
+                      parseFloat(
+                        parseProps(lessonUnderEdit.lesson.media.props, "end")
+                      ) || Number.MAX_SAFE_INTEGER
                     }
                     onChange={(e) => {
                       setLesson(
                         {
                           ...(lessonUnderEdit.lesson || newLesson),
-                          video: {
-                            ...(lessonUnderEdit.lesson || newLesson).video,
-                            end:
-                              parseFloat(e.target.value) ||
-                              Number.MAX_SAFE_INTEGER,
+                          media: {
+                            ...(lessonUnderEdit.lesson || newLesson).media,
+                            props: updateProps(
+                              (lessonUnderEdit.lesson || newLesson).media.props,
+                              "end",
+                              String(
+                                parseFloat(e.target.value) ||
+                                  Number.MIN_SAFE_INTEGER
+                              ) || ""
+                            ),
                           },
                         },
                         true
