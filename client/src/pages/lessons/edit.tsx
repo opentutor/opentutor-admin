@@ -526,17 +526,37 @@ const LessonEdit = (props: {
               data-cy="media-type"
               value={lessonUnderEdit.lesson.media.type ?? MediaType.NONE}
               onChange={(e: React.ChangeEvent<{ value: unknown }>) => {
-                setLesson(
-                  {
-                    ...(lessonUnderEdit.lesson || newLesson),
-                    media: {
-                      type: (e.target.value as string) || "",
-                      link: "",
-                      props: [],
+                if ((e.target.value as string) === MediaType.VIDEO) {
+                  setLesson(
+                    {
+                      ...(lessonUnderEdit.lesson || newLesson),
+                      media: {
+                        type: (e.target.value as string) || "",
+                        link: "",
+                        props: [
+                          { name: "start", value: "0" },
+                          {
+                            name: "end",
+                            value: String(Number.MAX_SAFE_INTEGER),
+                          },
+                        ],
+                      },
                     },
-                  },
-                  true
-                );
+                    true
+                  );
+                } else {
+                  setLesson(
+                    {
+                      ...(lessonUnderEdit.lesson || newLesson),
+                      media: {
+                        type: (e.target.value as string) || "",
+                        link: "",
+                        props: [],
+                      },
+                    },
+                    true
+                  );
+                }
               }}
             >
               <MenuItem data-cy="media-none" value={MediaType.NONE}>
