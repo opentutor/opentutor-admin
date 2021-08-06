@@ -548,15 +548,23 @@ const LessonEdit = (props: {
                     },
                     true
                   );
-                } else {
+                } else if ((e.target.value as string) === MediaType.IMAGE) {
                   setLesson(
                     {
                       ...(lessonUnderEdit.lesson || newLesson),
                       media: {
                         type: (e.target.value as string) || "",
                         url: "",
-                        props: [],
+                        props: undefined,
                       },
+                    },
+                    true
+                  );
+                } else {
+                  setLesson(
+                    {
+                      ...(lessonUnderEdit.lesson || newLesson),
+                      media: undefined,
                     },
                     true
                   );
