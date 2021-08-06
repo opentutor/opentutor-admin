@@ -18,9 +18,9 @@ const lessons = {
         intro: "introduction",
         question: "question",
         media: {
-          link: "",
+          url: "",
           type: "image",
-          props: [],
+          props: null,
         },
         conclusion: ["conclusion"],
         expectations: [
@@ -465,7 +465,7 @@ describe("edit lesson screen", () => {
     });
 
     cy.get("[data-cy=media-type]").contains("Video");
-    cy.get("[data-cy=video-link]").within(($input) => {
+    cy.get("[data-cy=video-url]").within(($input) => {
       cy.get("textarea").should("have.value", "https://youtube.come/?w=apple");
     });
     cy.get("[data-cy=video-start]").within(($input) => {

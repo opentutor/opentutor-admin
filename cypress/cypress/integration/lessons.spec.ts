@@ -103,8 +103,6 @@ describe("lessons screen", () => {
                 },
               },
             },
-            false,
-            true
           ),
         ],
       });

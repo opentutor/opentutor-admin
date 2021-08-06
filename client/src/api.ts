@@ -438,9 +438,12 @@ export async function fetchLesson(
             name
             question
             media {
-              link
+              url
               type
-              props
+              props {
+                name
+                value
+              }
             }
             conclusion
             expectations {
@@ -486,9 +489,12 @@ export async function updateLesson(
             name
             question
             media {
-              link
+              url
               type
-              props
+              props {
+                name
+                value
+              }
             }
             conclusion
             expectations {

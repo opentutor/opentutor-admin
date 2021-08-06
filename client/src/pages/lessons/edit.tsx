@@ -147,11 +147,7 @@ const newLesson: Lesson = {
   createdAt: "",
   createdBy: "",
   createdByName: "",
-  media: {
-    link: "",
-    type: MediaType.NONE,
-    props: [],
-  },
+  media: null,
   features: {},
   lastTrainedAt: "",
   updatedAt: "",
@@ -524,7 +520,7 @@ const LessonEdit = (props: {
             <Select
               labelId="media-label"
               data-cy="media-type"
-              value={lessonUnderEdit.lesson.media.type ?? MediaType.NONE}
+              value={lessonUnderEdit.lesson.media ? lessonUnderEdit.lesson.media.type : MediaType.NONE}
               onChange={(e: React.ChangeEvent<{ value: unknown }>) => {
                 if ((e.target.value as string) === MediaType.VIDEO) {
                   setLesson(
@@ -532,7 +528,7 @@ const LessonEdit = (props: {
                       ...(lessonUnderEdit.lesson || newLesson),
                       media: {
                         type: (e.target.value as string) || "",
-                        link: "",
+                        url: "",
                         props: [
                           { name: "start", value: "0" },
                           {
@@ -550,7 +546,7 @@ const LessonEdit = (props: {
                       ...(lessonUnderEdit.lesson || newLesson),
                       media: {
                         type: (e.target.value as string) || "",
-                        link: "",
+                        url: "",
                         props: [],
                       },
                     },
@@ -571,12 +567,12 @@ const LessonEdit = (props: {
             </Select>
             {/* <FormHelperText>Select a Media Type</FormHelperText> */}
           </FormControl>
-          {lessonUnderEdit.lesson.media.type === MediaType.IMAGE ? (
+          {lessonUnderEdit.lesson.media && lessonUnderEdit.lesson.media.type === MediaType.IMAGE ? (
             <div className={classes.image}>
               <TextField
                 data-cy="image"
                 label="Image"
-                placeholder="Link to image url"
+                placeholder="Image URL"
                 required
                 multiline
                 rowsMax={4}
@@ -584,14 +580,15 @@ const LessonEdit = (props: {
                 InputLabelProps={{
                   shrink: true,
                 }}
-                value={lessonUnderEdit.lesson.media.link || ""}
+                value={lessonUnderEdit.lesson.media.url || ""}
                 onChange={(e) => {
                   setLesson(
                     {
                       ...(lessonUnderEdit.lesson || newLesson),
                       media: {
                         ...(lessonUnderEdit.lesson || newLesson).media,
-                        link: (e.target.value as string) || "",
+                        type: MediaType.IMAGE,
+                        url: (e.target.value as string) || "",
                       },
                     },
                     true
@@ -602,11 +599,11 @@ const LessonEdit = (props: {
               <img
                 className={classes.thumbnail}
                 data-cy="image-thumbnail"
-                src={lessonUnderEdit.lesson.media.link}
+                src={lessonUnderEdit.lesson.media.url}
                 style={{ height: 50 }}
                 onClick={() => {
                   window.open(
-                    lessonUnderEdit.lesson?.media.link ?? "",
+                    lessonUnderEdit.lesson?.media?.url || "",
                     "_blank"
                   );
                 }}
@@ -615,12 +612,12 @@ const LessonEdit = (props: {
           ) : (
             <></>
           )}
-          {lessonUnderEdit.lesson.media.type === MediaType.VIDEO ? (
+          {lessonUnderEdit.lesson.media && lessonUnderEdit.lesson.media.type === MediaType.VIDEO ? (
             <>
               <TextField
-                data-cy="video-link"
+                data-cy="video-url"
                 label="Video"
-                placeholder="Link to YouTube video"
+                placeholder="YouTube Video URL"
                 required
                 multiline
                 rowsMax={4}
@@ -628,14 +625,15 @@ const LessonEdit = (props: {
                 InputLabelProps={{
                   shrink: true,
                 }}
-                value={lessonUnderEdit.lesson.media.link || ""}
+                value={lessonUnderEdit.lesson.media.url || ""}
                 onChange={(e) => {
                   setLesson(
                     {
                       ...(lessonUnderEdit.lesson || newLesson),
                       media: {
                         ...(lessonUnderEdit.lesson || newLesson).media,
-                        link: (e.target.value as string) || "",
+                        type: MediaType.VIDEO,
+                        url: (e.target.value as string) || "",
                       },
                     },
                     true
@@ -668,9 +666,10 @@ const LessonEdit = (props: {
                         {
                           ...(lessonUnderEdit.lesson || newLesson),
                           media: {
-                            ...(lessonUnderEdit.lesson || newLesson).media,
+                            url: lessonUnderEdit.lesson?.media?.url || "",
+                            type: MediaType.VIDEO,
                             props: updateProps(
-                              (lessonUnderEdit.lesson || newLesson).media.props,
+                              (lessonUnderEdit.lesson || newLesson).media.props || [],
                               "start",
                               String(parseFloat(e.target.value) || 0) || ""
                             ),
@@ -704,6 +703,7 @@ const LessonEdit = (props: {
                           ...(lessonUnderEdit.lesson || newLesson),
                           media: {
                             ...(lessonUnderEdit.lesson || newLesson).media,
+                            type: MediaType.VIDEO,
                             props: updateProps(
                               (lessonUnderEdit.lesson || newLesson).media.props,
                               "end",

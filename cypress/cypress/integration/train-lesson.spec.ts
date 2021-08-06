@@ -23,11 +23,7 @@ const lesson = {
   introduction: "introduction",
   question: "question",
   conclusion: ["conclusion"],
-  media: {
-    link: "",
-    type: "none",
-    props: [],
-  },
+  media: null,
   expectations: [
     {
       expectation: "expectation 1",

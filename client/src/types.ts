@@ -73,7 +73,7 @@ export interface Lesson {
   intro: string;
   dialogCategory: string;
   question: string;
-  media: Media;
+  media?: Media;
   expectations: LessonExpectation[];
   conclusion: string[];
   lastTrainedAt: string;
@@ -87,9 +87,9 @@ export interface Lesson {
 }
 
 export interface Media {
-  link: string;
+  url: string;
   type: string;
-  props: Array<{ name: string; value: string }>;
+  props?: Array<{ name: string; value: string }>;
 }
 
 export enum MediaType {

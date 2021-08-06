@@ -24,9 +24,9 @@ describe("screenshots - lesson edit", () => {
               question: "question",
               conclusion: ["conclusion"],
               media: {
-                link: "",
-                type: "none",
-                props: [],
+                url: "",
+                type: "",
+                props: null,
               },
               expectations: [
                 {
@@ -67,11 +67,7 @@ describe("screenshots - lesson edit", () => {
               question: "question",
               intro: "intro",
               conclusion: ["conclusion"],
-              media: {
-                link: "",
-                type: "none",
-                props: [],
-              },
+              media: null,
               expectations: [
                 {
                   expectation: "expectation 1",

@@ -10,11 +10,7 @@ export const lesson = {
   name: "lesson",
   intro: "introduction",
   question: "question",
-  media: {
-    link: "",
-    type: "none",
-    props: [],
-  },
+  media: null,
   conclusion: ["conclusion"],
   expectations: [
     {
@@ -39,7 +35,7 @@ export const videoLesson = {
   intro: "introduction",
   question: "question",
   media: {
-    link: "https://youtube.come/?w=apple",
+    url: "https://youtube.come/?w=apple",
     type: "video",
     props: [
       { name: "start", value: "0" },
