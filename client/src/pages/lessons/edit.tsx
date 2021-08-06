@@ -341,7 +341,7 @@ const LessonEdit = (props: {
   }
 
   function getProp(props: Array<Prop>, key: string): string {
-    return props.find((p) => p.name === key)?.value ?? "";
+    return props.find((p) => p.name === key)?.value || "";
   }
 
   function copyAndSetProp(props: Array<Prop>, prop: Prop): Array<Prop> {

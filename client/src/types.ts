@@ -93,7 +93,7 @@ export interface Media {
 }
 
 export enum MediaType {
-  NONE = "none",
+  NONE = "",
   IMAGE = "image",
   VIDEO = "video",
 }
