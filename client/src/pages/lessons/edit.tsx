@@ -147,7 +147,7 @@ const newLesson: Lesson = {
   createdAt: "",
   createdBy: "",
   createdByName: "",
-  media: null,
+  media: undefined,
   features: {},
   lastTrainedAt: "",
   updatedAt: "",
@@ -335,24 +335,41 @@ const LessonEdit = (props: {
     navigate(`/lessons`);
   }
 
-  function parseProps(
-    props: Array<{ name: string; value: string }>,
-    key: string
-  ): string {
+  interface Prop {
+    name: string;
+    value: string;
+  }
+
+  function getProp(props: Array<Prop>, key: string): string {
     return props.find((p) => p.name === key)?.value ?? "";
   }
 
-  function updateProps(
-    props: Array<{ name: string; value: string }>,
-    key: string,
-    value: string
-  ): Array<{ name: string; value: string }> {
-    for (let i = 0; i < props.length; i++) {
-      if (props[i].name === key) {
-        props[i].value = value;
-      }
+  // function copyAndSetProp(
+  //   props: Array<{ name: string; value: string }>,
+  //   key: string,
+  //   value: string
+  // ): Array<{ name: string; value: string }> {
+  //   for (let i = 0; i < props.length; i++) {
+  //     if (props[i].name === key) {
+  //       props[i].value = value;
+  //     }
+  //   }
+  //   return props;
+  // }
+
+  function copyAndSetProp(props: Array<Prop>, prop: Prop): Array<Prop> {
+    const pix = props.findIndex((p) => p.name === prop.name);
+    if (pix >= 0) {
+      return props.map((existing, i) => {
+        if (i === pix) {
+          return prop;
+        } else {
+          return existing;
+        }
+      });
+    } else {
+      return [...props, prop];
     }
-    return props;
   }
 
   if (!lessonUnderEdit.lesson) {
@@ -520,7 +537,11 @@ const LessonEdit = (props: {
             <Select
               labelId="media-label"
               data-cy="media-type"
-              value={lessonUnderEdit.lesson.media ? lessonUnderEdit.lesson.media.type : MediaType.NONE}
+              value={
+                lessonUnderEdit.lesson.media
+                  ? lessonUnderEdit.lesson.media.type
+                  : MediaType.NONE
+              }
               onChange={(e: React.ChangeEvent<{ value: unknown }>) => {
                 if ((e.target.value as string) === MediaType.VIDEO) {
                   setLesson(
@@ -567,7 +588,8 @@ const LessonEdit = (props: {
             </Select>
             {/* <FormHelperText>Select a Media Type</FormHelperText> */}
           </FormControl>
-          {lessonUnderEdit.lesson.media && lessonUnderEdit.lesson.media.type === MediaType.IMAGE ? (
+          {lessonUnderEdit.lesson.media &&
+          lessonUnderEdit.lesson.media.type === MediaType.IMAGE ? (
             <div className={classes.image}>
               <TextField
                 data-cy="image"
@@ -612,7 +634,8 @@ const LessonEdit = (props: {
           ) : (
             <></>
           )}
-          {lessonUnderEdit.lesson.media && lessonUnderEdit.lesson.media.type === MediaType.VIDEO ? (
+          {lessonUnderEdit.lesson.media &&
+          lessonUnderEdit.lesson.media.type === MediaType.VIDEO ? (
             <>
               <TextField
                 data-cy="video-url"
@@ -655,11 +678,13 @@ const LessonEdit = (props: {
                     InputLabelProps={{
                       shrink: true,
                     }}
-                    // value={lessonUnderEdit.lesson.media.start || 0}
                     value={
-                      parseFloat(
-                        parseProps(lessonUnderEdit.lesson.media.props, "start")
-                      ) || 0
+                      lessonUnderEdit.lesson.media &&
+                      lessonUnderEdit.lesson.media.props
+                        ? parseFloat(
+                            getProp(lessonUnderEdit.lesson.media.props, "start")
+                          ) || 0
+                        : 0
                     }
                     onChange={(e) => {
                       setLesson(
@@ -668,10 +693,14 @@ const LessonEdit = (props: {
                           media: {
                             url: lessonUnderEdit.lesson?.media?.url || "",
                             type: MediaType.VIDEO,
-                            props: updateProps(
-                              (lessonUnderEdit.lesson || newLesson).media.props || [],
-                              "start",
-                              String(parseFloat(e.target.value) || 0) || ""
+                            props: copyAndSetProp(
+                              (lessonUnderEdit.lesson || newLesson).media
+                                ?.props || [],
+                              {
+                                name: "start",
+                                value:
+                                  String(parseFloat(e.target.value) || 0) || "",
+                              }
                             ),
                           },
                         },
@@ -693,24 +722,31 @@ const LessonEdit = (props: {
                       shrink: true,
                     }}
                     value={
-                      parseFloat(
-                        parseProps(lessonUnderEdit.lesson.media.props, "end")
-                      ) || Number.MAX_SAFE_INTEGER
+                      lessonUnderEdit.lesson.media &&
+                      lessonUnderEdit.lesson.media.props
+                        ? parseFloat(
+                            getProp(lessonUnderEdit.lesson.media.props, "end")
+                          ) || Number.MAX_SAFE_INTEGER
+                        : Number.MAX_SAFE_INTEGER
                     }
                     onChange={(e) => {
                       setLesson(
                         {
                           ...(lessonUnderEdit.lesson || newLesson),
                           media: {
-                            ...(lessonUnderEdit.lesson || newLesson).media,
+                            url: lessonUnderEdit.lesson?.media?.url || "",
                             type: MediaType.VIDEO,
-                            props: updateProps(
-                              (lessonUnderEdit.lesson || newLesson).media.props,
-                              "end",
-                              String(
-                                parseFloat(e.target.value) ||
-                                  Number.MIN_SAFE_INTEGER
-                              ) || ""
+                            props: copyAndSetProp(
+                              (lessonUnderEdit.lesson || newLesson).media
+                                ?.props || [],
+                              {
+                                name: "end",
+                                value:
+                                  String(
+                                    parseFloat(e.target.value) ||
+                                      Number.MAX_SAFE_INTEGER
+                                  ) || "",
+                              }
                             ),
                           },
                         },
