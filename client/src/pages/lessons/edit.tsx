@@ -344,19 +344,6 @@ const LessonEdit = (props: {
     return props.find((p) => p.name === key)?.value ?? "";
   }
 
-  // function copyAndSetProp(
-  //   props: Array<{ name: string; value: string }>,
-  //   key: string,
-  //   value: string
-  // ): Array<{ name: string; value: string }> {
-  //   for (let i = 0; i < props.length; i++) {
-  //     if (props[i].name === key) {
-  //       props[i].value = value;
-  //     }
-  //   }
-  //   return props;
-  // }
-
   function copyAndSetProp(props: Array<Prop>, prop: Prop): Array<Prop> {
     const pix = props.findIndex((p) => p.name === prop.name);
     if (pix >= 0) {
