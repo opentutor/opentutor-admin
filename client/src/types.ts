@@ -74,6 +74,7 @@ export interface Lesson {
   dialogCategory: string;
   question: string;
   media?: Media;
+  learningFormat: string;
   expectations: LessonExpectation[];
   conclusion: string[];
   lastTrainedAt: string;

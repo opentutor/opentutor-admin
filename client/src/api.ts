@@ -445,6 +445,7 @@ export async function fetchLesson(
                 value
               }
             }
+            learningFormat
             conclusion
             expectations {
               expectationId
@@ -496,6 +497,7 @@ export async function updateLesson(
                 value
               }
             }
+            learningFormat
             conclusion
             expectations {
               expectationId
@@ -523,6 +525,7 @@ export async function updateLesson(
           dialogCategory: lesson.dialogCategory,
           question: lesson.question,
           media: lesson.media,
+          learningFormat: lesson.learningFormat,
           expectations: lesson.expectations,
           conclusion: lesson.conclusion,
           lastTrainedAt: lesson.lastTrainedAt,

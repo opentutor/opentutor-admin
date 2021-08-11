@@ -11,6 +11,7 @@ export const lesson = {
   intro: "introduction",
   question: "question",
   media: null,
+  learningFormat: null,
   conclusion: ["conclusion"],
   expectations: [
     {
@@ -34,6 +35,7 @@ export const videoLesson = {
   name: "lesson",
   intro: "introduction",
   question: "question",
+  learningFormat: null,
   media: {
     url: "https://youtube.come/?w=apple",
     type: "video",

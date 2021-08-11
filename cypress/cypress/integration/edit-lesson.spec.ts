@@ -22,6 +22,7 @@ const lessons = {
           type: "image",
           props: null,
         },
+        learningFormat: null,
         conclusion: ["conclusion"],
         expectations: [
           {
@@ -135,6 +136,7 @@ describe("edit lesson screen", () => {
           "Question the student needs to answer, e.g. 'What are the colors in RGB?'"
         );
       });
+      cy.get("[data-cy=lesson-format]").contains("Default");
       cy.get("[data-cy=media-type]").contains("None");
       cy.get("[data-cy=expectations]").children().should("have.length", 1);
       cy.get("[data-cy=expectation-0]")

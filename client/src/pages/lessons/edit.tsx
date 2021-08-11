@@ -148,6 +148,7 @@ const newLesson: Lesson = {
   createdBy: "",
   createdByName: "",
   media: undefined,
+  learningFormat: "default",
   features: {},
   lastTrainedAt: "",
   updatedAt: "",
@@ -447,6 +448,33 @@ const LessonEdit = (props: {
               <MenuItem value={"sensitive"}>Sensitive</MenuItem>
             </Select>
             <FormHelperText>Select a Dialog Type</FormHelperText>
+          </FormControl>
+
+          <FormControl
+            style={{ width: 800 }}
+            className={classes.selectForm}
+            variant="outlined"
+          >
+            <InputLabel shrink id="lesson-format-label">
+              Lesson Format
+            </InputLabel>
+            <Select
+              data-cy="lesson-format"
+              labelId="lesson-format-label"
+              value={lessonUnderEdit.lesson?.learningFormat || "default"}
+              onChange={(e: React.ChangeEvent<{ value: unknown }>) => {
+                setLesson(
+                  {
+                    ...(lessonUnderEdit.lesson || newLesson),
+                    learningFormat: (e.target.value as string) || "default",
+                  },
+                  true
+                );
+              }}
+            >
+              <MenuItem value={"default"}>Default</MenuItem>
+              <MenuItem value={"surveySays"}>Survey Says</MenuItem>
+            </Select>
           </FormControl>
 
           <TextField
