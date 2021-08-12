@@ -73,7 +73,7 @@ export interface Lesson {
   intro: string;
   dialogCategory: string;
   question: string;
-  media?: Media;
+  media?: Media | null;
   learningFormat: string;
   expectations: LessonExpectation[];
   conclusion: string[];

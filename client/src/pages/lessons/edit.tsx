@@ -592,7 +592,7 @@ const LessonEdit = (props: {
                   setLesson(
                     {
                       ...(lessonUnderEdit.lesson || newLesson),
-                      media: undefined,
+                      media: null,
                     },
                     true
                   );

@@ -502,6 +502,25 @@ describe("edit lesson screen", () => {
       });
   });
 
+  it.only("edits a video lesson back to a media-less lesson", () => {
+    cySetup(cy);
+    cyMockDefault(cy, {
+      gqlQueries: [
+        mockGQL("FetchLesson", { me: { lesson: videoLesson } }),
+        mockGQL("UpdateLesson", { me: { lesson: lesson } })
+      ],
+      userRole: "admin",
+    });
+    cy.visit("/lessons/edit?lessonId=q1");
+    cy.get("[data-cy=media-type]").contains("Video");
+    cy.get("[data-cy=media-type]").click();
+    cy.get("[data-cy=media-none]").click();
+    cy.get("[data-cy=save-button]").click();
+    cy.get("[data-cy=save-continue]").click();
+
+    cy.get("[data-cy=media-type]").contains("None");
+  });
+
   it("can expand and collapse an expectation", () => {
     cySetup(cy);
     cyMockDefault(cy);
