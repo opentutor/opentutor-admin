@@ -507,7 +507,7 @@ describe("edit lesson screen", () => {
     cyMockDefault(cy, {
       gqlQueries: [
         mockGQL("FetchLesson", { me: { lesson: videoLesson } }),
-        mockGQL("UpdateLesson", { me: { lesson: lesson } })
+        mockGQL("UpdateLesson", { me: { lesson: lesson } }),
       ],
       userRole: "admin",
     });
