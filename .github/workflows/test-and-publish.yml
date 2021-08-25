@@ -74,12 +74,12 @@ jobs:
       - name: Docker login
         run: docker login -u ${{ secrets.DOCKER_LOGIN }} -p ${{ secrets.DOCKER_PASSWORD }}
       - name: Docker build
-        run: export DOCKER_IMAGE=uscictdocker/opentutor-admin:${{ steps.tag.outputs.image_tag }} && make docker-build
+        run: export DOCKER_IMAGE=opentutor/opentutor-admin:${{ steps.tag.outputs.image_tag }} && make docker-build
       - name: Docker tag release as version
         if: needs.publish-check.outputs.is_release == 'true'
-        run: docker tag "uscictdocker/opentutor-admin:${{ steps.tag.outputs.image_tag }}" "uscictdocker/opentutor-admin:${GITHUB_REF#refs/tags/}"
+        run: docker tag "opentutor/opentutor-admin:${{ steps.tag.outputs.image_tag }}" "opentutor/opentutor-admin:${GITHUB_REF#refs/tags/}"
       - name: Docker tag main as latest
         if: github.ref == 'refs/heads/main'
-        run: docker tag "uscictdocker/opentutor-admin:${{ steps.tag.outputs.image_tag }}" "uscictdocker/opentutor-admin:latest"
+        run: docker tag "opentutor/opentutor-admin:${{ steps.tag.outputs.image_tag }}" "opentutor/opentutor-admin:latest"
       - name: Docker push
-        run: docker push --all-tags uscictdocker/opentutor-admin
+        run: docker push --all-tags opentutor/opentutor-admin
