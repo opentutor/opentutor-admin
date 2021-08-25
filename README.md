@@ -103,7 +103,7 @@ To build/push a pre-release semver tag of `opentutor-admin` for the current comm
 - create a [github release](https://github.com/ICTLearningSciences/opentutor-admin/releases/new) **from your development branch** with tag format `/^\d+\.\d+\.\d+(-[a-z\d\-.]+)?$/` (e.g. `1.0.0-alpha.1`)
 - find the `docker_tag_release` workflow for your git tag in [circleci](https://circleci.com/gh/ICTLearningSciences/workflows/opentutor-admin)
 - approve the workflow
-- this will create a tag like `uscictdocker/opentutor-admin:1.0.0-alpha.1`
+- this will create a tag like `opentutor/opentutor-admin:1.0.0-alpha.1`
 
 
 
@@ -112,4 +112,4 @@ Once your changes are approved and merged to main, you should create a release t
 - create a [github release](https://github.com/ICTLearningSciences/opentutor-admin/releases/new) **from main** with tag format `/^\d+\.\d+\.\d$/` (e.g. `1.0.0`)
 - find the `docker_tag_release` workflow for your git tag in [circleci](https://circleci.com/gh/ICTLearningSciences/workflows/opentutor-admin)
 - approve the workflow
-- this will create a tag like `uscictdocker/opentutor-admin:1.0.0`
+- this will create a tag like `opentutor/opentutor-admin:1.0.0`
