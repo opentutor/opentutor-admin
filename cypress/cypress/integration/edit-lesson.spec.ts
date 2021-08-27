@@ -5,7 +5,7 @@ Permission to use, copy, modify, and distribute this software and its documentat
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
 import { cySetup, cyMockDefault, mockGQL } from "../support/functions";
-import { lesson } from "../fixtures/lesson";
+import { lesson, videoLesson } from "../fixtures/lesson";
 import { find } from "cypress/types/lodash";
 
 const lessons = {
@@ -17,7 +17,12 @@ const lessons = {
         name: "lesson",
         intro: "introduction",
         question: "question",
-        image: null,
+        media: {
+          url: "",
+          type: "image",
+          props: null,
+        },
+        learningFormat: null,
         conclusion: ["conclusion"],
         expectations: [
           {
@@ -109,7 +114,9 @@ describe("edit lesson screen", () => {
   describe("new lesson", () => {
     it("new lesson has default values", () => {
       cySetup(cy);
-      cyMockDefault(cy);
+      cyMockDefault(cy, {
+        gqlQueries: [mockGQL("FetchLesson", { me: { lesson } })],
+      });
       cy.visit("/lessons/edit");
       cy.get("[data-cy=lesson-name]").within(($input) => {
         cy.get("input").should("have.value", "Display name for the lesson");
@@ -129,7 +136,8 @@ describe("edit lesson screen", () => {
           "Question the student needs to answer, e.g. 'What are the colors in RGB?'"
         );
       });
-      cy.get("[data-cy=image]").should("have.value", "");
+      cy.get("[data-cy=lesson-format]").contains("Default");
+      cy.get("[data-cy=media-type]").contains("None");
       cy.get("[data-cy=expectations]").children().should("have.length", 1);
       cy.get("[data-cy=expectation-0]")
         .find("[data-cy=edit-expectation]")
@@ -182,6 +190,8 @@ describe("edit lesson screen", () => {
           "With a DC input source, does current flow in the same or the opposite direction of the diode arrow?"
         );
       });
+      cy.get("[data-cy=media-type").click();
+      cy.get("[data-cy=media-image").click();
       cy.get("[data-cy=image]").within(($input) => {
         cy.get("textarea").fill(
           "https://cdn.jpegmini.com/user/images/slider_puffin_before_mobile.jpg"
@@ -285,7 +295,7 @@ describe("edit lesson screen", () => {
       cy.get("[data-cy=question]").within(($input) => {
         cy.get("textarea").should("have.value", "question");
       });
-      cy.get("[data-cy=image]").should("have.value", "");
+      cy.get("[data-cy=media-type]").contains("None");
       cy.get("[data-cy=expectations]").children().should("have.length", 1);
       cy.get("[data-cy=expectation-0]")
         .find("[data-cy=edit-expectation]")
@@ -384,7 +394,7 @@ describe("edit lesson screen", () => {
     });
   });
 
-  it("loads a lesson", () => {
+  it("loads a media-less lesson", () => {
     cySetup(cy);
     cyMockDefault(cy, {
       gqlQueries: [mockGQL("FetchLesson", { me: { lesson } })],
@@ -407,7 +417,6 @@ describe("edit lesson screen", () => {
     cy.get("[data-cy=question]").within(($input) => {
       cy.get("textarea").should("have.value", "question");
     });
-    cy.get("[data-cy=image]").should("have.value", "");
     cy.get("[data-cy=expectations]").children().should("have.length", 1);
     cy.get("[data-cy=expectation-0]")
       .find("[data-cy=edit-expectation]")
@@ -431,6 +440,85 @@ describe("edit lesson screen", () => {
       .within(($input) => {
         cy.get("textarea").should("have.value", "conclusion");
       });
+  });
+
+  it("loads a video lesson", () => {
+    cySetup(cy);
+    cyMockDefault(cy, {
+      gqlQueries: [mockGQL("FetchLesson", { me: { lesson: videoLesson } })],
+      userRole: "admin",
+    });
+    cy.visit("/lessons/edit?lessonId=q1");
+
+    cy.get("[data-cy=lesson-id]").within(($input) => {
+      cy.get("input").should("have.value", "q1");
+    });
+    cy.get("[data-cy=lesson-name]").within(($input) => {
+      cy.get("input").should("have.value", "lesson");
+    });
+    cy.get("[data-cy=lesson-creator]").within(($input) => {
+      cy.get("input").should("have.value", "OpenTutor");
+    });
+    cy.get("[data-cy=intro]").within(($input) => {
+      cy.get("textarea").should("have.value", "introduction");
+    });
+    cy.get("[data-cy=question]").within(($input) => {
+      cy.get("textarea").should("have.value", "question");
+    });
+
+    cy.get("[data-cy=media-type]").contains("Video");
+    cy.get("[data-cy=video-url]").within(($input) => {
+      cy.get("textarea").should("have.value", "https://youtube.come/?w=apple");
+    });
+    cy.get("[data-cy=video-start]").within(($input) => {
+      cy.get("textarea").should("have.value", "0");
+    });
+    cy.get("[data-cy=video-end]").within(($input) => {
+      cy.get("textarea").should("have.value", "100");
+    });
+
+    cy.get("[data-cy=expectations]").children().should("have.length", 1);
+    cy.get("[data-cy=expectation-0]")
+      .find("[data-cy=edit-expectation]")
+      .within(($input) => {
+        cy.get("input").should("have.value", "expectation 1");
+      });
+    cy.get("[data-cy=expectation-0] .jsoneditor").contains("bad1");
+    cy.get("[data-cy=expectation-0] .jsoneditor").contains("bad2");
+    cy.get("[data-cy=expectation-0]")
+      .find("[data-cy=hints]")
+      .children()
+      .should("have.length", 1);
+    cy.get("[data-cy=hint-0]")
+      .find("[data-cy=edit-hint]")
+      .within(($input) => {
+        cy.get("textarea").should("have.value", "hint 1.1");
+      });
+    cy.get("[data-cy=conclusions]").children().should("have.length", 1);
+    cy.get("[data-cy=conclusion-0]")
+      .find("[data-cy=edit-conclusion]")
+      .within(($input) => {
+        cy.get("textarea").should("have.value", "conclusion");
+      });
+  });
+
+  it.only("edits a video lesson back to a media-less lesson", () => {
+    cySetup(cy);
+    cyMockDefault(cy, {
+      gqlQueries: [
+        mockGQL("FetchLesson", { me: { lesson: videoLesson } }),
+        mockGQL("UpdateLesson", { me: { lesson: lesson } }),
+      ],
+      userRole: "admin",
+    });
+    cy.visit("/lessons/edit?lessonId=q1");
+    cy.get("[data-cy=media-type]").contains("Video");
+    cy.get("[data-cy=media-type]").click();
+    cy.get("[data-cy=media-none]").click();
+    cy.get("[data-cy=save-button]").click();
+    cy.get("[data-cy=save-continue]").click();
+
+    cy.get("[data-cy=media-type]").contains("None");
   });
 
   it("can expand and collapse an expectation", () => {

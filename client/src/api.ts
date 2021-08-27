@@ -437,7 +437,15 @@ export async function fetchLesson(
             dialogCategory
             name
             question
-            image
+            media {
+              url
+              type
+              props {
+                name
+                value
+              }
+            }
+            learningFormat
             conclusion
             expectations {
               expectationId
@@ -481,7 +489,15 @@ export async function updateLesson(
             dialogCategory
             name
             question
-            image
+            media {
+              url
+              type
+              props {
+                name
+                value
+              }
+            }
+            learningFormat
             conclusion
             expectations {
               expectationId
@@ -508,7 +524,8 @@ export async function updateLesson(
           intro: lesson.intro,
           dialogCategory: lesson.dialogCategory,
           question: lesson.question,
-          image: lesson.image,
+          media: lesson.media,
+          learningFormat: lesson.learningFormat,
           expectations: lesson.expectations,
           conclusion: lesson.conclusion,
           lastTrainedAt: lesson.lastTrainedAt,

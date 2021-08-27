@@ -75,37 +75,32 @@ describe("lessons screen", () => {
       cySetup(cy);
       cyMockDefault(cy, {
         gqlQueries: [
-          mockGQL(
-            "FetchLessons",
-            {
-              me: {
-                lessons: {
-                  edges: [
-                    {
-                      cursor: "cursor 1",
-                      node: {
-                        lessonId: "lesson1",
-                        name: "lesson 1",
-                        updatedAt: "1/1/20000, 12:00:00 AM",
-                        createdBy: "kayla",
-                        createdByName: "Kayla",
-                        userPermissions: {
-                          edit: false,
-                          view: false,
-                        },
+          mockGQL("FetchLessons", {
+            me: {
+              lessons: {
+                edges: [
+                  {
+                    cursor: "cursor 1",
+                    node: {
+                      lessonId: "lesson1",
+                      name: "lesson 1",
+                      updatedAt: "1/1/20000, 12:00:00 AM",
+                      createdBy: "kayla",
+                      createdByName: "Kayla",
+                      userPermissions: {
+                        edit: false,
+                        view: false,
                       },
                     },
-                  ],
-                  pageInfo: {
-                    hasNextPage: false,
-                    endCursor: "cursor 2",
                   },
+                ],
+                pageInfo: {
+                  hasNextPage: false,
+                  endCursor: "cursor 2",
                 },
               },
             },
-            false,
-            true
-          ),
+          }),
         ],
       });
       cy.visit("/lessons");

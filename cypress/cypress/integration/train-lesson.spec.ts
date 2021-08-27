@@ -23,6 +23,8 @@ const lesson = {
   introduction: "introduction",
   question: "question",
   conclusion: ["conclusion"],
+  media: null,
+  learningFormat: null,
   expectations: [
     {
       expectation: "expectation 1",
