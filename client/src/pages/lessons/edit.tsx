@@ -43,6 +43,7 @@ import "styles/layout.css";
 import "jsoneditor-react/es/editor.min.css";
 import "react-toastify/dist/ReactToastify.css";
 import { WindowLocation } from "@reach/router";
+import {StringParam, useQueryParam} from "use-query-params";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -169,7 +170,11 @@ const LessonEdit = (props: {
   search: LessonEditSearch;
   location: WindowLocation<unknown>;
 }) => {
-  const { lessonId, copyLesson } = props.search;
+  // const { lessonId, copyLesson } = props.search;
+  const [lessonId, setLessonId] = useQueryParam("lessonId", StringParam);
+  console.log(lessonId);
+  const [copyLesson, setCopyLesson] = useQueryParam("copyLesson", StringParam);
+  console.log(copyLesson);
 
   const classes = useStyles();
   const [cookies] = useCookies(["accessToken"]);
@@ -249,7 +254,7 @@ const LessonEdit = (props: {
 
   React.useEffect(() => {
     if (trainStatus.state === TrainState.SUCCESS) {
-      fetchLesson(lessonId, cookies.accessToken)
+      fetchLesson(lessonId ?? "", cookies.accessToken)
         .then((lesson) => {
           setLesson(lesson);
         })
@@ -314,7 +319,9 @@ const LessonEdit = (props: {
         }
 
         if (lessonId !== lesson.lessonId) {
-          window.location.href = `/lessons/edit?lessonId=${lesson.lessonId}`;
+          // window.location.href = `/lessons/edit?lessonId=${lesson.lessonId}`;
+          setLessonId(lesson.lessonId);
+          window.location.reload()
         }
         toast("Success!");
       })
@@ -428,10 +435,11 @@ const LessonEdit = (props: {
             className={classes.selectForm}
             variant="outlined"
           >
-            <InputLabel shrink id="dialog-category-label">
+            <InputLabel shrink id="dialog-category-label" key="Confirmation Code">
               Dialog Category
             </InputLabel>
             <Select
+              labelWidth={120}
               labelId="dialog-category-label"
               value={lessonUnderEdit.lesson?.dialogCategory || "NOT SET"}
               onChange={(e: React.ChangeEvent<{ value: unknown }>) => {
@@ -459,6 +467,7 @@ const LessonEdit = (props: {
               Lesson Format
             </InputLabel>
             <Select
+              labelWidth={110}
               data-cy="lesson-format"
               labelId="lesson-format-label"
               value={lessonUnderEdit.lesson?.learningFormat || "default"}
@@ -550,6 +559,7 @@ const LessonEdit = (props: {
               Media Type
             </InputLabel>
             <Select
+              labelWidth={85}
               labelId="media-label"
               data-cy="media-type"
               value={
@@ -788,7 +798,7 @@ const LessonEdit = (props: {
         <Divider style={{ marginTop: 20 }} />
         <ExpectationsList
           classes={classes}
-          lessonId={lessonId}
+          lessonId={lessonId ?? ""}
           expectations={lessonUnderEdit.lesson?.expectations}
           updateExpectations={(exp: LessonExpectation[]) =>
             setLesson(
