@@ -118,7 +118,14 @@ function UserItem(props: {
       await updateUserPermissions(user, permission, cookies.accessToken);
       props.onUpdated();
     } catch (err) {
-      props.onUpdated(err);
+      let message;
+      if (err instanceof Error) {
+        message = err.message;
+        props.onUpdated(message);
+      } else {
+        message = String(err);
+        props.onUpdated(message);
+      }
     }
   }
 

@@ -28,7 +28,10 @@ const SessionContext = React.createContext<ContextType>({
 });
 
 function SessionProvider(props: { children?: React.ReactNode }): JSX.Element {
-  const [cookies, setCookie, removeCookie] = useCookies(["accessToken"]);
+  const [cookies, setCookie, removeCookie] = useCookies([
+    "accessToken",
+    "user",
+  ]);
   const [user, setUser] = React.useState<User>();
   const [showGraded, setShowGraded] = React.useState(false);
   const [onlyCreator, setOnlyCreator] = React.useState(
