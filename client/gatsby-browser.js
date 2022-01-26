@@ -12,6 +12,18 @@ const theme = createTheme({
 });
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+export const onServiceWorkerUpdateReady = () => {
+  console.log("Test");
+  const answer = window.confirm(
+    `This application has been updated. ` +
+      `Reload to display the latest version?`
+  );
+  if (answer === true) {
+    window.location.reload();
+  }
+};
+
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const wrapRootElement = ({ element }) => (
   <MuiThemeProvider theme={theme}>
     <CookiesProvider>
