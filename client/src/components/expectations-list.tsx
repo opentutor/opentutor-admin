@@ -33,6 +33,8 @@ import ClearOutlinedIcon from "@material-ui/icons/ClearOutlined";
 import DragHandleIcon from "@material-ui/icons/DragHandle";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import LaunchIcon from "@material-ui/icons/Launch";
+import ArrowRightIcon from "@material-ui/icons/ArrowRight";
+import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import HintsList from "components/hints-list";
 import { expectationFeatureSchema } from "schemas/validation";
 import { LessonExpectation, Hint, Features } from "types";
@@ -79,6 +81,8 @@ const ExpectationCard = (props: {
     handleFeaturesChange,
   } = props;
   const [expanded, setExpanded] = React.useState(true);
+  const [isShowingAdvancedFeatures, setIsShowingAdvancedFeatures] =
+    React.useState(false);
   const editorRef = React.useRef<HasJsonEditor>();
 
   const ajv = new Ajv({ allErrors: true, verbose: true });
@@ -173,10 +177,25 @@ const ExpectationCard = (props: {
             hints={expectation.hints}
             updateHints={handleHintChange}
           />
-          <Typography variant="body2" style={{ padding: 5 }}>
-            Additional Features
-          </Typography>
-          {JSONEditor()}
+          <div style={{ display: "flex", alignItems: "center", padding: 5 }}>
+            <IconButton
+              onClick={() =>
+                setIsShowingAdvancedFeatures(!isShowingAdvancedFeatures)
+              }
+            >
+              {isShowingAdvancedFeatures ? (
+                <ArrowDropDownIcon />
+              ) : (
+                <ArrowRightIcon />
+              )}
+            </IconButton>
+            <Typography variant="body2">
+              {isShowingAdvancedFeatures
+                ? "Hide Advanced Features"
+                : "Show Advanced Features"}
+            </Typography>
+          </div>
+          {isShowingAdvancedFeatures ? JSONEditor() : <></>}
         </Collapse>
         <Button
           data-cy={`view-expectation-${expIdx}-data-button`}
