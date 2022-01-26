@@ -43,7 +43,7 @@ import "styles/layout.css";
 import "jsoneditor-react/es/editor.min.css";
 import "react-toastify/dist/ReactToastify.css";
 import { WindowLocation } from "@reach/router";
-import {StringParam, useQueryParam} from "use-query-params";
+import { StringParam, useQueryParam } from "use-query-params";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -321,7 +321,7 @@ const LessonEdit = (props: {
         if (lessonId !== lesson.lessonId) {
           // window.location.href = `/lessons/edit?lessonId=${lesson.lessonId}`;
           setLessonId(lesson.lessonId);
-          window.location.reload()
+          window.location.reload();
         }
         toast("Success!");
       })
@@ -435,7 +435,11 @@ const LessonEdit = (props: {
             className={classes.selectForm}
             variant="outlined"
           >
-            <InputLabel shrink id="dialog-category-label" key="Confirmation Code">
+            <InputLabel
+              shrink
+              id="dialog-category-label"
+              key="Confirmation Code"
+            >
               Dialog Category
             </InputLabel>
             <Select

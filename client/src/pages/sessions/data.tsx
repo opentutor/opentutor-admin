@@ -8,11 +8,7 @@ import { withPrefix } from "gatsby";
 import React, { useContext } from "react";
 import { useCookies } from "react-cookie";
 import clsx from "clsx";
-import {
-  lighten,
-  makeStyles,
-  Theme,
-} from "@material-ui/core/styles";
+import { lighten, makeStyles, Theme } from "@material-ui/core/styles";
 import {
   Container,
   CircularProgress,
@@ -37,7 +33,7 @@ import NotInterestedIcon from "@material-ui/icons/NotInterested";
 import AssessmentIcon from "@material-ui/icons/Assessment";
 import CheckIcon from "@material-ui/icons/Check";
 import FilterListIcon from "@material-ui/icons/FilterList";
-import GetAppIcon from '@material-ui/icons/GetApp';
+import GetAppIcon from "@material-ui/icons/GetApp";
 import NavBar from "components/nav-bar";
 import { UserRole } from "types";
 import SessionContext from "context/session";
@@ -188,26 +184,25 @@ function EnhancedTableHead(props: EnhancedTableProps) {
 }
 
 const useToolbarStyles = makeStyles((theme: Theme) => ({
-    root: {
-      paddingLeft: theme.spacing(2),
-      paddingRight: theme.spacing(1),
-    },
-    highlight:
-      theme.palette.type === "light"
-        ? {
-            color: theme.palette.secondary.main,
-            backgroundColor: lighten(theme.palette.secondary.light, 0.85),
-          }
-        : {
-            color: theme.palette.text.secondary,
-            backgroundColor: theme.palette.secondary.dark,
-          },
-    title: {
-      flex: "1 1 100%",
-      fontWeight: "bold",
-    },
-  })
-);
+  root: {
+    paddingLeft: theme.spacing(2),
+    paddingRight: theme.spacing(1),
+  },
+  highlight:
+    theme.palette.type === "light"
+      ? {
+          color: theme.palette.secondary.main,
+          backgroundColor: lighten(theme.palette.secondary.light, 0.85),
+        }
+      : {
+          color: theme.palette.text.secondary,
+          backgroundColor: theme.palette.secondary.dark,
+        },
+  title: {
+    flex: "1 1 100%",
+    fontWeight: "bold",
+  },
+}));
 
 interface EnhancedTableToolbarProps {
   numSelected: number;
@@ -232,12 +227,28 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
 
   function exportData() {
     // Prepare data:
-    const contents:string[][] = [];
-    contents.push (["Date", "User Name", "User Answer", "Grade", "Classifier Grade", "Confidence", "Accurate"]);
-    rows.forEach(row => {
-      contents.push([row.date, row.username, row.userAnswer, row.grade, row.classifierGrade, row.confidence, row.accurate])
+    const contents: string[][] = [];
+    contents.push([
+      "Date",
+      "User Name",
+      "User Answer",
+      "Grade",
+      "Classifier Grade",
+      "Confidence",
+      "Accurate",
+    ]);
+    rows.forEach((row) => {
+      contents.push([
+        row.date,
+        row.username,
+        row.userAnswer,
+        row.grade,
+        row.classifierGrade,
+        row.confidence,
+        row.accurate,
+      ]);
     });
-    const output:string = makeCSV(contents);
+    const output: string = makeCSV(contents);
 
     // Download it
     const blob = new Blob([output]);
@@ -245,32 +256,34 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
     setFileDownloadUrl(fileDownloadUrl);
   }
 
-  function makeCSV(content:string[][]) {
-    let csv = '';
-    content.forEach(value => {
+  function makeCSV(content: string[][]) {
+    let csv = "";
+    content.forEach((value) => {
       value.forEach((item, i) => {
-        const innerValue = item === null ? '' : item.toString();
+        const innerValue = item === null ? "" : item.toString();
         let result = innerValue.replace(/"/g, '""');
         if (result.search(/("|,|\n)/g) >= 0) {
-          result = '"' + result + '"'
+          result = '"' + result + '"';
         }
-        if (i > 0) {csv += ','}
+        if (i > 0) {
+          csv += ",";
+        }
         csv += result;
-      })
-      csv += '\n';
-    })
-    return csv
+      });
+      csv += "\n";
+    });
+    return csv;
   }
 
   useEffect(() => {
     //Callback
-    if(fileDownloadUrl !== "") {
-      if(fileDownloadAnchor.current) {
+    if (fileDownloadUrl !== "") {
+      if (fileDownloadAnchor.current) {
         fileDownloadAnchor.current.click();
       } else {
         console.log("Could not download csv.");
       }
-      URL.revokeObjectURL(fileDownloadUrl);  // free up storage--no longer needed.
+      URL.revokeObjectURL(fileDownloadUrl); // free up storage--no longer needed.
       setFileDownloadUrl("");
     }
   }, [fileDownloadUrl]);
@@ -328,18 +341,18 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
           <>
             <Tooltip title="Download Expectation Data" arrow>
               <IconButton
-                  aria-label="download expectation data"
-                  onClick={exportData}
-                  data-cy="download-button"
+                aria-label="download expectation data"
+                onClick={exportData}
+                data-cy="download-button"
               >
                 <GetAppIcon />
               </IconButton>
             </Tooltip>
             <Tooltip title="Filter list" arrow>
               <IconButton
-                  aria-label="filter list"
-                  onClick={handleFilterViewOpen}
-                  data-cy="filter-button"
+                aria-label="filter list"
+                onClick={handleFilterViewOpen}
+                data-cy="filter-button"
               >
                 <FilterListIcon />
               </IconButton>
@@ -353,57 +366,58 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
         {...props}
       />
       <a
-          style={{display: "none"}}
-          download={"expectation_data.csv"}
-          href={fileDownloadUrl}
-          ref={fileDownloadAnchor}
-      >Download File</a>
+        style={{ display: "none" }}
+        download={"expectation_data.csv"}
+        href={fileDownloadUrl}
+        ref={fileDownloadAnchor}
+      >
+        Download File
+      </a>
     </div>
   );
 };
 
 const useStyles = makeStyles((theme: Theme) => ({
-    root: {
-      width: "100%",
+  root: {
+    width: "100%",
+  },
+  paper: {
+    width: "100%",
+    marginBottom: theme.spacing(2),
+  },
+  table: {
+    minWidth: 750,
+  },
+  visuallyHidden: {
+    border: 0,
+    clip: "rect(0 0 0 0)",
+    height: 1,
+    margin: -1,
+    overflow: "hidden",
+    padding: 0,
+    position: "absolute",
+    top: 20,
+    width: 1,
+  },
+  progress: {
+    position: "fixed",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+  },
+  background: {
+    height: "100vh",
+    width: "100%",
+  },
+  tableHeader: {
+    fontWeight: 600,
+  },
+  normalButton: {
+    "&:hover": {
+      color: theme.palette.primary.main,
     },
-    paper: {
-      width: "100%",
-      marginBottom: theme.spacing(2),
-    },
-    table: {
-      minWidth: 750,
-    },
-    visuallyHidden: {
-      border: 0,
-      clip: "rect(0 0 0 0)",
-      height: 1,
-      margin: -1,
-      overflow: "hidden",
-      padding: 0,
-      position: "absolute",
-      top: 20,
-      width: 1,
-    },
-    progress: {
-      position: "fixed",
-      top: "50%",
-      left: "50%",
-      transform: "translate(-50%, -50%)",
-    },
-    background: {
-      height: "100vh",
-      width: "100%",
-    },
-    tableHeader: {
-      fontWeight: 600,
-    },
-    normalButton: {
-      "&:hover": {
-        color: theme.palette.primary.main,
-      },
-    },
-  })
-);
+  },
+}));
 
 function EnhancedTable(props: { lessonId: string; expectation: number }) {
   const classes = useStyles();
@@ -484,7 +498,7 @@ function EnhancedTable(props: { lessonId: string; expectation: number }) {
   const emptyRows =
     rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
 
-    return (
+  return (
     <div className={classes.root} data-cy="expectation-table">
       <Paper className={classes.paper} elevation={3}>
         <EnhancedTableToolbar
