@@ -38,12 +38,13 @@ import NotInterestedIcon from "@material-ui/icons/NotInterested";
 import AssessmentIcon from "@material-ui/icons/Assessment";
 import CheckIcon from "@material-ui/icons/Check";
 import FilterListIcon from "@material-ui/icons/FilterList";
+import GetAppIcon from '@material-ui/icons/GetApp';
 import NavBar from "components/nav-bar";
 import { UserRole } from "types";
 import SessionContext from "context/session";
 import withLocation from "wrap-with-location";
 import { Helmet } from "react-helmet";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import FilteringDialog from "components/filtering-dialog";
 import { SessionData, useWithSessionData } from "hooks/use-with-session-data";
 
@@ -223,12 +224,59 @@ interface EnhancedTableToolbarProps {
 
 const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
   const classes = useToolbarStyles();
-  const { numSelected, expectation } = props;
+  const { numSelected, expectation, rows } = props;
   const [openFilterView, setOpenFilterView] = useState(false);
+  const fileDownloadAnchor = useRef<HTMLAnchorElement>(null);
+  const [fileDownloadUrl, setFileDownloadUrl] = useState("");
 
   const handleFilterViewOpen = () => {
     setOpenFilterView(true);
   };
+
+  function exportData() {
+    // Prepare data:
+    const contents:string[][] = [];
+    contents.push (["Date", "User Name", "User Answer", "Grade", "Classifier Grade", "Confidence", "Accurate"]);
+    rows.forEach(row => {
+      contents.push([row.date, row.username, row.userAnswer, row.grade, row.classifierGrade, row.confidence, row.accurate])
+    });
+    const output:string = makeCSV(contents);
+
+    // Download it
+    const blob = new Blob([output]);
+    const fileDownloadUrl = URL.createObjectURL(blob);
+    setFileDownloadUrl(fileDownloadUrl);
+  }
+
+  function makeCSV(content:string[][]) {
+    let csv = '';
+    content.forEach(value => {
+      value.forEach((item, i) => {
+        const innerValue = item === null ? '' : item.toString();
+        let result = innerValue.replace(/"/g, '""');
+        if (result.search(/("|,|\n)/g) >= 0) {
+          result = '"' + result + '"'
+        }
+        if (i > 0) {csv += ','}
+        csv += result;
+      })
+      csv += '\n';
+    })
+    return csv
+  }
+
+  useEffect(() => {
+    //Callback
+    if(fileDownloadUrl !== "") {
+      if(fileDownloadAnchor.current) {
+        fileDownloadAnchor.current.click();
+      } else {
+        console.log("Could not download csv.");
+      }
+      URL.revokeObjectURL(fileDownloadUrl);  // free up storage--no longer needed.
+      setFileDownloadUrl("");
+    }
+  }, [fileDownloadUrl]);
 
   return (
     <div>
@@ -280,15 +328,26 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
             </Tooltip>
           </>
         ) : (
-          <Tooltip title="Filter list" arrow>
-            <IconButton
-              aria-label="filter list"
-              onClick={handleFilterViewOpen}
-              data-cy="filter-button"
-            >
-              <FilterListIcon />
-            </IconButton>
-          </Tooltip>
+          <>
+            <Tooltip title="Download Expectation Data" arrow>
+              <IconButton
+                  aria-label="download expectation data"
+                  onClick={exportData}
+                  data-cy="download-button"
+              >
+                <GetAppIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Filter list" arrow>
+              <IconButton
+                  aria-label="filter list"
+                  onClick={handleFilterViewOpen}
+                  data-cy="filter-button"
+              >
+                <FilterListIcon />
+              </IconButton>
+            </Tooltip>
+          </>
         )}
       </Toolbar>
       <FilteringDialog
@@ -296,6 +355,12 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
         setOpen={setOpenFilterView}
         {...props}
       />
+      <a
+          style={{display: "none"}}
+          download={"expectation_data.csv"}
+          href={fileDownloadUrl}
+          ref={fileDownloadAnchor}
+      >Download File</a>
     </div>
   );
 };
@@ -423,7 +488,7 @@ function EnhancedTable(props: { lessonId: string; expectation: number }) {
   const emptyRows =
     rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
 
-  return (
+    return (
     <div className={classes.root} data-cy="expectation-table">
       <Paper className={classes.paper} elevation={3}>
         <EnhancedTableToolbar
