@@ -21,7 +21,10 @@ export default function LoadingIndicator(): JSX.Element {
   const classes = useStyles();
   return (
     <div className={classes.progressRoot}>
-      <CircularProgress style={{ height: 100, width: 100 }} />
+      <CircularProgress
+        data-cy="loading-indicator"
+        style={{ height: 100, width: 100 }}
+      />
     </div>
   );
 }

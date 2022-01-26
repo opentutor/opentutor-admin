@@ -31,7 +31,7 @@ describe("settings screen - training default", () => {
     cy.get("[data-cy=train-default-button]").trigger("mouseover").click();
     waitTrainDefault();
     waitComplete();
-    cy.get("[data-cy=loading]").should("exist");
+    cy.get("[data-cy=loading-indicator]").should("exist");
   });
 
   it("fails for state FAILURE", () => {
