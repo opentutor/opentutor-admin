@@ -35,7 +35,7 @@ import CheckIcon from "@material-ui/icons/Check";
 import FilterListIcon from "@material-ui/icons/FilterList";
 import GetAppIcon from "@material-ui/icons/GetApp";
 import NavBar from "components/nav-bar";
-import { UserRole } from "types";
+import { ExpectationsDataFilter, UserRole } from "types";
 import SessionContext from "context/session";
 import withLocation from "wrap-with-location";
 import { Helmet } from "react-helmet";
@@ -288,6 +288,14 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
     }
   }, [fileDownloadUrl]);
 
+  //Filtering
+  const defaultFilter: ExpectationsDataFilter = {
+    hideUngraded: false,
+    hideInvalid: false,
+    dirty: false,
+  };
+  const [filter, setFilter] = React.useState(defaultFilter);
+
   return (
     <div>
       <Toolbar
@@ -322,7 +330,10 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
               <IconButton
                 aria-label="include"
                 data-cy="include-button"
-                onClick={() => props.onInvalidate(false)}
+                onClick={() => {
+                  props.onInvalidate(false);
+                  setFilter(defaultFilter);
+                }}
               >
                 <CheckIcon />
               </IconButton>
@@ -331,7 +342,10 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
               <IconButton
                 aria-label="exclude"
                 data-cy="exclude-button"
-                onClick={() => props.onInvalidate(true)}
+                onClick={() => {
+                  props.onInvalidate(true);
+                  setFilter(defaultFilter);
+                }}
               >
                 <NotInterestedIcon />
               </IconButton>
@@ -363,6 +377,8 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
       <FilteringDialog
         open={openFilterView}
         setOpen={setOpenFilterView}
+        filter={filter}
+        setFilter={setFilter}
         {...props}
       />
       <a

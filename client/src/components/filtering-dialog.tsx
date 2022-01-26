@@ -15,6 +15,7 @@ import {
   Switch,
 } from "@material-ui/core";
 import { SessionData } from "hooks/use-with-session-data";
+import { ExpectationsDataFilter } from "types";
 
 interface FilteringProps {
   open: boolean;
@@ -23,22 +24,12 @@ interface FilteringProps {
   setRows: React.Dispatch<React.SetStateAction<SessionData[]>>;
   rowsUnfiltered: SessionData[];
   setPage: (value: React.SetStateAction<number>) => void;
-}
-
-interface Filter {
-  dirty: boolean;
-  hideUngraded: boolean;
-  hideInvalid: boolean;
+  filter: ExpectationsDataFilter;
+  setFilter: React.Dispatch<React.SetStateAction<ExpectationsDataFilter>>;
 }
 
 export default function FilteringDialog(props: FilteringProps): JSX.Element {
-  const defaultFilter: Filter = {
-    hideUngraded: false,
-    hideInvalid: false,
-    dirty: false,
-  };
-  const [filter, setFilter] = React.useState(defaultFilter);
-
+  const { filter, setFilter } = props;
   const handleClose = () => {
     if (filter.dirty) {
       //Update the rows
