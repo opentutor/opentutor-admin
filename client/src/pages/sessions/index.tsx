@@ -9,7 +9,6 @@ import React, { useContext } from "react";
 import { useCookies } from "react-cookie";
 import {
   AppBar,
-  CircularProgress,
   FormGroup,
   FormControlLabel,
   IconButton,
@@ -36,6 +35,7 @@ import SessionContext from "context/session";
 import withLocation from "wrap-with-location";
 import "styles/layout.css";
 import { useWithSessions } from "hooks/use-with-sessions";
+import LoadingIndicator from "components/loading-indicator";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -49,12 +49,6 @@ const useStyles = makeStyles((theme) => ({
     height: "10%",
     top: "auto",
     bottom: 0,
-  },
-  progress: {
-    position: "fixed",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
   },
   paging: {
     position: "absolute",
@@ -268,7 +262,7 @@ function SessionsTable(props: { search: { lessonId: string } }): JSX.Element {
   if (!sessions) {
     return (
       <div className={classes.root}>
-        <CircularProgress className={classes.progress} />
+        <LoadingIndicator />
       </div>
     );
   }
@@ -310,13 +304,12 @@ function SessionsTable(props: { search: { lessonId: string } }): JSX.Element {
 function SessionsPage(props: { search: { lessonId: string } }): JSX.Element {
   const context = useContext(SessionContext);
   const [cookies] = useCookies(["accessToken"]);
-  const styles = useStyles();
 
   if (typeof window !== "undefined" && !cookies.accessToken) {
     return <div>Please login to view sessions.</div>;
   }
   if (!context.user) {
-    return <CircularProgress className={styles.progress} />;
+    return <LoadingIndicator />;
   }
 
   return (

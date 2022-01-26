@@ -12,7 +12,6 @@ import { v4 as uuid } from "uuid";
 import {
   Box,
   Button,
-  CircularProgress,
   Dialog,
   DialogActions,
   DialogTitle,
@@ -44,6 +43,7 @@ import "jsoneditor-react/es/editor.min.css";
 import "react-toastify/dist/ReactToastify.css";
 import { WindowLocation } from "@reach/router";
 import { StringParam, useQueryParam } from "use-query-params";
+import LoadingIndicator from "components/loading-indicator";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -106,12 +106,6 @@ const useStyles = makeStyles((theme) => ({
   },
   thumbnail: {
     padding: 10,
-  },
-  progress: {
-    position: "fixed",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
   },
   selectEmpty: {
     marginTop: theme.spacing(2),
@@ -368,7 +362,7 @@ const LessonEdit = (props: {
   }
 
   if (!lessonUnderEdit.lesson) {
-    return <CircularProgress className={classes.progress} />;
+    return <LoadingIndicator />;
   }
 
   if (lessonId && !userCanEdit(lessonUnderEdit.lesson, context.user)) {
@@ -863,7 +857,7 @@ const LessonEdit = (props: {
             : `Last Trained: Never Trained`}
         </Typography>
         {isTraining ? (
-          <CircularProgress className={classes.progress} />
+          <LoadingIndicator />
         ) : trainStatus.state === TrainState.SUCCESS ? (
           <List>
             {trainStatus.info?.expectations?.map((x, i) => (
@@ -876,7 +870,7 @@ const LessonEdit = (props: {
             ))}
           </List>
         ) : trainStatus.state === TrainState.FAILURE ? (
-          <Typography data-cy="train-failure">{`TRAINING FAILED`}</Typography>
+          <Typography data-cy="train-failure">{`Training Failed`}</Typography>
         ) : null}
       </Box>
       <div>
@@ -966,13 +960,12 @@ function EditPage(props: {
 }): JSX.Element {
   const context = useContext(SessionContext);
   const [cookies] = useCookies(["accessToken"]);
-  const styles = useStyles();
 
   if (typeof window !== "undefined" && !cookies.accessToken) {
     return <div>Please login to view lesson.</div>;
   }
   if (!context.user) {
-    return <CircularProgress className={styles.progress} />;
+    return <LoadingIndicator />;
   }
   return (
     <div>

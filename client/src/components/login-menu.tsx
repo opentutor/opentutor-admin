@@ -12,7 +12,7 @@ import {
   GoogleLoginResponse,
   GoogleLoginResponseOffline,
 } from "react-google-login";
-import { Button, CircularProgress, Typography } from "@material-ui/core";
+import { Button, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import NavBar from "components/nav-bar";
 import SessionContext from "context/session";
@@ -20,6 +20,7 @@ import { getClientID } from "config";
 import { loginGoogle } from "api";
 import { UserAccessToken } from "types";
 import "styles/layout.css";
+import LoadingIndicator from "components/loading-indicator";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -40,9 +41,6 @@ const useStyles = makeStyles((theme) => ({
   button: {
     margin: theme.spacing(1),
     width: 300,
-  },
-  progress: {
-    marginLeft: "50%",
   },
 }));
 
@@ -88,7 +86,7 @@ export function LoginMenu(): JSX.Element {
   if (cookies.accessToken) {
     return (
       <div className={classes.root}>
-        <CircularProgress className={classes.progress} />
+        <LoadingIndicator />
       </div>
     );
   }

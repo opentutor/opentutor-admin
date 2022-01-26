@@ -41,7 +41,7 @@ export function useWithTraining(pollingInterval = 1000): TrainingStatus {
           }
           if (status.state === TrainState.SUCCESS) {
             setIsTraining(false);
-            setMessage("Training Success");
+            setMessage("Training Succeeded");
           }
           if (status.state === TrainState.FAILURE) {
             setIsTraining(false);
@@ -63,7 +63,9 @@ export function useWithTraining(pollingInterval = 1000): TrainingStatus {
       return;
     }
     if (!lesson.isTrainable) {
-      setMessage("NEEDS MORE GRADED DATA");
+      setMessage(
+        "Not enough graded data. Please grade more sessions and try again."
+      );
       return;
     }
     trainLesson(lesson.lessonId)

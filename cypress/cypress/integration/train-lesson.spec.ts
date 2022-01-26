@@ -136,7 +136,7 @@ describe("lesson screen - training", () => {
     cy.get("[data-cy=train-button]").trigger("mouseover").click();
     waitTrainLesson();
     waitComplete();
-    cy.get("[data-cy=train-failure]").should("contain", "TRAINING FAILED");
+    cy.get("[data-cy=train-failure]").should("contain", "Training Failed");
   });
 
   it("train lesson fails for http error on start", () => {
@@ -149,7 +149,7 @@ describe("lesson screen - training", () => {
     const waitTrainLesson = cyMockTrain(cy, { responseStatus: 500 });
     cy.get("[data-cy=train-button]").trigger("mouseover").click();
     waitTrainLesson();
-    cy.get("[data-cy=train-failure]").should("contain", "TRAINING FAILED");
+    cy.get("[data-cy=train-failure]").should("contain", "Training Failed");
   });
 
   it("train lesson fails for http error on poll status", () => {
@@ -173,6 +173,6 @@ describe("lesson screen - training", () => {
     cy.get("[data-cy=train-button]").trigger("mouseover").click();
     waitTrainLesson();
     waitComplete();
-    cy.get("[data-cy=train-failure]").should("contain", "TRAINING FAILED");
+    cy.get("[data-cy=train-failure]").should("contain", "Training Failed");
   });
 });

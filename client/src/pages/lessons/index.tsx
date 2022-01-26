@@ -10,7 +10,6 @@ import { useCookies } from "react-cookie";
 import { ToastContainer, toast } from "react-toastify";
 import {
   AppBar,
-  CircularProgress,
   Fab,
   FormGroup,
   FormControlLabel,
@@ -42,6 +41,7 @@ import NavBar from "components/nav-bar";
 import SessionContext from "context/session";
 import "styles/layout.css";
 import "react-toastify/dist/ReactToastify.css";
+import LoadingIndicator from "components/loading-indicator";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -64,12 +64,6 @@ const useStyles = makeStyles((theme) => ({
     position: "absolute",
     right: theme.spacing(1),
     zIndex: 1,
-  },
-  progress: {
-    position: "fixed",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
   },
   normalButton: {
     "&:hover": {
@@ -345,7 +339,7 @@ const LessonsTable = () => {
   if (!lessons) {
     return (
       <div className={classes.root}>
-        <CircularProgress className={classes.progress} />
+        <LoadingIndicator />
       </div>
     );
   }
@@ -396,13 +390,12 @@ const LessonsTable = () => {
 const LessonsPage = (): JSX.Element => {
   const context = useContext(SessionContext);
   const [cookies] = useCookies(["accessToken"]);
-  const styles = useStyles();
 
   if (typeof window !== "undefined" && !cookies.accessToken) {
     return <div>Please login to view lessons.</div>;
   }
   if (!context.user) {
-    return <CircularProgress className={styles.progress} />;
+    return <LoadingIndicator />;
   }
 
   return (

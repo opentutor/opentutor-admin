@@ -6,12 +6,7 @@ The full terms of this copyright and license should always be found in the root 
 */
 import React, { useContext } from "react";
 import { useCookies } from "react-cookie";
-import {
-  CircularProgress,
-  Button,
-  Container,
-  Typography,
-} from "@material-ui/core";
+import { Button, Container, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import NavBar from "components/nav-bar";
 import SessionContext from "context/session";
@@ -19,6 +14,7 @@ import "styles/layout.css";
 import "react-toastify/dist/ReactToastify.css";
 import { useWithTraining } from "hooks/use-with-training";
 import { TrainState, UserRole } from "types";
+import LoadingIndicator from "components/loading-indicator";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -46,12 +42,6 @@ const useStyles = makeStyles((theme) => ({
     marginRight: "auto",
     marginTop: 10,
   },
-  progress: {
-    position: "fixed",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-  },
 }));
 
 // eslint-disable-next-line  @typescript-eslint/no-unused-vars
@@ -65,7 +55,7 @@ function SettingsPage(props: { path: string }): JSX.Element {
     return <div>Please login to view settings.</div>;
   }
   if (!context.user) {
-    return <CircularProgress className={styles.progress} />;
+    return <LoadingIndicator />;
   }
   if (context.user.userRole !== UserRole.ADMIN) {
     return <div>You must be an admin to view this page.</div>;
@@ -88,11 +78,11 @@ function SettingsPage(props: { path: string }): JSX.Element {
           Train Default Classifier
         </Button>
         {isTraining ? (
-          <CircularProgress data-cy="loading" className={styles.loading} />
+          <LoadingIndicator />
         ) : trainStatus.state === TrainState.SUCCESS ? (
-          <Typography data-cy="train-success">{`TRAINING SUCCEEDED`}</Typography>
+          <Typography data-cy="train-success">{`Training Succeeded`}</Typography>
         ) : trainStatus.state === TrainState.FAILURE ? (
-          <Typography data-cy="train-failure">{`TRAINING FAILED`}</Typography>
+          <Typography data-cy="train-failure">{`Training Failed`}</Typography>
         ) : null}
       </Container>
     </div>

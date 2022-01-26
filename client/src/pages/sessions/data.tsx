@@ -508,6 +508,14 @@ function EnhancedTable(props: { lessonId: string; expectation: number }) {
   const emptyRows =
     rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
 
+  if (!useSessionData.expectationTitle) {
+    return (
+      <div className={classes.root}>
+        <LoadingIndicator />
+      </div>
+    );
+  }
+
   return (
     <div className={classes.root} data-cy="expectation-table">
       <Paper className={classes.paper} elevation={3}>
