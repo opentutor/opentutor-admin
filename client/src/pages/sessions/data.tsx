@@ -11,7 +11,6 @@ import clsx from "clsx";
 import { lighten, makeStyles, Theme } from "@material-ui/core/styles";
 import {
   Container,
-  CircularProgress,
   Table,
   TableBody,
   TableCell,
@@ -42,6 +41,7 @@ import { Helmet } from "react-helmet";
 import { useState, useEffect, useRef } from "react";
 import FilteringDialog from "components/filtering-dialog";
 import { SessionData, useWithSessionData } from "hooks/use-with-session-data";
+import LoadingIndicator from "components/loading-indicator";
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   if (b[orderBy] < a[orderBy]) {
@@ -415,12 +415,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     top: 20,
     width: 1,
   },
-  progress: {
-    position: "fixed",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-  },
   background: {
     height: "100vh",
     width: "100%",
@@ -697,21 +691,11 @@ function Data(props: { search: LessonExpectationSearch }): JSX.Element {
     );
   }
   if (!context.user) {
-    return <CircularProgress className={styles.progress} />;
+    return <LoadingIndicator />;
   }
   if (context.user.userRole !== UserRole.ADMIN) {
     return <div>You must be an admin to view this page.</div>;
   }
-
-  // return (
-  //   <div>
-  //     <NavBar title="Expectation Data" />
-  //     <AlertDialog/>
-  //     {/*<Button variant="outlined" color="primary" onClick={() => {console.log("Done")}}>*/}
-  //     {/*  Open alert dialog*/}
-  //     {/*</Button>*/}
-  //   </div>
-  // );
 
   return (
     <>
