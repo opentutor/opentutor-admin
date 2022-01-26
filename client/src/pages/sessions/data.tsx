@@ -9,7 +9,6 @@ import React, { useContext } from "react";
 import { useCookies } from "react-cookie";
 import clsx from "clsx";
 import {
-  createStyles,
   lighten,
   makeStyles,
   Theme,
@@ -117,7 +116,6 @@ const headCells: HeadCell[] = [
 ];
 
 interface EnhancedTableProps {
-  classes: ReturnType<typeof useStyles>;
   numSelected: number;
   onRequestSort: (
     event: React.MouseEvent<unknown>,
@@ -131,7 +129,6 @@ interface EnhancedTableProps {
 
 function EnhancedTableHead(props: EnhancedTableProps) {
   const {
-    classes,
     onSelectAllClick,
     order,
     orderBy,
@@ -143,6 +140,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
     (property: keyof SessionData) => (event: React.MouseEvent<unknown>) => {
       onRequestSort(event, property);
     };
+  const classes = useStyles();
 
   return (
     <TableHead>
@@ -189,8 +187,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
   );
 }
 
-const useToolbarStyles = makeStyles((theme: Theme) =>
-  createStyles({
+const useToolbarStyles = makeStyles((theme: Theme) => ({
     root: {
       paddingLeft: theme.spacing(2),
       paddingRight: theme.spacing(1),
@@ -365,8 +362,7 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
   );
 };
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
+const useStyles = makeStyles((theme: Theme) => ({
     root: {
       width: "100%",
     },
@@ -508,7 +504,6 @@ function EnhancedTable(props: { lessonId: string; expectation: number }) {
             aria-label="enhanced table"
           >
             <EnhancedTableHead
-              classes={classes}
               numSelected={selected.length}
               order={order}
               orderBy={orderBy}
@@ -677,6 +672,16 @@ function Data(props: { search: LessonExpectationSearch }): JSX.Element {
   if (context.user.userRole !== UserRole.ADMIN) {
     return <div>You must be an admin to view this page.</div>;
   }
+
+  // return (
+  //   <div>
+  //     <NavBar title="Expectation Data" />
+  //     <AlertDialog/>
+  //     {/*<Button variant="outlined" color="primary" onClick={() => {console.log("Done")}}>*/}
+  //     {/*  Open alert dialog*/}
+  //     {/*</Button>*/}
+  //   </div>
+  // );
 
   return (
     <>
