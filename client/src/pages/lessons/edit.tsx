@@ -315,7 +315,8 @@ const LessonEdit = (props: {
         if (lessonId !== lesson.lessonId) {
           // window.location.href = `/lessons/edit?lessonId=${lesson.lessonId}`;
           setLessonId(lesson.lessonId);
-          window.location.reload();
+          // window.location.reload();
+          navigate("/lessons");
         }
         toast("Success!");
       })
