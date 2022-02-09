@@ -177,25 +177,32 @@ const ExpectationCard = (props: {
             hints={expectation.hints}
             updateHints={handleHintChange}
           />
-          <div style={{ display: "flex", alignItems: "center", padding: 5 }}>
-            <IconButton
-              onClick={() =>
-                setIsShowingAdvancedFeatures(!isShowingAdvancedFeatures)
-              }
-            >
-              {isShowingAdvancedFeatures ? (
-                <ArrowDropDownIcon />
-              ) : (
-                <ArrowRightIcon />
-              )}
-            </IconButton>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              padding: 5,
+              cursor: "pointer",
+            }}
+            onClick={() =>
+              setIsShowingAdvancedFeatures(!isShowingAdvancedFeatures)
+            }
+          >
+            {isShowingAdvancedFeatures ? (
+              <ArrowDropDownIcon />
+            ) : (
+              <ArrowRightIcon />
+            )}
             <Typography variant="body2">
               {isShowingAdvancedFeatures
                 ? "Hide Advanced Features"
                 : "Show Advanced Features"}
             </Typography>
           </div>
-          {isShowingAdvancedFeatures ? JSONEditor() : <></>}
+          {/* IMPORTANT: We cannot conditionally render JSONEditor() since it uses a ref to populate data. */}
+          <div style={isShowingAdvancedFeatures ? {} : { display: "none" }}>
+            {JSONEditor()}
+          </div>
         </Collapse>
         <Button
           data-cy={`view-expectation-${expIdx}-data-button`}
