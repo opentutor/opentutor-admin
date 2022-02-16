@@ -46,17 +46,8 @@ import { StringParam, useQueryParam } from "use-query-params";
 import LoadingIndicator from "components/loading-indicator";
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    // width: "100",
-    // "& .MuiTextField-root": {
-    //   marginTop: theme.spacing(1),
-    //   marginLeft: 10,
-    //   marginRight: 10,
-    //   width: "100%",
-    // },
-    // "& > *": {
-    //   borderBottom: "unset",
-    // },
+  cardRoot: {
+    width: "100%",
   },
   expand: {
     transform: "rotate(0deg)",
@@ -112,6 +103,10 @@ const useStyles = makeStyles((theme) => ({
   inputForm: {},
   selectForm: {
     width: "100%",
+  },
+  divider: {
+    marginTop: 25,
+    marginBottom: 25,
   },
 }));
 
@@ -379,7 +374,7 @@ const LessonEdit = (props: {
         margin: "auto",
       }}
     >
-      <form className={classes.root} noValidate autoComplete="off">
+      <form noValidate autoComplete="off">
         <Grid
           container
           // direction="column"
@@ -507,14 +502,8 @@ const LessonEdit = (props: {
             </FormControl>
           </Grid>
         </Grid>
-        <Grid
-          container
-          // justify="flex-start"
-          // direction="column"
-          // alignItems="flex-start"
-          spacing={2}
-          style={{ marginTop: 40 }}
-        >
+        <Divider variant="middle" className={classes.divider} />
+        <Grid container spacing={2}>
           <Grid item xs={12}>
             <TextField
               data-cy="intro"
@@ -824,7 +813,7 @@ const LessonEdit = (props: {
             <></>
           )}
         </Grid>
-        <Divider style={{ marginTop: 20 }} />
+        <Divider variant="middle" className={classes.divider} />
         <ExpectationsList
           classes={classes}
           lessonId={lessonId ?? ""}
@@ -839,7 +828,7 @@ const LessonEdit = (props: {
             )
           }
         />
-        <Divider />
+        <Divider variant="middle" className={classes.divider} />
         <ConclusionsList
           classes={classes}
           conclusions={lessonUnderEdit.lesson?.conclusion}

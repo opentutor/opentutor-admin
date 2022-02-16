@@ -56,6 +56,7 @@ interface ExpectationClasses {
   list: string;
   listDragging: string;
   button: string;
+  cardRoot: string;
 }
 
 const ExpectationCard = (props: {
@@ -119,7 +120,7 @@ const ExpectationCard = (props: {
   }
 
   return (
-    <Card data-cy={`expectation-${expIdx}`}>
+    <Card data-cy={`expectation-${expIdx}`} className={classes.cardRoot}>
       <CardContent>
         <div style={{ display: "flex", flexDirection: "row" }}>
           <CardActions>
@@ -296,7 +297,7 @@ function ExpectationsList(props: {
 
   return (
     <Paper elevation={0} style={{ textAlign: "left" }}>
-      <Typography variant="body2" style={{ padding: 15 }}>
+      <Typography variant="body2" style={{ paddingBottom: 15 }}>
         Expectations
       </Typography>
       <DragDropContext onDragEnd={onDragEnd}>

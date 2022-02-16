@@ -32,6 +32,7 @@ interface ConclusionClasses {
   button: string;
   list: string;
   listDragging: string;
+  cardRoot: string;
 }
 
 const ConclusionCard = (props: {
@@ -50,7 +51,7 @@ const ConclusionCard = (props: {
   } = props;
 
   return (
-    <Card data-cy={`conclusion-${idx}`}>
+    <Card data-cy={`conclusion-${idx}`} style={{ width: "100%" }}>
       <CardContent style={{ display: "flex", flexDirection: "row" }}>
         <CardActions>
           <DragHandleIcon />

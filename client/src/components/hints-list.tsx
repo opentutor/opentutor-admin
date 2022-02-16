@@ -40,7 +40,11 @@ const HintCard = (props: {
     props;
 
   return (
-    <Card data-cy={`hint-${hintIdx}`} variant="outlined">
+    <Card
+      data-cy={`hint-${hintIdx}`}
+      variant="outlined"
+      style={{ width: "100%" }}
+    >
       <CardContent style={{ display: "flex", flexDirection: "row" }}>
         <CardActions>
           <DragHandleIcon />
