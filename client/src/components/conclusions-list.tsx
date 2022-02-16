@@ -127,7 +127,7 @@ function ConclusionsList(props: {
 
   return (
     <Paper elevation={0} style={{ textAlign: "left" }}>
-      <Typography variant="body2" style={{ padding: 15 }}>
+      <Typography variant="h6" style={{ padding: 15 }}>
         Conclusions
       </Typography>
       <DragDropContext onDragEnd={onDragEnd}>
@@ -178,6 +178,8 @@ function ConclusionsList(props: {
         startIcon={<AddIcon />}
         className={classes.button}
         onClick={handleAddConclusion}
+        variant="outlined"
+        color="primary"
       >
         Add Conclusion
       </Button>

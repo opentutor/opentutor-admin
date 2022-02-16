@@ -17,7 +17,6 @@ import {
   DialogTitle,
   Divider,
   FormControl,
-  FormHelperText,
   Grid,
   InputLabel,
   List,
@@ -61,12 +60,14 @@ const useStyles = makeStyles((theme) => ({
   },
   list: {
     background: "#F5F5F5",
+    borderRadius: 10,
   },
   listDragging: {
     background: "lightgreen",
   },
   button: {
-    margin: theme.spacing(2),
+    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(2),
   },
   heading: {
     fontSize: theme.typography.pxToRem(15),
@@ -107,6 +108,13 @@ const useStyles = makeStyles((theme) => ({
   divider: {
     marginTop: 25,
     marginBottom: 25,
+  },
+  actionFooter: {
+    marginTop: 10,
+    display: "flex",
+    gap: 10,
+    alignItems: "center",
+    justifyContent: "center",
   },
 }));
 
@@ -377,9 +385,6 @@ const LessonEdit = (props: {
       <form noValidate autoComplete="off">
         <Grid
           container
-          // direction="column"
-          // justify="flex-start"
-          // alignItems="flex-start"
           data-cy="lesson-edit-grid"
           spacing={2}
           style={{ marginTop: 10 }}
@@ -618,7 +623,6 @@ const LessonEdit = (props: {
                   Video
                 </MenuItem>
               </Select>
-              {/* <FormHelperText>Select a Media Type</FormHelperText> */}
             </FormControl>
           </Grid>
           {lessonUnderEdit.lesson.media &&
@@ -893,10 +897,9 @@ const LessonEdit = (props: {
           <Typography data-cy="train-failure">{`Training Failed`}</Typography>
         ) : null}
       </Box>
-      <div>
+      <div className={classes.actionFooter}>
         <Button
           data-cy="train-button"
-          className={classes.button}
           variant="contained"
           color="primary"
           size="large"
@@ -916,7 +919,6 @@ const LessonEdit = (props: {
         </Button>
         <Button
           data-cy="launch-button"
-          className={classes.button}
           variant="contained"
           color="primary"
           size="large"
@@ -928,7 +930,6 @@ const LessonEdit = (props: {
         {lessonUnderEdit.dirty ? (
           <Button
             data-cy="save-button"
-            className={classes.button}
             variant="contained"
             color="primary"
             size="large"
@@ -940,14 +941,17 @@ const LessonEdit = (props: {
         ) : null}
         <Button
           data-cy="discard-button"
-          className={classes.button}
           variant="contained"
-          color="primary"
           size="large"
-          style={{ background: "#1B6A9C" }}
+          color="primary"
+          style={
+            lessonUnderEdit.dirty
+              ? { backgroundColor: "red" }
+              : { backgroundColor: "#1B6A9C" }
+          }
           onClick={handleDiscard}
         >
-          Discard
+          {lessonUnderEdit.dirty ? "Discard" : "Go Back"}
         </Button>
       </div>
       <Dialog open={Boolean(trainingMessage)} onClose={dismissTrainingMessage}>

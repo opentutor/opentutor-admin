@@ -297,7 +297,7 @@ function ExpectationsList(props: {
 
   return (
     <Paper elevation={0} style={{ textAlign: "left" }}>
-      <Typography variant="body2" style={{ paddingBottom: 15 }}>
+      <Typography variant="h6" style={{ paddingBottom: 15 }}>
         Expectations
       </Typography>
       <DragDropContext onDragEnd={onDragEnd}>
@@ -356,6 +356,8 @@ function ExpectationsList(props: {
         startIcon={<AddIcon />}
         className={classes.button}
         onClick={handleAddExpectation}
+        variant="outlined"
+        color="primary"
       >
         Add Expectation
       </Button>
