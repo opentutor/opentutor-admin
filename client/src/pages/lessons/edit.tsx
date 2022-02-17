@@ -43,6 +43,11 @@ import "react-toastify/dist/ReactToastify.css";
 import { WindowLocation } from "@reach/router";
 import { StringParam, useQueryParam } from "use-query-params";
 import LoadingIndicator from "components/loading-indicator";
+import DeleteIcon from "@material-ui/icons/Delete";
+import SaveIcon from "@material-ui/icons/Save";
+import LaunchIcon from "@material-ui/icons/Launch";
+import ArrowBackIcon from "@material-ui/icons/ArrowBack";
+import DirectionsRailwayIcon from "@material-ui/icons/DirectionsRailway";
 
 const useStyles = makeStyles((theme) => ({
   cardRoot: {
@@ -111,6 +116,7 @@ const useStyles = makeStyles((theme) => ({
   },
   actionFooter: {
     marginTop: 10,
+    marginBottom: 10,
     display: "flex",
     gap: 10,
     alignItems: "center",
@@ -389,7 +395,7 @@ const LessonEdit = (props: {
           spacing={2}
           style={{ marginTop: 10 }}
         >
-          <Grid item xs={12}>
+          <Grid item xs={12} md={6}>
             <TextField
               data-cy="lesson-name"
               label="Lesson Name"
@@ -412,7 +418,7 @@ const LessonEdit = (props: {
               variant="outlined"
             />
           </Grid>
-          <Grid item xs={12}>
+          <Grid item xs={12} md={6}>
             <TextField
               data-cy="lesson-id"
               label="Lesson ID"
@@ -452,7 +458,7 @@ const LessonEdit = (props: {
               disabled={true}
             />
           </Grid>
-          <Grid item xs={12}>
+          <Grid item xs={12} md={6}>
             <FormControl className={classes.selectForm} variant="outlined">
               <InputLabel
                 shrink
@@ -481,7 +487,7 @@ const LessonEdit = (props: {
               {/*<FormHelperText>Select a Dialog Type</FormHelperText>*/}
             </FormControl>
           </Grid>
-          <Grid item xs={12}>
+          <Grid item xs={12} md={6}>
             <FormControl className={classes.selectForm} variant="outlined">
               <InputLabel shrink id="lesson-format-label">
                 Lesson Format
@@ -850,6 +856,7 @@ const LessonEdit = (props: {
       <Box
         data-cy="train-data"
         border={5}
+        borderRadius={16}
         borderColor={
           trainStatus.state !== TrainState.SUCCESS &&
           trainStatus.state !== TrainState.FAILURE
@@ -875,11 +882,12 @@ const LessonEdit = (props: {
         }
       >
         <Typography variant="h5">Training Data</Typography>
-        <Typography>
+        <Typography variant="caption">
           {lessonUnderEdit.lesson?.lastTrainedAt
             ? `Last Trained: ${lessonUnderEdit.lesson?.lastTrainedAt}`
-            : `Last Trained: Never Trained`}
+            : `Last Trained: Never`}
         </Typography>
+        <Divider />
         {isTraining ? (
           <LoadingIndicator />
         ) : trainStatus.state === TrainState.SUCCESS ? (
@@ -889,7 +897,9 @@ const LessonEdit = (props: {
                 <ListItemText
                   style={{ textAlign: "center" }}
                   data-cy={`train-success-accuracy-${i}`}
-                >{`Accuracy: ${x.accuracy.toFixed(2)}`}</ListItemText>
+                >{`Expectation ${i + 1} Accuracy: ${x.accuracy.toFixed(
+                  2
+                )}`}</ListItemText>
               </ListItem>
             ))}
           </List>
@@ -897,11 +907,28 @@ const LessonEdit = (props: {
           <Typography data-cy="train-failure">{`Training Failed`}</Typography>
         ) : null}
       </Box>
+      <Divider variant="middle" className={classes.divider} />
       <div className={classes.actionFooter}>
+        <Button
+          data-cy="discard-button"
+          variant="contained"
+          startIcon={lessonUnderEdit.dirty ? <DeleteIcon /> : <ArrowBackIcon />}
+          size="large"
+          color="primary"
+          style={
+            lessonUnderEdit.dirty
+              ? { backgroundColor: "red" }
+              : { backgroundColor: "#1B6A9C" }
+          }
+          onClick={handleDiscard}
+        >
+          {lessonUnderEdit.dirty ? "Discard" : "Back"}
+        </Button>
         <Button
           data-cy="train-button"
           variant="contained"
           color="primary"
+          startIcon={<DirectionsRailwayIcon />}
           size="large"
           style={{
             background: lessonUnderEdit.lesson?.isTrainable
@@ -920,6 +947,7 @@ const LessonEdit = (props: {
         <Button
           data-cy="launch-button"
           variant="contained"
+          endIcon={<LaunchIcon />}
           color="primary"
           size="large"
           disabled={!lessonId || !isLessonValid()}
@@ -931,6 +959,7 @@ const LessonEdit = (props: {
           <Button
             data-cy="save-button"
             variant="contained"
+            startIcon={<SaveIcon />}
             color="primary"
             size="large"
             onClick={() => handleSavePopUp(true)}
@@ -939,20 +968,6 @@ const LessonEdit = (props: {
             Save
           </Button>
         ) : null}
-        <Button
-          data-cy="discard-button"
-          variant="contained"
-          size="large"
-          color="primary"
-          style={
-            lessonUnderEdit.dirty
-              ? { backgroundColor: "red" }
-              : { backgroundColor: "#1B6A9C" }
-          }
-          onClick={handleDiscard}
-        >
-          {lessonUnderEdit.dirty ? "Discard" : "Go Back"}
-        </Button>
       </div>
       <Dialog open={Boolean(trainingMessage)} onClose={dismissTrainingMessage}>
         <DialogTitle>{trainingMessage}</DialogTitle>
