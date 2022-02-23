@@ -47,7 +47,7 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import SaveIcon from "@material-ui/icons/Save";
 import LaunchIcon from "@material-ui/icons/Launch";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
-import DirectionsRailwayIcon from "@material-ui/icons/DirectionsRailway";
+import RefreshIcon from "@material-ui/icons/Refresh";
 
 const useStyles = makeStyles((theme) => ({
   cardRoot: {
@@ -68,7 +68,8 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: 10,
   },
   listDragging: {
-    background: "lightgreen",
+    background: "lightblue",
+    borderRadius: 10,
   },
   button: {
     marginTop: theme.spacing(2),
@@ -928,7 +929,7 @@ const LessonEdit = (props: {
           data-cy="train-button"
           variant="contained"
           color="primary"
-          startIcon={<DirectionsRailwayIcon />}
+          startIcon={<RefreshIcon />}
           size="large"
           style={{
             background: lessonUnderEdit.lesson?.isTrainable
