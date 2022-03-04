@@ -47,6 +47,7 @@ typings/
 
 # next.js build output
 .next
+.idea
 
 .DS_Store
 

@@ -379,6 +379,35 @@ const LessonEdit = (props: {
     return <div>You do not have permission to view this lesson.</div>;
   }
 
+  let lastTrainedString = "Never";
+  const months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+  if (lessonUnderEdit.lesson?.lastTrainedAt) {
+    const lastTrained = new Date(lessonUnderEdit.lesson?.lastTrainedAt);
+    const isAM = lastTrained.getHours() < 12;
+    let hours = lastTrained.getHours() % 12;
+    if (hours == 0) {
+      hours = 12;
+    }
+    lastTrainedString = `${
+      months[lastTrained.getMonth()]
+    } ${lastTrained.getDate()}, ${lastTrained.getUTCFullYear()}, at ${hours}:${lastTrained.getMinutes()} ${
+      isAM ? "am" : "pm"
+    }`; //January 12, 2022, at 3:45 pm
+  }
+
   return (
     <div
       style={{
@@ -884,9 +913,7 @@ const LessonEdit = (props: {
       >
         <Typography variant="h5">Training Data</Typography>
         <Typography variant="caption">
-          {lessonUnderEdit.lesson?.lastTrainedAt
-            ? `Last Trained: ${lessonUnderEdit.lesson?.lastTrainedAt}`
-            : `Last Trained: Never`}
+          {`Last Trained: ${lastTrainedString}`}
         </Typography>
         <Divider />
         {isTraining ? (
