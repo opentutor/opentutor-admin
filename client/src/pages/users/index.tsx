@@ -9,7 +9,6 @@ import { useCookies } from "react-cookie";
 import { ToastContainer, toast } from "react-toastify";
 import {
   AppBar,
-  CircularProgress,
   IconButton,
   MenuItem,
   Paper,
@@ -31,6 +30,7 @@ import { ColumnDef, ColumnHeader } from "components/column-header";
 import SessionContext from "context/session";
 import "styles/layout.css";
 import "react-toastify/dist/ReactToastify.css";
+import LoadingIndicator from "components/loading-indicator";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -44,12 +44,6 @@ const useStyles = makeStyles((theme) => ({
     height: "10%",
     top: "auto",
     bottom: 0,
-  },
-  progress: {
-    position: "fixed",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
   },
   paging: {
     position: "absolute",
@@ -124,7 +118,14 @@ function UserItem(props: {
       await updateUserPermissions(user, permission, cookies.accessToken);
       props.onUpdated();
     } catch (err) {
-      props.onUpdated(err);
+      let message;
+      if (err instanceof Error) {
+        message = err.message;
+        props.onUpdated(message);
+      } else {
+        message = String(err);
+        props.onUpdated(message);
+      }
     }
   }
 
@@ -219,7 +220,7 @@ function UsersTable(): JSX.Element {
   if (!users) {
     return (
       <div className={classes.root}>
-        <CircularProgress className={classes.progress} />
+        <LoadingIndicator />
       </div>
     );
   }
@@ -267,13 +268,12 @@ function UsersTable(): JSX.Element {
 function UsersPage(): JSX.Element {
   const context = useContext(SessionContext);
   const [cookies] = useCookies(["accessToken"]);
-  const styles = useStyles();
 
   if (typeof window !== "undefined" && !cookies.accessToken) {
     return <div>Please login to view users.</div>;
   }
   if (!context.user) {
-    return <CircularProgress className={styles.progress} />;
+    return <LoadingIndicator />;
   }
   if (!userIsElevated(context.user)) {
     return (

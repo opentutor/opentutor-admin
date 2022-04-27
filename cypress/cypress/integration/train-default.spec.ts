@@ -31,7 +31,7 @@ describe("settings screen - training default", () => {
     cy.get("[data-cy=train-default-button]").trigger("mouseover").click();
     waitTrainDefault();
     waitComplete();
-    cy.get("[data-cy=loading]").should("exist");
+    cy.get("[data-cy=loading-indicator]").should("exist");
   });
 
   it("fails for state FAILURE", () => {
@@ -49,7 +49,7 @@ describe("settings screen - training default", () => {
     cy.get("[data-cy=train-default-button]").trigger("mouseover").click();
     waitTrainDefault();
     waitComplete();
-    cy.get("[data-cy=train-failure]").should("contain", "TRAINING FAILED");
+    cy.get("[data-cy=train-failure]").should("contain", "Training Failed");
   });
 
   it("fails for http error on start", () => {
@@ -61,7 +61,7 @@ describe("settings screen - training default", () => {
     const waitTrainDefault = cyMockTrainDefault(cy, { responseStatus: 500 });
     cy.get("[data-cy=train-default-button]").trigger("mouseover").click();
     waitTrainDefault();
-    cy.get("[data-cy=train-failure]").should("contain", "TRAINING FAILED");
+    cy.get("[data-cy=train-failure]").should("contain", "Training Failed");
   });
 
   it("fails for http error on poll status", () => {
@@ -84,7 +84,7 @@ describe("settings screen - training default", () => {
     cy.get("[data-cy=train-default-button]").trigger("mouseover").click();
     waitTrainDefault();
     waitComplete();
-    cy.get("[data-cy=train-failure]").should("contain", "TRAINING FAILED");
+    cy.get("[data-cy=train-failure]").should("contain", "Training Failed");
   });
 
   it("show success message on successful train", () => {
@@ -102,6 +102,6 @@ describe("settings screen - training default", () => {
     cy.get("[data-cy=train-default-button]").trigger("mouseover").click();
     waitTrainDefault();
     waitComplete();
-    cy.get("[data-cy=train-success]").should("contain", "TRAINING SUCCEEDED");
+    cy.get("[data-cy=train-success]").should("contain", "Training Succeeded");
   });
 });

@@ -227,3 +227,9 @@ export interface UpdateUserPermissions {
     updateUserPermissions: User;
   };
 }
+
+export interface ExpectationsDataFilter {
+  dirty: boolean;
+  hideUngraded: boolean;
+  hideInvalid: boolean;
+}

@@ -40,7 +40,11 @@ const HintCard = (props: {
     props;
 
   return (
-    <Card data-cy={`hint-${hintIdx}`} variant="outlined">
+    <Card
+      data-cy={`hint-${hintIdx}`}
+      variant="outlined"
+      style={{ width: "100%" }}
+    >
       <CardContent style={{ display: "flex", flexDirection: "row" }}>
         <CardActions>
           <DragHandleIcon />
@@ -80,7 +84,7 @@ const HintCard = (props: {
 };
 
 export default function HintsList(props: {
-  classes: { listDragging: string; button: string };
+  classes: { listDragging: string; button: string; list: string };
   hints: Hint[];
   updateHints: (val: Hint[]) => void;
 }): JSX.Element {
@@ -117,7 +121,7 @@ export default function HintsList(props: {
 
   return (
     <Paper elevation={0} style={{ textAlign: "left" }}>
-      <Typography variant="body2" style={{ padding: 5 }}>
+      <Typography variant="body1" style={{ padding: 5 }}>
         Hints
       </Typography>
       <DragDropContext onDragEnd={onDragEnd}>
@@ -130,8 +134,9 @@ export default function HintsList(props: {
               dense
               disablePadding
               className={
-                snapshot.isDraggingOver ? classes.listDragging : undefined
+                snapshot.isDraggingOver ? classes.listDragging : classes.list
               }
+              style={{ paddingTop: 10, paddingBottom: 10 }}
             >
               {hints.map((hint, i) => (
                 <Draggable
@@ -170,6 +175,8 @@ export default function HintsList(props: {
         startIcon={<AddIcon />}
         className={classes.button}
         onClick={handleAddHint}
+        variant="outlined"
+        color="primary"
       >
         Add Hint
       </Button>

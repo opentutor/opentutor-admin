@@ -8,15 +8,9 @@ import { withPrefix } from "gatsby";
 import React, { useContext } from "react";
 import { useCookies } from "react-cookie";
 import clsx from "clsx";
-import {
-  createStyles,
-  lighten,
-  makeStyles,
-  Theme,
-} from "@material-ui/core/styles";
+import { lighten, makeStyles, Theme } from "@material-ui/core/styles";
 import {
   Container,
-  CircularProgress,
   Table,
   TableBody,
   TableCell,
@@ -38,14 +32,16 @@ import NotInterestedIcon from "@material-ui/icons/NotInterested";
 import AssessmentIcon from "@material-ui/icons/Assessment";
 import CheckIcon from "@material-ui/icons/Check";
 import FilterListIcon from "@material-ui/icons/FilterList";
+import GetAppIcon from "@material-ui/icons/GetApp";
 import NavBar from "components/nav-bar";
-import { UserRole } from "types";
+import { ExpectationsDataFilter, UserRole } from "types";
 import SessionContext from "context/session";
 import withLocation from "wrap-with-location";
 import { Helmet } from "react-helmet";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import FilteringDialog from "components/filtering-dialog";
 import { SessionData, useWithSessionData } from "hooks/use-with-session-data";
+import LoadingIndicator from "components/loading-indicator";
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   if (b[orderBy] < a[orderBy]) {
@@ -116,7 +112,6 @@ const headCells: HeadCell[] = [
 ];
 
 interface EnhancedTableProps {
-  classes: ReturnType<typeof useStyles>;
   numSelected: number;
   onRequestSort: (
     event: React.MouseEvent<unknown>,
@@ -130,7 +125,6 @@ interface EnhancedTableProps {
 
 function EnhancedTableHead(props: EnhancedTableProps) {
   const {
-    classes,
     onSelectAllClick,
     order,
     orderBy,
@@ -142,6 +136,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
     (property: keyof SessionData) => (event: React.MouseEvent<unknown>) => {
       onRequestSort(event, property);
     };
+  const classes = useStyles();
 
   return (
     <TableHead>
@@ -188,28 +183,26 @@ function EnhancedTableHead(props: EnhancedTableProps) {
   );
 }
 
-const useToolbarStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      paddingLeft: theme.spacing(2),
-      paddingRight: theme.spacing(1),
-    },
-    highlight:
-      theme.palette.type === "light"
-        ? {
-            color: theme.palette.secondary.main,
-            backgroundColor: lighten(theme.palette.secondary.light, 0.85),
-          }
-        : {
-            color: theme.palette.text.secondary,
-            backgroundColor: theme.palette.secondary.dark,
-          },
-    title: {
-      flex: "1 1 100%",
-      fontWeight: "bold",
-    },
-  })
-);
+const useToolbarStyles = makeStyles((theme: Theme) => ({
+  root: {
+    paddingLeft: theme.spacing(2),
+    paddingRight: theme.spacing(1),
+  },
+  highlight:
+    theme.palette.type === "light"
+      ? {
+          color: theme.palette.secondary.main,
+          backgroundColor: lighten(theme.palette.secondary.light, 0.85),
+        }
+      : {
+          color: theme.palette.text.secondary,
+          backgroundColor: theme.palette.secondary.dark,
+        },
+  title: {
+    flex: "1 1 100%",
+    fontWeight: "bold",
+  },
+}));
 
 interface EnhancedTableToolbarProps {
   numSelected: number;
@@ -223,12 +216,85 @@ interface EnhancedTableToolbarProps {
 
 const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
   const classes = useToolbarStyles();
-  const { numSelected, expectation } = props;
+  const { numSelected, expectation, rows } = props;
   const [openFilterView, setOpenFilterView] = useState(false);
+  const fileDownloadAnchor = useRef<HTMLAnchorElement>(null);
+  const [fileDownloadUrl, setFileDownloadUrl] = useState("");
 
   const handleFilterViewOpen = () => {
     setOpenFilterView(true);
   };
+
+  function exportData() {
+    // Prepare data:
+    const contents: string[][] = [];
+    contents.push([
+      "Date",
+      "User Name",
+      "User Answer",
+      "Grade",
+      "Classifier Grade",
+      "Confidence",
+      "Accurate",
+    ]);
+    rows.forEach((row) => {
+      contents.push([
+        row.date,
+        row.username,
+        row.userAnswer,
+        row.grade,
+        row.classifierGrade,
+        row.confidence,
+        row.accurate,
+      ]);
+    });
+    const output: string = makeCSV(contents);
+
+    // Download it
+    const blob = new Blob([output]);
+    const fileDownloadUrl = URL.createObjectURL(blob);
+    setFileDownloadUrl(fileDownloadUrl);
+  }
+
+  function makeCSV(content: string[][]) {
+    let csv = "";
+    content.forEach((value) => {
+      value.forEach((item, i) => {
+        const innerValue = item === null ? "" : item.toString();
+        let result = innerValue.replace(/"/g, '""');
+        if (result.search(/("|,|\n)/g) >= 0) {
+          result = '"' + result + '"';
+        }
+        if (i > 0) {
+          csv += ",";
+        }
+        csv += result;
+      });
+      csv += "\n";
+    });
+    return csv;
+  }
+
+  useEffect(() => {
+    //Callback
+    if (fileDownloadUrl !== "") {
+      if (fileDownloadAnchor.current) {
+        fileDownloadAnchor.current.click();
+      } else {
+        console.log("Could not download csv.");
+      }
+      URL.revokeObjectURL(fileDownloadUrl); // free up storage--no longer needed.
+      setFileDownloadUrl("");
+    }
+  }, [fileDownloadUrl]);
+
+  //Filtering
+  const defaultFilter: ExpectationsDataFilter = {
+    hideUngraded: false,
+    hideInvalid: false,
+    dirty: false,
+  };
+  const [filter, setFilter] = React.useState(defaultFilter);
 
   return (
     <div>
@@ -264,7 +330,10 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
               <IconButton
                 aria-label="include"
                 data-cy="include-button"
-                onClick={() => props.onInvalidate(false)}
+                onClick={() => {
+                  props.onInvalidate(false);
+                  setFilter(defaultFilter);
+                }}
               >
                 <CheckIcon />
               </IconButton>
@@ -273,76 +342,92 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
               <IconButton
                 aria-label="exclude"
                 data-cy="exclude-button"
-                onClick={() => props.onInvalidate(true)}
+                onClick={() => {
+                  props.onInvalidate(true);
+                  setFilter(defaultFilter);
+                }}
               >
                 <NotInterestedIcon />
               </IconButton>
             </Tooltip>
           </>
         ) : (
-          <Tooltip title="Filter list" arrow>
-            <IconButton
-              aria-label="filter list"
-              onClick={handleFilterViewOpen}
-              data-cy="filter-button"
-            >
-              <FilterListIcon />
-            </IconButton>
-          </Tooltip>
+          <>
+            <Tooltip title="Download Expectation Data" arrow>
+              <IconButton
+                aria-label="download expectation data"
+                onClick={exportData}
+                data-cy="download-button"
+              >
+                <GetAppIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Filter list" arrow>
+              <IconButton
+                aria-label="filter list"
+                onClick={handleFilterViewOpen}
+                data-cy="filter-button"
+              >
+                <FilterListIcon />
+              </IconButton>
+            </Tooltip>
+          </>
         )}
       </Toolbar>
       <FilteringDialog
         open={openFilterView}
         setOpen={setOpenFilterView}
+        filter={filter}
+        setFilter={setFilter}
         {...props}
       />
+      <a
+        style={{ display: "none" }}
+        download={"expectation_data.csv"}
+        href={fileDownloadUrl}
+        ref={fileDownloadAnchor}
+      >
+        Download File
+      </a>
     </div>
   );
 };
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      width: "100%",
+const useStyles = makeStyles((theme: Theme) => ({
+  root: {
+    width: "100%",
+  },
+  paper: {
+    width: "100%",
+    marginBottom: theme.spacing(2),
+  },
+  table: {
+    minWidth: 750,
+  },
+  visuallyHidden: {
+    border: 0,
+    clip: "rect(0 0 0 0)",
+    height: 1,
+    margin: -1,
+    overflow: "hidden",
+    padding: 0,
+    position: "absolute",
+    top: 20,
+    width: 1,
+  },
+  background: {
+    height: "100vh",
+    width: "100%",
+  },
+  tableHeader: {
+    fontWeight: 600,
+  },
+  normalButton: {
+    "&:hover": {
+      color: theme.palette.primary.main,
     },
-    paper: {
-      width: "100%",
-      marginBottom: theme.spacing(2),
-    },
-    table: {
-      minWidth: 750,
-    },
-    visuallyHidden: {
-      border: 0,
-      clip: "rect(0 0 0 0)",
-      height: 1,
-      margin: -1,
-      overflow: "hidden",
-      padding: 0,
-      position: "absolute",
-      top: 20,
-      width: 1,
-    },
-    progress: {
-      position: "fixed",
-      top: "50%",
-      left: "50%",
-      transform: "translate(-50%, -50%)",
-    },
-    background: {
-      height: "100vh",
-      width: "100%",
-    },
-    tableHeader: {
-      fontWeight: 600,
-    },
-    normalButton: {
-      "&:hover": {
-        color: theme.palette.primary.main,
-      },
-    },
-  })
-);
+  },
+}));
 
 function EnhancedTable(props: { lessonId: string; expectation: number }) {
   const classes = useStyles();
@@ -423,6 +508,14 @@ function EnhancedTable(props: { lessonId: string; expectation: number }) {
   const emptyRows =
     rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
 
+  if (!useSessionData.expectationTitle) {
+    return (
+      <div className={classes.root}>
+        <LoadingIndicator />
+      </div>
+    );
+  }
+
   return (
     <div className={classes.root} data-cy="expectation-table">
       <Paper className={classes.paper} elevation={3}>
@@ -443,7 +536,6 @@ function EnhancedTable(props: { lessonId: string; expectation: number }) {
             aria-label="enhanced table"
           >
             <EnhancedTableHead
-              classes={classes}
               numSelected={selected.length}
               order={order}
               orderBy={orderBy}
@@ -607,7 +699,7 @@ function Data(props: { search: LessonExpectationSearch }): JSX.Element {
     );
   }
   if (!context.user) {
-    return <CircularProgress className={styles.progress} />;
+    return <LoadingIndicator />;
   }
   if (context.user.userRole !== UserRole.ADMIN) {
     return <div>You must be an admin to view this page.</div>;
