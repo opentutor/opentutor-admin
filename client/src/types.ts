@@ -233,3 +233,9 @@ export interface ExpectationsDataFilter {
   hideUngraded: boolean;
   hideInvalid: boolean;
 }
+
+export interface ExpectationDataCSV {
+  me:{
+    csv: string;
+  };
+}

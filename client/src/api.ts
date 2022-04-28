@@ -27,6 +27,7 @@ import {
   UserAccessToken,
   User,
   UserRole,
+  ExpectationDataCSV,
 } from "types";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const urljoin = require("url-join");
@@ -75,6 +76,8 @@ export async function fetchAppConfig(): Promise<AppConfig> {
   }
   return gqlRes.data.data.appConfig;
 }
+
+
 
 export async function fetchSessions(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
@@ -256,6 +259,28 @@ export async function invalidateResponses(
     { headers: headers }
   );
   return findOrThrow<InvalidateResponses>(result).me.invalidateResponses;
+}
+
+export async function fetchExpectationDataCSV(
+  accessToken: string
+): Promise<ExpectationDataCSV> {
+  const headers = { Authorization: `bearer ${accessToken}`};
+  const result = await axios.post<GQLResponse<ExpectationDataCSV>>(
+    GRAPHQL_ENDPOINT,
+    {
+      query:`
+      query {
+        me{
+          allExpectationData {
+            csv
+          }
+        }
+      }
+      `
+    },
+    {headers: headers}
+  );
+  return findOrThrow<ExpectationDataCSV>(result);
 }
 
 export async function fetchSession(
