@@ -4,7 +4,7 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { useCookies } from "react-cookie";
 import { Button, Container, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
@@ -13,8 +13,9 @@ import SessionContext from "context/session";
 import "styles/layout.css";
 import "react-toastify/dist/ReactToastify.css";
 import { useWithTraining } from "hooks/use-with-training";
-import { TrainState, UserRole } from "types";
+import { ExpectationDataCSV, TrainState, UserRole } from "types";
 import LoadingIndicator from "components/loading-indicator";
+import { fetchExpectationDataCSV } from "api";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -50,6 +51,8 @@ function SettingsPage(props: { path: string }): JSX.Element {
   const [cookies] = useCookies(["accessToken"]);
   const styles = useStyles();
   const { isTraining, trainStatus, startDefaultTraining } = useWithTraining();
+  const [fileDownloadUrl, setFileDownloadUrl] = useState("");
+  const fileDownloadAnchor = useRef<HTMLAnchorElement>(null);
 
   if (typeof window !== "undefined" && !cookies.accessToken) {
     return <div>Please login to view settings.</div>;
@@ -61,9 +64,49 @@ function SettingsPage(props: { path: string }): JSX.Element {
     return <div>You must be an admin to view this page.</div>;
   }
 
+  useEffect(() => {
+    //Callback
+    if (fileDownloadUrl !== "") {
+      if (fileDownloadAnchor.current) {
+        fileDownloadAnchor.current.click();
+      } else {
+        console.log("Could not download csv.");
+      }
+      URL.revokeObjectURL(fileDownloadUrl); // free up storage--no longer needed.
+      setFileDownloadUrl("");
+    }
+  }, [fileDownloadUrl]);
+
   return (
     <div>
       <NavBar title="Settings" />
+      <Container maxWidth="lg">
+        <Button
+          variant="contained"
+          color="primary"
+          className={styles.trainButton}
+          onClick={() => {
+            fetchExpectationDataCSV(cookies.accessToken).then((csvJson:ExpectationDataCSV)=>
+            {
+              const blob = new Blob([csvJson.me.allExpectationData.csv]);
+              const fileDownloadUrl = URL.createObjectURL(blob);
+              setFileDownloadUrl(fileDownloadUrl);
+            });
+          }}
+          disabled={isTraining}
+          data-cy="download-expectation-button"
+        >
+          Download Expectation Data
+        </Button>
+        <a
+        style={{ display: "none" }}
+        download={"expectation_data.csv"}
+        href={fileDownloadUrl}
+        ref={fileDownloadAnchor}
+      >
+        Download File
+      </a>
+      </Container>
       <Container maxWidth="lg">
         <Button
           variant="contained"
