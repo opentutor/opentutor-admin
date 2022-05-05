@@ -77,8 +77,6 @@ export async function fetchAppConfig(): Promise<AppConfig> {
   return gqlRes.data.data.appConfig;
 }
 
-
-
 export async function fetchSessions(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
   filter: any,
@@ -264,11 +262,11 @@ export async function invalidateResponses(
 export async function fetchExpectationDataCSV(
   accessToken: string
 ): Promise<ExpectationDataCSV> {
-  const headers = { Authorization: `bearer ${accessToken}`};
+  const headers = { Authorization: `bearer ${accessToken}` };
   const result = await axios.post<GQLResponse<ExpectationDataCSV>>(
     GRAPHQL_ENDPOINT,
     {
-      query:`
+      query: `
       query {
         me{
           allExpectationData {
@@ -276,9 +274,9 @@ export async function fetchExpectationDataCSV(
           }
         }
       }
-      `
+      `,
     },
-    {headers: headers}
+    { headers: headers }
   );
   return findOrThrow<ExpectationDataCSV>(result);
 }

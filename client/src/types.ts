@@ -235,9 +235,9 @@ export interface ExpectationsDataFilter {
 }
 
 export interface ExpectationDataCSV {
-  me:{
-    allExpectationData:{
+  me: {
+    allExpectationData: {
       csv: string;
-    }  
+    };
   };
 }

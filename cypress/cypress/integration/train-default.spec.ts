@@ -24,6 +24,7 @@ describe("settings screen - training default", () => {
       userRole: "admin",
     });
     cy.visit("/settings");
+    cy.viewport(1000, 720);
     const waitTrainDefault = cyMockTrainDefault(cy);
     const waitComplete = cyMockTrainStatusSeq(cy, [
       { status: { state: TrainState.PENDING } },
@@ -103,5 +104,18 @@ describe("settings screen - training default", () => {
     waitTrainDefault();
     waitComplete();
     cy.get("[data-cy=train-success]").should("contain", "Training Succeeded");
+  });
+
+  it("Can't access if not admin", () => {
+    cySetup(cy);
+    cyMockDefault(cy, {
+      userRole: "user",
+    });
+    cy.visit("/settings");
+    cy.get("[data-cy=admin-error-container").within(() => {
+      cy.get("[data-cy=admin-error-message]").contains(
+        "You must be an admin to view this page."
+      );
+    });
   });
 });
