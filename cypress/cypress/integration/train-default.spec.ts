@@ -24,7 +24,6 @@ describe("settings screen - training default", () => {
       userRole: "admin",
     });
     cy.visit("/settings");
-    cy.viewport(1000, 720);
     const waitTrainDefault = cyMockTrainDefault(cy);
     const waitComplete = cyMockTrainStatusSeq(cy, [
       { status: { state: TrainState.PENDING } },
