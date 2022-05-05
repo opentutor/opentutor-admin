@@ -104,4 +104,17 @@ describe("settings screen - training default", () => {
     waitComplete();
     cy.get("[data-cy=train-success]").should("contain", "Training Succeeded");
   });
+
+  it("Can't access if not admin", () => {
+    cySetup(cy);
+    cyMockDefault(cy, {
+      userRole: "user",
+    });
+    cy.visit("/settings");
+    cy.get("[data-cy=admin-error-container").within(() => {
+      cy.get("[data-cy=admin-error-message]").contains(
+        "You must be an admin to view this page."
+      );
+    });
+  });
 });

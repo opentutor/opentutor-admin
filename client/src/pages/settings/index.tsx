@@ -4,7 +4,7 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { useCookies } from "react-cookie";
 import { Button, Container, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
@@ -13,8 +13,9 @@ import SessionContext from "context/session";
 import "styles/layout.css";
 import "react-toastify/dist/ReactToastify.css";
 import { useWithTraining } from "hooks/use-with-training";
-import { TrainState, UserRole } from "types";
+import { ExpectationDataCSV, TrainState, UserRole } from "types";
 import LoadingIndicator from "components/loading-indicator";
+import { fetchExpectationDataCSV } from "api";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -44,47 +45,110 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const NoAdminMessage = (): JSX.Element => {
+  return (
+    <Container maxWidth="lg" data-cy="admin-error-container">
+      <Typography variant="h4" data-cy="admin-error-message">
+        You must be an admin to view this page.
+      </Typography>
+    </Container>
+  );
+};
+
 // eslint-disable-next-line  @typescript-eslint/no-unused-vars
-function SettingsPage(props: { path: string }): JSX.Element {
+function SettingsPage(): JSX.Element {
+  const { isTraining, trainStatus, startDefaultTraining } = useWithTraining();
   const context = useContext(SessionContext);
   const [cookies] = useCookies(["accessToken"]);
+  const [fileDownloadUrl, setFileDownloadUrl] = useState<string>("");
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
+  const fileDownloadAnchor = useRef<HTMLAnchorElement>(null);
   const styles = useStyles();
-  const { isTraining, trainStatus, startDefaultTraining } = useWithTraining();
 
   if (typeof window !== "undefined" && !cookies.accessToken) {
     return <div>Please login to view settings.</div>;
   }
-  if (!context.user) {
-    return <LoadingIndicator />;
-  }
-  if (context.user.userRole !== UserRole.ADMIN) {
-    return <div>You must be an admin to view this page.</div>;
-  }
+
+  useEffect(() => {
+    //Callback
+    if (fileDownloadUrl !== "") {
+      if (fileDownloadAnchor.current) {
+        fileDownloadAnchor.current.click();
+      } else {
+        console.error("Could not download csv.");
+      }
+      URL.revokeObjectURL(fileDownloadUrl); // free up storage--no longer needed.
+      setFileDownloadUrl("");
+    }
+  }, [fileDownloadUrl]);
+
+  const displayLoadingProgress = !context.user ? <LoadingIndicator /> : null;
+
+  useEffect(() => {
+    if (context?.user?.userRole === UserRole.ADMIN) {
+      setIsAdmin(true);
+    }
+  }, [context]);
 
   return (
     <div>
       <NavBar title="Settings" />
-      <Container maxWidth="lg">
-        <Button
-          variant="contained"
-          color="primary"
-          className={styles.trainButton}
-          onClick={() => {
-            startDefaultTraining();
-          }}
-          disabled={isTraining}
-          data-cy="train-default-button"
-        >
-          Train Default Classifier
-        </Button>
-        {isTraining ? (
-          <LoadingIndicator />
-        ) : trainStatus.state === TrainState.SUCCESS ? (
-          <Typography data-cy="train-success">{`Training Succeeded`}</Typography>
-        ) : trainStatus.state === TrainState.FAILURE ? (
-          <Typography data-cy="train-failure">{`Training Failed`}</Typography>
-        ) : null}
-      </Container>
+      {displayLoadingProgress}
+      {isAdmin ? (
+        <>
+          <Container maxWidth="lg">
+            <Button
+              variant="contained"
+              color="primary"
+              className={styles.trainButton}
+              onClick={() => {
+                fetchExpectationDataCSV(cookies.accessToken).then(
+                  (csvJson: ExpectationDataCSV) => {
+                    const blob = new Blob([csvJson.me.allExpectationData.csv]);
+                    const fileDownloadUrl = URL.createObjectURL(blob);
+                    setFileDownloadUrl(fileDownloadUrl);
+                  }
+                );
+              }}
+              disabled={isTraining}
+              data-cy="download-expectation-button"
+            >
+              Download Expectation Data
+            </Button>
+            <a
+              style={{ display: "none" }}
+              download={"expectation_data.csv"}
+              href={fileDownloadUrl}
+              ref={fileDownloadAnchor}
+            >
+              Download File
+            </a>
+          </Container>
+          <Container maxWidth="lg">
+            <Button
+              variant="contained"
+              color="primary"
+              className={styles.trainButton}
+              onClick={() => {
+                startDefaultTraining();
+              }}
+              disabled={isTraining}
+              data-cy="train-default-button"
+            >
+              Train Default Classifier
+            </Button>
+            {isTraining ? (
+              <LoadingIndicator />
+            ) : trainStatus.state === TrainState.SUCCESS ? (
+              <Typography data-cy="train-success">{`Training Succeeded`}</Typography>
+            ) : trainStatus.state === TrainState.FAILURE ? (
+              <Typography data-cy="train-failure">{`Training Failed`}</Typography>
+            ) : null}
+          </Container>
+        </>
+      ) : (
+        <NoAdminMessage />
+      )}
     </div>
   );
 }
