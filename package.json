@@ -3,10 +3,9 @@
   "version": "1.0.0",
   "description": "Top level package list for opentutor-admin",
   "main": "index.js",
-  "dependencies": {},
   "devDependencies": {
-    "license-check-and-add": "^4.0.2",
-    "prettier": "^2.3.0"
+    "license-check-and-add": "^4.0.5",
+    "prettier": "^2.7.1"
   },
   "scripts": {
     "test": "run",

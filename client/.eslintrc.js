@@ -21,18 +21,13 @@ module.exports = {
     ecmaFeatures: {
       jsx: true,
     },
-    ecmaVersion: 2018, // Allows for the parsing of modern ECMAScript features
+    ecmaVersion: 2022, // Allows for the parsing of modern ECMAScript features
     sourceType: "module", // Allows for the use of imports
   },
   rules: {
     "no-prototype-builtins": "off",
     "react/display-name": "off",
     "react/prop-types": "off", // Disable prop-types as we use TypeScript for type checking
-  },
-  settings: {
-    react: {
-      version: "detect", // Tells eslint-plugin-react to automatically detect the version of React to use
-    },
   },
   overrides: [
     // Override some TypeScript rules just for .js files
