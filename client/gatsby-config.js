@@ -36,16 +36,14 @@ module.exports = {
     },
     {
       resolve: "gatsby-plugin-eslint",
-    
+
       options: {
-    
         extensions: ["js", "jsx", "ts", "tsx"],
         exclude: ["node_modules", ".cache", "public"],
         stages: ["develop"],
 
         emitWarning: true,
         failOnError: false,
-        
       },
     },
   ],
