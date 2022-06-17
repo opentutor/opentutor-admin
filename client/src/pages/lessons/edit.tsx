@@ -901,10 +901,12 @@ const LessonEdit = (props: {
               )
             ? "#FF0000"
             : Math.min(
+                // eslint-disable-next-line no-unsafe-optional-chaining
                 ...trainStatus.info?.expectations.map((x) => x.accuracy)
               ) >= 0.6
             ? "#008000"
             : Math.min(
+                // eslint-disable-next-line no-unsafe-optional-chaining
                 ...trainStatus.info?.expectations.map((x) => x.accuracy)
               ) >= 0.4
             ? "#FFFF00"
