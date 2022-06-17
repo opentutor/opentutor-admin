@@ -1,12 +1,11 @@
-# opentutor-admin
-web ui for grading opentutor sessions
 
+# opentutor-admin
+
+web ui for grading opentutor sessions
 
 ## Usage
 
-
 A docker image that serves a web client for grading opentutor sessions .
-
 
 ## Variables
 
@@ -14,37 +13,60 @@ In order to function properly the client generally requires these environment va
 
 - **GRAPHQL_ENDPOINT**: The graphql endpoint for accessing grader data. Defaults to /graphql
 
-
 ## Development
 
 ### Running in WSL
 
 Please see the following for setting up Cypress in the wsl
+
 [https://nickymeuleman.netlify.app/blog/gui-on-wsl2-cypress](https://nickymeuleman.netlify.app/blog/gui-on-wsl2-cypress)
 
 ### Required Software
 
 - unix system (osx or linux)
-- node/npm 12.X
+
+- node/npm 16.X lts
+
 - docker
 
-Any changes made to this repo should be covered by tests. To run the existing tests:
+### Initial Setup
+
+Ensure that the node version is set to 12.22.12. This example utilizes nvm to control node versions.
 
 ```
-make test
+nvm use 16.15.1
 ```
 
-All pushed commits must also pass format and lint checks. To check all required tests before a commit:
+To install all other packages (Main, Client, and Cypress):
+
+```
+npm install
+```
+
+### Testing
+
+Any changes made to this repo should be covered by tests. This is now covered by Cypress Testing.
+
+To check all required tests before a commit:
 
 ```
 make test-all
 ```
 
-To fix formatting issues:
+All pushed commits must also pass format and lint checks:
 
 ```
 make format
 ```
+```
+make pretty
+```
+```
+make license
+```
+
+
+
 
 ### Cypress Testing
 
@@ -57,10 +79,6 @@ cd client && make develop
 ...then you can run the full cypress test suite with
 
 ```
-cd cypress && make test-cypress
-```
-
-```
 cd cypress && npm run cy:open
 ```
 
@@ -68,7 +86,7 @@ cd cypress && npm run cy:open
 
 ### Cypress Visual-Regression Testing
 
-We use [cypress-image-snapshot](https://www.npmjs.com/package/cypress-image-snapshot) for visual-regression testing. 
+We use [cypress-image-snapshot](https://www.npmjs.com/package/cypress-image-snapshot) for visual-regression testing.
 
 Generally, you don't want to run the image-snapshot tests while developing because they will fail based on small differences in rendering from environment to environment. For this reason, the default npm commands for `cy:open` and `cy:run` disable image-snapshot testing.
 
@@ -95,21 +113,27 @@ Currently, this image is semantically versioned. When making changes that you wa
 To build/push a work-in-progress tag of `opentutor-admin` for the current commit in your branch
 
 - find the `docker_tag_commit` workflow for your commit in [circleci](https://circleci.com/gh/ICTLearningSciences/workflows/opentutor-admin)
+
 - approve the workflow
+
 - this will create a tag like `https://hub.docker.com/opentutor-admin:${COMMIT_SHA}`
 
 To build/push a pre-release semver tag of `opentutor-admin` for the current commit in your branch
 
 - create a [github release](https://github.com/ICTLearningSciences/opentutor-admin/releases/new) **from your development branch** with tag format `/^\d+\.\d+\.\d+(-[a-z\d\-.]+)?$/` (e.g. `1.0.0-alpha.1`)
+
 - find the `docker_tag_release` workflow for your git tag in [circleci](https://circleci.com/gh/ICTLearningSciences/workflows/opentutor-admin)
+
 - approve the workflow
+
 - this will create a tag like `opentutor/opentutor-admin:1.0.0-alpha.1`
-
-
 
 Once your changes are approved and merged to main, you should create a release tag in semver format as follows:
 
 - create a [github release](https://github.com/ICTLearningSciences/opentutor-admin/releases/new) **from main** with tag format `/^\d+\.\d+\.\d$/` (e.g. `1.0.0`)
+
 - find the `docker_tag_release` workflow for your git tag in [circleci](https://circleci.com/gh/ICTLearningSciences/workflows/opentutor-admin)
+
 - approve the workflow
+
 - this will create a tag like `opentutor/opentutor-admin:1.0.0`
