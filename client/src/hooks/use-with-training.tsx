@@ -6,6 +6,7 @@ The full terms of this copyright and license should always be found in the root 
 */
 import { fetchTrainingStatus, trainDefault, trainLesson } from "api";
 import { useState } from "react";
+import { useCookies } from "react-cookie";
 import { Lesson, TrainState, TrainStatus } from "types";
 import useInterval from "./use-interval";
 
@@ -21,6 +22,7 @@ export interface TrainingStatus {
 
 export function useWithTraining(pollingInterval = 1000): TrainingStatus {
   const [isTraining, setIsTraining] = useState<boolean>(false);
+  const [cookies] = useCookies(["accessToken"]);
   const [message, setMessage] = useState<string>();
   const [statusUrl, setStatusUrl] = useState<string>("");
   const [trainStatus, setTrainStatus] = useState<TrainStatus>({
@@ -68,7 +70,7 @@ export function useWithTraining(pollingInterval = 1000): TrainingStatus {
       );
       return;
     }
-    trainLesson(lesson.lessonId)
+    trainLesson(lesson.lessonId, cookies.accessToken)
       .then((trainJob) => {
         setStatusUrl(trainJob.statusUrl);
         setIsTraining(true);
@@ -88,7 +90,7 @@ export function useWithTraining(pollingInterval = 1000): TrainingStatus {
     if (isTraining) {
       return;
     }
-    trainDefault()
+    trainDefault(cookies.accessToken)
       .then((trainJob) => {
         setStatusUrl(trainJob.statusUrl);
         setIsTraining(true);

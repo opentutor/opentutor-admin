@@ -590,20 +590,33 @@ export async function deleteSession(
   return findOrThrow<DeleteSession>(result).me.deleteSession;
 }
 
-export async function trainLesson(lessonId: string): Promise<TrainJob> {
+export async function trainLesson(
+  lessonId: string,
+  accessToken: string
+): Promise<TrainJob> {
   const result = await axios.post<GQLResponse<TrainJob>>(
     urljoin(CLASSIFIER_ENTRYPOINT, "train"),
     {
       lesson: lessonId,
+    },
+    {
+      headers: {
+        Authorization: `bearer ${accessToken}`,
+      },
     }
   );
   return findOrThrow<TrainJob>(result);
 }
 
-export async function trainDefault(): Promise<TrainJob> {
+export async function trainDefault(accessToken: string): Promise<TrainJob> {
   const result = await axios.post<GQLResponse<TrainJob>>(
     urljoin(CLASSIFIER_ENTRYPOINT, "train_default"),
-    {}
+    {},
+    {
+      headers: {
+        Authorization: `bearer ${accessToken}`,
+      },
+    }
   );
   return findOrThrow<TrainJob>(result);
 }
