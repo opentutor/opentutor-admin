@@ -4,7 +4,9 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import { sessions } from "../fixtures/session";
+import { sessions, session } from "../fixtures/session";
+import session1 from "../fixtures/sessions1.json";
+import session2 from "../fixtures/sessions2.json";
 import { cySetup, cyMockDefault, mockGQL } from "../support/functions";
 
 describe("sessions screen", () => {
@@ -47,7 +49,7 @@ describe("sessions screen", () => {
     it("enables edit if user is contentManager", () => {
       cySetup(cy);
       cyMockDefault(cy, {
-        gqlQueries: [mockGQL("FetchSessions", { me: { sessions } })],
+        gqlQueries: [mockGQL("FetchSessions", { me: { session1 } })],
         userRole: "contentManager",
       });
       cy.visit("/sessions");
@@ -150,6 +152,46 @@ describe("sessions screen", () => {
     cy.get("[data-cy=column-header]")
       .find("[data-cy=username]")
       .contains("Username");
+  });
+
+  it("test next page button", () => {
+    cySetup(cy);
+    cyMockDefault(cy, {
+      gqlQueries: [mockGQL("FetchSessions", { me: { sessions: session1 } })],
+      userRole: "admin",
+    });
+    cy.visit("/sessions");
+    cy.get("[data-cy=sessions]").children().should("have.length", 50);
+    cyMockDefault(cy, {
+      gqlQueries: [mockGQL("FetchSessions", { me: { sessions: session2 } })],
+      userRole: "admin",
+    });
+    cy.find("[data-cy=next-page]").trigger("mouseover").click();
+    cy.get("[data-cy=sessions]").children().should("have.length", 50);
+  });
+
+  it("preserves location in list after grading a session", () => {
+    cySetup(cy);
+    cyMockDefault(cy, {
+      gqlQueries: [mockGQL("FetchSessions", { me: { sessions: session1 } })],
+      userRole: "admin",
+    });
+    cy.visit("/sessions");
+    cy.get("[data-cy=sessions]").children().should("have.length", 50);
+    cyMockDefault(cy, {
+      gqlQueries: [mockGQL("FetchSessions", { me: { sessions: session2 } })],
+      userRole: "admin",
+    });
+    cy.find("[data-cy=next-page]").trigger("mouseover").click();
+    cy.get("[data-cy=sessions]").children().should("have.length", 50);
+    cyMockDefault(cy, {
+      gqlQueries: [mockGQL("FetchSession", { me: { session: session } })],
+      userRole: "admin",
+    });
+    cy.get("[data-cy=session-0]")
+      .find("[data-cy=grade-button]")
+      .trigger("mouseover")
+      .click();
   });
 
   it("displays a list of sessions", () => {

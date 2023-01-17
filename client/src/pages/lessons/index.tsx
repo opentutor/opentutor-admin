@@ -214,7 +214,9 @@ const LessonItem = (props: {
         )}
       </TableCell>
       <TableCell data-cy="date" align="left">
-        {row.node.updatedAt ? row.node.updatedAt.toLocaleString() : ""}
+        {row.node.updatedAt
+          ? new Date(row.node.updatedAt).toLocaleString()
+          : ""}
       </TableCell>
       <TableCell data-cy="creator" align="left">
         {row.node.createdByName}

@@ -113,7 +113,7 @@ const SessionTable = (props: { search: { sessionId: string } }) => {
     <Paper className={classes.root}>
       <div data-cy="lesson">{session.lesson?.name || "No Lesson Name"}</div>
       <div data-cy="username">{session.username || "Guest"}</div>
-      <div data-cy="date">{date ? date : ""}</div>
+      <div data-cy="date">{date ? new Date(date).toLocaleString() : ""}</div>
       <div data-cy="question"> {session.question?.text || ""} </div>
       <div data-cy="score">
         Score:{" "}

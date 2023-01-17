@@ -213,7 +213,7 @@ function SessionItem(props: { row: Edge<Session>; i: number }): JSX.Element {
         {row.node.lessonCreatedBy || "Guest"}
       </TableCell>
       <TableCell data-cy="date" align="left">
-        {row.node.createdAt || ""}
+        {new Date(row.node.createdAt).toLocaleString() || ""}
       </TableCell>
       <TableCell data-cy="username" align="left">
         {row.node.username || "Guest"}
