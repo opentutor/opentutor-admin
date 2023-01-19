@@ -154,7 +154,7 @@ describe("sessions screen", () => {
       .contains("Username");
   });
 
-  it("test next page button", () => {
+  it("test next page button remains in state after grading", () => {
     cySetup(cy);
     cyMockDefault(cy, {
       gqlQueries: [mockGQL("FetchSessions", { me: { sessions: session1 } })],
@@ -166,32 +166,25 @@ describe("sessions screen", () => {
       gqlQueries: [mockGQL("FetchSessions", { me: { sessions: session2 } })],
       userRole: "admin",
     });
-    cy.find("[data-cy=next-page]").trigger("mouseover").click();
-    cy.get("[data-cy=sessions]").children().should("have.length", 50);
-  });
-
-  it("preserves location in list after grading a session", () => {
-    cySetup(cy);
-    cyMockDefault(cy, {
-      gqlQueries: [mockGQL("FetchSessions", { me: { sessions: session1 } })],
-      userRole: "admin",
-    });
-    cy.visit("/sessions");
-    cy.get("[data-cy=sessions]").children().should("have.length", 50);
-    cyMockDefault(cy, {
-      gqlQueries: [mockGQL("FetchSessions", { me: { sessions: session2 } })],
-      userRole: "admin",
-    });
-    cy.find("[data-cy=next-page]").trigger("mouseover").click();
+    cy.get("[data-cy=next-page]").trigger("mouseover").click();
     cy.get("[data-cy=sessions]").children().should("have.length", 50);
     cyMockDefault(cy, {
       gqlQueries: [mockGQL("FetchSession", { me: { session: session } })],
       userRole: "admin",
     });
-    cy.get("[data-cy=session-0]")
-      .find("[data-cy=grade-button]")
-      .trigger("mouseover")
-      .click();
+    cy.get("[data-cy=session-1]")
+    .find("[data-cy=grade-button]")
+    .trigger("mouseover")
+    .click();
+    cy.wait(4000);
+    cy.get("[data-cy=title]").contains("Grade Session");
+    cy.get("[data-cy=doneButton").trigger("mouseover").click();
+    cyMockDefault(cy, {
+      gqlQueries: [mockGQL("FetchSessions", { me: { sessions: session2 } })],
+      userRole: "admin",
+    });
+    cy.wait(4000);
+    cy.location().should((loc) =>{ expect(loc.search).to.include("cursor")});
   });
 
   it("displays a list of sessions", () => {

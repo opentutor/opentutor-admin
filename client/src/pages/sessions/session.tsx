@@ -242,7 +242,7 @@ const SessionTable = (props: { search: { sessionId: string } }) => {
         </Table>
       </TableContainer>
       <div>
-        <Button variant="contained" onClick={handleDone}>
+        <Button variant="contained" data-cy="doneButton" onClick={handleDone}>
           Done
         </Button>
         <IconButton
