@@ -175,13 +175,13 @@ function TableFooter(props: {
   );
 }
 
-function SessionItem(props: { row: Edge<Session>; i: number }): JSX.Element {
+function SessionItem(props: { row: Edge<Session>; i: number, cursor:string }): JSX.Element {
   const { row, i } = props;
   const context = useContext(SessionContext);
   const styles = useStyles();
 
   function handleGrade(): void {
-    navigate(`/sessions/session?sessionId=${row.node.sessionId}`);
+    navigate(`/sessions/session?sessionId=${row.node.sessionId}&cursor=${props.cursor}`);
   }
 
   return (
@@ -254,10 +254,10 @@ function SessionItem(props: { row: Edge<Session>; i: number }): JSX.Element {
   );
 }
 
-function SessionsTable(props: { search: { lessonId: string } }): JSX.Element {
+function SessionsTable(props: { search: { lessonId: string, cursor:string } }): JSX.Element {
   const classes = useStyles();
   const { sessions, sortBy, sortAsc, sort, nextPage, prevPage } =
-    useWithSessions(props.search.lessonId);
+    useWithSessions(props.search.lessonId, props.search.cursor);
 
   if (!sessions) {
     return (
@@ -284,7 +284,7 @@ function SessionsTable(props: { search: { lessonId: string } }): JSX.Element {
             />
             <TableBody data-cy="sessions">
               {sessions.edges.map((row, i) => (
-                <SessionItem key={row.node.sessionId} row={row} i={i} />
+                <SessionItem key={row.node.sessionId} row={row} i={i} cursor= {props.search.cursor}/>
               ))}
             </TableBody>
           </Table>
@@ -301,7 +301,7 @@ function SessionsTable(props: { search: { lessonId: string } }): JSX.Element {
   );
 }
 
-function SessionsPage(props: { search: { lessonId: string } }): JSX.Element {
+function SessionsPage(props: { search: { lessonId: string, cursor:string } }): JSX.Element {
   const context = useContext(SessionContext);
   const [cookies] = useCookies(["accessToken"]);
 
