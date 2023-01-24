@@ -40,7 +40,9 @@ const useStyles = makeStyles({
   },
 });
 
-const SessionTable = (props: { search: { sessionId: string, cursor:string } }) => {
+const SessionTable = (props: {
+  search: { sessionId: string; cursor: string };
+}) => {
   const { sessionId } = props.search;
   const classes = useStyles();
   const [cookies] = useCookies(["accessToken"]);
@@ -259,7 +261,9 @@ const SessionTable = (props: { search: { sessionId: string, cursor:string } }) =
   );
 };
 
-const SessionPage = (props: { search: { sessionId: string, cursor:string } }) => {
+const SessionPage = (props: {
+  search: { sessionId: string; cursor: string };
+}) => {
   const context = useContext(SessionContext);
   const [cookies] = useCookies(["accessToken"]);
   if (typeof window !== "undefined" && !cookies.accessToken) {

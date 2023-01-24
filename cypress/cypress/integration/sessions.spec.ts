@@ -49,7 +49,7 @@ describe("sessions screen", () => {
     it("enables edit if user is contentManager", () => {
       cySetup(cy);
       cyMockDefault(cy, {
-        gqlQueries: [mockGQL("FetchSessions", { me: { session1 } })],
+        gqlQueries: [mockGQL("FetchSessions", { me: { sessions } })],
         userRole: "contentManager",
       });
       cy.visit("/sessions");
@@ -173,9 +173,9 @@ describe("sessions screen", () => {
       userRole: "admin",
     });
     cy.get("[data-cy=session-1]")
-    .find("[data-cy=grade-button]")
-    .trigger("mouseover")
-    .click();
+      .find("[data-cy=grade-button]")
+      .trigger("mouseover")
+      .click();
     cy.wait(4000);
     cy.get("[data-cy=title]").contains("Grade Session");
     cy.get("[data-cy=doneButton").trigger("mouseover").click();
@@ -184,7 +184,9 @@ describe("sessions screen", () => {
       userRole: "admin",
     });
     cy.wait(4000);
-    cy.location().should((loc) =>{ expect(loc.search).to.include("cursor")});
+    cy.location().should((loc) => {
+      expect(loc.search).to.include("cursor");
+    });
   });
 
   it("displays a list of sessions", () => {
