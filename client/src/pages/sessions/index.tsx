@@ -181,7 +181,7 @@ function SessionItem(props: { row: Edge<Session>; i: number, cursor:string }): J
   const styles = useStyles();
 
   function handleGrade(): void {
-    navigate(`/sessions/session?sessionId=${row.node.sessionId}&cursor=${props.cursor}`);
+    navigate(`/sessions/session?sessionId=${row.node.sessionId}&cursor=${row.cursor}`);
   }
 
   return (
