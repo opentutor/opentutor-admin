@@ -180,13 +180,13 @@ function SessionItem(props: {
   i: number;
   cursor: string;
 }): JSX.Element {
-  const { row, i } = props;
+  const { row, i, cursor } = props;
   const context = useContext(SessionContext);
   const styles = useStyles();
 
   function handleGrade(): void {
     navigate(
-      `/sessions/session?sessionId=${row.node.sessionId}&cursor=${row.cursor}`
+      `/sessions/session?sessionId=${row.node.sessionId}&cursor=${cursor}`
     );
   }
 
@@ -296,7 +296,7 @@ function SessionsTable(props: {
                   key={row.node.sessionId}
                   row={row}
                   i={i}
-                  cursor={props.search.cursor}
+                  cursor={sessions.pageInfo.startCursor}
                 />
               ))}
             </TableBody>
