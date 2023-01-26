@@ -46,8 +46,7 @@ export function useWithSessions(
   const rowsPerPage = search.limit;
 
   useEffect(() => {
-    if (existingCursor) setCursor(existingCursor);
-    else setCursor("");
+    setCursor(existingCursor || "");
     load();
   }, [context.onlyCreator, context.showGraded]);
 
