@@ -4,7 +4,9 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import { sessions } from "../fixtures/session";
+import { sessions, session } from "../fixtures/session";
+import session1 from "../fixtures/sessions1.json";
+import session2 from "../fixtures/sessions2.json";
 import { cySetup, cyMockDefault, mockGQL } from "../support/functions";
 
 describe("sessions screen", () => {
@@ -150,6 +152,41 @@ describe("sessions screen", () => {
     cy.get("[data-cy=column-header]")
       .find("[data-cy=username]")
       .contains("Username");
+  });
+
+  it("test next page button remains in state after grading", () => {
+    cySetup(cy);
+    cyMockDefault(cy, {
+      gqlQueries: [mockGQL("FetchSessions", { me: { sessions: session1 } })],
+      userRole: "admin",
+    });
+    cy.visit("/sessions");
+    cy.get("[data-cy=sessions]").children().should("have.length", 50);
+    cyMockDefault(cy, {
+      gqlQueries: [mockGQL("FetchSessions", { me: { sessions: session2 } })],
+      userRole: "admin",
+    });
+    cy.get("[data-cy=next-page]").trigger("mouseover").click();
+    cy.get("[data-cy=sessions]").children().should("have.length", 50);
+    cyMockDefault(cy, {
+      gqlQueries: [mockGQL("FetchSession", { me: { session: session } })],
+      userRole: "admin",
+    });
+    cy.get("[data-cy=session-1]")
+      .find("[data-cy=grade-button]")
+      .trigger("mouseover")
+      .click();
+    cy.wait(4000);
+    cy.get("[data-cy=title]").contains("Grade Session");
+    cy.get("[data-cy=doneButton").trigger("mouseover").click();
+    cyMockDefault(cy, {
+      gqlQueries: [mockGQL("FetchSessions", { me: { sessions: session2 } })],
+      userRole: "admin",
+    });
+    cy.wait(4000);
+    cy.location().should((loc) => {
+      expect(loc.search).to.include("cursor");
+    });
   });
 
   it("displays a list of sessions", () => {

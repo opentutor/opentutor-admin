@@ -21,6 +21,7 @@ export interface SearchParams {
 
 export function useWithSessions(
   lessonId?: string,
+  existingCursor?: string,
   search: SearchParams = {
     limit: 50,
     cursor: "",
@@ -45,7 +46,7 @@ export function useWithSessions(
   const rowsPerPage = search.limit;
 
   useEffect(() => {
-    setCursor("");
+    setCursor(existingCursor || "");
     load();
   }, [context.onlyCreator, context.showGraded]);
 
