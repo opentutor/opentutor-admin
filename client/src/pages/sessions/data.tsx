@@ -718,13 +718,12 @@ function Data(props: { search: LessonExpectationSearch }): JSX.Element {
   );
 }
 
-
 // https://www.gatsbyjs.com/docs/reference/built-in-components/gatsby-head/
 export const Head = (): JSX.Element => (
   <>
-     <style>{"body { background-color: #F5F5F5; }"}</style>
-          {/* MUI Gray 100 */}
+    <style>{"body { background-color: #F5F5F5; }"}</style>
+    {/* MUI Gray 100 */}
   </>
-)
+);
 
 export default withLocation(Data);
