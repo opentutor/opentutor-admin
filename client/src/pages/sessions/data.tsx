@@ -37,7 +37,6 @@ import NavBar from "components/nav-bar";
 import { ExpectationsDataFilter, UserRole } from "types";
 import SessionContext from "context/session";
 import withLocation from "wrap-with-location";
-import { Helmet } from "react-helmet";
 import { useState, useEffect, useRef } from "react";
 import FilteringDialog from "components/filtering-dialog";
 import { SessionData, useWithSessionData } from "hooks/use-with-session-data";
@@ -708,10 +707,6 @@ function Data(props: { search: LessonExpectationSearch }): JSX.Element {
   return (
     <>
       <div className={styles.background}>
-        <Helmet>
-          <style>{"body { background-color: #F5F5F5; }"}</style>
-          {/* MUI Gray 100 */}
-        </Helmet>
         <NavBar title="Expectation Data" />
         <Container maxWidth="xl">
           <div style={{ marginTop: 40 }}>
@@ -722,5 +717,14 @@ function Data(props: { search: LessonExpectationSearch }): JSX.Element {
     </>
   );
 }
+
+
+// https://www.gatsbyjs.com/docs/reference/built-in-components/gatsby-head/
+export const Head = (): JSX.Element => (
+  <>
+     <style>{"body { background-color: #F5F5F5; }"}</style>
+          {/* MUI Gray 100 */}
+  </>
+)
 
 export default withLocation(Data);

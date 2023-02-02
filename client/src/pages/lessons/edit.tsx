@@ -40,7 +40,6 @@ import { useWithTraining } from "hooks/use-with-training";
 import "styles/layout.css";
 import "jsoneditor-react/es/editor.min.css";
 import "react-toastify/dist/ReactToastify.css";
-import { WindowLocation } from "@reach/router";
 import { StringParam, useQueryParam } from "use-query-params";
 import LoadingIndicator from "components/loading-indicator";
 import DeleteIcon from "@material-ui/icons/Delete";
@@ -48,6 +47,7 @@ import SaveIcon from "@material-ui/icons/Save";
 import LaunchIcon from "@material-ui/icons/Launch";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import RefreshIcon from "@material-ui/icons/Refresh";
+import { Location } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   cardRoot: {
@@ -171,7 +171,7 @@ export interface LessonEditSearch {
 
 const LessonEdit = (props: {
   search: LessonEditSearch;
-  location: WindowLocation<unknown>;
+  location: Location;
 }) => {
   // const { lessonId, copyLesson } = props.search;
   const [lessonId, setLessonId] = useQueryParam("lessonId", StringParam);
@@ -1023,7 +1023,7 @@ const LessonEdit = (props: {
 
 function EditPage(props: {
   search: LessonEditSearch;
-  location: WindowLocation<unknown>;
+  location: Location;
 }): JSX.Element {
   const context = useContext(SessionContext);
   const [cookies] = useCookies(["accessToken"]);
