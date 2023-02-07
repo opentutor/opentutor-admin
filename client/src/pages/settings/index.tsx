@@ -6,8 +6,8 @@ The full terms of this copyright and license should always be found in the root 
 */
 import React, { useContext } from "react";
 import { useCookies } from "react-cookie";
-import { Button, Container, Typography } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { Button, Container, Theme, Typography } from "@mui/material";
+import { makeStyles } from "@mui/styles";
 import NavBar from "components/nav-bar";
 import SessionContext from "context/session";
 import "styles/layout.css";
@@ -16,7 +16,7 @@ import { useWithTraining } from "hooks/use-with-training";
 import { TrainState, UserRole } from "types";
 import LoadingIndicator from "components/loading-indicator";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme:Theme) => ({
   root: {
     display: "flex",
     flexFlow: "column",

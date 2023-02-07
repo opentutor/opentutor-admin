@@ -24,10 +24,12 @@ import {
   ListItemText,
   MenuItem,
   Select,
+  SelectChangeEvent,
   TextField,
+  Theme,
   Typography,
-} from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+} from "@mui/material";
+import { makeStyles } from "@mui/styles";
 import { fetchLesson, updateLesson, userCanEdit, fetchLessons } from "api";
 import SessionContext from "context/session";
 import NavBar from "components/nav-bar";
@@ -42,14 +44,16 @@ import "jsoneditor-react/es/editor.min.css";
 import "react-toastify/dist/ReactToastify.css";
 import { StringParam, useQueryParam } from "use-query-params";
 import LoadingIndicator from "components/loading-indicator";
-import DeleteIcon from "@material-ui/icons/Delete";
-import SaveIcon from "@material-ui/icons/Save";
-import LaunchIcon from "@material-ui/icons/Launch";
-import ArrowBackIcon from "@material-ui/icons/ArrowBack";
-import RefreshIcon from "@material-ui/icons/Refresh";
+import {
+  Delete as DeleteIcon,
+  Save as SaveIcon,
+  Launch as LaunchIcon,
+  ArrowBack as ArrowBackIcon,
+  Refresh as RefreshIcon,
+} from "@mui/icons-material";
 import { Location } from "react-router-dom";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme:Theme) => ({
   cardRoot: {
     width: "100%",
   },
@@ -498,10 +502,9 @@ const LessonEdit = (props: {
                 Dialog Category
               </InputLabel>
               <Select
-                labelWidth={120}
                 labelId="dialog-category-label"
                 value={lessonUnderEdit.lesson?.dialogCategory || "NOT SET"}
-                onChange={(e: React.ChangeEvent<{ value: unknown }>) => {
+                onChange={(e: SelectChangeEvent<string>) => {
                   setLesson(
                     {
                       ...(lessonUnderEdit.lesson || newLesson),
@@ -523,11 +526,10 @@ const LessonEdit = (props: {
                 Lesson Format
               </InputLabel>
               <Select
-                labelWidth={110}
                 data-cy="lesson-format"
                 labelId="lesson-format-label"
                 value={lessonUnderEdit.lesson?.learningFormat || "default"}
-                onChange={(e: React.ChangeEvent<{ value: unknown }>) => {
+                onChange={(e: SelectChangeEvent<string>) => {
                   setLesson(
                     {
                       ...(lessonUnderEdit.lesson || newLesson),
@@ -551,7 +553,7 @@ const LessonEdit = (props: {
               label="Introduction"
               placeholder="Introduction to the lesson,  e.g. 'This is a lesson about RGB colors'"
               multiline
-              rowsMax={4}
+              maxRows={4}
               fullWidth
               InputLabelProps={{
                 shrink: true,
@@ -575,7 +577,7 @@ const LessonEdit = (props: {
               label="Question"
               placeholder="Question the student needs to answer, e.g. 'What are the colors in RGB?'"
               multiline
-              rowsMax={4}
+              maxRows={4}
               fullWidth
               InputLabelProps={{
                 shrink: true,
@@ -599,7 +601,6 @@ const LessonEdit = (props: {
                 Media Type
               </InputLabel>
               <Select
-                labelWidth={85}
                 labelId="media-label"
                 data-cy="media-type"
                 value={
@@ -607,7 +608,7 @@ const LessonEdit = (props: {
                     ? lessonUnderEdit.lesson.media.type
                     : MediaType.NONE
                 }
-                onChange={(e: React.ChangeEvent<{ value: unknown }>) => {
+                onChange={(e: SelectChangeEvent<string>) => {
                   if ((e.target.value as string) === MediaType.VIDEO) {
                     setLesson(
                       {
@@ -671,7 +672,7 @@ const LessonEdit = (props: {
                   placeholder="Image URL"
                   required
                   multiline
-                  rowsMax={4}
+                  maxRows={4}
                   fullWidth
                   InputLabelProps={{
                     shrink: true,
@@ -718,7 +719,7 @@ const LessonEdit = (props: {
                   placeholder="YouTube Video URL"
                   required
                   multiline
-                  rowsMax={4}
+                  maxRows={4}
                   fullWidth
                   InputLabelProps={{
                     shrink: true,
@@ -755,7 +756,7 @@ const LessonEdit = (props: {
                       type="number"
                       required
                       multiline
-                      rowsMax={1}
+                      maxRows={1}
                       // style={{ width: "50%" }}
                       InputLabelProps={{
                         shrink: true,
@@ -806,7 +807,7 @@ const LessonEdit = (props: {
                       required
                       multiline
                       fullWidth
-                      rowsMax={1}
+                      maxRows={1}
                       // style={{ width: "50%" }}
                       InputLabelProps={{
                         shrink: true,
@@ -890,7 +891,7 @@ const LessonEdit = (props: {
         borderColor={
           trainStatus.state !== TrainState.SUCCESS &&
           trainStatus.state !== TrainState.FAILURE
-            ? null
+            ? "#000000"
             : trainStatus.state === TrainState.FAILURE
             ? "#FF0000"
             : !(

@@ -13,16 +13,20 @@ import {
   MenuItem,
   Paper,
   Select,
+  SelectChangeEvent,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableRow,
+  Theme,
   Toolbar,
-} from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import KeyboardArrowLeftIcon from "@material-ui/icons/KeyboardArrowLeft";
-import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
+} from "@mui/material";
+import { makeStyles } from "@mui/styles";
+import {
+  KeyboardArrowLeft as KeyboardArrowLeftIcon,
+  KeyboardArrowRight as KeyboardArrowRightIcon,
+} from "@mui/icons-material";
 import { fetchUsers, updateUserPermissions, userIsElevated } from "api";
 import { Connection, Edge, User, UserRole } from "types";
 import NavBar from "components/nav-bar";
@@ -32,7 +36,7 @@ import "styles/layout.css";
 import "react-toastify/dist/ReactToastify.css";
 import LoadingIndicator from "components/loading-indicator";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme:Theme) => ({
   root: {
     display: "flex",
     flexFlow: "column",
@@ -142,7 +146,7 @@ function UserItem(props: {
           data-cy="select-role"
           value={row.node.userRole}
           onChange={(
-            event: React.ChangeEvent<{ value: unknown; name?: unknown }>
+            event: SelectChangeEvent<string>
           ) => {
             handleRoleChange(row.node.id, event.target.value as string);
           }}

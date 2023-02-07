@@ -1,5 +1,5 @@
+import { createTheme, ThemeProvider as MuiThemeProvider } from "@mui/material";
 import React from "react";
-import { createTheme, MuiThemeProvider } from "@material-ui/core/styles";
 import { CookiesProvider } from "react-cookie";
 import { SessionProvider } from "./src/context/session";
 

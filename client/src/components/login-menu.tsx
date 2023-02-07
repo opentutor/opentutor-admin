@@ -12,8 +12,8 @@ import {
   GoogleLoginResponse,
   GoogleLoginResponseOffline,
 } from "react-google-login";
-import { Button, Typography } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { Button, Typography } from "@mui/material";
+import { makeStyles } from "@mui/styles";
 import NavBar from "components/nav-bar";
 import SessionContext from "context/session";
 import { getClientID } from "config";
@@ -22,7 +22,7 @@ import { UserAccessToken } from "types";
 import "styles/layout.css";
 import LoadingIndicator from "components/loading-indicator";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme:any) => ({
   root: {
     height: "100%",
     display: "flex",

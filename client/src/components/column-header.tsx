@@ -10,7 +10,7 @@ import {
   TableHead,
   TableSortLabel,
   TableRow,
-} from "@material-ui/core";
+} from "@mui/material";
 
 export interface ColumnDef {
   id: string;
