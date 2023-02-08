@@ -13,7 +13,6 @@ import {
   GoogleLoginResponseOffline,
 } from "react-google-login";
 import { Button, Theme, Typography } from "@mui/material";
-import { useTheme } from "@mui/material/styles";
 import { makeStyles } from "@mui/styles";
 import NavBar from "components/nav-bar";
 import SessionContext from "context/session";
@@ -36,11 +35,11 @@ const useStyles = makeStyles((theme:Theme) => ({
     margin: 25,
   },
   input: {
-    margin: useTheme().spacing(1),
+    margin: theme.spacing(1),
     width: 300,
   },
   button: {
-    margin: useTheme().spacing(1),
+    margin: theme.spacing(1),
     width: 300,
   },
 }));
