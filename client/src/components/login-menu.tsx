@@ -12,7 +12,8 @@ import {
   GoogleLoginResponse,
   GoogleLoginResponseOffline,
 } from "react-google-login";
-import { Button, Typography } from "@mui/material";
+import { Button, Theme, Typography } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 import { makeStyles } from "@mui/styles";
 import NavBar from "components/nav-bar";
 import SessionContext from "context/session";
@@ -22,7 +23,7 @@ import { UserAccessToken } from "types";
 import "styles/layout.css";
 import LoadingIndicator from "components/loading-indicator";
 
-const useStyles = makeStyles((theme:any) => ({
+const useStyles = makeStyles((theme:Theme) => ({
   root: {
     height: "100%",
     display: "flex",
@@ -35,11 +36,11 @@ const useStyles = makeStyles((theme:any) => ({
     margin: 25,
   },
   input: {
-    margin: theme.spacing(1),
+    margin: useTheme().spacing(1),
     width: 300,
   },
   button: {
-    margin: theme.spacing(1),
+    margin: useTheme().spacing(1),
     width: 300,
   },
 }));
