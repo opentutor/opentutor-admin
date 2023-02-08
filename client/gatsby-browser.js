@@ -1,4 +1,8 @@
-import { createTheme, StyledEngineProvider, ThemeProvider as MuiThemeProvider } from "@mui/material/styles";
+import {
+  createTheme,
+  StyledEngineProvider,
+  ThemeProvider as MuiThemeProvider,
+} from "@mui/material/styles";
 import React from "react";
 import { CookiesProvider } from "react-cookie";
 import { SessionProvider } from "./src/context/session";

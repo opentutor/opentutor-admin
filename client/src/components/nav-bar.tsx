@@ -23,19 +23,20 @@ import {
   Theme,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-import { AccountCircle,
-         Close as CloseIcon, 
-         Menu as MenuIcon, 
-         Assignment as AssignmentIcon,
-         Assessment as AssessmentIcon,
-         Group as GroupIcon,
-         Settings as SettingsIcon,
+import {
+  AccountCircle,
+  Close as CloseIcon,
+  Menu as MenuIcon,
+  Assignment as AssignmentIcon,
+  Assessment as AssessmentIcon,
+  Group as GroupIcon,
+  Settings as SettingsIcon,
 } from "@mui/icons-material";
 import { userIsElevated } from "api";
 import SessionContext from "context/session";
 import { UserRole } from "types";
 
-const useStyles = makeStyles((theme:Theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   toolbar: theme.mixins.toolbar,
   root: {
     flexGrow: 1,

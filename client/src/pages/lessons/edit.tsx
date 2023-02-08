@@ -53,7 +53,7 @@ import {
 } from "@mui/icons-material";
 import { Location } from "@reach/router";
 
-const useStyles = makeStyles((theme:Theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   cardRoot: {
     width: "100%",
   },

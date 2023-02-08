@@ -36,7 +36,7 @@ import {
   KeyboardArrowLeft as KeyboardArrowLeftIcon,
   KeyboardArrowRight as KeyboardArrowRightIcon,
   Launch as LaunchIcon,
-} from "@mui/icons-material"; 
+} from "@mui/icons-material";
 import { fetchLessons, deleteLesson, userCanEdit } from "api";
 import { Connection, Edge, Lesson } from "types";
 import { ColumnDef, ColumnHeader } from "components/column-header";
@@ -46,7 +46,7 @@ import "styles/layout.css";
 import "react-toastify/dist/ReactToastify.css";
 import LoadingIndicator from "components/loading-indicator";
 
-const useStyles = makeStyles((theme:Theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   root: {
     display: "flex",
     flexFlow: "column",

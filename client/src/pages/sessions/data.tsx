@@ -34,7 +34,7 @@ import {
   Check as CheckIcon,
   FilterList as FilterListIcon,
   GetApp as GetAppIcon,
-} from "@mui/icons-material"
+} from "@mui/icons-material";
 import NavBar from "components/nav-bar";
 import { ExpectationsDataFilter, UserRole } from "types";
 import SessionContext from "context/session";

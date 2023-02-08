@@ -40,7 +40,7 @@ import "styles/layout.css";
 import { useWithSessions } from "hooks/use-with-sessions";
 import LoadingIndicator from "components/loading-indicator";
 
-const useStyles = makeStyles((theme:Theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   root: {
     display: "flex",
     flexFlow: "column",

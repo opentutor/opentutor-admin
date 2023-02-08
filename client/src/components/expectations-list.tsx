@@ -33,7 +33,15 @@ import { expectationFeatureSchema } from "schemas/validation";
 import { LessonExpectation, Hint, Features } from "types";
 import "styles/layout.css";
 import "jsoneditor-react/es/editor.min.css";
-import { Add, DragHandle, ClearOutlined, ExpandMore, Launch, ArrowRight, ArrowDropDown } from "@mui/icons-material";
+import {
+  Add,
+  DragHandle,
+  ClearOutlined,
+  ExpandMore,
+  Launch,
+  ArrowRight,
+  ArrowDropDown,
+} from "@mui/icons-material";
 
 interface IJSONEditor extends JSX.Element {
   expandAll: () => void;
@@ -183,11 +191,7 @@ const ExpectationCard = (props: {
               setIsShowingAdvancedFeatures(!isShowingAdvancedFeatures)
             }
           >
-            {isShowingAdvancedFeatures ? (
-              <ArrowDropDown />
-            ) : (
-              <ArrowRight />
-            )}
+            {isShowingAdvancedFeatures ? <ArrowDropDown /> : <ArrowRight />}
             <Typography variant="body2">
               {isShowingAdvancedFeatures
                 ? "Hide Advanced Features"

@@ -36,7 +36,7 @@ import "styles/layout.css";
 import "react-toastify/dist/ReactToastify.css";
 import LoadingIndicator from "components/loading-indicator";
 
-const useStyles = makeStyles((theme:Theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   root: {
     display: "flex",
     flexFlow: "column",
@@ -145,9 +145,7 @@ function UserItem(props: {
         <Select
           data-cy="select-role"
           value={row.node.userRole}
-          onChange={(
-            event: SelectChangeEvent<string>
-          ) => {
+          onChange={(event: SelectChangeEvent<string>) => {
             handleRoleChange(row.node.id, event.target.value as string);
           }}
           className={styles.dropdown}

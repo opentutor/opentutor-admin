@@ -16,7 +16,7 @@ import { useWithTraining } from "hooks/use-with-training";
 import { TrainState, UserRole } from "types";
 import LoadingIndicator from "components/loading-indicator";
 
-const useStyles = makeStyles((theme:Theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   root: {
     display: "flex",
     flexFlow: "column",

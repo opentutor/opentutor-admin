@@ -22,7 +22,7 @@ import { UserAccessToken } from "types";
 import "styles/layout.css";
 import LoadingIndicator from "components/loading-indicator";
 
-const useStyles = makeStyles((theme:Theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   root: {
     height: "100%",
     display: "flex",

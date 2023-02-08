@@ -23,7 +23,11 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import {Add as AddIcon, ClearOutlined as ClearOutlinedIcon, DragHandle as DragHandleIcon} from "@mui/icons-material";
+import {
+  Add as AddIcon,
+  ClearOutlined as ClearOutlinedIcon,
+  DragHandle as DragHandleIcon,
+} from "@mui/icons-material";
 import { Hint } from "types";
 import "styles/layout.css";
 
