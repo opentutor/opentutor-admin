@@ -13,7 +13,7 @@ import {
   DialogActions,
   FormControlLabel,
   Switch,
-} from "@material-ui/core";
+} from "@mui/material";
 import { SessionData } from "hooks/use-with-session-data";
 import { ExpectationsDataFilter } from "types";
 

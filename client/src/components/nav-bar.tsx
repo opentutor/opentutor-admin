@@ -20,20 +20,23 @@ import {
   SwipeableDrawer,
   Toolbar,
   Typography,
-} from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import AccountCircle from "@material-ui/icons/AccountCircle";
-import CloseIcon from "@material-ui/icons/Close";
-import MenuIcon from "@material-ui/icons/Menu";
-import AssignmentIcon from "@material-ui/icons/Assignment";
-import AssessmentIcon from "@material-ui/icons/Assessment";
-import GroupIcon from "@material-ui/icons/Group";
-import SettingsIcon from "@material-ui/icons/Settings";
+  Theme,
+} from "@mui/material";
+import { makeStyles } from "@mui/styles";
+import {
+  AccountCircle,
+  Close as CloseIcon,
+  Menu as MenuIcon,
+  Assignment as AssignmentIcon,
+  Assessment as AssessmentIcon,
+  Group as GroupIcon,
+  Settings as SettingsIcon,
+} from "@mui/icons-material";
 import { userIsElevated } from "api";
 import SessionContext from "context/session";
 import { UserRole } from "types";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   toolbar: theme.mixins.toolbar,
   root: {
     flexGrow: 1,

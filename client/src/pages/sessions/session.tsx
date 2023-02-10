@@ -7,7 +7,7 @@ The full terms of this copyright and license should always be found in the root 
 import { navigate } from "gatsby";
 import React, { useContext } from "react";
 import { useCookies } from "react-cookie";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles } from "@mui/styles";
 import {
   Paper,
   Table,
@@ -21,8 +21,9 @@ import {
   Typography,
   Button,
   IconButton,
-} from "@material-ui/core";
-import EditIcon from "@material-ui/icons/Edit";
+  SelectChangeEvent,
+} from "@mui/material";
+import { Edit as EditIcon } from "@mui/icons-material";
 import withLocation from "wrap-with-location";
 import { Session } from "types";
 import { fetchSession, setGrade, userCanEdit } from "api";
@@ -51,7 +52,7 @@ const SessionTable = (props: {
   const [date, setDate] = React.useState<string>("");
 
   const handleGradeExpectationChange = (
-    event: React.ChangeEvent<{ value: unknown; name?: unknown }>
+    event: SelectChangeEvent<string>
   ): void => {
     const indexes = event.target.name as string;
     const indexSplit = indexes.split(" ");

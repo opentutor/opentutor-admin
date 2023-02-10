@@ -22,11 +22,14 @@ import {
   Toolbar,
   Tooltip,
   Box,
-} from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import KeyboardArrowLeftIcon from "@material-ui/icons/KeyboardArrowLeft";
-import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
-import AssessmentIcon from "@material-ui/icons/Assessment";
+  Theme,
+} from "@mui/material";
+import { makeStyles } from "@mui/styles";
+import {
+  KeyboardArrowLeft as KeyboardArrowLeftIcon,
+  KeyboardArrowRight as KeyboardArrowRightIcon,
+  Assessment as AssessmentIcon,
+} from "@mui/icons-material";
 import { userCanEdit } from "api";
 import { Edge, Session } from "types";
 import NavBar from "components/nav-bar";
@@ -37,7 +40,7 @@ import "styles/layout.css";
 import { useWithSessions } from "hooks/use-with-sessions";
 import LoadingIndicator from "components/loading-indicator";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   root: {
     display: "flex",
     flexFlow: "column",

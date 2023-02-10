@@ -8,7 +8,7 @@ import { withPrefix } from "gatsby";
 import React, { useContext } from "react";
 import { useCookies } from "react-cookie";
 import clsx from "clsx";
-import { lighten, makeStyles, Theme } from "@material-ui/core/styles";
+import { makeStyles } from "@mui/styles";
 import {
   Container,
   Table,
@@ -27,21 +27,23 @@ import {
   Tooltip,
   FormControlLabel,
   Switch,
-} from "@material-ui/core";
-import NotInterestedIcon from "@material-ui/icons/NotInterested";
-import AssessmentIcon from "@material-ui/icons/Assessment";
-import CheckIcon from "@material-ui/icons/Check";
-import FilterListIcon from "@material-ui/icons/FilterList";
-import GetAppIcon from "@material-ui/icons/GetApp";
+} from "@mui/material";
+import {
+  NotInterested as NotInterestedIcon,
+  Assessment as AssessmentIcon,
+  Check as CheckIcon,
+  FilterList as FilterListIcon,
+  GetApp as GetAppIcon,
+} from "@mui/icons-material";
 import NavBar from "components/nav-bar";
 import { ExpectationsDataFilter, UserRole } from "types";
 import SessionContext from "context/session";
 import withLocation from "wrap-with-location";
-import { Helmet } from "react-helmet";
 import { useState, useEffect, useRef } from "react";
 import FilteringDialog from "components/filtering-dialog";
 import { SessionData, useWithSessionData } from "hooks/use-with-session-data";
 import LoadingIndicator from "components/loading-indicator";
+import { lighten, Theme } from "@mui/material";
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   if (b[orderBy] < a[orderBy]) {
@@ -189,7 +191,7 @@ const useToolbarStyles = makeStyles((theme: Theme) => ({
     paddingRight: theme.spacing(1),
   },
   highlight:
-    theme.palette.type === "light"
+    theme.palette.mode === "light"
       ? {
           color: theme.palette.secondary.main,
           backgroundColor: lighten(theme.palette.secondary.light, 0.85),
@@ -708,10 +710,6 @@ function Data(props: { search: LessonExpectationSearch }): JSX.Element {
   return (
     <>
       <div className={styles.background}>
-        <Helmet>
-          <style>{"body { background-color: #F5F5F5; }"}</style>
-          {/* MUI Gray 100 */}
-        </Helmet>
         <NavBar title="Expectation Data" />
         <Container maxWidth="xl">
           <div style={{ marginTop: 40 }}>
@@ -722,5 +720,13 @@ function Data(props: { search: LessonExpectationSearch }): JSX.Element {
     </>
   );
 }
+
+// https://www.gatsbyjs.com/docs/reference/built-in-components/gatsby-head/
+export const Head = (): JSX.Element => (
+  <>
+    <style>{"body { background-color: #F5F5F5; }"}</style>
+    {/* MUI Gray 100 */}
+  </>
+);
 
 export default withLocation(Data);

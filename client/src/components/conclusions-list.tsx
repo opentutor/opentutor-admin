@@ -22,10 +22,8 @@ import {
   Paper,
   TextField,
   Typography,
-} from "@material-ui/core";
-import AddIcon from "@material-ui/icons/Add";
-import ClearOutlinedIcon from "@material-ui/icons/ClearOutlined";
-import DragHandleIcon from "@material-ui/icons/DragHandle";
+} from "@mui/material";
+import { Add, DragHandle, ClearOutlined } from "@mui/icons-material";
 import "styles/layout.css";
 
 interface ConclusionClasses {
@@ -54,14 +52,14 @@ const ConclusionCard = (props: {
     <Card data-cy={`conclusion-${idx}`} style={{ width: "100%" }}>
       <CardContent style={{ display: "flex", flexDirection: "row" }}>
         <CardActions>
-          <DragHandleIcon />
+          <DragHandle />
         </CardActions>
         <TextField
           margin="normal"
           data-cy="edit-conclusion"
           label={`Conclusion ${idx + 1}`}
           multiline
-          rowsMax={4}
+          maxRows={4}
           fullWidth
           placeholder="Add a conclusion statement, e.g. 'In summary,  RGB colors are red, green, and blue'"
           InputLabelProps={{
@@ -81,7 +79,7 @@ const ConclusionCard = (props: {
               size="small"
               onClick={handleRemoveConclusion}
             >
-              <ClearOutlinedIcon />
+              <ClearOutlined />
             </IconButton>
           ) : null}
         </CardActions>
@@ -175,7 +173,7 @@ function ConclusionsList(props: {
       </DragDropContext>
       <Button
         data-cy="add-conclusion"
-        startIcon={<AddIcon />}
+        startIcon={<Add />}
         className={classes.button}
         onClick={handleAddConclusion}
         variant="outlined"

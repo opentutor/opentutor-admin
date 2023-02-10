@@ -1,5 +1,9 @@
+import {
+  createTheme,
+  StyledEngineProvider,
+  ThemeProvider as MuiThemeProvider,
+} from "@mui/material/styles";
 import React from "react";
-import { createTheme, MuiThemeProvider } from "@material-ui/core/styles";
 import { CookiesProvider } from "react-cookie";
 import { SessionProvider } from "./src/context/session";
 
@@ -25,9 +29,11 @@ export const onServiceWorkerUpdateReady = () => {
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const wrapRootElement = ({ element }) => (
-  <MuiThemeProvider theme={theme}>
-    <CookiesProvider>
-      <SessionProvider>{element}</SessionProvider>
-    </CookiesProvider>
-  </MuiThemeProvider>
+  <StyledEngineProvider injectFirst>
+    <MuiThemeProvider theme={theme}>
+      <CookiesProvider>
+        <SessionProvider>{element}</SessionProvider>
+      </CookiesProvider>
+    </MuiThemeProvider>
+  </StyledEngineProvider>
 );

@@ -25,15 +25,18 @@ import {
   TableRow,
   Toolbar,
   Tooltip,
-} from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import AddIcon from "@material-ui/icons/Add";
-import AssessmentIcon from "@material-ui/icons/Assessment";
-import DeleteIcon from "@material-ui/icons/Delete";
-import FileCopyIcon from "@material-ui/icons/FileCopy";
-import KeyboardArrowLeftIcon from "@material-ui/icons/KeyboardArrowLeft";
-import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
-import LaunchIcon from "@material-ui/icons/Launch";
+  Theme,
+} from "@mui/material";
+import { makeStyles } from "@mui/styles";
+import {
+  Add as AddIcon,
+  Assessment as AssessmentIcon,
+  Delete as DeleteIcon,
+  FileCopy as FileCopyIcon,
+  KeyboardArrowLeft as KeyboardArrowLeftIcon,
+  KeyboardArrowRight as KeyboardArrowRightIcon,
+  Launch as LaunchIcon,
+} from "@mui/icons-material";
 import { fetchLessons, deleteLesson, userCanEdit } from "api";
 import { Connection, Edge, Lesson } from "types";
 import { ColumnDef, ColumnHeader } from "components/column-header";
@@ -43,7 +46,7 @@ import "styles/layout.css";
 import "react-toastify/dist/ReactToastify.css";
 import LoadingIndicator from "components/loading-indicator";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   root: {
     display: "flex",
     flexFlow: "column",

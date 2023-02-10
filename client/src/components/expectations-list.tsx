@@ -27,19 +27,21 @@ import {
   Paper,
   TextField,
   Typography,
-} from "@material-ui/core";
-import AddIcon from "@material-ui/icons/Add";
-import ClearOutlinedIcon from "@material-ui/icons/ClearOutlined";
-import DragHandleIcon from "@material-ui/icons/DragHandle";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import LaunchIcon from "@material-ui/icons/Launch";
-import ArrowRightIcon from "@material-ui/icons/ArrowRight";
-import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
+} from "@mui/material";
 import HintsList from "components/hints-list";
 import { expectationFeatureSchema } from "schemas/validation";
 import { LessonExpectation, Hint, Features } from "types";
 import "styles/layout.css";
 import "jsoneditor-react/es/editor.min.css";
+import {
+  Add,
+  DragHandle,
+  ClearOutlined,
+  ExpandMore,
+  Launch,
+  ArrowRight,
+  ArrowDropDown,
+} from "@mui/icons-material";
 
 interface IJSONEditor extends JSX.Element {
   expandAll: () => void;
@@ -124,7 +126,7 @@ const ExpectationCard = (props: {
       <CardContent>
         <div style={{ display: "flex", flexDirection: "row" }}>
           <CardActions>
-            <DragHandleIcon />
+            <DragHandle />
           </CardActions>
           <TextField
             data-cy="edit-expectation"
@@ -150,7 +152,7 @@ const ExpectationCard = (props: {
                 size="small"
                 onClick={handleRemoveExpectation}
               >
-                <ClearOutlinedIcon />
+                <ClearOutlined />
               </IconButton>
             ) : null}
             <IconButton
@@ -163,7 +165,7 @@ const ExpectationCard = (props: {
               })}
               onClick={() => setExpanded(!expanded)}
             >
-              <ExpandMoreIcon />
+              <ExpandMore />
             </IconButton>
           </CardActions>
         </div>
@@ -189,11 +191,7 @@ const ExpectationCard = (props: {
               setIsShowingAdvancedFeatures(!isShowingAdvancedFeatures)
             }
           >
-            {isShowingAdvancedFeatures ? (
-              <ArrowDropDownIcon />
-            ) : (
-              <ArrowRightIcon />
-            )}
+            {isShowingAdvancedFeatures ? <ArrowDropDown /> : <ArrowRight />}
             <Typography variant="body2">
               {isShowingAdvancedFeatures
                 ? "Hide Advanced Features"
@@ -208,7 +206,7 @@ const ExpectationCard = (props: {
         <Button
           data-cy={`view-expectation-${expIdx}-data-button`}
           style={{ marginLeft: 15, marginTop: 10 }}
-          endIcon={<LaunchIcon />}
+          endIcon={<Launch />}
           onClick={() => {
             navigate(
               `../../sessions/data?lessonId=${lessonId}&expectation=${expIdx}`
@@ -353,7 +351,7 @@ function ExpectationsList(props: {
       </DragDropContext>
       <Button
         data-cy="add-expectation"
-        startIcon={<AddIcon />}
+        startIcon={<Add />}
         className={classes.button}
         onClick={handleAddExpectation}
         variant="outlined"

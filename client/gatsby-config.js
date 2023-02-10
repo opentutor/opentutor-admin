@@ -18,9 +18,6 @@ module.exports = {
       resolve: "gatsby-plugin-material-ui",
     },
     {
-      resolve: "gatsby-plugin-react-helmet",
-    },
-    {
       resolve: "gatsby-plugin-use-query-params",
     },
     {

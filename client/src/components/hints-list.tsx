@@ -22,10 +22,12 @@ import {
   Paper,
   TextField,
   Typography,
-} from "@material-ui/core";
-import AddIcon from "@material-ui/icons/Add";
-import ClearOutlinedIcon from "@material-ui/icons/ClearOutlined";
-import DragHandleIcon from "@material-ui/icons/DragHandle";
+} from "@mui/material";
+import {
+  Add as AddIcon,
+  ClearOutlined as ClearOutlinedIcon,
+  DragHandle as DragHandleIcon,
+} from "@mui/icons-material";
 import { Hint } from "types";
 import "styles/layout.css";
 
@@ -55,7 +57,7 @@ const HintCard = (props: {
           label={`Hint ${hintIdx + 1}`}
           placeholder="Add a hint to help for the expectation, e.g. 'One of them starts with R'"
           multiline
-          rowsMax={4}
+          maxRows={4}
           fullWidth
           InputLabelProps={{
             shrink: true,
