@@ -1,0 +1,25 @@
+version: 0.2
+
+env:
+  variables:
+    GRAPHQL_ENDPOINT: 'https://opentutor.info/graphql'
+    CLASSIFIER_ENTRYPOINT: 'https://opentutor.info/classifier'
+    TUTOR_ENDPOINT: 'https://opentutor.info/tutor'
+  parameter-store:
+    GOOGLE_CLIENT_ID: '/shared/google_client_id'
+    S3_DEPLOY_BUCKET_PROD: "/prod-opentutor/s3-websites/NAME"
+    CDN_ID_PROD: "/prod-opentutor/CLOUDFRONT_DISTRIBUTION_ID"
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 14
+    commands:
+      - n 18
+
+  build:
+    commands:
+      - cd client && npm run build
+      - echo Deploying to $S3_DEPLOY_BUCKET_PROD
+      - aws s3 sync ./public s3://$S3_DEPLOY_BUCKET_PROD/admin
+      - aws cloudfront create-invalidation --distribution-id $CDN_ID_PROD --paths "/admin*"
