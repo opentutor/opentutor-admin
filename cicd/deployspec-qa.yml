@@ -2,7 +2,7 @@ version: 0.2
 
 env:
   variables:
-    GRAPHQL_ENDPOINT: 'https://api-qa.opentutor.info/graphql'
+    GRAPHQL_ENDPOINT: 'https://api-qa.opentutor.info/graphql/graphql'
     CLASSIFIER_ENTRYPOINT: 'https://opentutor.info/classifier'
     TUTOR_ENDPOINT: 'https://qa.opentutor.info/tutor'
   parameter-store:
