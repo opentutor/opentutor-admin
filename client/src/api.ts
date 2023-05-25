@@ -613,7 +613,9 @@ export async function trainDefault(): Promise<TrainJob> {
 export async function fetchTrainingStatus(
   statusUrl: string
 ): Promise<TrainStatus> {
-  const result = await axios.get<GQLResponse<TrainStatus>>(statusUrl);
+  const result = await axios.get<GQLResponse<TrainStatus>>(
+    urljoin(CLASSIFIER_ENTRYPOINT, statusUrl)
+  );
   return findOrThrow<TrainStatus>(result);
 }
 
