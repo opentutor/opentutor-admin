@@ -602,8 +602,10 @@ export async function trainLesson(lessonId: string): Promise<TrainJob> {
 
 export async function trainDefault(): Promise<TrainJob> {
   const result = await axios.post<GQLResponse<TrainJob>>(
-    urljoin(CLASSIFIER_ENTRYPOINT, "train_default"),
-    {}
+    urljoin(CLASSIFIER_ENTRYPOINT, "train"),
+    {
+      train_default: true,
+    }
   );
   return findOrThrow<TrainJob>(result);
 }
