@@ -5,8 +5,8 @@ Permission to use, copy, modify, and distribute this software and its documentat
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
 import axios, { AxiosResponse } from "axios";
-import { AppConfig } from "config";
 import {
+  AppConfig,
   DeleteLesson,
   DeleteSession,
   FetchSessions,
@@ -55,6 +55,9 @@ export async function fetchAppConfig(): Promise<AppConfig> {
       query FetchConfig {
         appConfig {
           googleClientId
+          logoIcon
+          logoLargeIcon
+          featuredLessons
         }
       }
     `,
@@ -74,6 +77,52 @@ export async function fetchAppConfig(): Promise<AppConfig> {
     );
   }
   return gqlRes.data.data.appConfig;
+}
+
+export async function updateAppConfig(
+  accessToken: string,
+  appConfig: AppConfig
+): Promise<AppConfig> {
+  const headers = { Authorization: `bearer ${accessToken}` };
+  const gqlRes = await axios.post<
+    GQLResponse<{ me: { updateAppConfig: AppConfig } }>
+  >(
+    GRAPHQL_ENDPOINT,
+    {
+      query: `mutation UpdateConfig($appConfig: AppConfigUpdateInputType!) {
+        me {
+          updateAppConfig(appConfig: $appConfig) {
+            googleClientId
+            logoIcon
+            logoLargeIcon
+            featuredLessons
+          }
+        }
+      }`,
+      variables: {
+        appConfig: {
+          logoIcon: appConfig.logoIcon,
+          logoLargeIcon: appConfig.logoLargeIcon,
+          featuredLessons: appConfig.featuredLessons,
+        },
+      },
+    },
+    { headers: headers }
+  );
+  if (gqlRes.status !== 200) {
+    throw new Error(`updateAppConfig failed: ${gqlRes.statusText}}`);
+  }
+  if (gqlRes.data.errors) {
+    throw new Error(
+      `errors reponse to updateAppConfig: ${JSON.stringify(gqlRes.data.errors)}`
+    );
+  }
+  if (!gqlRes.data.data) {
+    throw new Error(
+      `no data in non-error reponse: ${JSON.stringify(gqlRes.data)}`
+    );
+  }
+  return gqlRes.data.data.me.updateAppConfig;
 }
 
 export async function fetchSessions(

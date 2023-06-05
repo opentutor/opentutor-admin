@@ -16,9 +16,8 @@ import { Button, Theme, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import NavBar from "components/nav-bar";
 import SessionContext from "context/session";
-import { getClientID } from "config";
-import { loginGoogle } from "api";
-import { UserAccessToken } from "types";
+import { loginGoogle, fetchAppConfig } from "api";
+import { AppConfig, UserAccessToken } from "types";
 import "styles/layout.css";
 import LoadingIndicator from "components/loading-indicator";
 
@@ -52,12 +51,12 @@ export function LoginMenu(): JSX.Element {
 
   React.useEffect(() => {
     let mounted = true;
-    getClientID()
-      .then((id: string) => {
+    fetchAppConfig()
+      .then((config: AppConfig) => {
         if (!mounted) {
           return;
         }
-        setClientId(id);
+        setClientId(config.googleClientId);
       })
       .catch((err) => console.error(err));
     return () => {
