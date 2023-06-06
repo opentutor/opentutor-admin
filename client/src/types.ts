@@ -24,6 +24,13 @@ export interface Connection<T> {
   pageInfo: PageInfo;
 }
 
+export interface AppConfig {
+  googleClientId: string;
+  logoIcon: string;
+  logoLargeIcon: string;
+  featuredLessons: string[];
+}
+
 export interface Session {
   sessionId: string;
   username: string;

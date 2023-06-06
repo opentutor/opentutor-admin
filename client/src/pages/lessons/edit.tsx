@@ -179,9 +179,7 @@ const LessonEdit = (props: {
 }) => {
   // const { lessonId, copyLesson } = props.search;
   const [lessonId, setLessonId] = useQueryParam("lessonId", StringParam);
-  console.log(lessonId);
   const [copyLesson] = useQueryParam("copyLesson", StringParam);
-  console.log(copyLesson);
 
   const classes = useStyles();
   const [cookies] = useCookies(["accessToken"]);

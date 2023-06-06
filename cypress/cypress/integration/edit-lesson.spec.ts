@@ -6,7 +6,6 @@ The full terms of this copyright and license should always be found in the root 
 */
 import { cySetup, cyMockDefault, mockGQL } from "../support/functions";
 import { lesson, videoLesson } from "../fixtures/lesson";
-import { find } from "cypress/types/lodash";
 
 const lessons = {
   edges: [
@@ -82,7 +81,7 @@ describe("edit lesson screen", () => {
       });
       cy.visit("/lessons/edit?lessonId=q1");
       cy.get("[data-cy=lesson-creator]").within(($input) => {
-        cy.get("input").should("have.value", "Kayla");
+        cy.get("textarea").should("have.value", "Kayla");
       });
     });
 
@@ -94,7 +93,7 @@ describe("edit lesson screen", () => {
       });
       cy.visit("/lessons/edit?lessonId=q1");
       cy.get("[data-cy=lesson-creator]").within(($input) => {
-        cy.get("input").should("have.value", "OpenTutor");
+        cy.get("textarea").should("have.value", "OpenTutor");
       });
     });
 
@@ -106,7 +105,7 @@ describe("edit lesson screen", () => {
       });
       cy.visit("/lessons/edit?lessonId=q1");
       cy.get("[data-cy=lesson-creator]").within(($input) => {
-        cy.get("input").should("have.value", "OpenTutor");
+        cy.get("textarea").should("have.value", "OpenTutor");
       });
     });
   });
@@ -119,10 +118,10 @@ describe("edit lesson screen", () => {
       });
       cy.visit("/lessons/edit");
       cy.get("[data-cy=lesson-name]").within(($input) => {
-        cy.get("input").should("have.value", "Display name for the lesson");
+        cy.get("textarea").should("have.value", "Display name for the lesson");
       });
       cy.get("[data-cy=lesson-creator]").within(($input) => {
-        cy.get("input").should("have.value", "Kayla");
+        cy.get("textarea").should("have.value", "Kayla");
       });
       cy.get("[data-cy=intro]").within(($input) => {
         cy.get("textarea").should(
@@ -175,10 +174,10 @@ describe("edit lesson screen", () => {
       cyMockDefault(cy);
       cy.visit("/lessons/edit");
       cy.get("[data-cy=lesson-name]").within(($input) => {
-        cy.get("input").fill("Review Diode Current Flow");
+        cy.get("textarea").fill("Review Diode Current Flow");
       });
       cy.get("[data-cy=lesson-id]").within(($input) => {
-        cy.get("input").fill("review-diode-current-flow");
+        cy.get("textarea").fill("review-diode-current-flow");
       });
       cy.get("[data-cy=intro]").within(($input) => {
         cy.get("textarea").fill(
@@ -220,13 +219,13 @@ describe("edit lesson screen", () => {
           );
         });
       cy.get("[data-cy=lesson-name]").within(($input) => {
-        cy.get("input").should("have.value", "Review Diode Current Flow");
+        cy.get("textarea").should("have.value", "Review Diode Current Flow");
       });
       cy.get("[data-cy=lesson-id]").within(($input) => {
-        cy.get("input").should("have.value", "review-diode-current-flow");
+        cy.get("textarea").should("have.value", "review-diode-current-flow");
       });
       cy.get("[data-cy=lesson-creator]").within(($input) => {
-        cy.get("input").should("have.value", "Kayla");
+        cy.get("textarea").should("have.value", "Kayla");
       });
       cy.get("[data-cy=intro]").within(($input) => {
         cy.get("textarea").should(
@@ -329,7 +328,7 @@ describe("edit lesson screen", () => {
       });
       cy.visit("/lessons/edit?copyLesson=q1");
       cy.get("[data-cy=lesson-name]").within(($input) => {
-        cy.get("input").should("have.value", "Copy of lesson");
+        cy.get("textarea").should("have.value", "Copy of lesson");
       });
       cy.get("[data-cy=lesson-id]").should("not.have.value", "q1");
       cy.get("[data-cy=lesson-creator]").should("not.have.value", "OpenTutor");
@@ -344,7 +343,7 @@ describe("edit lesson screen", () => {
         userRole: "admin",
       });
       cy.visit("/lessons/edit?lessonId=q1");
-      cy.get("[data-cy=lesson-id]").clear().type("~");
+      cy.get("[data-cy=lesson-id]").type("~");
       cy.get("[data-cy=lesson-id]")
         .find("p")
         .contains("id must be lower-case and alpha-numeric.");
@@ -359,7 +358,7 @@ describe("edit lesson screen", () => {
         userRole: "admin",
       });
       cy.visit("/lessons/edit?lessonId=q1");
-      cy.get("[data-cy=lesson-id]").clear().type("A");
+      cy.get("[data-cy=lesson-id]").type("A");
       cy.get("[data-cy=lesson-id]")
         .find("p")
         .contains("id must be lower-case and alpha-numeric.");
@@ -374,7 +373,7 @@ describe("edit lesson screen", () => {
         userRole: "admin",
       });
       cy.visit("/lessons/edit");
-      cy.get("[data-cy=lesson-id]").clear().type("q1");
+      cy.get("[data-cy=lesson-id]").type("q1");
       cy.get("[data-cy=lesson-id]")
         .find("p")
         .contains("id is already being used for another lesson.");
@@ -388,8 +387,8 @@ describe("edit lesson screen", () => {
         userRole: "admin",
       });
       cy.visit("/lessons/edit");
-      cy.get("[data-cy=lesson-id]").clear().type("q0");
-      cy.get("[data-cy=lesson-name]").clear().type("{backspace}");
+      cy.get("[data-cy=lesson-id]").type("q0");
+      cy.get("[data-cy=lesson-name]").type("{backspace}");
       cy.get("[data-cy=save-button]").should("be.visible");
     });
   });
@@ -403,13 +402,13 @@ describe("edit lesson screen", () => {
     cy.visit("/lessons/edit?lessonId=q1");
 
     cy.get("[data-cy=lesson-id]").within(($input) => {
-      cy.get("input").should("have.value", "q1");
+      cy.get("textarea").should("have.value", "q1");
     });
     cy.get("[data-cy=lesson-name]").within(($input) => {
-      cy.get("input").should("have.value", "lesson");
+      cy.get("textarea").should("have.value", "lesson");
     });
     cy.get("[data-cy=lesson-creator]").within(($input) => {
-      cy.get("input").should("have.value", "OpenTutor");
+      cy.get("textarea").should("have.value", "OpenTutor");
     });
     cy.get("[data-cy=intro]").within(($input) => {
       cy.get("textarea").should("have.value", "introduction");
@@ -451,13 +450,13 @@ describe("edit lesson screen", () => {
     cy.visit("/lessons/edit?lessonId=q1");
 
     cy.get("[data-cy=lesson-id]").within(($input) => {
-      cy.get("input").should("have.value", "q1");
+      cy.get("textarea").should("have.value", "q1");
     });
     cy.get("[data-cy=lesson-name]").within(($input) => {
-      cy.get("input").should("have.value", "lesson");
+      cy.get("textarea").should("have.value", "lesson");
     });
     cy.get("[data-cy=lesson-creator]").within(($input) => {
-      cy.get("input").should("have.value", "OpenTutor");
+      cy.get("textarea").should("have.value", "OpenTutor");
     });
     cy.get("[data-cy=intro]").within(($input) => {
       cy.get("textarea").should("have.value", "introduction");
@@ -502,7 +501,7 @@ describe("edit lesson screen", () => {
       });
   });
 
-  it.only("edits a video lesson back to a media-less lesson", () => {
+  it("edits a video lesson back to a media-less lesson", () => {
     cySetup(cy);
     cyMockDefault(cy, {
       gqlQueries: [
@@ -634,7 +633,7 @@ describe("edit lesson screen", () => {
       userRole: "admin",
     });
     cy.visit("/lessons/edit?lessonId=q1");
-    cy.get("[data-cy=lesson-name]").clear().type("{backspace}");
+    cy.get("[data-cy=lesson-name]").type("{backspace}");
     cy.get("[data-cy=save-button]").should("be.visible");
   });
 
@@ -645,7 +644,7 @@ describe("edit lesson screen", () => {
       userRole: "admin",
     });
     cy.visit("/lessons/edit?lessonId=q1");
-    cy.get("[data-cy=lesson-name]").clear().type("{backspace}");
+    cy.get("[data-cy=lesson-name]").type("{backspace}");
     cy.get("[data-cy=save-button]").trigger("mouseover").click();
   });
 
