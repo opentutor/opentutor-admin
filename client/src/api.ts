@@ -726,7 +726,7 @@ export async function checkModel(lessonId: string): Promise<boolean> {
   return findOrThrow<{ exists: boolean }>(result)?.exists;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function downloadModel(lessonId: string): Promise<any> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const result = await axios.post<GQLResponse<{ output: any }>>(
