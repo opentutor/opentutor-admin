@@ -243,3 +243,23 @@ export function cyMockTrainStatusSeq(
     }
   };
 }
+
+export function cyMockModelStatus(
+  cy: Cypress.cy,
+  params: {
+    exists?: boolean;
+    responseStatus?: number;
+  } = {}
+): WaitFunc {
+  params = params || {};
+  cy.intercept("POST", "**/check_model", {
+    statusCode: params.responseStatus || 200,
+    body: {
+      data: {
+        exists: params.exists || false,
+      },
+      errors: null,
+    },
+  }).as("check_model");
+  return () => cy.wait("@check_model");
+}
