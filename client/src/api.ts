@@ -27,6 +27,7 @@ import {
   UserAccessToken,
   User,
   UserRole,
+  OfflineLessonData,
 } from "types";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const urljoin = require("url-join");
@@ -666,6 +667,76 @@ export async function fetchTrainingStatus(
     urljoin(CLASSIFIER_ENTRYPOINT, statusUrl)
   );
   return findOrThrow<TrainStatus>(result);
+}
+
+export async function fetchOfflineLessonData(
+  lessonId: string,
+  accessToken: string
+): Promise<OfflineLessonData> {
+  const headers = { Authorization: `bearer ${accessToken}` };
+  const result = await axios.post<
+    GQLResponse<{ me: { offlineLessonData: OfflineLessonData } }>
+  >(
+    GRAPHQL_ENDPOINT,
+    {
+      query: `
+      query FetchOfflineLesson($lessonId: String!) {
+        me {
+          offlineLessonData(lessonId: $lessonId) {
+            id
+            lessonId
+            name
+            intro
+            question
+            expectations {
+              expectationId
+              expectation
+              hints {
+                text
+              }
+            }
+            conclusion
+            dialogCategory
+            learningFormat
+            image
+            video {
+              uri
+              startTime
+              endTime
+            }
+          }
+        }
+      }
+    `,
+      variables: { lessonId },
+    },
+    { headers }
+  );
+  return findOrThrow<{ me: { offlineLessonData: OfflineLessonData } }>(result)
+    .me.offlineLessonData;
+}
+
+export async function checkModel(lessonId: string): Promise<boolean> {
+  const result = await axios.post<GQLResponse<{ exists: boolean }>>(
+    urljoin(CLASSIFIER_ENTRYPOINT, "check_model"),
+    {
+      lesson: lessonId,
+    }
+  );
+  return findOrThrow<{ exists: boolean }>(result)?.exists;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function downloadModel(lessonId: string): Promise<any> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const result = await axios.post<GQLResponse<{ output: any }>>(
+    urljoin(CLASSIFIER_ENTRYPOINT, "extract_config"),
+    {
+      lesson: lessonId,
+    }
+  );
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return findOrThrow<{ output: any }>(result)?.output;
 }
 
 export async function fetchUsers(

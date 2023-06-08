@@ -11,6 +11,7 @@ import {
   mockGQL,
   cyMockTrain,
   cyMockTrainStatusSeq,
+  cyMockModelStatus,
 } from "../support/functions";
 
 function snapname(n) {
@@ -81,6 +82,7 @@ describe("lesson screen - training", () => {
       ex.expectedAccuracies
     )}`, () => {
       cySetup(cy);
+      cyMockModelStatus(cy);
       cyMockDefault(cy, {
         gqlQueries: [mockGQL("FetchLesson", { me: { lesson } })],
         userRole: "admin",
@@ -118,6 +120,7 @@ describe("lesson screen - training", () => {
 
   it("train lesson fails for state FAILURE", () => {
     cySetup(cy);
+    cyMockModelStatus(cy);
     cyMockDefault(cy, {
       gqlQueries: [mockGQL("FetchLesson", { me: { lesson } })],
       userRole: "admin",
@@ -141,6 +144,7 @@ describe("lesson screen - training", () => {
 
   it("train lesson fails for http error on start", () => {
     cySetup(cy);
+    cyMockModelStatus(cy);
     cyMockDefault(cy, {
       gqlQueries: [mockGQL("FetchLesson", { me: { lesson } })],
       userRole: "admin",
@@ -154,6 +158,7 @@ describe("lesson screen - training", () => {
 
   it("train lesson fails for http error on poll status", () => {
     cySetup(cy);
+    cyMockModelStatus(cy);
     cyMockDefault(cy, {
       gqlQueries: [mockGQL("FetchLesson", { me: { lesson } })],
       userRole: "admin",

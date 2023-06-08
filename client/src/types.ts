@@ -240,3 +240,23 @@ export interface ExpectationsDataFilter {
   hideUngraded: boolean;
   hideInvalid: boolean;
 }
+
+export interface OfflineVideoData {
+  uri: string;
+  startTime: number;
+  endTime: number;
+}
+
+export interface OfflineLessonData {
+  id: string;
+  lessonId: string;
+  name: string;
+  intro: string;
+  question: string;
+  expectations: LessonExpectation[];
+  conclusion: string[];
+  dialogCategory: string;
+  learningFormat?: string;
+  image?: string;
+  video?: OfflineVideoData;
+}

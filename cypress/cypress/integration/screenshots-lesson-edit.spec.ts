@@ -4,7 +4,12 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import { cySetup, cyMockDefault, mockGQL } from "../support/functions";
+import {
+  cySetup,
+  cyMockDefault,
+  mockGQL,
+  cyMockModelStatus,
+} from "../support/functions";
 
 function snapname(n) {
   return `screenshots-lesson-edit-${n}`;
@@ -13,6 +18,7 @@ function snapname(n) {
 describe("screenshots - lesson edit", () => {
   it("displays lesson form on load", () => {
     cySetup(cy);
+    cyMockModelStatus(cy);
     cyMockDefault(cy, {
       gqlQueries: [
         mockGQL("FetchLesson", {
@@ -57,6 +63,7 @@ describe("screenshots - lesson edit", () => {
 
   it("displays save button enabled after edits", () => {
     cySetup(cy);
+    cyMockModelStatus(cy);
     cyMockDefault(cy, {
       gqlQueries: [
         mockGQL("FetchLesson", {
