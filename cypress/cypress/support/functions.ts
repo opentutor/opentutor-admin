@@ -188,26 +188,6 @@ export function cyMockTrain(
   return () => cy.wait("@train");
 }
 
-export function cyMockTrainDefault(
-  cy: Cypress.cy,
-  params: {
-    statusUrl?: string;
-    responseStatus?: number;
-  } = {}
-): WaitFunc {
-  params = params || {};
-  cy.intercept("POST", "**/train_default", {
-    statusCode: params.responseStatus || 200,
-    body: {
-      data: {
-        statusUrl: params.statusUrl || TRAIN_STATUS_URL,
-      },
-      errors: null,
-    },
-  }).as("train");
-  return () => cy.wait("@train");
-}
-
 export function cyMockTrainStatusSeq(
   cy: Cypress.cy,
   responses: StatusResponse[],
@@ -262,4 +242,24 @@ export function cyMockTrainStatusSeq(
       cy.wait(alias);
     }
   };
+}
+
+export function cyMockModelStatus(
+  cy: Cypress.cy,
+  params: {
+    exists?: boolean;
+    responseStatus?: number;
+  } = {}
+): WaitFunc {
+  params = params || {};
+  cy.intercept("POST", "**/check_model", {
+    statusCode: params.responseStatus || 200,
+    body: {
+      data: {
+        exists: params.exists || false,
+      },
+      errors: null,
+    },
+  }).as("check_model");
+  return () => cy.wait("@check_model");
 }

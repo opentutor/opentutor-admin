@@ -3,7 +3,7 @@ version: 0.2
 env:
   variables:
     GRAPHQL_ENDPOINT: 'https://api.opentutor.info/graphql/graphql'
-    CLASSIFIER_ENTRYPOINT: 'https://opentutor.info/classifier'
+    CLASSIFIER_ENTRYPOINT: 'https://api.opentutor.info/classifier'
     TUTOR_ENDPOINT: 'https://opentutor.info/tutor'
   parameter-store:
     GOOGLE_CLIENT_ID: '/shared/google_client_id'

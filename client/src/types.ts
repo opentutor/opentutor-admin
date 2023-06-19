@@ -24,6 +24,13 @@ export interface Connection<T> {
   pageInfo: PageInfo;
 }
 
+export interface AppConfig {
+  googleClientId: string;
+  logoIcon: string;
+  logoLargeIcon: string;
+  featuredLessons: string[];
+}
+
 export interface Session {
   sessionId: string;
   username: string;
@@ -232,4 +239,24 @@ export interface ExpectationsDataFilter {
   dirty: boolean;
   hideUngraded: boolean;
   hideInvalid: boolean;
+}
+
+export interface OfflineVideoData {
+  uri: string;
+  startTime: number;
+  endTime: number;
+}
+
+export interface OfflineLessonData {
+  id: string;
+  lessonId: string;
+  name: string;
+  intro: string;
+  question: string;
+  expectations: LessonExpectation[];
+  conclusion: string[];
+  dialogCategory: string;
+  learningFormat?: string;
+  image?: string;
+  video?: OfflineVideoData;
 }

@@ -50,8 +50,10 @@ import {
   Launch as LaunchIcon,
   ArrowBack as ArrowBackIcon,
   Refresh as RefreshIcon,
+  Download,
 } from "@mui/icons-material";
 import { Location } from "@reach/router";
+import { useWithDownload } from "hooks/use-with-download";
 
 const useStyles = makeStyles((theme: Theme) => ({
   cardRoot: {
@@ -177,11 +179,8 @@ const LessonEdit = (props: {
   search: LessonEditSearch;
   location: Location;
 }) => {
-  // const { lessonId, copyLesson } = props.search;
   const [lessonId, setLessonId] = useQueryParam("lessonId", StringParam);
-  console.log(lessonId);
   const [copyLesson] = useQueryParam("copyLesson", StringParam);
-  console.log(copyLesson);
 
   const classes = useStyles();
   const [cookies] = useCookies(["accessToken"]);
@@ -198,6 +197,13 @@ const LessonEdit = (props: {
     startLessonTraining,
     dismissTrainingMessage,
   } = useWithTraining(props.search.trainStatusPollInterval);
+  const {
+    isDownloadable,
+    isDownloading,
+    downloadMessage,
+    download,
+    dismissDownloadMessage,
+  } = useWithDownload(lessonId, context.user, cookies.accessToken);
 
   const [mounted, setMounted] = React.useState(false);
   React.useEffect(() => {
@@ -997,9 +1003,25 @@ const LessonEdit = (props: {
             Save
           </Button>
         ) : null}
+        {isDownloadable ? (
+          <Button
+            data-cy="download-button"
+            variant="contained"
+            startIcon={<Download />}
+            color="primary"
+            size="large"
+            onClick={download}
+            disabled={isDownloading}
+          >
+            Download
+          </Button>
+        ) : null}
       </div>
       <Dialog open={Boolean(trainingMessage)} onClose={dismissTrainingMessage}>
         <DialogTitle>{trainingMessage}</DialogTitle>
+      </Dialog>
+      <Dialog open={Boolean(downloadMessage)} onClose={dismissDownloadMessage}>
+        <DialogTitle>{downloadMessage}</DialogTitle>
       </Dialog>
       <Dialog open={savePopUp} onClose={() => handleSavePopUp(false)}>
         <DialogTitle>Save</DialogTitle>

@@ -4,9 +4,13 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import { cySetup, cyMockDefault, mockGQL } from "../support/functions";
+import {
+  cySetup,
+  cyMockDefault,
+  mockGQL,
+  cyMockModelStatus,
+} from "../support/functions";
 import { lesson, videoLesson } from "../fixtures/lesson";
-import { find } from "cypress/types/lodash";
 
 const lessons = {
   edges: [
@@ -52,12 +56,14 @@ describe("edit lesson screen", () => {
   describe("permissions", () => {
     it("cannot view lesson page if not logged in", () => {
       cySetup(cy);
+      cyMockModelStatus(cy);
       cy.visit("/lessons/edit?lessonId=q1");
       cy.contains("Please login to view lesson.");
     });
 
     it("cannot view lesson page if user does not have permission to edit", () => {
       cySetup(cy);
+      cyMockModelStatus(cy);
       cyMockDefault(cy, {
         gqlQueries: [mockGQL("FetchLesson", { me: { lesson } })],
       });
@@ -67,6 +73,7 @@ describe("edit lesson screen", () => {
 
     it("can view lesson page if user created lesson", () => {
       cySetup(cy);
+      cyMockModelStatus(cy);
       cyMockDefault(cy, {
         gqlQueries: [
           mockGQL("FetchLesson", {
@@ -82,31 +89,33 @@ describe("edit lesson screen", () => {
       });
       cy.visit("/lessons/edit?lessonId=q1");
       cy.get("[data-cy=lesson-creator]").within(($input) => {
-        cy.get("input").should("have.value", "Kayla");
+        cy.get("textarea").should("have.value", "Kayla");
       });
     });
 
     it("can view lesson page if user is admin", () => {
       cySetup(cy);
+      cyMockModelStatus(cy);
       cyMockDefault(cy, {
         gqlQueries: [mockGQL("FetchLesson", { me: { lesson } })],
         userRole: "admin",
       });
       cy.visit("/lessons/edit?lessonId=q1");
       cy.get("[data-cy=lesson-creator]").within(($input) => {
-        cy.get("input").should("have.value", "OpenTutor");
+        cy.get("textarea").should("have.value", "OpenTutor");
       });
     });
 
     it("can view lesson page if user is content manager", () => {
       cySetup(cy);
+      cyMockModelStatus(cy);
       cyMockDefault(cy, {
         gqlQueries: [mockGQL("FetchLesson", { me: { lesson } })],
         userRole: "contentManager",
       });
       cy.visit("/lessons/edit?lessonId=q1");
       cy.get("[data-cy=lesson-creator]").within(($input) => {
-        cy.get("input").should("have.value", "OpenTutor");
+        cy.get("textarea").should("have.value", "OpenTutor");
       });
     });
   });
@@ -114,15 +123,16 @@ describe("edit lesson screen", () => {
   describe("new lesson", () => {
     it("new lesson has default values", () => {
       cySetup(cy);
+      cyMockModelStatus(cy);
       cyMockDefault(cy, {
         gqlQueries: [mockGQL("FetchLesson", { me: { lesson } })],
       });
       cy.visit("/lessons/edit");
       cy.get("[data-cy=lesson-name]").within(($input) => {
-        cy.get("input").should("have.value", "Display name for the lesson");
+        cy.get("textarea").should("have.value", "Display name for the lesson");
       });
       cy.get("[data-cy=lesson-creator]").within(($input) => {
-        cy.get("input").should("have.value", "Kayla");
+        cy.get("textarea").should("have.value", "Kayla");
       });
       cy.get("[data-cy=intro]").within(($input) => {
         cy.get("textarea").should(
@@ -172,13 +182,14 @@ describe("edit lesson screen", () => {
 
     it("edits a new lesson", () => {
       cySetup(cy);
+      cyMockModelStatus(cy);
       cyMockDefault(cy);
       cy.visit("/lessons/edit");
       cy.get("[data-cy=lesson-name]").within(($input) => {
-        cy.get("input").fill("Review Diode Current Flow");
+        cy.get("textarea").fill("Review Diode Current Flow");
       });
       cy.get("[data-cy=lesson-id]").within(($input) => {
-        cy.get("input").fill("review-diode-current-flow");
+        cy.get("textarea").fill("review-diode-current-flow");
       });
       cy.get("[data-cy=intro]").within(($input) => {
         cy.get("textarea").fill(
@@ -220,13 +231,13 @@ describe("edit lesson screen", () => {
           );
         });
       cy.get("[data-cy=lesson-name]").within(($input) => {
-        cy.get("input").should("have.value", "Review Diode Current Flow");
+        cy.get("textarea").should("have.value", "Review Diode Current Flow");
       });
       cy.get("[data-cy=lesson-id]").within(($input) => {
-        cy.get("input").should("have.value", "review-diode-current-flow");
+        cy.get("textarea").should("have.value", "review-diode-current-flow");
       });
       cy.get("[data-cy=lesson-creator]").within(($input) => {
-        cy.get("input").should("have.value", "Kayla");
+        cy.get("textarea").should("have.value", "Kayla");
       });
       cy.get("[data-cy=intro]").within(($input) => {
         cy.get("textarea").should(
@@ -275,6 +286,7 @@ describe("edit lesson screen", () => {
 
     it("launch lesson is disabled if new lesson", () => {
       cySetup(cy);
+      cyMockModelStatus(cy);
       cyMockDefault(cy);
       cy.visit("/lessons/edit");
       cy.get("[data-cy=launch-button]").should("be.disabled");
@@ -284,6 +296,7 @@ describe("edit lesson screen", () => {
   describe("copy lesson", () => {
     it("loads a copy of the lesson", () => {
       cySetup(cy);
+      cyMockModelStatus(cy);
       cyMockDefault(cy, {
         gqlQueries: [mockGQL("FetchLesson", { me: { lesson } })],
         userRole: "admin",
@@ -323,13 +336,14 @@ describe("edit lesson screen", () => {
 
     it("lesson copy has a new id, name, and creator", () => {
       cySetup(cy);
+      cyMockModelStatus(cy);
       cyMockDefault(cy, {
         gqlQueries: [mockGQL("FetchLesson", { me: { lesson } })],
         userRole: "admin",
       });
       cy.visit("/lessons/edit?copyLesson=q1");
       cy.get("[data-cy=lesson-name]").within(($input) => {
-        cy.get("input").should("have.value", "Copy of lesson");
+        cy.get("textarea").should("have.value", "Copy of lesson");
       });
       cy.get("[data-cy=lesson-id]").should("not.have.value", "q1");
       cy.get("[data-cy=lesson-creator]").should("not.have.value", "OpenTutor");
@@ -339,12 +353,13 @@ describe("edit lesson screen", () => {
   describe("validates lessonId", () => {
     it("lessonId is invalid if it contains symbols", () => {
       cySetup(cy);
+      cyMockModelStatus(cy);
       cyMockDefault(cy, {
         gqlQueries: [mockGQL("FetchLesson", { me: { lesson } })],
         userRole: "admin",
       });
       cy.visit("/lessons/edit?lessonId=q1");
-      cy.get("[data-cy=lesson-id]").clear().type("~");
+      cy.get("[data-cy=lesson-id]").type("~");
       cy.get("[data-cy=lesson-id]")
         .find("p")
         .contains("id must be lower-case and alpha-numeric.");
@@ -354,12 +369,13 @@ describe("edit lesson screen", () => {
 
     it("lessonId is invalid if it contains capital letters", () => {
       cySetup(cy);
+      cyMockModelStatus(cy);
       cyMockDefault(cy, {
         gqlQueries: [mockGQL("FetchLesson", { me: { lesson } })],
         userRole: "admin",
       });
       cy.visit("/lessons/edit?lessonId=q1");
-      cy.get("[data-cy=lesson-id]").clear().type("A");
+      cy.get("[data-cy=lesson-id]").type("A");
       cy.get("[data-cy=lesson-id]")
         .find("p")
         .contains("id must be lower-case and alpha-numeric.");
@@ -369,12 +385,13 @@ describe("edit lesson screen", () => {
 
     it("lessonId is invalid if another lesson is already using the lessonId", () => {
       cySetup(cy);
+      cyMockModelStatus(cy);
       cyMockDefault(cy, {
         gqlQueries: [mockGQL("FetchLessons", { me: { lessons } })],
         userRole: "admin",
       });
       cy.visit("/lessons/edit");
-      cy.get("[data-cy=lesson-id]").clear().type("q1");
+      cy.get("[data-cy=lesson-id]").type("q1");
       cy.get("[data-cy=lesson-id]")
         .find("p")
         .contains("id is already being used for another lesson.");
@@ -384,18 +401,20 @@ describe("edit lesson screen", () => {
 
     it("lessonId is valid if it is unique, lower-case, and alpha-numeric", () => {
       cySetup(cy);
+      cyMockModelStatus(cy);
       cyMockDefault(cy, {
         userRole: "admin",
       });
       cy.visit("/lessons/edit");
-      cy.get("[data-cy=lesson-id]").clear().type("q0");
-      cy.get("[data-cy=lesson-name]").clear().type("{backspace}");
+      cy.get("[data-cy=lesson-id]").type("q0");
+      cy.get("[data-cy=lesson-name]").type("{backspace}");
       cy.get("[data-cy=save-button]").should("be.visible");
     });
   });
 
   it("loads a media-less lesson", () => {
     cySetup(cy);
+    cyMockModelStatus(cy);
     cyMockDefault(cy, {
       gqlQueries: [mockGQL("FetchLesson", { me: { lesson } })],
       userRole: "admin",
@@ -403,13 +422,13 @@ describe("edit lesson screen", () => {
     cy.visit("/lessons/edit?lessonId=q1");
 
     cy.get("[data-cy=lesson-id]").within(($input) => {
-      cy.get("input").should("have.value", "q1");
+      cy.get("textarea").should("have.value", "q1");
     });
     cy.get("[data-cy=lesson-name]").within(($input) => {
-      cy.get("input").should("have.value", "lesson");
+      cy.get("textarea").should("have.value", "lesson");
     });
     cy.get("[data-cy=lesson-creator]").within(($input) => {
-      cy.get("input").should("have.value", "OpenTutor");
+      cy.get("textarea").should("have.value", "OpenTutor");
     });
     cy.get("[data-cy=intro]").within(($input) => {
       cy.get("textarea").should("have.value", "introduction");
@@ -444,6 +463,7 @@ describe("edit lesson screen", () => {
 
   it("loads a video lesson", () => {
     cySetup(cy);
+    cyMockModelStatus(cy);
     cyMockDefault(cy, {
       gqlQueries: [mockGQL("FetchLesson", { me: { lesson: videoLesson } })],
       userRole: "admin",
@@ -451,13 +471,13 @@ describe("edit lesson screen", () => {
     cy.visit("/lessons/edit?lessonId=q1");
 
     cy.get("[data-cy=lesson-id]").within(($input) => {
-      cy.get("input").should("have.value", "q1");
+      cy.get("textarea").should("have.value", "q1");
     });
     cy.get("[data-cy=lesson-name]").within(($input) => {
-      cy.get("input").should("have.value", "lesson");
+      cy.get("textarea").should("have.value", "lesson");
     });
     cy.get("[data-cy=lesson-creator]").within(($input) => {
-      cy.get("input").should("have.value", "OpenTutor");
+      cy.get("textarea").should("have.value", "OpenTutor");
     });
     cy.get("[data-cy=intro]").within(($input) => {
       cy.get("textarea").should("have.value", "introduction");
@@ -502,8 +522,9 @@ describe("edit lesson screen", () => {
       });
   });
 
-  it.only("edits a video lesson back to a media-less lesson", () => {
+  it("edits a video lesson back to a media-less lesson", () => {
     cySetup(cy);
+    cyMockModelStatus(cy);
     cyMockDefault(cy, {
       gqlQueries: [
         mockGQL("FetchLesson", { me: { lesson: videoLesson } }),
@@ -523,6 +544,7 @@ describe("edit lesson screen", () => {
 
   it("can expand and collapse an expectation", () => {
     cySetup(cy);
+    cyMockModelStatus(cy);
     cyMockDefault(cy);
     cy.visit("/lessons/edit");
     // expectation is expanded by default
@@ -550,6 +572,7 @@ describe("edit lesson screen", () => {
 
   it("adds and deletes an expectation", () => {
     cySetup(cy);
+    cyMockModelStatus(cy);
     cyMockDefault(cy);
     cy.visit("/lessons/edit");
     // must have at least 1 expectation
@@ -569,6 +592,7 @@ describe("edit lesson screen", () => {
 
   it("can navigate to expectation data page from expectation card", () => {
     cySetup(cy);
+    cyMockModelStatus(cy);
     cyMockDefault(cy, {
       gqlQueries: [mockGQL("FetchLesson", { me: { lesson } })],
       userRole: "admin",
@@ -583,6 +607,7 @@ describe("edit lesson screen", () => {
 
   it("adds and deletes a hint", () => {
     cySetup(cy);
+    cyMockModelStatus(cy);
     cyMockDefault(cy);
     cy.visit("/lessons/edit");
     // must have at least 1 hint
@@ -600,6 +625,7 @@ describe("edit lesson screen", () => {
 
   it("adds and deletes a conclusion", () => {
     cySetup(cy);
+    cyMockModelStatus(cy);
     cyMockDefault(cy);
     cy.visit("/lessons/edit");
     // must have at least 1 conclusion
@@ -619,6 +645,7 @@ describe("edit lesson screen", () => {
 
   it("save button is hidden if no edits were made", () => {
     cySetup(cy);
+    cyMockModelStatus(cy);
     cyMockDefault(cy, {
       gqlQueries: [mockGQL("FetchLesson", { me: { lesson } })],
       userRole: "admin",
@@ -629,28 +656,31 @@ describe("edit lesson screen", () => {
 
   it("save button is visible after making an edit", () => {
     cySetup(cy);
+    cyMockModelStatus(cy);
     cyMockDefault(cy, {
       gqlQueries: [mockGQL("FetchLesson", { me: { lesson } })],
       userRole: "admin",
     });
     cy.visit("/lessons/edit?lessonId=q1");
-    cy.get("[data-cy=lesson-name]").clear().type("{backspace}");
+    cy.get("[data-cy=lesson-name]").type("{backspace}");
     cy.get("[data-cy=save-button]").should("be.visible");
   });
 
   it("makes an edit and clicks on save", () => {
     cySetup(cy);
+    cyMockModelStatus(cy);
     cyMockDefault(cy, {
       gqlQueries: [mockGQL("FetchLesson", { me: { lesson } })],
       userRole: "admin",
     });
     cy.visit("/lessons/edit?lessonId=q1");
-    cy.get("[data-cy=lesson-name]").clear().type("{backspace}");
+    cy.get("[data-cy=lesson-name]").type("{backspace}");
     cy.get("[data-cy=save-button]").trigger("mouseover").click();
   });
 
   it("launches lesson", () => {
     cySetup(cy);
+    cyMockModelStatus(cy);
     cyMockDefault(cy, {
       gqlQueries: [mockGQL("FetchLesson", { me: { lesson } })],
       userRole: "admin",

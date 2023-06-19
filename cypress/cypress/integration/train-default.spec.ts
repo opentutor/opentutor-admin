@@ -9,7 +9,7 @@ import {
   cySetup,
   cyMockDefault,
   mockGQL,
-  cyMockTrainDefault,
+  cyMockTrain,
   cyMockTrainStatusSeq,
 } from "../support/functions";
 
@@ -24,7 +24,7 @@ describe("settings screen - training default", () => {
       userRole: "admin",
     });
     cy.visit("/settings");
-    const waitTrainDefault = cyMockTrainDefault(cy);
+    const waitTrainDefault = cyMockTrain(cy);
     const waitComplete = cyMockTrainStatusSeq(cy, [
       { status: { state: TrainState.PENDING } },
     ]);
@@ -40,7 +40,7 @@ describe("settings screen - training default", () => {
       userRole: "admin",
     });
     cy.visit("/settings");
-    const waitTrainDefault = cyMockTrainDefault(cy);
+    const waitTrainDefault = cyMockTrain(cy);
     const waitComplete = cyMockTrainStatusSeq(cy, [
       { status: { state: TrainState.PENDING } },
       { status: { state: TrainState.STARTED } },
@@ -58,7 +58,7 @@ describe("settings screen - training default", () => {
       userRole: "admin",
     });
     cy.visit("/settings");
-    const waitTrainDefault = cyMockTrainDefault(cy, { responseStatus: 500 });
+    const waitTrainDefault = cyMockTrain(cy, { responseStatus: 500 });
     cy.get("[data-cy=train-default-button]").trigger("mouseover").click();
     waitTrainDefault();
     cy.get("[data-cy=train-failure]").should("contain", "Training Failed");
@@ -70,7 +70,7 @@ describe("settings screen - training default", () => {
       userRole: "admin",
     });
     cy.visit("/settings");
-    const waitTrainDefault = cyMockTrainDefault(cy);
+    const waitTrainDefault = cyMockTrain(cy);
     const waitComplete = cyMockTrainStatusSeq(cy, [
       { status: { state: TrainState.PENDING } },
       { status: { state: TrainState.STARTED } },
@@ -93,7 +93,7 @@ describe("settings screen - training default", () => {
       userRole: "admin",
     });
     cy.visit("/settings");
-    const waitTrainDefault = cyMockTrainDefault(cy);
+    const waitTrainDefault = cyMockTrain(cy);
     const waitComplete = cyMockTrainStatusSeq(cy, [
       { status: { state: TrainState.PENDING } },
       { status: { state: TrainState.STARTED } },
