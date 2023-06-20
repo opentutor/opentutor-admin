@@ -1,9 +1,11 @@
-FROM cypress/base:14.15.0
+FROM cypress/base:16
 WORKDIR /app
+
 COPY package.json .
 COPY package-lock.json .
 COPY tsconfig.json .
+
+ENV CI=1
 RUN npm ci
-COPY cypress ./cypress
-COPY cypress.json .
-ENTRYPOINT ["tail", "-f", "/dev/null"]
+
+RUN npx cypress verify
