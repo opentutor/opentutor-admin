@@ -60,7 +60,6 @@ export function staticResponse(s: StaticResponse): StaticResponse {
 }
 
 export function cySetup(cy) {
-  cy.server();
   cy.viewport(1920, 1080);
 }
 
@@ -85,6 +84,9 @@ export function cyInterceptGraphQL(cy, mocks: MockGraphQLQuery[]): void {
   }
   cy.intercept("/graphql", (req) => {
     const { body } = req;
+    if (!body.query) {
+      return;
+    }
     const queryBody = body.query.replace(/\s+/g, " ").replace("\n", "").trim();
     let handled = false;
     for (const mock of mocks) {

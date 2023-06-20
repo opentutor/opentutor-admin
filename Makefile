@@ -16,8 +16,9 @@ develop:
 .PHONY docker-build:
 docker-build:
 	docker build \
-		--file docker/Dockerfile \
+		-f docker/Dockerfile \
 		-t $(DOCKER_IMAGE) \
+		-m 4g \
 	.
 
 node_modules/license-check-and-add:
