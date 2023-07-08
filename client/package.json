@@ -45,7 +45,7 @@
     "gatsby-plugin-env-variables": "^2.1.0",
     "gatsby-plugin-eslint": "^3.0.0",
     "gatsby-plugin-material-ui": "^4.1.0",
-    "npm-check-updates": "^11.8.1",
+    "npm-check-updates": "^16.10.15",
     "typescript": "^4.3.5"
   },
   "keywords": [
