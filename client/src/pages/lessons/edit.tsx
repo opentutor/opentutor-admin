@@ -133,6 +133,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 const newLesson: Lesson = {
   lessonId: uuid(),
+  arch: "opentutor_classifier.lr2",
   name: "Display name for the lesson",
   intro:
     "Introduction to the lesson,  e.g. 'This is a lesson about RGB colors'",

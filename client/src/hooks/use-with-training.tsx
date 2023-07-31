@@ -68,7 +68,7 @@ export function useWithTraining(pollingInterval = 1000): TrainingStatus {
       );
       return;
     }
-    trainLesson(lesson.lessonId)
+    trainLesson(lesson.lessonId, lesson.arch)
       .then((trainJob) => {
         setStatusUrl(trainJob.statusUrl);
         setIsTraining(true);
