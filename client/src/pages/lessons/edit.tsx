@@ -484,7 +484,7 @@ const LessonEdit = (props: {
               variant="outlined"
             />
           </Grid>
-          <Grid item xs={12}>
+          <Grid item xs={12} md={6}>
             <TextField
               fullWidth
               multiline
@@ -498,6 +498,36 @@ const LessonEdit = (props: {
               value={lessonUnderEdit.lesson?.createdByName || "Guest"}
               disabled={true}
             />
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <FormControl className={classes.selectForm} variant="outlined">
+              <InputLabel shrink id="classifier-arch-label">
+                Classifier Architecture
+              </InputLabel>
+              <Select
+                data-cy="classifier-arch"
+                labelId="classifier-arch-label"
+                value={
+                  lessonUnderEdit.lesson?.arch || "opentutor_classifier.lr2"
+                }
+                onChange={(e: SelectChangeEvent<string>) => {
+                  setLesson(
+                    {
+                      ...(lessonUnderEdit.lesson || newLesson),
+                      arch:
+                        (e.target.value as string) ||
+                        "opentutor_classifier.lr2",
+                    },
+                    true
+                  );
+                }}
+              >
+                <MenuItem value={"opentutor_classifier.lr2"}>LR2</MenuItem>
+                <MenuItem value={"opentutor_classifier.openai"}>
+                  OpenAI
+                </MenuItem>
+              </Select>
+            </FormControl>
           </Grid>
           <Grid item xs={12} md={6}>
             <FormControl className={classes.selectForm} variant="outlined">
