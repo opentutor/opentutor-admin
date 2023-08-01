@@ -31,6 +31,7 @@ import {
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { fetchLesson, updateLesson, userCanEdit, fetchLessons } from "api";
+import { DEFAULT_CLASSIFIER_ARCHITECTURE } from "admin-constants";
 import SessionContext from "context/session";
 import NavBar from "components/nav-bar";
 import ConclusionsList from "components/conclusions-list";
@@ -133,7 +134,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 const newLesson: Lesson = {
   lessonId: uuid(),
-  arch: "opentutor_classifier.lr2",
+  arch: DEFAULT_CLASSIFIER_ARCHITECTURE,
   name: "Display name for the lesson",
   intro:
     "Introduction to the lesson,  e.g. 'This is a lesson about RGB colors'",
@@ -484,7 +485,7 @@ const LessonEdit = (props: {
               variant="outlined"
             />
           </Grid>
-          <Grid item xs={12}>
+          <Grid item xs={12} md={6}>
             <TextField
               fullWidth
               multiline
@@ -498,6 +499,37 @@ const LessonEdit = (props: {
               value={lessonUnderEdit.lesson?.createdByName || "Guest"}
               disabled={true}
             />
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <FormControl className={classes.selectForm} variant="outlined">
+              <InputLabel shrink id="classifier-arch-label">
+                Classifier Architecture
+              </InputLabel>
+              <Select
+                data-cy="classifier-arch"
+                labelId="classifier-arch-label"
+                value={
+                  lessonUnderEdit.lesson?.arch ||
+                  DEFAULT_CLASSIFIER_ARCHITECTURE
+                }
+                onChange={(e: SelectChangeEvent<string>) => {
+                  setLesson(
+                    {
+                      ...(lessonUnderEdit.lesson || newLesson),
+                      arch:
+                        (e.target.value as string) ||
+                        DEFAULT_CLASSIFIER_ARCHITECTURE,
+                    },
+                    true
+                  );
+                }}
+              >
+                <MenuItem value={DEFAULT_CLASSIFIER_ARCHITECTURE}>LR2</MenuItem>
+                <MenuItem value={"opentutor_classifier.openai"}>
+                  OpenAI
+                </MenuItem>
+              </Select>
+            </FormControl>
           </Grid>
           <Grid item xs={12} md={6}>
             <FormControl className={classes.selectForm} variant="outlined">

@@ -18,6 +18,7 @@ const lessons = {
       cursor: "cursor 1",
       node: {
         lessonId: "q1",
+        arch: "opentutor_classifier.lr2",
         name: "lesson",
         intro: "introduction",
         question: "question",
@@ -146,6 +147,7 @@ describe("edit lesson screen", () => {
           "Question the student needs to answer, e.g. 'What are the colors in RGB?'"
         );
       });
+      cy.get("[data-cy=classifier-arch]").contains("LR2");
       cy.get("[data-cy=lesson-format]").contains("Default");
       cy.get("[data-cy=media-type]").contains("None");
       cy.get("[data-cy=expectations]").children().should("have.length", 1);
