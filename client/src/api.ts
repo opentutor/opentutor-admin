@@ -485,6 +485,7 @@ export async function fetchLesson(
             lessonId
             intro
             dialogCategory
+            arch
             name
             question
             media {
@@ -535,6 +536,7 @@ export async function updateLesson(
         me {
           updateLesson(lessonId: $lessonId, lesson: $lesson){
             lessonId
+            arch
             intro
             dialogCategory
             name
@@ -570,6 +572,7 @@ export async function updateLesson(
         lessonId,
         lesson: {
           lessonId: lesson.lessonId,
+          arch: lesson.arch,
           name: lesson.name,
           intro: lesson.intro,
           dialogCategory: lesson.dialogCategory,
@@ -640,11 +643,15 @@ export async function deleteSession(
   return findOrThrow<DeleteSession>(result).me.deleteSession;
 }
 
-export async function trainLesson(lessonId: string): Promise<TrainJob> {
+export async function trainLesson(
+  lessonId: string,
+  arch: string
+): Promise<TrainJob> {
   const result = await axios.post<GQLResponse<TrainJob>>(
     urljoin(CLASSIFIER_ENTRYPOINT, "train"),
     {
       lesson: lessonId,
+      arch: arch,
     }
   );
   return findOrThrow<TrainJob>(result);

@@ -1,11 +1,13 @@
 version: '3.8'
 services:
   opentutor:
+    image: apache
     container_name: opentutor
     build:
       context: .
       dockerfile: ./docker/Dockerfile
-  cypress:
+  e2e:
+    image: cypress
     container_name: cypress
     depends_on:
       - opentutor
@@ -14,3 +16,7 @@ services:
     environment:
       - "CYPRESS_BASE_URL=http://opentutor/admin"
       - "CYPRESS_SNAPSHOT_DIFF_DIR=/app/cypress/snapshots/snapshot_failed_diffs"
+    command: npx cypress run --env updateSnapshots=true
+    volumes:
+      - ./cypress/cypress:/app/cypress
+      - ./cypress/cypress.config.ts:/app/cypress.config.ts
