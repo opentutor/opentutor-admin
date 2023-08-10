@@ -32,6 +32,7 @@ import {
 import { makeStyles } from "@mui/styles";
 import { fetchLesson, updateLesson, userCanEdit, fetchLessons } from "api";
 import {
+  COMPOSITE_CLASSIFIER_ARCHITECTURE,
   DEFAULT_CLASSIFIER_ARCHITECTURE,
   OPENAI_CLASSIFIER_ARCHITECTURE,
 } from "admin-constants";
@@ -531,6 +532,9 @@ const LessonEdit = (props: {
                 <MenuItem value={DEFAULT_CLASSIFIER_ARCHITECTURE}>LR2</MenuItem>
                 <MenuItem value={OPENAI_CLASSIFIER_ARCHITECTURE}>
                   OpenAI
+                </MenuItem>
+                <MenuItem value={COMPOSITE_CLASSIFIER_ARCHITECTURE}>
+                  COMPOSITE
                 </MenuItem>
               </Select>
             </FormControl>

@@ -7,3 +7,5 @@ The full terms of this copyright and license should always be found in the root 
 
 export const DEFAULT_CLASSIFIER_ARCHITECTURE = "opentutor_classifier.lr2";
 export const OPENAI_CLASSIFIER_ARCHITECTURE = "opentutor_classifier.openai";
+export const COMPOSITE_CLASSIFIER_ARCHITECTURE =
+  "opentutor_classifier.composite";
