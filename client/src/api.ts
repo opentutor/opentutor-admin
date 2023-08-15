@@ -268,7 +268,7 @@ interface InvalidateResponses {
   };
 }
 export async function invalidateResponses(
-  expectation: number,
+  expectation: string,
   invalid: boolean,
   responses: InvalidateResponseInput[],
   accessToken: string
@@ -278,7 +278,7 @@ export async function invalidateResponses(
     GRAPHQL_ENDPOINT,
     {
       query: `
-        mutation InvalidateResponse($expIndex: Int!, $invalid: Boolean!, $invalidateResponses: [InvalidateResponseInputType!]) {
+        mutation InvalidateResponse($expIndex: String!, $invalid: Boolean!, $invalidateResponses: [InvalidateResponseInputType!]) {
           me {
             invalidateResponses(expectation: $expIndex, invalid: $invalid, invalidateResponses: $invalidateResponses) { 
               sessionId
@@ -298,7 +298,7 @@ export async function invalidateResponses(
         }
       `,
       variables: {
-        expIndex: parseInt(expectation.toString()),
+        expIndex: expectation,
         invalid,
         invalidateResponses: responses,
       },
