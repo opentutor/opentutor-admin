@@ -69,8 +69,10 @@ export function useWithSessionData(
     sessions.edges.forEach((e) => {
       const session = e.node;
       for (const [i, response] of session.userResponses.entries()) {
-        const exp = response.expectationScores.find((e) => e.expectationId == expectationId);
-        if (!exp){
+        const exp = response.expectationScores.find(
+          (e) => e.expectationId == expectationId
+        );
+        if (!exp) {
           continue;
         }
         data.push({
@@ -115,7 +117,6 @@ export function useWithSessionData(
       sessionId: r[0],
       responseIds: r[1],
     }));
-    expNum = 
     invalidateResponses(expectationId, invalid, responses, cookies.accessToken)
       .then((s) => {
         let updatedSessions = sessions;
@@ -142,7 +143,9 @@ export function useWithSessionData(
 
   return {
     rows: rows,
-    expectationTitle: lesson?.expectations.find((e)=> e.expectationId == expectationId)?.expectation || "",
+    expectationTitle:
+      lesson?.expectations.find((e) => e.expectationId == expectationId)
+        ?.expectation || "",
     toggleInvalids,
   };
 }
