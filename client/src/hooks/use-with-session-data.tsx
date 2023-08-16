@@ -33,7 +33,7 @@ export interface SessionData {
 
 export function useWithSessionData(
   lessonId: string,
-  expectation: number,
+  expectationId: string,
   limit = 500
 ): {
   rows: SessionData[];
@@ -59,7 +59,7 @@ export function useWithSessionData(
     return () => {
       mounted = false;
     };
-  }, [lessonId, expectation]);
+  }, [lessonId, expectationId]);
 
   useEffect(() => {
     if (!sessions || !lesson) {
@@ -69,7 +69,12 @@ export function useWithSessionData(
     sessions.edges.forEach((e) => {
       const session = e.node;
       for (const [i, response] of session.userResponses.entries()) {
-        const exp = response.expectationScores[expectation];
+        const exp = response.expectationScores.find(
+          (e) => e.expectationId == expectationId
+        );
+        if (!exp) {
+          continue;
+        }
         data.push({
           id: `${session.sessionId}-${i}`,
           session: session.sessionId,
@@ -112,7 +117,7 @@ export function useWithSessionData(
       sessionId: r[0],
       responseIds: r[1],
     }));
-    invalidateResponses(expectation, invalid, responses, cookies.accessToken)
+    invalidateResponses(expectationId, invalid, responses, cookies.accessToken)
       .then((s) => {
         let updatedSessions = sessions;
         for (const session of s) {
@@ -138,7 +143,9 @@ export function useWithSessionData(
 
   return {
     rows: rows,
-    expectationTitle: lesson?.expectations[expectation].expectation || "",
+    expectationTitle:
+      lesson?.expectations.find((e) => e.expectationId == expectationId)
+        ?.expectation || "",
     toggleInvalids,
   };
 }

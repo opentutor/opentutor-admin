@@ -431,7 +431,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-function EnhancedTable(props: { lessonId: string; expectation: number }) {
+function EnhancedTable(props: { lessonId: string; expectation: string }) {
   const classes = useStyles();
   const [selected, setSelected] = React.useState<string[]>([]);
   const [dense, setDense] = React.useState(false);
@@ -678,7 +678,7 @@ function EnhancedTable(props: { lessonId: string; expectation: number }) {
 
 export interface LessonExpectationSearch {
   lessonId: string;
-  expectation: number;
+  expectation: string;
 }
 
 // eslint-disable-next-line  @typescript-eslint/no-unused-vars
