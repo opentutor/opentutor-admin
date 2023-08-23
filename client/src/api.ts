@@ -232,6 +232,7 @@ export async function fetchSessionsData(
                   _id
                   text
                   expectationScores {
+                    expectationId
                     invalidated
                     graderGrade
                     classifierGrade
@@ -288,6 +289,7 @@ export async function invalidateResponses(
                 _id
                 text
                 expectationScores {
+                  expectationId
                   invalidated
                   graderGrade
                   classifierGrade
