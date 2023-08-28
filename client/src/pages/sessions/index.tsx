@@ -134,7 +134,14 @@ function TableFooter(props: {
 }): JSX.Element {
   const { classes, hasNext, hasPrev, onNext, onPrev } = props;
   const context = useContext(SessionContext);
-  const { onlyCreator, showGraded, showAbandoned, toggleCreator, toggleGraded, toggleAbandoned } = context;
+  const {
+    onlyCreator,
+    showGraded,
+    showAbandoned,
+    toggleCreator,
+    toggleGraded,
+    toggleAbandoned,
+  } = context;
 
   return (
     <AppBar position="sticky" color="default" className={classes.appBar}>
