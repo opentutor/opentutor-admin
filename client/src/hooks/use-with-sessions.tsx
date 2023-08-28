@@ -62,6 +62,9 @@ export function useWithSessions(
     if (!context.showGraded) {
       filter.graderGrade = null;
     }
+    if(!context.showAbandoned){
+      filter.sessionStatus = {$ne: "LAUNCHED"};
+    }
     if (lessonId) {
       filter.lessonId = lessonId;
     }
