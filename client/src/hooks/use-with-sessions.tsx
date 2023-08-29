@@ -48,7 +48,7 @@ export function useWithSessions(
   useEffect(() => {
     setCursor(existingCursor || "");
     load();
-  }, [context.onlyCreator, context.showGraded]);
+  }, [context.onlyCreator, context.showGraded, context.showAbandoned]);
 
   useEffect(() => {
     load();
