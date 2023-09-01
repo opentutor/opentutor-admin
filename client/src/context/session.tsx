@@ -12,19 +12,24 @@ import { User, UserAccessToken } from "types";
 type ContextType = {
   user: User | undefined;
   showGraded: boolean;
+  showAbandoned: boolean;
   onlyCreator: boolean;
   toggleGraded: () => void;
   toggleCreator: () => void;
+  toggleAbandoned: () => void;
 };
 
 const SessionContext = React.createContext<ContextType>({
   user: undefined,
   showGraded: false,
+  showAbandoned: false,
   onlyCreator: false,
   // eslint-disable-next-line
   toggleGraded: () => {},
   // eslint-disable-next-line
   toggleCreator: () => {},
+  // eslint-disable-next-line
+  toggleAbandoned: () => {},
 });
 
 function SessionProvider(props: { children?: React.ReactNode }): JSX.Element {
@@ -37,6 +42,7 @@ function SessionProvider(props: { children?: React.ReactNode }): JSX.Element {
   const [onlyCreator, setOnlyCreator] = React.useState(
     cookies.accessToken || cookies.user ? true : false
   );
+  const [showAbandoned, setShowAbandoned] = React.useState(false);
 
   React.useEffect(() => {
     if (!cookies.accessToken) {
@@ -62,6 +68,10 @@ function SessionProvider(props: { children?: React.ReactNode }): JSX.Element {
     setOnlyCreator(!onlyCreator);
   }
 
+  function toggleAbandoned(): void {
+    setShowAbandoned(!showAbandoned);
+  }
+
   return (
     <SessionContext.Provider
       value={{
@@ -70,6 +80,8 @@ function SessionProvider(props: { children?: React.ReactNode }): JSX.Element {
         toggleGraded,
         onlyCreator,
         toggleCreator,
+        showAbandoned,
+        toggleAbandoned,
       }}
     >
       {props.children}

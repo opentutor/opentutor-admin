@@ -32,6 +32,7 @@ const lessons = {
         expectations: [
           {
             expectation: "expectation 1",
+            expectationId: "0",
             hints: [
               {
                 text: "hint 1.1",

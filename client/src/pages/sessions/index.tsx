@@ -134,7 +134,14 @@ function TableFooter(props: {
 }): JSX.Element {
   const { classes, hasNext, hasPrev, onNext, onPrev } = props;
   const context = useContext(SessionContext);
-  const { onlyCreator, showGraded, toggleCreator, toggleGraded } = context;
+  const {
+    onlyCreator,
+    showGraded,
+    showAbandoned,
+    toggleCreator,
+    toggleGraded,
+    toggleAbandoned,
+  } = context;
 
   return (
     <AppBar position="sticky" color="default" className={classes.appBar}>
@@ -163,6 +170,19 @@ function TableFooter(props: {
               />
             }
             label={"Show Graded"}
+          />
+        </FormGroup>
+        <FormGroup>
+          <FormControlLabel
+            control={
+              <Switch
+                data-cy="toggle-abandoned"
+                checked={showAbandoned}
+                onChange={toggleAbandoned}
+                aria-label="switch"
+              />
+            }
+            label={"Show Abandoned"}
           />
         </FormGroup>
         <div className={classes.paging}>

@@ -31,7 +31,11 @@ import {
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { fetchLesson, updateLesson, userCanEdit, fetchLessons } from "api";
-import { DEFAULT_CLASSIFIER_ARCHITECTURE } from "admin-constants";
+import {
+  COMPOSITE_CLASSIFIER_ARCHITECTURE,
+  DEFAULT_CLASSIFIER_ARCHITECTURE,
+  OPENAI_CLASSIFIER_ARCHITECTURE,
+} from "admin-constants";
 import SessionContext from "context/session";
 import NavBar from "components/nav-bar";
 import ConclusionsList from "components/conclusions-list";
@@ -297,6 +301,7 @@ const LessonEdit = (props: {
     }
     return (
       !error &&
+      lessonUnderEdit.lesson.arch != OPENAI_CLASSIFIER_ARCHITECTURE &&
       lessonUnderEdit.lesson?.expectations.every((exp: LessonExpectation) =>
         isExpValid(exp)
       )
@@ -525,8 +530,11 @@ const LessonEdit = (props: {
                 }}
               >
                 <MenuItem value={DEFAULT_CLASSIFIER_ARCHITECTURE}>LR2</MenuItem>
-                <MenuItem value={"opentutor_classifier.openai"}>
+                <MenuItem value={OPENAI_CLASSIFIER_ARCHITECTURE}>
                   OpenAI
+                </MenuItem>
+                <MenuItem value={COMPOSITE_CLASSIFIER_ARCHITECTURE}>
+                  COMPOSITE
                 </MenuItem>
               </Select>
             </FormControl>

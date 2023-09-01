@@ -64,7 +64,8 @@ interface ExpectationClasses {
 const ExpectationCard = (props: {
   classes: ExpectationClasses;
   expectation: LessonExpectation;
-  expIdx: number;
+  expId: string;
+  expIndex: number;
   lessonId: string;
   canDelete: boolean;
   handleExpectationChange: (val: string) => void;
@@ -75,7 +76,8 @@ const ExpectationCard = (props: {
   const {
     classes,
     expectation,
-    expIdx,
+    expId: expId,
+    expIndex: expIndex,
     lessonId,
     canDelete,
     handleExpectationChange,
@@ -122,7 +124,7 @@ const ExpectationCard = (props: {
   }
 
   return (
-    <Card data-cy={`expectation-${expIdx}`} className={classes.cardRoot}>
+    <Card data-cy={`expectation-${expIndex}`} className={classes.cardRoot}>
       <CardContent>
         <div style={{ display: "flex", flexDirection: "row" }}>
           <CardActions>
@@ -132,7 +134,7 @@ const ExpectationCard = (props: {
             data-cy="edit-expectation"
             margin="normal"
             name="expectations"
-            label={`Expectation ${expIdx + 1}`}
+            label={`Expectation ${expIndex + 1}`}
             placeholder="Add a short ideal answer for an expectation, e.g. 'Red'"
             variant="outlined"
             fullWidth
@@ -204,12 +206,12 @@ const ExpectationCard = (props: {
           </div>
         </Collapse>
         <Button
-          data-cy={`view-expectation-${expIdx}-data-button`}
+          data-cy={`view-expectation-${expIndex}-data-button`}
           style={{ marginLeft: 15, marginTop: 10 }}
           endIcon={<Launch />}
           onClick={() => {
             navigate(
-              `../../sessions/data?lessonId=${lessonId}&expectation=${expIdx}`
+              `../../sessions/data?lessonId=${lessonId}&expectation=${expId}`
             );
           }}
         >
@@ -324,7 +326,8 @@ function ExpectationsList(props: {
                       <ExpectationCard
                         classes={classes}
                         expectation={exp}
-                        expIdx={i}
+                        expId={exp.expectationId}
+                        expIndex={i}
                         lessonId={lessonId}
                         canDelete={expectations.length > 1}
                         handleExpectationChange={(val: string) => {
