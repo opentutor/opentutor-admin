@@ -244,6 +244,7 @@ export async function fetchSessionsData(
           lesson(lessonId: $lessonId) {
             expectations {
               expectation
+              expectationId
             }
           }
         }
