@@ -3,7 +3,7 @@
   "description": "cypress testing",
   "version": "1.0.0",
   "dependencies": {
-    "cypress": "^12.13.0",
+    "cypress": "^13.10.0",
     "cypress-fill-command": "^1.0.2",
     "typescript": "^5.1.3"
   },
