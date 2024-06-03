@@ -28,3 +28,8 @@ body {
 div.jsoneditor {
     min-height: 400px !important;
 }
+
+.navbar-container {
+  position: relative;
+  z-index: 1000; /* Set a high z-index value */
+}

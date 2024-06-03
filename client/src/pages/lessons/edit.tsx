@@ -16,11 +16,14 @@ import {
   DialogActions,
   DialogTitle,
   Divider,
+  Drawer,
   FormControl,
   Grid,
+  IconButton,
   InputLabel,
   List,
   ListItem,
+  ListItemIcon,
   ListItemText,
   MenuItem,
   Select,
@@ -56,11 +59,22 @@ import {
   ArrowBack as ArrowBackIcon,
   Refresh as RefreshIcon,
   Download,
+  ArrowBackIosNew as BackIcon,
+
 } from "@mui/icons-material";
 import { Location } from "@reach/router";
 import { useWithDownload } from "hooks/use-with-download";
 
 const useStyles = makeStyles((theme: Theme) => ({
+  appBar: {
+    zIndex: theme.zIndex.drawer + 1,
+  },
+  drawer: {
+    paddingTop: "10%",
+    flexShrink: 0,
+    zIndex: 1,
+    position: 'fixed',
+  },
   cardRoot: {
     width: "100%",
   },
@@ -424,14 +438,49 @@ const LessonEdit = (props: {
       isAM ? "am" : "pm"
     }`; //January 12, 2022, at 3:45 pm
   }
-
+ 
+  
+  
   return (
+    <>
+    <Drawer
+      className={classes.drawer}
+      variant="permanent"
+      anchor="left"
+      PaperProps={{ style: { width: '10%', paddingRight: 2, paddingLeft: 20} }}
+    >
+      <div style={{ marginTop: 70 /* Height of your app bar */ }}>
+        <div 
+          style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end'}}>
+          <IconButton>
+            <BackIcon />
+          </IconButton>
+        </div>
+
+        <List>
+          <ListItem>
+          <Button
+            data-cy="discard-button"
+            variant="contained"
+            startIcon={<ArrowBackIcon />}
+            size="medium"
+            color="primary"
+            sx={{width: 200}}
+            >
+              Back
+          </Button>
+          
+          </ListItem>
+        </List>
+      </div>
+    </Drawer>
+    
     <div
       style={{
-        padding: 10,
+        paddingLeft: 200,
         boxSizing: "border-box",
-        width: "100%",
-        maxWidth: 1000,
+        width: "90%",
+        maxWidth: 1700,
         margin: "auto",
       }}
     >
@@ -1082,6 +1131,7 @@ const LessonEdit = (props: {
       </Dialog>
       <ToastContainer />
     </div>
+    </>
   );
 };
 
@@ -1100,7 +1150,10 @@ function EditPage(props: {
   }
   return (
     <div>
-      <NavBar title="Edit Lesson" />
+      <div className="navbar-container">
+        <NavBar title="Edit Lesson" />
+      </div>
+      
       <LessonEdit search={props.search} location={props.location} />
     </div>
   );
