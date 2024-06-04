@@ -134,8 +134,8 @@ const ExpectationCard = (props: {
             data-cy="edit-expectation"
             margin="normal"
             name="expectations"
-            label={`Expectation ${expIndex + 1}`}
-            placeholder="Add a short ideal answer for an expectation, e.g. 'Red'"
+            label={`Concept ${expIndex + 1}`}
+            placeholder="Add a short ideal answer for the question and include the main ideas."
             variant="outlined"
             fullWidth
             InputLabelProps={{
@@ -296,9 +296,10 @@ function ExpectationsList(props: {
   };
 
   return (
-    <Paper elevation={0} style={{ textAlign: "left" }}>
-      <Typography variant="h6" style={{ paddingBottom: 15 }}>
-        Expectations
+    <Paper elevation={0} style={{ textAlign: "left", marginBottom: 20 }}>
+      {/*rewording "Expectations" as Key Concepts for the User */}
+      <Typography variant="h6" style={{ paddingTop: 5, paddingBottom: 15 }}>
+        Key Concepts
       </Typography>
       <DragDropContext onDragEnd={onDragEnd}>
         <Droppable droppableId="droppable">
@@ -359,8 +360,9 @@ function ExpectationsList(props: {
         onClick={handleAddExpectation}
         variant="outlined"
         color="primary"
+        style={{ marginTop: 15 }}
       >
-        Add Expectation
+        Add Concept
       </Button>
     </Paper>
   );

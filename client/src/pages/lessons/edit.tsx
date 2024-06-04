@@ -23,9 +23,9 @@ import {
   InputLabel,
   List,
   ListItem,
-  ListItemIcon,
   ListItemText,
   MenuItem,
+  Paper,
   Select,
   SelectChangeEvent,
   TextField,
@@ -60,7 +60,9 @@ import {
   Refresh as RefreshIcon,
   Download,
   ArrowBackIosNew as BackIcon,
-
+  ArrowRight,
+  ArrowDropDown,
+  InsertPhoto as InsertPhotoIcon,
 } from "@mui/icons-material";
 import { Location } from "@reach/router";
 import { useWithDownload } from "hooks/use-with-download";
@@ -73,7 +75,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     paddingTop: "10%",
     flexShrink: 0,
     zIndex: 1,
-    position: 'fixed',
+    position: "fixed",
   },
   cardRoot: {
     width: "100%",
@@ -153,22 +155,18 @@ const useStyles = makeStyles((theme: Theme) => ({
 const newLesson: Lesson = {
   lessonId: uuid(),
   arch: DEFAULT_CLASSIFIER_ARCHITECTURE,
-  name: "Display name for the lesson",
-  intro:
-    "Introduction to the lesson,  e.g. 'This is a lesson about RGB colors'",
+  name: "",
+  intro: "",
   dialogCategory: "default",
-  question:
-    "Question the student needs to answer, e.g. 'What are the colors in RGB?'",
-  conclusion: [
-    "Add a conclusion statement, e.g. 'In summary,  RGB colors are red, green, and blue'",
-  ],
+  question: "",
+  conclusion: [""],
   expectations: [
     {
-      expectation: "Add a short ideal answer for an expectation, e.g. 'Red'",
+      expectation: "",
       expectationId: uuid().toString(),
       hints: [
         {
-          text: "Add a hint to help for the expectation, e.g. 'One of them starts with R'",
+          text: "",
         },
       ],
       features: {},
@@ -210,6 +208,8 @@ const LessonEdit = (props: {
   );
   const [error, setError] = React.useState("");
   const [savePopUp, setSavePopUp] = React.useState(false);
+  const [isShowingAdvancedFeatures, setIsShowingAdvancedFeatures] =
+    React.useState(false);
   const {
     isTraining,
     trainStatus,
@@ -438,83 +438,111 @@ const LessonEdit = (props: {
       isAM ? "am" : "pm"
     }`; //January 12, 2022, at 3:45 pm
   }
- 
-  
-  
+
   return (
     <>
-    <Drawer
-      className={classes.drawer}
-      variant="permanent"
-      anchor="left"
-      PaperProps={{ style: { width: '10%', paddingRight: 2, paddingLeft: 20} }}
-    >
-      <div style={{ marginTop: 70 /* Height of your app bar */ }}>
-        <div 
-          style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end'}}>
-          <IconButton>
-            <BackIcon />
-          </IconButton>
-        </div>
+      <Drawer
+        className={classes.drawer}
+        variant="permanent"
+        anchor="left"
+        PaperProps={{
+          style: { width: "10%", paddingRight: 2, paddingLeft: 20 },
+        }}
+      >
+        <div style={{ marginTop: 70 }}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "flex-end",
+            }}
+          >
+            <IconButton>
+              <BackIcon />
+            </IconButton>
+          </div>
 
-        <List>
-          <ListItem>
-          <Button
-            data-cy="discard-button"
-            variant="contained"
-            startIcon={<ArrowBackIcon />}
-            size="medium"
-            color="primary"
-            sx={{width: 200}}
-            >
-              Back
-          </Button>
-          
-          </ListItem>
-        </List>
-      </div>
-    </Drawer>
-    
-    <div
-      style={{
-        paddingLeft: 200,
-        boxSizing: "border-box",
-        width: "90%",
-        maxWidth: 1700,
-        margin: "auto",
-      }}
-    >
-      <form noValidate autoComplete="off">
-        <Grid
-          container
-          data-cy="lesson-edit-grid"
-          spacing={2}
-          style={{ marginTop: 10 }}
-        >
-          <Grid item xs={12} md={6}>
-            <TextField
-              data-cy="lesson-name"
-              label="Lesson Name"
-              placeholder="Display name for the lesson"
-              fullWidth
-              multiline
-              InputLabelProps={{
-                shrink: true,
-              }}
-              value={lessonUnderEdit.lesson?.name || ""}
-              onChange={(e) => {
-                setLesson(
-                  {
-                    ...(lessonUnderEdit.lesson || newLesson),
-                    name: e.target.value || "",
-                  },
-                  true
-                );
-              }}
-              variant="outlined"
-            />
-          </Grid>
-          <Grid item xs={12} md={6}>
+          <List>
+            <ListItem>
+              <Button
+                data-cy="discard-button"
+                variant="contained"
+                startIcon={<ArrowBackIcon />}
+                size="medium"
+                color="primary"
+                sx={{ width: 200 }}
+              >
+                Back
+              </Button>
+            </ListItem>
+          </List>
+        </div>
+      </Drawer>
+
+      <div
+        style={{
+          paddingLeft: 200,
+          boxSizing: "border-box",
+          width: "90%",
+          maxWidth: 1700,
+          margin: "auto",
+        }}
+      >
+        <form noValidate autoComplete="off">
+          <Grid
+            container
+            data-cy="lesson-edit-grid"
+            spacing={2}
+            style={{ marginTop: 20, marginBottom: 20 }}
+          >
+            <Grid item xs={8}>
+              <TextField
+                data-cy="lesson-name"
+                label="Lesson Title"
+                placeholder="Lesson Name"
+                fullWidth
+                multiline
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                value={lessonUnderEdit.lesson?.name || ""}
+                onChange={(e) => {
+                  setLesson(
+                    {
+                      ...(lessonUnderEdit.lesson || newLesson),
+                      name: e.target.value || "",
+                    },
+                    true
+                  );
+                }}
+                variant="outlined"
+              />
+            </Grid>
+            <Grid item xs={4}>
+              <FormControl className={classes.selectForm} variant="outlined">
+                <InputLabel shrink id="lesson-format-label">
+                  Lesson Type
+                </InputLabel>
+                <Select
+                  data-cy="lesson-format"
+                  labelId="lesson-format-label"
+                  value={lessonUnderEdit.lesson?.learningFormat || "default"}
+                  onChange={(e: SelectChangeEvent<string>) => {
+                    setLesson(
+                      {
+                        ...(lessonUnderEdit.lesson || newLesson),
+                        learningFormat: (e.target.value as string) || "default",
+                      },
+                      true
+                    );
+                  }}
+                >
+                  <MenuItem value={"default"}>Short Answer Question</MenuItem>
+                  <MenuItem value={"surveySays"}>Survey Says</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+            {/* <Grid item xs={12} md={6}>
             <TextField
               data-cy="lesson-id"
               label="Lesson ID"
@@ -538,8 +566,8 @@ const LessonEdit = (props: {
               }}
               variant="outlined"
             />
-          </Grid>
-          <Grid item xs={12} md={6}>
+          </Grid> */}
+            {/* <Grid item xs={12} md={6}>
             <TextField
               fullWidth
               multiline
@@ -553,8 +581,8 @@ const LessonEdit = (props: {
               value={lessonUnderEdit.lesson?.createdByName || "Guest"}
               disabled={true}
             />
-          </Grid>
-          <Grid item xs={12} md={6}>
+          </Grid> */}
+            {/* <Grid item xs={12} md={6}>
             <FormControl className={classes.selectForm} variant="outlined">
               <InputLabel shrink id="classifier-arch-label">
                 Classifier Architecture
@@ -587,8 +615,8 @@ const LessonEdit = (props: {
                 </MenuItem>
               </Select>
             </FormControl>
-          </Grid>
-          <Grid item xs={12} md={6}>
+          </Grid> */}
+            {/* <Grid item xs={12} md={6}>
             <FormControl className={classes.selectForm} variant="outlined">
               <InputLabel
                 shrink
@@ -613,195 +641,206 @@ const LessonEdit = (props: {
                 <MenuItem value={"default"}>Default</MenuItem>
                 <MenuItem value={"sensitive"}>Sensitive</MenuItem>
               </Select>
-              {/*<FormHelperText>Select a Dialog Type</FormHelperText>*/}
+              {<FormHelperText>Select a Dialog Type</FormHelperText>}
             </FormControl>
+          </Grid> */}
           </Grid>
-          <Grid item xs={12} md={6}>
-            <FormControl className={classes.selectForm} variant="outlined">
-              <InputLabel shrink id="lesson-format-label">
-                Lesson Format
-              </InputLabel>
-              <Select
-                data-cy="lesson-format"
-                labelId="lesson-format-label"
-                value={lessonUnderEdit.lesson?.learningFormat || "default"}
-                onChange={(e: SelectChangeEvent<string>) => {
-                  setLesson(
-                    {
-                      ...(lessonUnderEdit.lesson || newLesson),
-                      learningFormat: (e.target.value as string) || "default",
-                    },
-                    true
-                  );
-                }}
-              >
-                <MenuItem value={"default"}>Default</MenuItem>
-                <MenuItem value={"surveySays"}>Survey Says</MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
-        </Grid>
-        <Divider variant="middle" className={classes.divider} />
-        <Grid container spacing={2}>
-          <Grid item xs={12}>
-            <TextField
-              data-cy="intro"
-              label="Introduction"
-              placeholder="Introduction to the lesson,  e.g. 'This is a lesson about RGB colors'"
-              multiline
-              maxRows={4}
-              fullWidth
-              InputLabelProps={{
-                shrink: true,
-              }}
-              value={lessonUnderEdit.lesson?.intro || ""}
-              onChange={(e) => {
-                setLesson(
-                  {
-                    ...(lessonUnderEdit.lesson || newLesson),
-                    intro: e.target.value || "",
-                  },
-                  true
-                );
-              }}
-              variant="outlined"
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <TextField
-              data-cy="question"
-              label="Question"
-              placeholder="Question the student needs to answer, e.g. 'What are the colors in RGB?'"
-              multiline
-              maxRows={4}
-              fullWidth
-              InputLabelProps={{
-                shrink: true,
-              }}
-              value={lessonUnderEdit.lesson?.question || ""}
-              onChange={(e) => {
-                setLesson(
-                  {
-                    ...(lessonUnderEdit.lesson || newLesson),
-                    question: e.target.value || "",
-                  },
-                  true
-                );
-              }}
-              variant="outlined"
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <FormControl className={classes.selectForm} variant="outlined">
-              <InputLabel shrink id="media-label">
-                Media Type
-              </InputLabel>
-              <Select
-                labelId="media-label"
-                data-cy="media-type"
-                value={
-                  lessonUnderEdit.lesson.media
-                    ? lessonUnderEdit.lesson.media.type
-                    : MediaType.NONE
-                }
-                onChange={(e: SelectChangeEvent<string>) => {
-                  if ((e.target.value as string) === MediaType.VIDEO) {
-                    setLesson(
-                      {
-                        ...(lessonUnderEdit.lesson || newLesson),
-                        media: {
-                          type: (e.target.value as string) || "",
-                          url: "",
-                          props: [
-                            { name: "start", value: "0" },
-                            {
-                              name: "end",
-                              value: String(Number.MAX_SAFE_INTEGER),
-                            },
-                          ],
-                        },
-                      },
-                      true
-                    );
-                  } else if ((e.target.value as string) === MediaType.IMAGE) {
-                    setLesson(
-                      {
-                        ...(lessonUnderEdit.lesson || newLesson),
-                        media: {
-                          type: (e.target.value as string) || "",
-                          url: "",
-                          props: undefined,
-                        },
-                      },
-                      true
-                    );
-                  } else {
-                    setLesson(
-                      {
-                        ...(lessonUnderEdit.lesson || newLesson),
-                        media: null,
-                      },
-                      true
-                    );
-                  }
-                }}
-              >
-                <MenuItem data-cy="media-none" value={MediaType.NONE}>
-                  None
-                </MenuItem>
-                <MenuItem data-cy="media-image" value={MediaType.IMAGE}>
-                  Image
-                </MenuItem>
-                <MenuItem data-cy="media-video" value={MediaType.VIDEO}>
-                  Video
-                </MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
-          {lessonUnderEdit.lesson.media &&
-          lessonUnderEdit.lesson.media.type === MediaType.IMAGE ? (
-            <Grid item xs={12}>
-              <div className={classes.image}>
+
+          <Divider variant="middle" className={classes.divider} />
+
+          <Paper elevation={0} style={{ textAlign: "left" }}>
+            <Typography
+              variant="h6"
+              style={{ paddingTop: 5, paddingBottom: 15 }}
+            >
+              Question
+            </Typography>
+
+            <Grid container spacing={2} style={{ marginBottom: 20 }}>
+              <Grid item xs={12}>
                 <TextField
-                  data-cy="image"
-                  label="Image"
-                  placeholder="Image URL"
-                  required
+                  data-cy="intro"
+                  label="Introduction"
+                  placeholder="Introduction of lesson, 'This lesson is about...'"
                   multiline
                   maxRows={4}
                   fullWidth
                   InputLabelProps={{
                     shrink: true,
                   }}
-                  value={lessonUnderEdit.lesson.media.url || ""}
+                  value={lessonUnderEdit.lesson?.intro || ""}
                   onChange={(e) => {
                     setLesson(
                       {
                         ...(lessonUnderEdit.lesson || newLesson),
-                        media: {
-                          ...(lessonUnderEdit.lesson || newLesson).media,
-                          type: MediaType.IMAGE,
-                          url: (e.target.value as string) || "",
-                        },
+                        intro: e.target.value || "",
                       },
                       true
                     );
                   }}
                   variant="outlined"
                 />
-                <img
-                  className={classes.thumbnail}
-                  data-cy="image-thumbnail"
-                  src={lessonUnderEdit.lesson.media.url}
-                  onClick={() => {
-                    window.open(
-                      lessonUnderEdit.lesson?.media?.url || "",
-                      "_blank"
+              </Grid>
+            </Grid>
+            <Grid
+              container
+              spacing={6}
+              style={{ marginBottom: 20 }}
+              alignItems="center"
+            >
+              <Grid item xs={10}>
+                <TextField
+                  data-cy="question"
+                  label="Question"
+                  placeholder="What is...?"
+                  multiline
+                  maxRows={4}
+                  fullWidth
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  value={lessonUnderEdit.lesson?.question || ""}
+                  onChange={(e) => {
+                    setLesson(
+                      {
+                        ...(lessonUnderEdit.lesson || newLesson),
+                        question: e.target.value || "",
+                      },
+                      true
                     );
                   }}
+                  variant="outlined"
                 />
-              </div>
+              </Grid>
+              <Grid item xs={2} style={{ display: "flex" }}>
+                <Button
+                  variant="contained"
+                  startIcon={<InsertPhotoIcon />}
+                  size="large"
+                  color="primary"
+                  style={{
+                    backgroundColor: "#1B6A9C",
+                    paddingLeft: 20,
+                    paddingRight: 20,
+                  }}
+                >
+                  ADD MEDIA
+                </Button>
+              </Grid>
             </Grid>
+
+            {/* <Grid xs={2}>
+        
+          <FormControl className={classes.selectForm} variant="outlined">
+            <InputLabel shrink id="media-label">
+              Media Type
+            </InputLabel>
+            <Select
+              labelId="media-label"
+              data-cy="media-type"
+              value={
+                lessonUnderEdit.lesson.media
+                  ? lessonUnderEdit.lesson.media.type
+                  : MediaType.NONE
+              }
+              onChange={(e: SelectChangeEvent<string>) => {
+                if ((e.target.value as string) === MediaType.VIDEO) {
+                  setLesson(
+                    {
+                      ...(lessonUnderEdit.lesson || newLesson),
+                      media: {
+                        type: (e.target.value as string) || "",
+                        url: "",
+                        props: [
+                          { name: "start", value: "0" },
+                          {
+                            name: "end",
+                            value: String(Number.MAX_SAFE_INTEGER),
+                          },
+                        ],
+                      },
+                    },
+                    true
+                  );
+                } else if ((e.target.value as string) === MediaType.IMAGE) {
+                  setLesson(
+                    {
+                      ...(lessonUnderEdit.lesson || newLesson),
+                      media: {
+                        type: (e.target.value as string) || "",
+                        url: "",
+                        props: undefined,
+                      },
+                    },
+                    true
+                  );
+                } else {
+                  setLesson(
+                    {
+                      ...(lessonUnderEdit.lesson || newLesson),
+                      media: null,
+                    },
+                    true
+                  );
+                }
+              }}
+            >
+              <MenuItem data-cy="media-none" value={MediaType.NONE}>
+                None
+              </MenuItem>
+              <MenuItem data-cy="media-image" value={MediaType.IMAGE}>
+                Image
+              </MenuItem>
+              <MenuItem data-cy="media-video" value={MediaType.VIDEO}>
+                Video
+              </MenuItem>
+            </Select>
+          </FormControl>
+        </Grid>
+        {lessonUnderEdit.lesson.media &&
+        lessonUnderEdit.lesson.media.type === MediaType.IMAGE ? (
+          <Grid item xs={12}>
+            <div className={classes.image}>
+              <TextField
+                data-cy="image"
+                label="Image"
+                placeholder="Image URL"
+                required
+                multiline
+                maxRows={4}
+                fullWidth
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                value={lessonUnderEdit.lesson.media.url || ""}
+                onChange={(e) => {
+                  setLesson(
+                    {
+                      ...(lessonUnderEdit.lesson || newLesson),
+                      media: {
+                        ...(lessonUnderEdit.lesson || newLesson).media,
+                        type: MediaType.IMAGE,
+                        url: (e.target.value as string) || "",
+                      },
+                    },
+                    true
+                  );
+                }}
+                variant="outlined"
+              />
+              <img
+                className={classes.thumbnail}
+                data-cy="image-thumbnail"
+                src={lessonUnderEdit.lesson.media.url}
+                onClick={() => {
+                  window.open(
+                    lessonUnderEdit.lesson?.media?.url || "",
+                    "_blank"
+                  );
+                }}
+              />
+            </div>
+          </Grid>
           ) : (
             <></>
           )}
@@ -948,189 +987,309 @@ const LessonEdit = (props: {
             </>
           ) : (
             <></>
-          )}
-        </Grid>
-        <Divider variant="middle" className={classes.divider} />
-        <ExpectationsList
-          classes={classes}
-          lessonId={lessonId ?? ""}
-          expectations={lessonUnderEdit.lesson?.expectations}
-          updateExpectations={(exp: LessonExpectation[]) =>
-            setLesson(
-              {
-                ...(lessonUnderEdit.lesson || newLesson),
-                expectations: exp,
-              },
-              true
-            )
-          }
-        />
-        <Divider variant="middle" className={classes.divider} />
-        <ConclusionsList
-          classes={classes}
-          conclusions={lessonUnderEdit.lesson?.conclusion}
-          updateConclusions={(conclusions: string[]) =>
-            setLesson(
-              {
-                ...(lessonUnderEdit.lesson || newLesson),
-                conclusion: conclusions,
-              },
-              true
-            )
-          }
-        />
-      </form>
-      <Box
-        data-cy="train-data"
-        border={5}
-        borderRadius={16}
-        borderColor={
-          trainStatus.state !== TrainState.SUCCESS &&
-          trainStatus.state !== TrainState.FAILURE
-            ? "#000000"
-            : trainStatus.state === TrainState.FAILURE
-            ? "#FF0000"
-            : !(
-                trainStatus.info &&
-                trainStatus.info?.expectations &&
-                Array.isArray(trainStatus.info?.expectations) &&
-                trainStatus.info.expectations.length > 0
+          )} */}
+          </Paper>
+          <Divider variant="middle" className={classes.divider} />
+
+          <ExpectationsList
+            classes={classes}
+            lessonId={lessonId ?? ""}
+            expectations={lessonUnderEdit.lesson?.expectations}
+            updateExpectations={(exp: LessonExpectation[]) =>
+              setLesson(
+                {
+                  ...(lessonUnderEdit.lesson || newLesson),
+                  expectations: exp,
+                },
+                true
               )
-            ? "#FF0000"
-            : Math.min(
-                ...trainStatus.info?.expectations.map((x) => x.accuracy)
-              ) >= 0.6
-            ? "#008000"
-            : Math.min(
-                ...trainStatus.info?.expectations.map((x) => x.accuracy)
-              ) >= 0.4
-            ? "#FFFF00"
-            : "#FF0000"
-        }
-      >
-        <Typography variant="h5">Training Data</Typography>
-        <Typography variant="caption">
-          {`Last Trained: ${lastTrainedString}`}
-        </Typography>
-        <Divider />
-        {isTraining ? (
-          <LoadingIndicator />
-        ) : trainStatus.state === TrainState.SUCCESS ? (
-          <List>
-            {trainStatus.info?.expectations?.map((x, i) => (
-              <ListItem key={`train-success-accuracy-${i}`}>
-                <ListItemText
-                  style={{ textAlign: "center" }}
-                  data-cy={`train-success-accuracy-${i}`}
-                >{`Expectation ${i + 1} Accuracy: ${x.accuracy.toFixed(
-                  2
-                )}`}</ListItemText>
-              </ListItem>
-            ))}
-          </List>
-        ) : trainStatus.state === TrainState.FAILURE ? (
-          <Typography data-cy="train-failure">{`Training Failed`}</Typography>
-        ) : null}
-      </Box>
-      <Divider variant="middle" className={classes.divider} />
-      <div className={classes.actionFooter}>
-        <Button
-          data-cy="discard-button"
-          variant="contained"
-          startIcon={lessonUnderEdit.dirty ? <DeleteIcon /> : <ArrowBackIcon />}
-          size="large"
-          color="primary"
-          style={
-            lessonUnderEdit.dirty
-              ? { backgroundColor: "red" }
-              : { backgroundColor: "#1B6A9C" }
-          }
-          onClick={handleDiscard}
-        >
-          {lessonUnderEdit.dirty ? "Discard" : "Back"}
-        </Button>
-        <Button
-          data-cy="train-button"
-          variant="contained"
-          color="primary"
-          startIcon={<RefreshIcon />}
-          size="large"
-          style={{
-            background: lessonUnderEdit.lesson?.isTrainable
-              ? "#1B6A9C"
-              : "#808080",
-          }}
-          disabled={isTraining || !lessonUnderEdit.lesson}
-          onClick={() => {
-            if (lessonUnderEdit.lesson) {
-              startLessonTraining(lessonUnderEdit.lesson);
             }
+          />
+          <Divider variant="middle" className={classes.divider} />
+          <ConclusionsList
+            classes={classes}
+            conclusions={lessonUnderEdit.lesson?.conclusion}
+            updateConclusions={(conclusions: string[]) =>
+              setLesson(
+                {
+                  ...(lessonUnderEdit.lesson || newLesson),
+                  conclusion: conclusions,
+                },
+                true
+              )
+            }
+          />
+        </form>
+        <Box
+          data-cy="train-data"
+          border={5}
+          borderRadius={16}
+          borderColor={
+            trainStatus.state !== TrainState.SUCCESS &&
+            trainStatus.state !== TrainState.FAILURE
+              ? "#000000"
+              : trainStatus.state === TrainState.FAILURE
+              ? "#FF0000"
+              : !(
+                  trainStatus.info &&
+                  trainStatus.info?.expectations &&
+                  Array.isArray(trainStatus.info?.expectations) &&
+                  trainStatus.info.expectations.length > 0
+                )
+              ? "#FF0000"
+              : Math.min(
+                  ...trainStatus.info?.expectations.map((x) => x.accuracy)
+                ) >= 0.6
+              ? "#008000"
+              : Math.min(
+                  ...trainStatus.info?.expectations.map((x) => x.accuracy)
+                ) >= 0.4
+              ? "#FFFF00"
+              : "#FF0000"
+          }
+        >
+          <Typography variant="h5">Training Data</Typography>
+          <Typography variant="caption">
+            {`Last Trained: ${lastTrainedString}`}
+          </Typography>
+          <Divider />
+          {isTraining ? (
+            <LoadingIndicator />
+          ) : trainStatus.state === TrainState.SUCCESS ? (
+            <List>
+              {trainStatus.info?.expectations?.map((x, i) => (
+                <ListItem key={`train-success-accuracy-${i}`}>
+                  <ListItemText
+                    style={{ textAlign: "center" }}
+                    data-cy={`train-success-accuracy-${i}`}
+                  >{`Expectation ${i + 1} Accuracy: ${x.accuracy.toFixed(
+                    2
+                  )}`}</ListItemText>
+                </ListItem>
+              ))}
+            </List>
+          ) : trainStatus.state === TrainState.FAILURE ? (
+            <Typography data-cy="train-failure">{`Training Failed`}</Typography>
+          ) : null}
+        </Box>
+        <Divider variant="middle" className={classes.divider} />
+        <div className={classes.actionFooter}>
+          <Button
+            data-cy="discard-button"
+            variant="contained"
+            startIcon={
+              lessonUnderEdit.dirty ? <DeleteIcon /> : <ArrowBackIcon />
+            }
+            size="large"
+            color="primary"
+            style={
+              lessonUnderEdit.dirty
+                ? { backgroundColor: "red" }
+                : { backgroundColor: "#1B6A9C" }
+            }
+            onClick={handleDiscard}
+          >
+            {lessonUnderEdit.dirty ? "Discard" : "Back"}
+          </Button>
+          <Button
+            data-cy="train-button"
+            variant="contained"
+            color="primary"
+            startIcon={<RefreshIcon />}
+            size="large"
+            style={{
+              background: lessonUnderEdit.lesson?.isTrainable
+                ? "#1B6A9C"
+                : "#808080",
+            }}
+            disabled={isTraining || !lessonUnderEdit.lesson}
+            onClick={() => {
+              if (lessonUnderEdit.lesson) {
+                startLessonTraining(lessonUnderEdit.lesson);
+              }
+            }}
+          >
+            Train
+          </Button>
+          <Button
+            data-cy="launch-button"
+            variant="contained"
+            endIcon={<LaunchIcon />}
+            color="primary"
+            size="large"
+            disabled={!lessonId || !isLessonValid()}
+            onClick={handleLaunch}
+          >
+            Launch
+          </Button>
+          {lessonUnderEdit.dirty ? (
+            <Button
+              data-cy="save-button"
+              variant="contained"
+              startIcon={<SaveIcon />}
+              color="primary"
+              size="large"
+              onClick={() => handleSavePopUp(true)}
+              disabled={!isLessonValid()}
+            >
+              Save
+            </Button>
+          ) : null}
+          {isDownloadable ? (
+            <Button
+              data-cy="download-button"
+              variant="contained"
+              startIcon={<Download />}
+              color="primary"
+              size="large"
+              onClick={download}
+              disabled={isDownloading}
+            >
+              Download
+            </Button>
+          ) : null}
+        </div>
+        <Dialog
+          open={Boolean(trainingMessage)}
+          onClose={dismissTrainingMessage}
+        >
+          <DialogTitle>{trainingMessage}</DialogTitle>
+        </Dialog>
+        <Dialog
+          open={Boolean(downloadMessage)}
+          onClose={dismissDownloadMessage}
+        >
+          <DialogTitle>{downloadMessage}</DialogTitle>
+        </Dialog>
+        <Dialog open={savePopUp} onClose={() => handleSavePopUp(false)}>
+          <DialogTitle>Save</DialogTitle>
+          <DialogActions>
+            <Button
+              data-cy="save-exit"
+              onClick={handleSaveExit}
+              color="primary"
+            >
+              Exit
+            </Button>
+            <Button
+              data-cy="save-continue"
+              onClick={handleSaveContinue}
+              color="primary"
+              variant="contained"
+            >
+              Continue
+            </Button>
+          </DialogActions>
+        </Dialog>
+        <ToastContainer />
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            padding: 5,
+            cursor: "pointer",
           }}
+          onClick={() =>
+            setIsShowingAdvancedFeatures(!isShowingAdvancedFeatures)
+          }
         >
-          Train
-        </Button>
-        <Button
-          data-cy="launch-button"
-          variant="contained"
-          endIcon={<LaunchIcon />}
-          color="primary"
-          size="large"
-          disabled={!lessonId || !isLessonValid()}
-          onClick={handleLaunch}
-        >
-          Launch
-        </Button>
-        {lessonUnderEdit.dirty ? (
-          <Button
-            data-cy="save-button"
-            variant="contained"
-            startIcon={<SaveIcon />}
-            color="primary"
-            size="large"
-            onClick={() => handleSavePopUp(true)}
-            disabled={!isLessonValid()}
-          >
-            Save
-          </Button>
-        ) : null}
-        {isDownloadable ? (
-          <Button
-            data-cy="download-button"
-            variant="contained"
-            startIcon={<Download />}
-            color="primary"
-            size="large"
-            onClick={download}
-            disabled={isDownloading}
-          >
-            Download
-          </Button>
-        ) : null}
+          {isShowingAdvancedFeatures ? <ArrowDropDown /> : <ArrowRight />}
+          <Typography variant="body2">
+            {isShowingAdvancedFeatures
+              ? "Hide Advanced Features"
+              : "Show Advanced Features"}
+          </Typography>
+        </div>
+        <div style={isShowingAdvancedFeatures ? {} : { display: "none" }}>
+          <Grid item xs={12} md={6}>
+            <TextField
+              data-cy="lesson-id"
+              label="Lesson ID"
+              placeholder="Unique alias to the lesson"
+              fullWidth
+              multiline
+              error={error !== ""}
+              helperText={error}
+              InputLabelProps={{
+                shrink: true,
+              }}
+              value={lessonUnderEdit.lesson?.lessonId || ""}
+              onChange={(e) => {
+                setLesson(
+                  {
+                    ...(lessonUnderEdit.lesson || newLesson),
+                    lessonId: e.target.value || "",
+                  },
+                  true
+                );
+              }}
+              variant="outlined"
+            />
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <FormControl className={classes.selectForm} variant="outlined">
+              <InputLabel
+                shrink
+                id="dialog-category-label"
+                key="Confirmation Code"
+              >
+                Dialog Category
+              </InputLabel>
+              <Select
+                labelId="dialog-category-label"
+                value={lessonUnderEdit.lesson?.dialogCategory || "NOT SET"}
+                onChange={(e: SelectChangeEvent<string>) => {
+                  setLesson(
+                    {
+                      ...(lessonUnderEdit.lesson || newLesson),
+                      dialogCategory: (e.target.value as string) || "",
+                    },
+                    true
+                  );
+                }}
+              >
+                <MenuItem value={"default"}>Default</MenuItem>
+                <MenuItem value={"sensitive"}>Sensitive</MenuItem>
+              </Select>
+              {/*<FormHelperText>Select a Dialog Type</FormHelperText>*/}
+            </FormControl>
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <FormControl className={classes.selectForm} variant="outlined">
+              <InputLabel shrink id="classifier-arch-label">
+                Classifier Architecture
+              </InputLabel>
+              <Select
+                data-cy="classifier-arch"
+                labelId="classifier-arch-label"
+                value={
+                  lessonUnderEdit.lesson?.arch ||
+                  DEFAULT_CLASSIFIER_ARCHITECTURE
+                }
+                onChange={(e: SelectChangeEvent<string>) => {
+                  setLesson(
+                    {
+                      ...(lessonUnderEdit.lesson || newLesson),
+                      arch:
+                        (e.target.value as string) ||
+                        DEFAULT_CLASSIFIER_ARCHITECTURE,
+                    },
+                    true
+                  );
+                }}
+              >
+                <MenuItem value={DEFAULT_CLASSIFIER_ARCHITECTURE}>LR2</MenuItem>
+                <MenuItem value={OPENAI_CLASSIFIER_ARCHITECTURE}>
+                  OpenAI
+                </MenuItem>
+                <MenuItem value={COMPOSITE_CLASSIFIER_ARCHITECTURE}>
+                  COMPOSITE
+                </MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+        </div>
       </div>
-      <Dialog open={Boolean(trainingMessage)} onClose={dismissTrainingMessage}>
-        <DialogTitle>{trainingMessage}</DialogTitle>
-      </Dialog>
-      <Dialog open={Boolean(downloadMessage)} onClose={dismissDownloadMessage}>
-        <DialogTitle>{downloadMessage}</DialogTitle>
-      </Dialog>
-      <Dialog open={savePopUp} onClose={() => handleSavePopUp(false)}>
-        <DialogTitle>Save</DialogTitle>
-        <DialogActions>
-          <Button data-cy="save-exit" onClick={handleSaveExit} color="primary">
-            Exit
-          </Button>
-          <Button
-            data-cy="save-continue"
-            onClick={handleSaveContinue}
-            color="primary"
-            variant="contained"
-          >
-            Continue
-          </Button>
-        </DialogActions>
-      </Dialog>
-      <ToastContainer />
-    </div>
     </>
   );
 };
@@ -1153,7 +1312,7 @@ function EditPage(props: {
       <div className="navbar-container">
         <NavBar title="Edit Lesson" />
       </div>
-      
+
       <LessonEdit search={props.search} location={props.location} />
     </div>
   );

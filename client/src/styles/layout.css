@@ -31,5 +31,5 @@ div.jsoneditor {
 
 .navbar-container {
   position: relative;
-  z-index: 1000; /* Set a high z-index value */
+  z-index: 1000; 
 }
