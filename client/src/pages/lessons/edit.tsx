@@ -526,6 +526,7 @@ const LessonEdit = (props: {
                 <Select
                   data-cy="lesson-format"
                   labelId="lesson-format-label"
+                  label="Lesson Type"
                   value={lessonUnderEdit.lesson?.learningFormat || "default"}
                   onChange={(e: SelectChangeEvent<string>) => {
                     setLesson(
@@ -1020,6 +1021,119 @@ const LessonEdit = (props: {
             }
           />
         </form>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            padding: 5,
+            cursor: "pointer",
+          }}
+          onClick={() =>
+            setIsShowingAdvancedFeatures(!isShowingAdvancedFeatures)
+          }
+        >
+          {isShowingAdvancedFeatures ? <ArrowDropDown /> : <ArrowRight />}
+          <Typography variant="body2">
+            {isShowingAdvancedFeatures
+              ? "Hide Advanced Features"
+              : "Show Advanced Features"}
+          </Typography>
+        </div>
+
+        <div style={isShowingAdvancedFeatures ? {} : { display: "none" }}>
+          <Grid container spacing={2} style={{marginTop:3, marginBottom: 10}}>
+            <Grid item xs={12}>
+              <TextField
+                data-cy="lesson-id"
+                label="Lesson ID"
+                placeholder="Unique alias to the lesson"
+                fullWidth
+                multiline
+                error={error !== ""}
+                helperText={error}
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                value={lessonUnderEdit.lesson?.lessonId || ""}
+                onChange={(e) => {
+                  setLesson(
+                    {
+                      ...(lessonUnderEdit.lesson || newLesson),
+                      lessonId: e.target.value || "",
+                    },
+                    true
+                  );
+                }}
+                variant="outlined"
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <FormControl className={classes.selectForm} variant="outlined">
+                <InputLabel
+                  shrink
+                  id="dialog-category-label"
+                  key="Confirmation Code"
+                >
+                  Dialog Category
+                </InputLabel>
+                <Select
+                  labelId="dialog-category-label"
+                  value={lessonUnderEdit.lesson?.dialogCategory || "NOT SET"}
+                  label="Dialog Category"
+                  onChange={(e: SelectChangeEvent<string>) => {
+                    setLesson(
+                      {
+                        ...(lessonUnderEdit.lesson || newLesson),
+                        dialogCategory: (e.target.value as string) || "",
+                      },
+                      true
+                    );
+                  }}
+                >
+                  <MenuItem value={"default"}>Default</MenuItem>
+                  <MenuItem value={"sensitive"}>Sensitive</MenuItem>
+                </Select>
+                {/*<FormHelperText>Select a Dialog Type</FormHelperText>*/}
+              </FormControl>
+            </Grid>
+            <Grid item xs={6}>
+              <FormControl className={classes.selectForm} variant="outlined">
+                <InputLabel shrink id="classifier-arch-label">
+                  Classifier Architecture
+                </InputLabel>
+                <Select
+                  data-cy="classifier-arch"
+                  labelId="classifier-arch-label"
+                  label="Classifier Architecture"
+                  value={
+                    lessonUnderEdit.lesson?.arch ||
+                    DEFAULT_CLASSIFIER_ARCHITECTURE
+                  }
+                  onChange={(e: SelectChangeEvent<string>) => {
+                    setLesson(
+                      {
+                        ...(lessonUnderEdit.lesson || newLesson),
+                        arch:
+                          (e.target.value as string) ||
+                          DEFAULT_CLASSIFIER_ARCHITECTURE,
+                      },
+                      true
+                    );
+                  }}
+                >
+                  <MenuItem value={DEFAULT_CLASSIFIER_ARCHITECTURE}>LR2</MenuItem>
+                  <MenuItem value={OPENAI_CLASSIFIER_ARCHITECTURE}>
+                    OpenAI
+                  </MenuItem>
+                  <MenuItem value={COMPOSITE_CLASSIFIER_ARCHITECTURE}>
+                    COMPOSITE
+                  </MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+          </Grid>
+        </div>
+
         <Box
           data-cy="train-data"
           border={5}
@@ -1182,113 +1296,7 @@ const LessonEdit = (props: {
           </DialogActions>
         </Dialog>
         <ToastContainer />
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            padding: 5,
-            cursor: "pointer",
-          }}
-          onClick={() =>
-            setIsShowingAdvancedFeatures(!isShowingAdvancedFeatures)
-          }
-        >
-          {isShowingAdvancedFeatures ? <ArrowDropDown /> : <ArrowRight />}
-          <Typography variant="body2">
-            {isShowingAdvancedFeatures
-              ? "Hide Advanced Features"
-              : "Show Advanced Features"}
-          </Typography>
-        </div>
-        <div style={isShowingAdvancedFeatures ? {} : { display: "none" }}>
-          <Grid item xs={12} md={6}>
-            <TextField
-              data-cy="lesson-id"
-              label="Lesson ID"
-              placeholder="Unique alias to the lesson"
-              fullWidth
-              multiline
-              error={error !== ""}
-              helperText={error}
-              InputLabelProps={{
-                shrink: true,
-              }}
-              value={lessonUnderEdit.lesson?.lessonId || ""}
-              onChange={(e) => {
-                setLesson(
-                  {
-                    ...(lessonUnderEdit.lesson || newLesson),
-                    lessonId: e.target.value || "",
-                  },
-                  true
-                );
-              }}
-              variant="outlined"
-            />
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <FormControl className={classes.selectForm} variant="outlined">
-              <InputLabel
-                shrink
-                id="dialog-category-label"
-                key="Confirmation Code"
-              >
-                Dialog Category
-              </InputLabel>
-              <Select
-                labelId="dialog-category-label"
-                value={lessonUnderEdit.lesson?.dialogCategory || "NOT SET"}
-                onChange={(e: SelectChangeEvent<string>) => {
-                  setLesson(
-                    {
-                      ...(lessonUnderEdit.lesson || newLesson),
-                      dialogCategory: (e.target.value as string) || "",
-                    },
-                    true
-                  );
-                }}
-              >
-                <MenuItem value={"default"}>Default</MenuItem>
-                <MenuItem value={"sensitive"}>Sensitive</MenuItem>
-              </Select>
-              {/*<FormHelperText>Select a Dialog Type</FormHelperText>*/}
-            </FormControl>
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <FormControl className={classes.selectForm} variant="outlined">
-              <InputLabel shrink id="classifier-arch-label">
-                Classifier Architecture
-              </InputLabel>
-              <Select
-                data-cy="classifier-arch"
-                labelId="classifier-arch-label"
-                value={
-                  lessonUnderEdit.lesson?.arch ||
-                  DEFAULT_CLASSIFIER_ARCHITECTURE
-                }
-                onChange={(e: SelectChangeEvent<string>) => {
-                  setLesson(
-                    {
-                      ...(lessonUnderEdit.lesson || newLesson),
-                      arch:
-                        (e.target.value as string) ||
-                        DEFAULT_CLASSIFIER_ARCHITECTURE,
-                    },
-                    true
-                  );
-                }}
-              >
-                <MenuItem value={DEFAULT_CLASSIFIER_ARCHITECTURE}>LR2</MenuItem>
-                <MenuItem value={OPENAI_CLASSIFIER_ARCHITECTURE}>
-                  OpenAI
-                </MenuItem>
-                <MenuItem value={COMPOSITE_CLASSIFIER_ARCHITECTURE}>
-                  COMPOSITE
-                </MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
-        </div>
+        
       </div>
     </>
   );
