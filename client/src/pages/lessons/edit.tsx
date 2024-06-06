@@ -33,7 +33,8 @@ import {
   Theme,
   Typography,
 } from "@mui/material";
-import { makeStyles } from "@mui/styles";
+import { makeStyles} from "@mui/styles";
+import {createTheme, ThemeProvider } from "@mui/material/styles";
 import { fetchLesson, updateLesson, userCanEdit, fetchLessons } from "api";
 import {
   COMPOSITE_CLASSIFIER_ARCHITECTURE,
@@ -196,6 +197,47 @@ export interface LessonEditSearch {
   trainStatusPollInterval?: number;
   copyLesson?: string;
 }
+
+
+declare module '@mui/material/styles' {
+  interface Palette {
+    primary: Palette['primary'];
+    secondary: Palette['primary'];
+    error: Palette['primary'];
+    info: Palette['primary'];
+    success: Palette['primary'];
+  }
+
+  interface PaletteOptions {
+    primary?: PaletteOptions['primary'];
+    secondary?: PaletteOptions['primary'];
+    error?: PaletteOptions['primary'];
+    info?: PaletteOptions['primary'];
+    success?: PaletteOptions['primary'];
+  }
+}
+
+const buttonTheme = createTheme({
+  palette: {
+    primary: {
+      main: "#0C60AD",
+    },
+    secondary: {
+      main: "#000000",
+    },
+    info: {
+      main: "#FFFF00",
+      contrastText: "#000000",
+    },
+    success: {
+      main: "#008000"
+    },
+    error: {
+      main: "#FF0000",
+    },
+  },
+});
+
 
 const LessonEdit = (props: {
   search: LessonEditSearch;
@@ -443,6 +485,27 @@ const LessonEdit = (props: {
     }`; //January 12, 2022, at 3:45 pm
   }
 
+  const trainAIButtonColor =  trainStatus.state !== TrainState.SUCCESS && trainStatus.state !== TrainState.FAILURE
+      ? "secondary"
+      : trainStatus.state === TrainState.FAILURE
+      ? "error"
+      : !(
+          trainStatus.info &&
+          trainStatus.info?.expectations &&
+          Array.isArray(trainStatus.info?.expectations) &&
+          trainStatus.info.expectations.length > 0
+        )
+      ? "error"
+      : Math.min(
+          ...trainStatus.info?.expectations.map((x) => x.accuracy)
+        ) >= 0.6
+      ? "success"
+      : Math.min(
+          ...trainStatus.info?.expectations.map((x) => x.accuracy)
+        ) >= 0.4
+      ? "info"
+      : "error";
+
   return (
     <>
       <Drawer
@@ -484,7 +547,7 @@ const LessonEdit = (props: {
                   data-cy="share-button"
                   variant="contained"
                   startIcon={<ShortcutIcon />}
-                  color="primary"
+                  color="info"
                   size="small"
                   sx={{width: 87}}
                   onClick={() => null}
@@ -509,38 +572,72 @@ const LessonEdit = (props: {
                 Save
               </Button>
             </ListItem>
+            <ThemeProvider theme={buttonTheme}>
             <ListItem>
               <Button
-              data-cy="launch-button"
-              variant="contained"
-              endIcon={<LaunchIcon />}
-              color="primary"
-              size="medium"
-              sx={{width: 200}}
-              disabled={!lessonId || !isLessonValid()}
-              onClick={handleLaunch}
-            >
-              Launch
-            </Button>
-            </ListItem>
-            <ListItem>
-              <Button
-                data-cy="train-button"
-                variant="outlined"
-                
-                startIcon={<RefreshIcon />}
+                data-cy="launch-button"
+                variant="contained"
+                endIcon={<LaunchIcon />}
+                color="primary"
                 size="medium"
-                sx={{width:200}}
-                disabled={isTraining || !lessonUnderEdit.lesson}
-                onClick={() => {
-                  if (lessonUnderEdit.lesson) {
-                    startLessonTraining(lessonUnderEdit.lesson);
-                  }
-                }}
+                sx={{width: 200}}
+                disabled={!lessonId || !isLessonValid()}
+                onClick={handleLaunch}
               >
-                Train AI
+                Launch
               </Button>
             </ListItem>
+            <ListItem>
+              <Grid container direction="column" alignItems="center" spacing={1}>
+                <Grid item>
+                  <Button
+                    data-cy="train-button"
+                    variant={trainAIButtonColor == "info" ? "contained" : "outlined"}
+                    startIcon={<RefreshIcon />}
+                    color={trainAIButtonColor}
+                    size="medium"
+                    sx={{ width: 200 }}
+                    disabled={isTraining || !lessonUnderEdit.lesson}
+                    onClick={() => {
+                      if (lessonUnderEdit.lesson) {
+                        startLessonTraining(lessonUnderEdit.lesson);
+                      }
+                    }}
+                  >
+                    Train AI
+                  </Button>
+                </Grid>
+                <Grid item>
+                  <Typography variant="caption">
+                    {`Last Trained: ${lastTrainedString}`}
+                  </Typography>
+                  <Divider/>
+                </Grid>
+                <Grid item>
+                  <ListItem>
+                    {isTraining ? (
+                      <LoadingIndicator />
+                    ) : trainStatus.state === TrainState.SUCCESS ? (
+                      <List>
+                        {trainStatus.info?.expectations?.map((x, i) => (
+                          <ListItem key={`train-success-accuracy-${i}`}>
+                            <ListItemText
+                              style={{ textAlign: "center" }}
+                              data-cy={`train-success-accuracy-${i}`}
+                            >{`Expectation ${i + 1} Accuracy: ${x.accuracy.toFixed(
+                              2
+                            )}`}</ListItemText>
+                          </ListItem>
+                        ))}
+                      </List>
+                    ) : trainStatus.state === TrainState.FAILURE ? (
+                      <Typography data-cy="train-failure">{`Training Failed`}</Typography>
+                    ) : null}
+                  </ListItem>
+                </Grid>
+              </Grid>
+            </ListItem>
+            </ThemeProvider>
           </List>
         </div>
       </Drawer>
@@ -1220,7 +1317,7 @@ const LessonEdit = (props: {
           </Grid>
         </div>
 
-        <Box
+        {/* <Box
           data-cy="train-data"
           border={5}
           borderRadius={16}
@@ -1251,27 +1348,12 @@ const LessonEdit = (props: {
           <Typography variant="h5">Training Data</Typography>
           <Typography variant="caption">
             {`Last Trained: ${lastTrainedString}`}
-          </Typography>
-          <Divider />
-          {isTraining ? (
-            <LoadingIndicator />
-          ) : trainStatus.state === TrainState.SUCCESS ? (
-            <List>
-              {trainStatus.info?.expectations?.map((x, i) => (
-                <ListItem key={`train-success-accuracy-${i}`}>
-                  <ListItemText
-                    style={{ textAlign: "center" }}
-                    data-cy={`train-success-accuracy-${i}`}
-                  >{`Expectation ${i + 1} Accuracy: ${x.accuracy.toFixed(
-                    2
-                  )}`}</ListItemText>
-                </ListItem>
-              ))}
-            </List>
-          ) : trainStatus.state === TrainState.FAILURE ? (
-            <Typography data-cy="train-failure">{`Training Failed`}</Typography>
-          ) : null}
-        </Box>
+          </Typography> 
+          </Box> */}
+          
+        
+
+
         <Divider variant="middle" className={classes.divider} />
         <div className={classes.actionFooter}>
           <Button
