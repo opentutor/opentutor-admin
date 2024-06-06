@@ -23,6 +23,7 @@ import {
   InputLabel,
   List,
   ListItem,
+  ListItemIcon,
   ListItemText,
   MenuItem,
   Paper,
@@ -63,6 +64,9 @@ import {
   ArrowRight,
   ArrowDropDown,
   InsertPhoto as InsertPhotoIcon,
+  GpsNotFixed as GPSNotFixedIcon,
+  ViewModule as ViewModuleIcon,
+  Shortcut as ShortcutIcon
 } from "@mui/icons-material";
 import { Location } from "@reach/router";
 import { useWithDownload } from "hooks/use-with-download";
@@ -446,7 +450,7 @@ const LessonEdit = (props: {
         variant="permanent"
         anchor="left"
         PaperProps={{
-          style: { width: "10%", paddingRight: 2, paddingLeft: 20 },
+          style: { width: "12%", paddingRight: 8, paddingLeft: 18 },
         }}
       >
         <div style={{ marginTop: 70 }}>
@@ -464,15 +468,77 @@ const LessonEdit = (props: {
 
           <List>
             <ListItem>
+              <Box sx={{ display: 'flex', gap: 4 }}>
+                <Button
+                  data-cy="discard-button"
+                  variant="contained"
+                  startIcon={<ArrowBackIcon />}
+                  size="small"
+                  color="primary"
+                  sx={{ width: 78 }}
+                >
+                  Back
+                </Button>
+
+                <Button
+                  data-cy="share-button"
+                  variant="contained"
+                  startIcon={<ShortcutIcon />}
+                  color="primary"
+                  size="small"
+                  sx={{width: 87}}
+                  onClick={() => null}
+                >
+                  Share
+                </Button>
+              </Box>
+            </ListItem>
+            <ListItem
+              sx={{display: lessonUnderEdit.dirty ? "flex" : "none"}}
+            > 
               <Button
-                data-cy="discard-button"
+                data-cy="save-button"
                 variant="contained"
-                startIcon={<ArrowBackIcon />}
-                size="medium"
+                startIcon={<SaveIcon />}
                 color="primary"
-                sx={{ width: 200 }}
+                size="medium"
+                sx={{width: 200}}
+                onClick={() => handleSavePopUp(true)}
+                disabled={!isLessonValid()}
               >
-                Back
+                Save
+              </Button>
+            </ListItem>
+            <ListItem>
+              <Button
+              data-cy="launch-button"
+              variant="contained"
+              endIcon={<LaunchIcon />}
+              color="primary"
+              size="medium"
+              sx={{width: 200}}
+              disabled={!lessonId || !isLessonValid()}
+              onClick={handleLaunch}
+            >
+              Launch
+            </Button>
+            </ListItem>
+            <ListItem>
+              <Button
+                data-cy="train-button"
+                variant="outlined"
+                
+                startIcon={<RefreshIcon />}
+                size="medium"
+                sx={{width:200}}
+                disabled={isTraining || !lessonUnderEdit.lesson}
+                onClick={() => {
+                  if (lessonUnderEdit.lesson) {
+                    startLessonTraining(lessonUnderEdit.lesson);
+                  }
+                }}
+              >
+                Train AI
               </Button>
             </ListItem>
           </List>
@@ -537,9 +603,29 @@ const LessonEdit = (props: {
                       true
                     );
                   }}
+                  renderValue={(value) => {
+                    return (
+                      <Box sx={{ display: "flex", gap: 17 }}>
+                        {value == "default" ? <GPSNotFixedIcon font-size="small"/> : <ViewModuleIcon />}
+                        {value == "default" ? "Default Format" : "Survey Says Format"}
+                      </Box>
+                    );
+                  }}
                 >
-                  <MenuItem value={"default"}>Short Answer Question</MenuItem>
-                  <MenuItem value={"surveySays"}>Survey Says</MenuItem>
+                  <MenuItem value={"default"}>
+                    <ListItemIcon>
+                      <GPSNotFixedIcon font-size="small"/>
+                    </ListItemIcon> 
+                    <ListItemText primary="Default Format" />
+                  </MenuItem>
+                  <MenuItem value={"surveySays"}>
+                    <ListItemIcon>
+                      <ViewModuleIcon />
+                    </ListItemIcon> 
+                    <ListItemText primary="Survey Says Format">  
+                      Survey Says Format
+                    </ListItemText>
+                  </MenuItem>
                 </Select>
               </FormControl>
             </Grid>
@@ -1203,52 +1289,10 @@ const LessonEdit = (props: {
             }
             onClick={handleDiscard}
           >
-            {lessonUnderEdit.dirty ? "Discard" : "Back"}
+            {lessonUnderEdit.dirty ? "Discard Changes" : "Back"}
           </Button>
-          <Button
-            data-cy="train-button"
-            variant="contained"
-            color="primary"
-            startIcon={<RefreshIcon />}
-            size="large"
-            style={{
-              background: lessonUnderEdit.lesson?.isTrainable
-                ? "#1B6A9C"
-                : "#808080",
-            }}
-            disabled={isTraining || !lessonUnderEdit.lesson}
-            onClick={() => {
-              if (lessonUnderEdit.lesson) {
-                startLessonTraining(lessonUnderEdit.lesson);
-              }
-            }}
-          >
-            Train
-          </Button>
-          <Button
-            data-cy="launch-button"
-            variant="contained"
-            endIcon={<LaunchIcon />}
-            color="primary"
-            size="large"
-            disabled={!lessonId || !isLessonValid()}
-            onClick={handleLaunch}
-          >
-            Launch
-          </Button>
-          {lessonUnderEdit.dirty ? (
-            <Button
-              data-cy="save-button"
-              variant="contained"
-              startIcon={<SaveIcon />}
-              color="primary"
-              size="large"
-              onClick={() => handleSavePopUp(true)}
-              disabled={!isLessonValid()}
-            >
-              Save
-            </Button>
-          ) : null}
+          
+          
           {isDownloadable ? (
             <Button
               data-cy="download-button"

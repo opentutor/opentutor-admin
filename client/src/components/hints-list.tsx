@@ -32,6 +32,9 @@ import {
 import { Hint } from "types";
 import "styles/layout.css";
 
+
+
+
 const HintCard = (props: {
   hint: Hint;
   hintIdx: number;
@@ -39,8 +42,8 @@ const HintCard = (props: {
   handleHintChange: (val: string) => void;
   handleRemoveHint: () => void;
 }) => {
-  const { hint, hintIdx, canDelete, handleHintChange, handleRemoveHint } =
-    props;
+  const { hint, hintIdx, canDelete, handleHintChange, handleRemoveHint } = props;
+  
 
   return (
     <Card
@@ -56,7 +59,7 @@ const HintCard = (props: {
           data-cy="edit-hint"
           margin="normal"
           label={`Hint ${hintIdx + 1}`}
-          placeholder="Add a hint to help for the expectation"
+          placeholder="Add a leading question or other hint for the concept's correct answer."
           multiline
           maxRows={4}
           fullWidth

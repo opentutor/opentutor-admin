@@ -135,7 +135,7 @@ const ExpectationCard = (props: {
             margin="normal"
             name="expectations"
             label={`Concept ${expIndex + 1}`}
-            placeholder="Add a short ideal answer for the question and include the main ideas."
+            placeholder="Add a short ideal answer for the question. Make sure to list necessary main ideas as separate key concepts."
             variant="outlined"
             fullWidth
             InputLabelProps={{
@@ -196,27 +196,28 @@ const ExpectationCard = (props: {
             {isShowingAdvancedFeatures ? <ArrowDropDown /> : <ArrowRight />}
             <Typography variant="body2">
               {isShowingAdvancedFeatures
-                ? "Hide Advanced Features"
-                : "Show Advanced Features"}
+                ? "Hide Advanced Concept Options"
+                : "Show Advanced Concept Options"}
             </Typography>
           </div>
           {/* IMPORTANT: We cannot conditionally render JSONEditor() since it uses a ref to populate data. */}
           <div style={isShowingAdvancedFeatures ? {} : { display: "none" }}>
             {JSONEditor()}
+            <Button
+              data-cy={`view-expectation-${expIndex}-data-button`}
+              style={{ marginLeft: 15, marginTop: 10 }}
+              endIcon={<Launch />}
+              onClick={() => {
+                navigate(
+                  `../../sessions/data?lessonId=${lessonId}&expectation=${expId}`
+                );
+              }}
+            >
+              View Expectation Data
+            </Button>
           </div>
         </Collapse>
-        <Button
-          data-cy={`view-expectation-${expIndex}-data-button`}
-          style={{ marginLeft: 15, marginTop: 10 }}
-          endIcon={<Launch />}
-          onClick={() => {
-            navigate(
-              `../../sessions/data?lessonId=${lessonId}&expectation=${expId}`
-            );
-          }}
-        >
-          View Expectation Data
-        </Button>
+        
       </CardContent>
     </Card>
   );
