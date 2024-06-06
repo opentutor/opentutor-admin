@@ -25,6 +25,7 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
+  Menu,
   MenuItem,
   Paper,
   Select,
@@ -33,8 +34,8 @@ import {
   Theme,
   Typography,
 } from "@mui/material";
-import { makeStyles} from "@mui/styles";
-import {createTheme, ThemeProvider } from "@mui/material/styles";
+import { makeStyles } from "@mui/styles";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { fetchLesson, updateLesson, userCanEdit, fetchLessons } from "api";
 import {
   COMPOSITE_CLASSIFIER_ARCHITECTURE,
@@ -67,7 +68,7 @@ import {
   InsertPhoto as InsertPhotoIcon,
   GpsNotFixed as GPSNotFixedIcon,
   ViewModule as ViewModuleIcon,
-  Shortcut as ShortcutIcon
+  Shortcut as ShortcutIcon,
 } from "@mui/icons-material";
 import { Location } from "@reach/router";
 import { useWithDownload } from "hooks/use-with-download";
@@ -198,22 +199,21 @@ export interface LessonEditSearch {
   copyLesson?: string;
 }
 
-
-declare module '@mui/material/styles' {
+declare module "@mui/material/styles" {
   interface Palette {
-    primary: Palette['primary'];
-    secondary: Palette['primary'];
-    error: Palette['primary'];
-    info: Palette['primary'];
-    success: Palette['primary'];
+    primary: Palette["primary"];
+    secondary: Palette["primary"];
+    error: Palette["primary"];
+    info: Palette["primary"];
+    success: Palette["primary"];
   }
 
   interface PaletteOptions {
-    primary?: PaletteOptions['primary'];
-    secondary?: PaletteOptions['primary'];
-    error?: PaletteOptions['primary'];
-    info?: PaletteOptions['primary'];
-    success?: PaletteOptions['primary'];
+    primary?: PaletteOptions["primary"];
+    secondary?: PaletteOptions["primary"];
+    error?: PaletteOptions["primary"];
+    info?: PaletteOptions["primary"];
+    success?: PaletteOptions["primary"];
   }
 }
 
@@ -230,7 +230,7 @@ const buttonTheme = createTheme({
       contrastText: "#000000",
     },
     success: {
-      main: "#008000"
+      main: "#008000",
     },
     error: {
       main: "#FF0000",
@@ -238,6 +238,7 @@ const buttonTheme = createTheme({
   },
 });
 
+const options = ["No Media", "Add Image", "Add Video"];
 
 const LessonEdit = (props: {
   search: LessonEditSearch;
@@ -272,6 +273,66 @@ const LessonEdit = (props: {
   } = useWithDownload(lessonId, context.user, cookies.accessToken);
 
   const [mounted, setMounted] = React.useState(false);
+
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [selectedIndex, setSelectedIndex] = React.useState(0);
+  const open = Boolean(anchorEl);
+  const handleClickListItem = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuItemClick = (
+    event: React.MouseEvent<HTMLElement>,
+    index: number
+  ) => {
+    setSelectedIndex(index);
+
+    if (options[index] == "Add Image") {
+      setLesson(
+        {
+          ...(lessonUnderEdit.lesson || newLesson),
+          media: {
+            type: (MediaType.IMAGE as string) || "",
+            url: "",
+            props: undefined,
+          },
+        },
+        true
+      );
+    } else if (options[index] == "Add Video") {
+      setLesson(
+        {
+          ...(lessonUnderEdit.lesson || newLesson),
+          media: {
+            type: (MediaType.VIDEO as string) || "",
+            url: "",
+            props: [
+              { name: "start", value: "0" },
+              {
+                name: "end",
+                value: String(Number.MAX_SAFE_INTEGER),
+              },
+            ],
+          },
+        },
+        true
+      );
+    } else {
+      setLesson(
+        {
+          ...(lessonUnderEdit.lesson || newLesson),
+          media: null,
+        },
+        true
+      );
+    }
+    setAnchorEl(null);
+  };
+
+  const handleClose = () => {
+    2;
+    setAnchorEl(null);
+  };
   React.useEffect(() => {
     if (!lessonUnderEdit.lesson || mounted) {
       return;
@@ -485,7 +546,9 @@ const LessonEdit = (props: {
     }`; //January 12, 2022, at 3:45 pm
   }
 
-  const trainAIButtonColor =  trainStatus.state !== TrainState.SUCCESS && trainStatus.state !== TrainState.FAILURE
+  const trainAIButtonColor =
+    trainStatus.state !== TrainState.SUCCESS &&
+    trainStatus.state !== TrainState.FAILURE
       ? "secondary"
       : trainStatus.state === TrainState.FAILURE
       ? "error"
@@ -496,13 +559,11 @@ const LessonEdit = (props: {
           trainStatus.info.expectations.length > 0
         )
       ? "error"
-      : Math.min(
-          ...trainStatus.info?.expectations.map((x) => x.accuracy)
-        ) >= 0.6
+      : Math.min(...trainStatus.info?.expectations.map((x) => x.accuracy)) >=
+        0.6
       ? "success"
-      : Math.min(
-          ...trainStatus.info?.expectations.map((x) => x.accuracy)
-        ) >= 0.4
+      : Math.min(...trainStatus.info?.expectations.map((x) => x.accuracy)) >=
+        0.4
       ? "info"
       : "error";
 
@@ -531,7 +592,7 @@ const LessonEdit = (props: {
 
           <List>
             <ListItem>
-              <Box sx={{ display: 'flex', gap: 4 }}>
+              <Box sx={{ display: "flex", gap: 4 }}>
                 <Button
                   data-cy="discard-button"
                   variant="contained"
@@ -549,23 +610,21 @@ const LessonEdit = (props: {
                   startIcon={<ShortcutIcon />}
                   color="info"
                   size="small"
-                  sx={{width: 87}}
+                  sx={{ width: 87 }}
                   onClick={() => null}
                 >
                   Share
                 </Button>
               </Box>
             </ListItem>
-            <ListItem
-              sx={{display: lessonUnderEdit.dirty ? "flex" : "none"}}
-            > 
+            <ListItem sx={{ display: lessonUnderEdit.dirty ? "flex" : "none" }}>
               <Button
                 data-cy="save-button"
                 variant="contained"
                 startIcon={<SaveIcon />}
                 color="primary"
                 size="medium"
-                sx={{width: 200}}
+                sx={{ width: 200 }}
                 onClick={() => handleSavePopUp(true)}
                 disabled={!isLessonValid()}
               >
@@ -573,70 +632,79 @@ const LessonEdit = (props: {
               </Button>
             </ListItem>
             <ThemeProvider theme={buttonTheme}>
-            <ListItem>
-              <Button
-                data-cy="launch-button"
-                variant="contained"
-                endIcon={<LaunchIcon />}
-                color="primary"
-                size="medium"
-                sx={{width: 200}}
-                disabled={!lessonId || !isLessonValid()}
-                onClick={handleLaunch}
-              >
-                Launch
-              </Button>
-            </ListItem>
-            <ListItem>
-              <Grid container direction="column" alignItems="center" spacing={1}>
-                <Grid item>
-                  <Button
-                    data-cy="train-button"
-                    variant={trainAIButtonColor == "info" ? "contained" : "outlined"}
-                    startIcon={<RefreshIcon />}
-                    color={trainAIButtonColor}
-                    size="medium"
-                    sx={{ width: 200 }}
-                    disabled={isTraining || !lessonUnderEdit.lesson}
-                    onClick={() => {
-                      if (lessonUnderEdit.lesson) {
-                        startLessonTraining(lessonUnderEdit.lesson);
+              <ListItem>
+                <Button
+                  data-cy="launch-button"
+                  variant="contained"
+                  endIcon={<LaunchIcon />}
+                  color="primary"
+                  size="medium"
+                  sx={{ width: 200 }}
+                  disabled={!lessonId || !isLessonValid()}
+                  onClick={handleLaunch}
+                >
+                  Launch
+                </Button>
+              </ListItem>
+              <ListItem>
+                <Grid
+                  container
+                  direction="column"
+                  alignItems="center"
+                  spacing={1}
+                >
+                  <Grid item>
+                    <Button
+                      data-cy="train-button"
+                      variant={
+                        trainAIButtonColor == "info" ? "contained" : "outlined"
                       }
-                    }}
-                  >
-                    Train AI
-                  </Button>
+                      startIcon={<RefreshIcon />}
+                      color={trainAIButtonColor}
+                      size="medium"
+                      sx={{ width: 200 }}
+                      disabled={isTraining || !lessonUnderEdit.lesson}
+                      onClick={() => {
+                        if (lessonUnderEdit.lesson) {
+                          startLessonTraining(lessonUnderEdit.lesson);
+                        }
+                      }}
+                    >
+                      Train AI
+                    </Button>
+                  </Grid>
+                  <Grid item>
+                    <Typography variant="caption">
+                      {`Last Trained: ${lastTrainedString}`}
+                    </Typography>
+                    <Divider />
+                  </Grid>
+                  <Grid item>
+                    <ListItem>
+                      {isTraining ? (
+                        <LoadingIndicator />
+                      ) : trainStatus.state === TrainState.SUCCESS ? (
+                        <List>
+                          {trainStatus.info?.expectations?.map((x, i) => (
+                            <ListItem key={`train-success-accuracy-${i}`}>
+                              <ListItemText
+                                style={{ textAlign: "center" }}
+                                data-cy={`train-success-accuracy-${i}`}
+                              >{`Expectation ${
+                                i + 1
+                              } Accuracy: ${x.accuracy.toFixed(
+                                2
+                              )}`}</ListItemText>
+                            </ListItem>
+                          ))}
+                        </List>
+                      ) : trainStatus.state === TrainState.FAILURE ? (
+                        <Typography data-cy="train-failure">{`Training Failed`}</Typography>
+                      ) : null}
+                    </ListItem>
+                  </Grid>
                 </Grid>
-                <Grid item>
-                  <Typography variant="caption">
-                    {`Last Trained: ${lastTrainedString}`}
-                  </Typography>
-                  <Divider/>
-                </Grid>
-                <Grid item>
-                  <ListItem>
-                    {isTraining ? (
-                      <LoadingIndicator />
-                    ) : trainStatus.state === TrainState.SUCCESS ? (
-                      <List>
-                        {trainStatus.info?.expectations?.map((x, i) => (
-                          <ListItem key={`train-success-accuracy-${i}`}>
-                            <ListItemText
-                              style={{ textAlign: "center" }}
-                              data-cy={`train-success-accuracy-${i}`}
-                            >{`Expectation ${i + 1} Accuracy: ${x.accuracy.toFixed(
-                              2
-                            )}`}</ListItemText>
-                          </ListItem>
-                        ))}
-                      </List>
-                    ) : trainStatus.state === TrainState.FAILURE ? (
-                      <Typography data-cy="train-failure">{`Training Failed`}</Typography>
-                    ) : null}
-                  </ListItem>
-                </Grid>
-              </Grid>
-            </ListItem>
+              </ListItem>
             </ThemeProvider>
           </List>
         </div>
@@ -703,131 +771,35 @@ const LessonEdit = (props: {
                   renderValue={(value) => {
                     return (
                       <Box sx={{ display: "flex", gap: 17 }}>
-                        {value == "default" ? <GPSNotFixedIcon font-size="small"/> : <ViewModuleIcon />}
-                        {value == "default" ? "Default Format" : "Survey Says Format"}
+                        {value == "default" ? (
+                          <GPSNotFixedIcon font-size="small" />
+                        ) : (
+                          <ViewModuleIcon />
+                        )}
+                        {value == "default"
+                          ? "Default Format"
+                          : "Survey Says Format"}
                       </Box>
                     );
                   }}
                 >
                   <MenuItem value={"default"}>
                     <ListItemIcon>
-                      <GPSNotFixedIcon font-size="small"/>
-                    </ListItemIcon> 
+                      <GPSNotFixedIcon font-size="small" />
+                    </ListItemIcon>
                     <ListItemText primary="Default Format" />
                   </MenuItem>
                   <MenuItem value={"surveySays"}>
                     <ListItemIcon>
                       <ViewModuleIcon />
-                    </ListItemIcon> 
-                    <ListItemText primary="Survey Says Format">  
+                    </ListItemIcon>
+                    <ListItemText primary="Survey Says Format">
                       Survey Says Format
                     </ListItemText>
                   </MenuItem>
                 </Select>
               </FormControl>
             </Grid>
-            {/* <Grid item xs={12} md={6}>
-            <TextField
-              data-cy="lesson-id"
-              label="Lesson ID"
-              placeholder="Unique alias to the lesson"
-              fullWidth
-              multiline
-              error={error !== ""}
-              helperText={error}
-              InputLabelProps={{
-                shrink: true,
-              }}
-              value={lessonUnderEdit.lesson?.lessonId || ""}
-              onChange={(e) => {
-                setLesson(
-                  {
-                    ...(lessonUnderEdit.lesson || newLesson),
-                    lessonId: e.target.value || "",
-                  },
-                  true
-                );
-              }}
-              variant="outlined"
-            />
-          </Grid> */}
-            {/* <Grid item xs={12} md={6}>
-            <TextField
-              fullWidth
-              multiline
-              data-cy="lesson-creator"
-              label="Created By"
-              placeholder="Guest"
-              variant="outlined"
-              InputLabelProps={{
-                shrink: true,
-              }}
-              value={lessonUnderEdit.lesson?.createdByName || "Guest"}
-              disabled={true}
-            />
-          </Grid> */}
-            {/* <Grid item xs={12} md={6}>
-            <FormControl className={classes.selectForm} variant="outlined">
-              <InputLabel shrink id="classifier-arch-label">
-                Classifier Architecture
-              </InputLabel>
-              <Select
-                data-cy="classifier-arch"
-                labelId="classifier-arch-label"
-                value={
-                  lessonUnderEdit.lesson?.arch ||
-                  DEFAULT_CLASSIFIER_ARCHITECTURE
-                }
-                onChange={(e: SelectChangeEvent<string>) => {
-                  setLesson(
-                    {
-                      ...(lessonUnderEdit.lesson || newLesson),
-                      arch:
-                        (e.target.value as string) ||
-                        DEFAULT_CLASSIFIER_ARCHITECTURE,
-                    },
-                    true
-                  );
-                }}
-              >
-                <MenuItem value={DEFAULT_CLASSIFIER_ARCHITECTURE}>LR2</MenuItem>
-                <MenuItem value={OPENAI_CLASSIFIER_ARCHITECTURE}>
-                  OpenAI
-                </MenuItem>
-                <MenuItem value={COMPOSITE_CLASSIFIER_ARCHITECTURE}>
-                  COMPOSITE
-                </MenuItem>
-              </Select>
-            </FormControl>
-          </Grid> */}
-            {/* <Grid item xs={12} md={6}>
-            <FormControl className={classes.selectForm} variant="outlined">
-              <InputLabel
-                shrink
-                id="dialog-category-label"
-                key="Confirmation Code"
-              >
-                Dialog Category
-              </InputLabel>
-              <Select
-                labelId="dialog-category-label"
-                value={lessonUnderEdit.lesson?.dialogCategory || "NOT SET"}
-                onChange={(e: SelectChangeEvent<string>) => {
-                  setLesson(
-                    {
-                      ...(lessonUnderEdit.lesson || newLesson),
-                      dialogCategory: (e.target.value as string) || "",
-                    },
-                    true
-                  );
-                }}
-              >
-                <MenuItem value={"default"}>Default</MenuItem>
-                <MenuItem value={"sensitive"}>Sensitive</MenuItem>
-              </Select>
-              {<FormHelperText>Select a Dialog Type</FormHelperText>}
-            </FormControl>
-          </Grid> */}
           </Grid>
 
           <Divider variant="middle" className={classes.divider} />
@@ -902,6 +874,8 @@ const LessonEdit = (props: {
                   startIcon={<InsertPhotoIcon />}
                   size="large"
                   color="primary"
+                  aria-expanded={open ? "true" : undefined}
+                  onClick={handleClickListItem}
                   style={{
                     backgroundColor: "#1B6A9C",
                     paddingLeft: 20,
@@ -910,268 +884,221 @@ const LessonEdit = (props: {
                 >
                   ADD MEDIA
                 </Button>
+                <Menu
+                  anchorEl={anchorEl}
+                  open={open}
+                  onClose={handleClose}
+                  MenuListProps={{
+                    "aria-labelledby": "media-button",
+                    role: "listbox",
+                  }}
+                >
+                  {options.map((option, index) => (
+                    <MenuItem
+                      key={option}
+                      selected={index === selectedIndex}
+                      onClick={(event) => handleMenuItemClick(event, index)}
+                    >
+                      {option}
+                    </MenuItem>
+                  ))}
+                </Menu>
               </Grid>
             </Grid>
-
-            {/* <Grid xs={2}>
-        
-          <FormControl className={classes.selectForm} variant="outlined">
-            <InputLabel shrink id="media-label">
-              Media Type
-            </InputLabel>
-            <Select
-              labelId="media-label"
-              data-cy="media-type"
-              value={
-                lessonUnderEdit.lesson.media
-                  ? lessonUnderEdit.lesson.media.type
-                  : MediaType.NONE
-              }
-              onChange={(e: SelectChangeEvent<string>) => {
-                if ((e.target.value as string) === MediaType.VIDEO) {
-                  setLesson(
-                    {
-                      ...(lessonUnderEdit.lesson || newLesson),
-                      media: {
-                        type: (e.target.value as string) || "",
-                        url: "",
-                        props: [
-                          { name: "start", value: "0" },
-                          {
-                            name: "end",
-                            value: String(Number.MAX_SAFE_INTEGER),
-                          },
-                        ],
-                      },
-                    },
-                    true
-                  );
-                } else if ((e.target.value as string) === MediaType.IMAGE) {
-                  setLesson(
-                    {
-                      ...(lessonUnderEdit.lesson || newLesson),
-                      media: {
-                        type: (e.target.value as string) || "",
-                        url: "",
-                        props: undefined,
-                      },
-                    },
-                    true
-                  );
-                } else {
-                  setLesson(
-                    {
-                      ...(lessonUnderEdit.lesson || newLesson),
-                      media: null,
-                    },
-                    true
-                  );
-                }
-              }}
-            >
-              <MenuItem data-cy="media-none" value={MediaType.NONE}>
-                None
-              </MenuItem>
-              <MenuItem data-cy="media-image" value={MediaType.IMAGE}>
-                Image
-              </MenuItem>
-              <MenuItem data-cy="media-video" value={MediaType.VIDEO}>
-                Video
-              </MenuItem>
-            </Select>
-          </FormControl>
-        </Grid>
-        {lessonUnderEdit.lesson.media &&
-        lessonUnderEdit.lesson.media.type === MediaType.IMAGE ? (
-          <Grid item xs={12}>
-            <div className={classes.image}>
-              <TextField
-                data-cy="image"
-                label="Image"
-                placeholder="Image URL"
-                required
-                multiline
-                maxRows={4}
-                fullWidth
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                value={lessonUnderEdit.lesson.media.url || ""}
-                onChange={(e) => {
-                  setLesson(
-                    {
-                      ...(lessonUnderEdit.lesson || newLesson),
-                      media: {
-                        ...(lessonUnderEdit.lesson || newLesson).media,
-                        type: MediaType.IMAGE,
-                        url: (e.target.value as string) || "",
-                      },
-                    },
-                    true
-                  );
-                }}
-                variant="outlined"
-              />
-              <img
-                className={classes.thumbnail}
-                data-cy="image-thumbnail"
-                src={lessonUnderEdit.lesson.media.url}
-                onClick={() => {
-                  window.open(
-                    lessonUnderEdit.lesson?.media?.url || "",
-                    "_blank"
-                  );
-                }}
-              />
-            </div>
-          </Grid>
-          ) : (
-            <></>
-          )}
-          {lessonUnderEdit.lesson.media &&
-          lessonUnderEdit.lesson.media.type === MediaType.VIDEO ? (
-            <>
+            {lessonUnderEdit.lesson.media &&
+            lessonUnderEdit.lesson.media.type === MediaType.IMAGE ? (
               <Grid item xs={12}>
-                <TextField
-                  data-cy="video-url"
-                  label="Video"
-                  placeholder="YouTube Video URL"
-                  required
-                  multiline
-                  maxRows={4}
-                  fullWidth
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
-                  value={lessonUnderEdit.lesson.media.url || ""}
-                  onChange={(e) => {
-                    setLesson(
-                      {
-                        ...(lessonUnderEdit.lesson || newLesson),
-                        media: {
-                          ...(lessonUnderEdit.lesson || newLesson).media,
-                          type: MediaType.VIDEO,
-                          url: (e.target.value as string) || "",
+                <div className={classes.image}>
+                  <TextField
+                    data-cy="image"
+                    label="Image"
+                    placeholder="Image URL"
+                    required
+                    multiline
+                    maxRows={4}
+                    fullWidth
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    value={lessonUnderEdit.lesson.media.url || ""}
+                    onChange={(e) => {
+                      setLesson(
+                        {
+                          ...(lessonUnderEdit.lesson || newLesson),
+                          media: {
+                            ...(lessonUnderEdit.lesson || newLesson).media,
+                            type: MediaType.IMAGE,
+                            url: (e.target.value as string) || "",
+                          },
                         },
-                      },
-                      true
-                    );
-                  }}
-                  variant="outlined"
-                />
+                        true
+                      );
+                    }}
+                    variant="outlined"
+                  />
+                  <img
+                    className={classes.thumbnail}
+                    data-cy="image-thumbnail"
+                    src={lessonUnderEdit.lesson.media.url}
+                    onClick={() => {
+                      window.open(
+                        lessonUnderEdit.lesson?.media?.url || "",
+                        "_blank"
+                      );
+                    }}
+                  />
+                </div>
               </Grid>
-              <Grid item xs={12}>
-                <Grid
-                  container
-                  // TODO: With MUI v5 We can dimply do: rowSpacing={2}
-                  direction={"row"}
-                  spacing={2}
-                >
-                  <Grid item xs={6}>
-                    <TextField
-                      data-cy="video-start"
-                      label="Video Start Time"
-                      placeholder="0.0"
-                      type="number"
-                      required
-                      multiline
-                      maxRows={1}
-                      // style={{ width: "50%" }}
-                      InputLabelProps={{
-                        shrink: true,
-                      }}
-                      fullWidth
-                      value={
-                        lessonUnderEdit.lesson.media &&
-                        lessonUnderEdit.lesson.media.props
-                          ? parseFloat(
-                              getProp(
-                                lessonUnderEdit.lesson.media.props,
-                                "start"
-                              )
-                            ) || 0
-                          : 0
-                      }
-                      onChange={(e) => {
-                        setLesson(
-                          {
-                            ...(lessonUnderEdit.lesson || newLesson),
-                            media: {
-                              url: lessonUnderEdit.lesson?.media?.url || "",
-                              type: MediaType.VIDEO,
-                              props: copyAndSetProp(
-                                (lessonUnderEdit.lesson || newLesson).media
-                                  ?.props || [],
-                                {
-                                  name: "start",
-                                  value:
-                                    String(parseFloat(e.target.value) || 0) ||
-                                    "",
-                                }
-                              ),
-                            },
+            ) : (
+              <></>
+            )}
+            {lessonUnderEdit.lesson.media &&
+            lessonUnderEdit.lesson.media.type === MediaType.VIDEO ? (
+              <Grid container spacing={2}>
+                <Grid item xs={12}>
+                  <TextField
+                    data-cy="video-url"
+                    label="Video"
+                    placeholder="YouTube Video URL"
+                    required
+                    multiline
+                    maxRows={4}
+                    fullWidth
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    value={lessonUnderEdit.lesson.media.url || ""}
+                    onChange={(e) => {
+                      setLesson(
+                        {
+                          ...(lessonUnderEdit.lesson || newLesson),
+                          media: {
+                            ...(lessonUnderEdit.lesson || newLesson).media,
+                            type: MediaType.VIDEO,
+                            url: (e.target.value as string) || "",
                           },
-                          true
-                        );
-                      }}
-                      variant="outlined"
-                    />
-                  </Grid>
-                  <Grid item xs={6}>
-                    <TextField
-                      data-cy="video-end"
-                      label="Video End Time"
-                      placeholder="180.0"
-                      type="number"
-                      required
-                      multiline
-                      fullWidth
-                      maxRows={1}
-                      // style={{ width: "50%" }}
-                      InputLabelProps={{
-                        shrink: true,
-                      }}
-                      value={
-                        lessonUnderEdit.lesson.media &&
-                        lessonUnderEdit.lesson.media.props
-                          ? parseFloat(
-                              getProp(lessonUnderEdit.lesson.media.props, "end")
-                            ) || Number.MAX_SAFE_INTEGER
-                          : Number.MAX_SAFE_INTEGER
-                      }
-                      onChange={(e) => {
-                        setLesson(
-                          {
-                            ...(lessonUnderEdit.lesson || newLesson),
-                            media: {
-                              url: lessonUnderEdit.lesson?.media?.url || "",
-                              type: MediaType.VIDEO,
-                              props: copyAndSetProp(
-                                (lessonUnderEdit.lesson || newLesson).media
-                                  ?.props || [],
-                                {
-                                  name: "end",
-                                  value:
-                                    String(
-                                      parseFloat(e.target.value) ||
-                                        Number.MAX_SAFE_INTEGER
-                                    ) || "",
-                                }
-                              ),
+                        },
+                        true
+                      );
+                    }}
+                    variant="outlined"
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <Grid
+                    container
+                    // TODO: With MUI v5 We can dimply do: rowSpacing={2}
+                    direction={"row"}
+                    spacing={2}
+                  >
+                    <Grid item xs={6}>
+                      <TextField
+                        data-cy="video-start"
+                        label="Video Start Time"
+                        placeholder="0.0"
+                        type="number"
+                        required
+                        multiline
+                        maxRows={1}
+                        // style={{ width: "50%" }}
+                        InputLabelProps={{
+                          shrink: true,
+                        }}
+                        fullWidth
+                        value={
+                          lessonUnderEdit.lesson.media &&
+                          lessonUnderEdit.lesson.media.props
+                            ? parseFloat(
+                                getProp(
+                                  lessonUnderEdit.lesson.media.props,
+                                  "start"
+                                )
+                              ) || 0
+                            : 0
+                        }
+                        onChange={(e) => {
+                          setLesson(
+                            {
+                              ...(lessonUnderEdit.lesson || newLesson),
+                              media: {
+                                url: lessonUnderEdit.lesson?.media?.url || "",
+                                type: MediaType.VIDEO,
+                                props: copyAndSetProp(
+                                  (lessonUnderEdit.lesson || newLesson).media
+                                    ?.props || [],
+                                  {
+                                    name: "start",
+                                    value:
+                                      String(parseFloat(e.target.value) || 0) ||
+                                      "",
+                                  }
+                                ),
+                              },
                             },
-                          },
-                          true
-                        );
-                      }}
-                      variant="outlined"
-                    />
+                            true
+                          );
+                        }}
+                        variant="outlined"
+                      />
+                    </Grid>
+                    <Grid item xs={6}>
+                      <TextField
+                        data-cy="video-end"
+                        label="Video End Time"
+                        placeholder="180.0"
+                        type="number"
+                        required
+                        multiline
+                        fullWidth
+                        maxRows={1}
+                        // style={{ width: "50%" }}
+                        InputLabelProps={{
+                          shrink: true,
+                        }}
+                        value={
+                          lessonUnderEdit.lesson.media &&
+                          lessonUnderEdit.lesson.media.props
+                            ? parseFloat(
+                                getProp(
+                                  lessonUnderEdit.lesson.media.props,
+                                  "end"
+                                )
+                              ) || Number.MAX_SAFE_INTEGER
+                            : Number.MAX_SAFE_INTEGER
+                        }
+                        onChange={(e) => {
+                          setLesson(
+                            {
+                              ...(lessonUnderEdit.lesson || newLesson),
+                              media: {
+                                url: lessonUnderEdit.lesson?.media?.url || "",
+                                type: MediaType.VIDEO,
+                                props: copyAndSetProp(
+                                  (lessonUnderEdit.lesson || newLesson).media
+                                    ?.props || [],
+                                  {
+                                    name: "end",
+                                    value:
+                                      String(
+                                        parseFloat(e.target.value) ||
+                                          Number.MAX_SAFE_INTEGER
+                                      ) || "",
+                                  }
+                                ),
+                              },
+                            },
+                            true
+                          );
+                        }}
+                        variant="outlined"
+                      />
+                    </Grid>
                   </Grid>
                 </Grid>
               </Grid>
-            </>
-          ) : (
-            <></>
-          )} */}
+            ) : (
+              <></>
+            )}
           </Paper>
           <Divider variant="middle" className={classes.divider} />
 
@@ -1224,7 +1151,11 @@ const LessonEdit = (props: {
         </div>
 
         <div style={isShowingAdvancedFeatures ? {} : { display: "none" }}>
-          <Grid container spacing={2} style={{marginTop:3, marginBottom: 10}}>
+          <Grid
+            container
+            spacing={2}
+            style={{ marginTop: 3, marginBottom: 10 }}
+          >
             <Grid item xs={12}>
               <TextField
                 data-cy="lesson-id"
@@ -1304,7 +1235,9 @@ const LessonEdit = (props: {
                     );
                   }}
                 >
-                  <MenuItem value={DEFAULT_CLASSIFIER_ARCHITECTURE}>LR2</MenuItem>
+                  <MenuItem value={DEFAULT_CLASSIFIER_ARCHITECTURE}>
+                    LR2
+                  </MenuItem>
                   <MenuItem value={OPENAI_CLASSIFIER_ARCHITECTURE}>
                     OpenAI
                   </MenuItem>
@@ -1316,43 +1249,6 @@ const LessonEdit = (props: {
             </Grid>
           </Grid>
         </div>
-
-        {/* <Box
-          data-cy="train-data"
-          border={5}
-          borderRadius={16}
-          borderColor={
-            trainStatus.state !== TrainState.SUCCESS &&
-            trainStatus.state !== TrainState.FAILURE
-              ? "#000000"
-              : trainStatus.state === TrainState.FAILURE
-              ? "#FF0000"
-              : !(
-                  trainStatus.info &&
-                  trainStatus.info?.expectations &&
-                  Array.isArray(trainStatus.info?.expectations) &&
-                  trainStatus.info.expectations.length > 0
-                )
-              ? "#FF0000"
-              : Math.min(
-                  ...trainStatus.info?.expectations.map((x) => x.accuracy)
-                ) >= 0.6
-              ? "#008000"
-              : Math.min(
-                  ...trainStatus.info?.expectations.map((x) => x.accuracy)
-                ) >= 0.4
-              ? "#FFFF00"
-              : "#FF0000"
-          }
-        >
-          <Typography variant="h5">Training Data</Typography>
-          <Typography variant="caption">
-            {`Last Trained: ${lastTrainedString}`}
-          </Typography> 
-          </Box> */}
-          
-        
-
 
         <Divider variant="middle" className={classes.divider} />
         <div className={classes.actionFooter}>
@@ -1373,8 +1269,7 @@ const LessonEdit = (props: {
           >
             {lessonUnderEdit.dirty ? "Discard Changes" : "Back"}
           </Button>
-          
-          
+
           {isDownloadable ? (
             <Button
               data-cy="download-button"
@@ -1422,7 +1317,6 @@ const LessonEdit = (props: {
           </DialogActions>
         </Dialog>
         <ToastContainer />
-        
       </div>
     </>
   );

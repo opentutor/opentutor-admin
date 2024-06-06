@@ -217,7 +217,6 @@ const ExpectationCard = (props: {
             </Button>
           </div>
         </Collapse>
-        
       </CardContent>
     </Card>
   );

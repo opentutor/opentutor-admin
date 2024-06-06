@@ -32,9 +32,6 @@ import {
 import { Hint } from "types";
 import "styles/layout.css";
 
-
-
-
 const HintCard = (props: {
   hint: Hint;
   hintIdx: number;
@@ -42,8 +39,8 @@ const HintCard = (props: {
   handleHintChange: (val: string) => void;
   handleRemoveHint: () => void;
 }) => {
-  const { hint, hintIdx, canDelete, handleHintChange, handleRemoveHint } = props;
-  
+  const { hint, hintIdx, canDelete, handleHintChange, handleRemoveHint } =
+    props;
 
   return (
     <Card
@@ -127,26 +124,29 @@ export default function HintsList(props: {
 
   return (
     <Paper elevation={0} style={{ textAlign: "left" }}>
-      <Grid container spacing={0} style={{display: "flex", alignItems:"center", marginBottom: 5 }}>
+      <Grid
+        container
+        spacing={0}
+        style={{ display: "flex", alignItems: "center", marginBottom: 5 }}
+      >
         <Grid item>
           <Typography variant="body1" style={{ padding: 5 }}>
             Hints
           </Typography>
         </Grid>
-        <Grid item style={{marginLeft:10}}>
+        <Grid item style={{ marginLeft: 10 }}>
           <Button
-          data-cy="add-hint"
-          startIcon={<AddIcon />}
-          className={classes.button}
-          onClick={handleAddHint}
-          variant="outlined"
-          color="primary"
-          size="small"
+            data-cy="add-hint"
+            startIcon={<AddIcon />}
+            className={classes.button}
+            onClick={handleAddHint}
+            variant="outlined"
+            color="primary"
+            size="small"
           >
-          Add Hint
-        </Button>
+            Add Hint
+          </Button>
         </Grid>
-      
       </Grid>
       <DragDropContext onDragEnd={onDragEnd}>
         <Droppable droppableId="droppable">
@@ -194,7 +194,6 @@ export default function HintsList(props: {
           )}
         </Droppable>
       </DragDropContext>
-      
     </Paper>
   );
 }
