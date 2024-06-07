@@ -23,7 +23,7 @@ import {
   IconButton,
   SelectChangeEvent,
 } from "@mui/material";
-import { Edit as EditIcon } from "@mui/icons-material";
+import { Edit as EditIcon, PropaneSharp } from "@mui/icons-material";
 import withLocation from "wrap-with-location";
 import { Session } from "types";
 import { fetchSession, setGrade, userCanEdit } from "api";
@@ -73,7 +73,8 @@ const SessionTable = (props: {
   };
 
   function handleDone(): void {
-    navigate(`/sessions?cursor=${props.search.cursor}`);
+    if (props.search.cursor) navigate(`/sessions`);
+    else navigate(`/sessions?cursor=${props.search.cursor}`);
   }
 
   function handleEdit(lessonId: string): void {

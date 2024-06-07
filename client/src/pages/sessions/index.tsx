@@ -208,9 +208,11 @@ function SessionItem(props: {
   const styles = useStyles();
 
   function handleGrade(): void {
-    navigate(
-      `/sessions/session?sessionId=${row.node.sessionId}&cursor=${cursor}`
-    );
+    if (cursor)
+      navigate(
+        `/sessions/session?sessionId=${row.node.sessionId}&cursor=${cursor}`
+      );
+    else navigate(`/sessions/session?sessionId=${row.node.sessionId}`);
   }
 
   return (
