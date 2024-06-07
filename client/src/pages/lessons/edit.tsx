@@ -600,6 +600,7 @@ const LessonEdit = (props: {
                   size="small"
                   color="primary"
                   sx={{ width: 78 }}
+                  onClick={handleDiscard}
                 >
                   Back
                 </Button>
@@ -1252,24 +1253,6 @@ const LessonEdit = (props: {
 
         <Divider variant="middle" className={classes.divider} />
         <div className={classes.actionFooter}>
-          <Button
-            data-cy="discard-button"
-            variant="contained"
-            startIcon={
-              lessonUnderEdit.dirty ? <DeleteIcon /> : <ArrowBackIcon />
-            }
-            size="large"
-            color="primary"
-            style={
-              lessonUnderEdit.dirty
-                ? { backgroundColor: "red" }
-                : { backgroundColor: "#1B6A9C" }
-            }
-            onClick={handleDiscard}
-          >
-            {lessonUnderEdit.dirty ? "Discard Changes" : "Back"}
-          </Button>
-
           {isDownloadable ? (
             <Button
               data-cy="download-button"
