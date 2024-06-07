@@ -189,6 +189,35 @@ describe("sessions screen", () => {
     });
   });
 
+  it("test cursor does not get sent on first page of sessions", () => {
+    cySetup(cy);
+    cyMockDefault(cy, {
+      gqlQueries: [mockGQL("FetchSessions", { me: { sessions: sessions1 } })],
+      userRole: "admin",
+    });
+    cy.visit("/sessions");
+    cy.get("[data-cy=sessions]").children().should("have.length", 50);
+    cyMockDefault(cy, {
+      gqlQueries: [mockGQL("FetchSession", { me: { session: session } })],
+      userRole: "admin",
+    });
+    cy.get("[data-cy=session-1]")
+      .find("[data-cy=grade-button]")
+      .trigger("mouseover")
+      .click();
+    cy.wait(4000);
+    cy.get("[data-cy=title]").contains("Grade Session");
+    cy.get("[data-cy=doneButton").trigger("mouseover").click();
+    cyMockDefault(cy, {
+      gqlQueries: [mockGQL("FetchSessions", { me: { sessions: sessions1 } })],
+      userRole: "admin",
+    });
+    cy.wait(4000);
+    cy.location().should((loc) => {
+      expect(loc.search).to.not.include("cursor");
+    });
+  });
+
   it("displays a list of sessions", () => {
     cySetup(cy);
     cyMockDefault(cy, {
