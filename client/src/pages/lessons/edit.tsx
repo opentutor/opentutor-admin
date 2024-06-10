@@ -883,7 +883,7 @@ const LessonEdit = (props: {
           style={{
             flexGrow: 1,
             marginTop: 30,
-            marginBottom: 30,
+            marginBottom: 10,
             paddingLeft: 40,
             paddingRight: 40,
           }}
@@ -965,9 +965,8 @@ const LessonEdit = (props: {
                   </Select>
                 </FormControl>
               </Grid>
+              <Divider variant="middle" className={classes.divider} />
             </Grid>
-
-            <Divider variant="middle" className={classes.divider} />
 
             <Paper elevation={0} style={{ textAlign: "left" }}>
               <Typography
@@ -1328,7 +1327,7 @@ const LessonEdit = (props: {
             <Grid
               container
               spacing={2}
-              style={{ marginTop: 3, marginBottom: 10 }}
+              style={{ marginTop: 3, marginBottom: 20 }}
             >
               <Grid item xs={8}>
                 <TextField
@@ -1440,7 +1439,11 @@ const LessonEdit = (props: {
             </Grid>
           </div>
 
-          <Divider variant="middle" className={classes.divider} />
+          <Divider
+            variant="middle"
+            className={classes.divider}
+            sx={{ marginTop: 2 }}
+          />
           <div className={classes.actionFooter}>
             {isDownloadable ? (
               <Button
