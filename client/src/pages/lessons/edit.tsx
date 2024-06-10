@@ -1504,6 +1504,7 @@ function EditPage(props: {
 }): JSX.Element {
   const context = useContext(SessionContext);
   const [cookies] = useCookies(["accessToken"]);
+  const [lessonId] = useQueryParam("lessonId", StringParam);
 
   if (typeof window !== "undefined" && !cookies.accessToken) {
     return <div>Please login to view lesson.</div>;
@@ -1514,7 +1515,7 @@ function EditPage(props: {
   return (
     <div>
       <div className="navbar-container">
-        <NavBar title="Edit Lesson" />
+        <NavBar title={lessonId ? "Edit Lesson" : "Create Lesson"} />
       </div>
 
       <LessonEdit search={props.search} location={props.location} />
