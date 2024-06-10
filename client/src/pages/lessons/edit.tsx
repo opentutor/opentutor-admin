@@ -1062,7 +1062,13 @@ const LessonEdit = (props: {
                     {options.map((option, index) => (
                       <MenuItem
                         key={option}
-                        data-cy= {option === "No Media" ? "media-none" : (option === "Add Image" ? "media-image" : "media-video")}
+                        data-cy={
+                          option === "No Media"
+                            ? "media-none"
+                            : option === "Add Image"
+                            ? "media-image"
+                            : "media-video"
+                        }
                         selected={index === selectedIndex}
                         onClick={(event) => handleMenuItemClick(event, index)}
                       >
