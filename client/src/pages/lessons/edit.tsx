@@ -882,10 +882,10 @@ const LessonEdit = (props: {
           item
           style={{
             flexGrow: 1,
-            marginTop: 20,
-            marginBottom: 20,
-            paddingLeft: 30,
-            paddingRight: 30,
+            marginTop: 30,
+            marginBottom: 30,
+            paddingLeft: 40,
+            paddingRight: 40,
           }}
         >
           <form noValidate autoComplete="off">
@@ -1036,6 +1036,7 @@ const LessonEdit = (props: {
                 <Grid item xs={2} style={{ display: "flex" }}>
                   <Button
                     variant="contained"
+                    data-cy="media-type"
                     startIcon={<InsertPhotoIcon />}
                     size="large"
                     color="primary"
@@ -1061,6 +1062,7 @@ const LessonEdit = (props: {
                     {options.map((option, index) => (
                       <MenuItem
                         key={option}
+                        data-cy= {option === "No Media" ? "media-none" : (option === "Add Image" ? "media-image" : "media-video")}
                         selected={index === selectedIndex}
                         onClick={(event) => handleMenuItemClick(event, index)}
                       >
@@ -1309,7 +1311,7 @@ const LessonEdit = (props: {
             }
           >
             {isShowingAdvancedFeatures ? <ArrowDropDown /> : <ArrowRight />}
-            <Typography variant="body2">
+            <Typography variant="body2" data-cy="advanced-features">
               {isShowingAdvancedFeatures
                 ? "Hide Advanced Features"
                 : "Show Advanced Features"}
@@ -1322,7 +1324,7 @@ const LessonEdit = (props: {
               spacing={2}
               style={{ marginTop: 3, marginBottom: 10 }}
             >
-              <Grid item xs={12}>
+              <Grid item xs={8}>
                 <TextField
                   data-cy="lesson-id"
                   label="Lesson ID"
@@ -1347,6 +1349,22 @@ const LessonEdit = (props: {
                   variant="outlined"
                 />
               </Grid>
+              <Grid item xs={4}>
+                <TextField
+                  fullWidth
+                  multiline
+                  data-cy="lesson-creator"
+                  label="Created By"
+                  placeholder="Guest"
+                  variant="outlined"
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  value={lessonUnderEdit.lesson?.createdByName || "Guest"}
+                  disabled={true}
+                />
+              </Grid>
+
               <Grid item xs={6}>
                 <FormControl className={classes.selectForm} variant="outlined">
                   <InputLabel

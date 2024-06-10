@@ -188,13 +188,14 @@ const ExpectationCard = (props: {
               alignItems: "center",
               padding: 5,
               cursor: "pointer",
+              
             }}
             onClick={() =>
               setIsShowingAdvancedFeatures(!isShowingAdvancedFeatures)
             }
           >
             {isShowingAdvancedFeatures ? <ArrowDropDown /> : <ArrowRight />}
-            <Typography variant="body2">
+            <Typography variant="body2" data-cy={`advanced-concept-options-${expIndex}`}>
               {isShowingAdvancedFeatures
                 ? "Hide Advanced Concept Options"
                 : "Show Advanced Concept Options"}
