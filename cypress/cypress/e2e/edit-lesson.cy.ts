@@ -130,55 +130,22 @@ describe("edit lesson screen", () => {
         gqlQueries: [mockGQL("FetchLesson", { me: { lesson } })],
       });
       cy.visit("/lessons/edit");
-      // cy.get("[data-cy=lesson-name]").within(($input) => {
-      //   cy.get("textarea").should("have.value", "Display name for the lesson");
-      // });
       cy.get("[data-cy=lesson-creator]").within(($input) => {
         cy.get("textarea").should("have.value", "Kayla");
       });
-      // cy.get("[data-cy=intro]").within(($input) => {
-      //   cy.get("textarea").should(
-      //     "have.value",
-      //     "Introduction to the lesson,  e.g. 'This is a lesson about RGB colors'"
-      //   );
-      // });
-      // cy.get("[data-cy=question]").within(($input) => {
-      //   cy.get("textarea").should(
-      //     "have.value",
-      //     "Question the student needs to answer, e.g. 'What are the colors in RGB?'"
-      //   );
-      // });
       cy.get("[data-cy=classifier-arch]").contains("LR2");
       cy.get("[data-cy=lesson-format]").contains("Default");
       cy.get("[data-cy=video-url]").should("not.exist");
       cy.get("[data-cy=image-url]").should("not.exist");
       cy.get("[data-cy=expectations]").children().should("have.length", 1);
       cy.get("[data-cy=expectation-0]").find("[data-cy=edit-expectation]");
-      // .within(($input) => {
-      //   cy.get("input").should(
-      //     "have.value",
-      //     "Add a short ideal answer for an expectation, e.g. 'Red'"
-      //   );
-      // });
       cy.get("[data-cy=expectation-0]")
         .find("[data-cy=hints]")
         .children()
         .should("have.length", 1);
       cy.get("[data-cy=hint-0]").find("[data-cy=edit-hint]");
-      // .within(($input) => {
-      //   cy.get("textarea").should(
-      //     "have.value",
-      //     "Add a hint to help for the expectation, e.g. 'One of them starts with R'"
-      //   );
-      // });
       cy.get("[data-cy=conclusions]").children().should("have.length", 1);
       cy.get("[data-cy=conclusion-0]").find("[data-cy=edit-conclusion]");
-      // .within(($input) => {
-      //   cy.get("textarea").should(
-      //     "have.value",
-      //     "Add a conclusion statement, e.g. 'In summary,  RGB colors are red, green, and blue'"
-      //   );
-      // });
     });
 
     it("edits a new lesson", () => {
