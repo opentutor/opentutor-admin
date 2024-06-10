@@ -73,7 +73,8 @@ const SessionTable = (props: {
   };
 
   function handleDone(): void {
-    navigate(`/sessions?cursor=${props.search.cursor}`);
+    if (!props.search.cursor) navigate(`/sessions`);
+    else navigate(`/sessions?cursor=${props.search.cursor}`);
   }
 
   function handleEdit(lessonId: string): void {
