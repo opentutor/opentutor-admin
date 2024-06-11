@@ -111,7 +111,7 @@ describe("Navigation bar", () => {
     cy.visit("/lessons");
     cy.get("[data-cy=nav-bar]").get("[data-cy=title]").contains("Lessons");
     cy.visit("/lessons/edit");
-    cy.get("[data-cy=nav-bar]").get("[data-cy=title]").contains("Edit Lesson");
+    cy.get("[data-cy=nav-bar]").get("[data-cy=title]").contains("Create Lesson");
     cy.visit("/sessions");
     cy.get("[data-cy=nav-bar]").get("[data-cy=title]").contains("Grading");
     cy.visit("/sessions/session");
