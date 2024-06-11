@@ -6,7 +6,7 @@ The full terms of this copyright and license should always be found in the root 
 */
 import React, { useContext } from "react";
 import { useCookies } from "react-cookie";
-import { ToastContainer} from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import { v4 as uuid } from "uuid";
 import {
   Box,
@@ -27,9 +27,7 @@ import {
 } from "@mui/material";
 
 import { makeStyles } from "@mui/styles";
-import {
-  Theme,
-} from "@mui/material/styles";
+import { Theme } from "@mui/material/styles";
 import { fetchLesson, userCanEdit, fetchLessons } from "api";
 import {
   COMPOSITE_CLASSIFIER_ARCHITECTURE,
@@ -58,7 +56,6 @@ import {
   ViewModule as ViewModuleIcon,
 } from "@mui/icons-material";
 import { Location } from "@reach/router";
-
 
 const useStyles = makeStyles((theme: Theme) => ({
   appBar: {
@@ -186,9 +183,6 @@ export interface LessonEditSearch {
   copyLesson?: string;
 }
 
-
-
-
 const LessonEdit = (props: {
   search: LessonEditSearch;
   location: Location;
@@ -203,11 +197,9 @@ const LessonEdit = (props: {
     { lesson: undefined, dirty: false }
   );
   const [error, setError] = React.useState("");
-  
+
   const [isShowingAdvancedFeatures, setIsShowingAdvancedFeatures] =
     React.useState(false);
-
-  
 
   const [mounted, setMounted] = React.useState(false);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -218,7 +210,6 @@ const LessonEdit = (props: {
   };
   const options = ["No Media", "Add Image", "Add Video"];
 
-  
   const handleMenuItemClick = (
     event: React.MouseEvent<HTMLElement>,
     index: number
@@ -330,17 +321,12 @@ const LessonEdit = (props: {
     }
   }, [lessonUnderEdit.lesson]);
 
-  
-
   function setLesson(lesson?: Lesson, dirty?: boolean) {
     if (lessonUnderEdit.lesson?.lessonId !== lesson?.lessonId) {
       setError("verifying lesson id...");
     }
     setLessonUnderEdit({ lesson, dirty });
   }
-
- 
-
 
   interface Prop {
     name: string;
@@ -374,14 +360,11 @@ const LessonEdit = (props: {
     return <div>You do not have permission to view this lesson.</div>;
   }
 
-  
-
-  
   return (
     <>
       <Grid container sx={{ display: "flex" }}>
-        <SideBar 
-          lessonId={lessonId || ''}
+        <SideBar
+          lessonId={lessonId || ""}
           lessonUnderEdit={lessonUnderEdit}
           setLesson={setLesson}
           setLessonId={setLessonId}
@@ -980,7 +963,6 @@ function EditPage(props: {
   }
   return (
     <div>
-      
       <div className="navbar-container">
         <NavBar title={lessonId ? "Edit Lesson" : "Create Lesson"} />
       </div>
