@@ -125,7 +125,6 @@ export function SideBar(props: {
   } = props;
   const [savePopUp, setSavePopUp] = React.useState(false);
 
-  const drawerWidth = 240;
   const context = useContext(SessionContext);
   const {
     isDownloadable,
@@ -153,6 +152,7 @@ export function SideBar(props: {
     }
   }, [trainStatus]);
 
+  const drawerWidth = 240;
   const openedMixin = (theme: Theme): CSSObject => ({
     width: drawerWidth,
     transition: theme.transitions.create("width", {
@@ -189,21 +189,6 @@ export function SideBar(props: {
     setDrawerOpen(!drawerOpen);
     console.log("button clicked");
   };
-  const [shareOpen, setShareOpen] = React.useState(false);
-  const handleClickOpenShare = () => {
-    setShareOpen(true);
-  };
-
-  const handleCloseShare = () => {
-    setShareOpen(false);
-  };
-
-  function isExpValid(exp: LessonExpectation): boolean {
-    if (!exp.features) {
-      return true;
-    }
-    return validateExpectationFeatures(exp.features);
-  }
 
   const Drawer = styled(MuiDrawer, {
     shouldForwardProp: (prop) => prop !== "open",
@@ -221,6 +206,22 @@ export function SideBar(props: {
       "& .MuiDrawer-paper": closedMixin(theme),
     }),
   }));
+
+  const [shareOpen, setShareOpen] = React.useState(false);
+  const handleClickOpenShare = () => {
+    setShareOpen(true);
+  };
+
+  const handleCloseShare = () => {
+    setShareOpen(false);
+  };
+
+  function isExpValid(exp: LessonExpectation): boolean {
+    if (!exp.features) {
+      return true;
+    }
+    return validateExpectationFeatures(exp.features);
+  }
 
   function handleLaunch() {
     saveChanges();
@@ -480,79 +481,75 @@ export function SideBar(props: {
                   </DialogActions>
                 </Dialog>
               </ListItem>
-              <React.Fragment>
-                <ListItem data-cy="train-data">
-                  <Button
-                    data-cy="train-button"
-                    variant={
-                      trainAIButtonColor == "warning" ? "contained" : "outlined"
-                    }
-                    startIcon={<RefreshIcon />}
-                    color={trainAIButtonColor}
-                    size="medium"
-                    sx={{
-                      minWidth: 0,
-                      minHeight: 40,
-                      ...(drawerOpen
-                        ? { width: 200 }
-                        : {
-                            "& .MuiButton-startIcon": { margin: "0px" },
-                          }),
-                    }}
-                    disabled={isTraining || !lessonUnderEdit.lesson}
-                    onClick={() => {
-                      if (lessonUnderEdit.lesson) {
-                        startLessonTraining(lessonUnderEdit.lesson);
-                      }
-                    }}
-                  >
-                    {drawerOpen ? "TRAIN AI" : ""}
-                  </Button>
-                </ListItem>
-                <ListItem
+              <ListItem data-cy="train-data">
+                <Button
+                  data-cy="train-button"
+                  variant={
+                    trainAIButtonColor == "warning" ? "contained" : "outlined"
+                  }
+                  startIcon={<RefreshIcon />}
+                  color={trainAIButtonColor}
+                  size="medium"
                   sx={{
-                    marginTop: 0,
-                    paddingTop: 0,
-                    display: drawerOpen ? "flex" : "none",
+                    minWidth: 0,
+                    minHeight: 40,
+                    ...(drawerOpen
+                      ? { width: 200 }
+                      : {
+                          "& .MuiButton-startIcon": { margin: "0px" },
+                        }),
+                  }}
+                  disabled={isTraining || !lessonUnderEdit.lesson}
+                  onClick={() => {
+                    if (lessonUnderEdit.lesson) {
+                      startLessonTraining(lessonUnderEdit.lesson);
+                    }
                   }}
                 >
-                  <Grid
-                    container
-                    direction="column"
-                    alignItems="center"
-                    spacing={1}
-                  >
-                    <Grid item>
-                      <Typography variant="caption">
-                        {`Last Trained: ${lastTrainedString}`}
-                      </Typography>
-                    </Grid>
-                    <Divider />
-                    <Grid item style={{ whiteSpace: "normal" }}>
-                      {isTraining ? (
-                        <LoadingIndicator />
-                      ) : trainStatus.state === TrainState.SUCCESS ? (
-                        <Grid container>
-                          {trainStatus.info?.expectations?.map((x, i) => (
-                            <Grid item key={`train-success-accuracy-${i}`}>
-                              <Typography
-                                style={{ textAlign: "center" }}
-                                data-cy={`train-success-accuracy-${i}`}
-                              >{`Expectation ${
-                                i + 1
-                              } Accuracy: ${x.accuracy.toFixed(
-                                2
-                              )}`}</Typography>
-                            </Grid>
-                          ))}
-                        </Grid>
-                      ) : trainStatus.state === TrainState.FAILURE ? (
-                        <Typography data-cy="train-failure">{`Training Failed`}</Typography>
-                      ) : null}
-                    </Grid>
+                  {drawerOpen ? "TRAIN AI" : ""}
+                </Button>
+              </ListItem>
+              <ListItem
+                sx={{
+                  marginTop: 0,
+                  paddingTop: 0,
+                  display: drawerOpen ? "flex" : "none",
+                }}
+              >
+                <Grid
+                  container
+                  direction="column"
+                  alignItems="center"
+                  spacing={1}
+                >
+                  <Grid item>
+                    <Typography variant="caption">
+                      {`Last Trained: ${lastTrainedString}`}
+                    </Typography>
                   </Grid>
-                </ListItem>
-              </React.Fragment>
+                  <Divider />
+                  <Grid item style={{ whiteSpace: "normal" }}>
+                    {isTraining ? (
+                      <LoadingIndicator />
+                    ) : trainStatus.state === TrainState.SUCCESS ? (
+                      <Grid container>
+                        {trainStatus.info?.expectations?.map((x, i) => (
+                          <Grid item key={`train-success-accuracy-${i}`}>
+                            <Typography
+                              style={{ textAlign: "center" }}
+                              data-cy={`train-success-accuracy-${i}`}
+                            >{`Expectation ${
+                              i + 1
+                            } Accuracy: ${x.accuracy.toFixed(2)}`}</Typography>
+                          </Grid>
+                        ))}
+                      </Grid>
+                    ) : trainStatus.state === TrainState.FAILURE ? (
+                      <Typography data-cy="train-failure">{`Training Failed`}</Typography>
+                    ) : null}
+                  </Grid>
+                </Grid>
+              </ListItem>
             </ThemeProvider>
             <ListItem>
               {isDownloadable ? (
