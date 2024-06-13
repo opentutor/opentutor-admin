@@ -19,3 +19,11 @@ export const months = [
   "November",
   "December",
 ];
+export type ButtonColor =
+  | "inherit"
+  | "primary"
+  | "secondary"
+  | "success"
+  | "error"
+  | "info"
+  | "warning";

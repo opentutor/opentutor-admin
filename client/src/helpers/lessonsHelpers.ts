@@ -8,13 +8,13 @@ import { Lesson, TrainState, TrainStatus } from "types";
 import { months } from "constants/lessonConstants";
 import { styled, CSSObject, Theme } from "@mui/material/styles";
 import MuiDrawer from "@mui/material/Drawer";
-
+import { ButtonColor } from "constants/lessonConstants";
 interface LessonUnderEdit {
   lesson?: Lesson;
   dirty?: boolean;
 }
 
-export const getTrainButtonColor = (trainStatus: TrainStatus): string => {
+export const getTrainButtonColor = (trainStatus: TrainStatus): ButtonColor => {
   return trainStatus.state !== TrainState.SUCCESS &&
     trainStatus.state !== TrainState.FAILURE
     ? "secondary"

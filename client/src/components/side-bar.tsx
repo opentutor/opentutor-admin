@@ -201,12 +201,11 @@ export function SideBar(props: {
       });
   }
 
-  const trainAIButtonColor = getTrainButtonColor(trainStatus);
-
   const host = process.env.TUTOR_ENDPOINT || location.origin;
   const lessonLink = `${host}/tutor?lesson=${lessonId}`;
 
   const lastTrainedString = getLastTrainedAtString(lessonUnderEdit);
+  const trainAIButtonColor = getTrainButtonColor(trainStatus);
 
   return (
     <Grid item>
