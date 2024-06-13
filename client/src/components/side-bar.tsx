@@ -22,13 +22,7 @@ import {
 } from "@mui/material";
 import LoadingIndicator from "components/loading-indicator";
 import { useWithDownload } from "hooks/use-with-download";
-import {
-  createTheme,
-  ThemeProvider,
-  styled,
-  CSSObject,
-  Theme,
-} from "@mui/material/styles";
+import { ThemeProvider } from "@mui/material/styles";
 import {
   Save as SaveIcon,
   Launch as LaunchIcon,
@@ -40,8 +34,13 @@ import {
   IosShare as IosShareIcon,
   ContentCopy as ContentCopyIcon,
 } from "@mui/icons-material";
-import MuiDrawer from "@mui/material/Drawer";
-
+import { buttonTheme } from "styles/sidebarTheme";
+import {
+  getTrainButtonColor,
+  getLastTrainedAtString,
+  DrawerHeader,
+  Drawer,
+} from "helpers/lessonsHelpers";
 import { Lesson, LessonExpectation, TrainState } from "types";
 import { validateExpectationFeatures } from "schemas/validation";
 import SessionContext from "context/session";
@@ -50,44 +49,6 @@ import { navigate } from "gatsby";
 import { OPENAI_CLASSIFIER_ARCHITECTURE } from "admin-constants";
 import { fetchLesson, updateLesson } from "api";
 import { useWithTraining } from "hooks/use-with-training";
-declare module "@mui/material/styles" {
-  interface Palette {
-    primary: Palette["primary"];
-    secondary: Palette["primary"];
-    error: Palette["primary"];
-    warning: Palette["primary"];
-    success: Palette["primary"];
-  }
-
-  interface PaletteOptions {
-    primary?: PaletteOptions["primary"];
-    secondary?: PaletteOptions["primary"];
-    error?: PaletteOptions["primary"];
-    warning?: PaletteOptions["primary"];
-    success?: PaletteOptions["primary"];
-  }
-}
-
-const buttonTheme = createTheme({
-  palette: {
-    primary: {
-      main: "#0C60AD",
-    },
-    secondary: {
-      main: "#000000",
-    },
-    warning: {
-      main: "#FFFF00",
-      contrastText: "#000000",
-    },
-    success: {
-      main: "#008000",
-    },
-    error: {
-      main: "#FF0000",
-    },
-  },
-});
 
 interface LessonUnderEdit {
   lesson?: Lesson;
@@ -152,60 +113,11 @@ export function SideBar(props: {
     }
   }, [trainStatus]);
 
-  const drawerWidth = 240;
-  const openedMixin = (theme: Theme): CSSObject => ({
-    width: drawerWidth,
-    transition: theme.transitions.create("width", {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-    overflowX: "hidden",
-  });
-
-  const closedMixin = (theme: Theme): CSSObject => ({
-    transition: theme.transitions.create("width", {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
-    overflowX: "hidden",
-    width: `calc(${theme.spacing(7)} + 1px)`,
-    [theme.breakpoints.up("sm")]: {
-      width: `calc(${theme.spacing(8)} + 1px)`,
-    },
-  });
-
-  const DrawerHeader = styled("div")(({ theme }) => ({
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "flex-end",
-    padding: theme.spacing(0, 1),
-    // necessary for content to be below app bar
-    ...theme.mixins.toolbar,
-  }));
-
   const [drawerOpen, setDrawerOpen] = React.useState(true);
 
   const handleDrawerChange = () => {
     setDrawerOpen(!drawerOpen);
-    console.log("button clicked");
   };
-
-  const Drawer = styled(MuiDrawer, {
-    shouldForwardProp: (prop) => prop !== "open",
-  })(({ theme, open }) => ({
-    width: drawerWidth,
-    flexShrink: 0,
-    whiteSpace: "nowrap",
-    boxSizing: "border-box",
-    ...(open && {
-      ...openedMixin(theme),
-      "& .MuiDrawer-paper": openedMixin(theme),
-    }),
-    ...(!open && {
-      ...closedMixin(theme),
-      "& .MuiDrawer-paper": closedMixin(theme),
-    }),
-  }));
 
   const [shareOpen, setShareOpen] = React.useState(false);
   const handleClickOpenShare = () => {
@@ -278,9 +190,7 @@ export function SideBar(props: {
         }
 
         if (lessonId !== lesson?.lessonId) {
-          // window.location.href = `/lessons/edit?lessonId=${lesson.lessonId}`;
           setLessonId(lesson.lessonId);
-          // window.location.reload();
           navigate("/lessons");
         }
         toast("Success!");
@@ -291,58 +201,12 @@ export function SideBar(props: {
       });
   }
 
-  const trainAIButtonColor =
-    trainStatus.state !== TrainState.SUCCESS &&
-    trainStatus.state !== TrainState.FAILURE
-      ? "secondary"
-      : trainStatus.state === TrainState.FAILURE
-      ? "error"
-      : !(
-          trainStatus.info &&
-          trainStatus.info?.expectations &&
-          Array.isArray(trainStatus.info?.expectations) &&
-          trainStatus.info.expectations.length > 0
-        )
-      ? "error"
-      : Math.min(...trainStatus.info?.expectations.map((x) => x.accuracy)) >=
-        0.6
-      ? "success"
-      : Math.min(...trainStatus.info?.expectations.map((x) => x.accuracy)) >=
-        0.4
-      ? "warning"
-      : "error";
+  const trainAIButtonColor = getTrainButtonColor(trainStatus);
 
   const host = process.env.TUTOR_ENDPOINT || location.origin;
   const lessonLink = `${host}/tutor?lesson=${lessonId}`;
 
-  let lastTrainedString = "Never";
-  const months = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ];
-  if (lessonUnderEdit.lesson?.lastTrainedAt) {
-    const lastTrained = new Date(lessonUnderEdit.lesson?.lastTrainedAt);
-    const isAM = lastTrained.getHours() < 12;
-    let hours = lastTrained.getHours() % 12;
-    if (hours == 0) {
-      hours = 12;
-    }
-    lastTrainedString = `${
-      months[lastTrained.getMonth()]
-    } ${lastTrained.getDate()}, ${lastTrained.getUTCFullYear()}, at ${hours}:${lastTrained.getMinutes()} ${
-      isAM ? "am" : "pm"
-    }`; //January 12, 2022, at 3:45 pm
-  }
+  const lastTrainedString = getLastTrainedAtString(lessonUnderEdit);
 
   return (
     <Grid item>
