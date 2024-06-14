@@ -23,11 +23,6 @@ import {
 } from "admin-constants";
 import { ArrowRight, ArrowDropDown } from "@mui/icons-material";
 
-export interface LessonEditSearch {
-  lessonId: string;
-  trainStatusPollInterval?: number;
-  copyLesson?: string;
-}
 interface LessonUnderEdit {
   lesson?: Lesson;
   dirty?: boolean;
@@ -226,3 +221,5 @@ export function AdvancedFeatures(props: {
     </>
   );
 }
+
+export default AdvancedFeatures;
