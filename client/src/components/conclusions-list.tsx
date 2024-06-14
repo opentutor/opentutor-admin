@@ -57,11 +57,11 @@ const ConclusionCard = (props: {
         <TextField
           margin="normal"
           data-cy="edit-conclusion"
-          label={`Conclusion ${idx + 1}`}
+          label={`Message ${idx + 1}`}
           multiline
           maxRows={4}
           fullWidth
-          placeholder="Add a conclusion statement, e.g. 'In summary,  RGB colors are red, green, and blue'"
+          placeholder="Add a concluding statement/summary."
           InputLabelProps={{
             shrink: true,
           }}
@@ -125,8 +125,9 @@ function ConclusionsList(props: {
 
   return (
     <Paper elevation={0} style={{ textAlign: "left" }}>
-      <Typography variant="h6" style={{ padding: 15 }}>
-        Conclusions
+      {/*Renaming Conclusion as Closing Message in UI for ease of use */}
+      <Typography variant="h6" style={{ paddingTop: 5, paddingBottom: 15 }}>
+        Closing Messages
       </Typography>
       <DragDropContext onDragEnd={onDragEnd}>
         <Droppable droppableId="droppable">
@@ -178,8 +179,9 @@ function ConclusionsList(props: {
         onClick={handleAddConclusion}
         variant="outlined"
         color="primary"
+        style={{ marginTop: 15, marginBottom: 15 }}
       >
-        Add Conclusion
+        Add Message
       </Button>
     </Paper>
   );

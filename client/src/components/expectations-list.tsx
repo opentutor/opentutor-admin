@@ -134,8 +134,8 @@ const ExpectationCard = (props: {
             data-cy="edit-expectation"
             margin="normal"
             name="expectations"
-            label={`Expectation ${expIndex + 1}`}
-            placeholder="Add a short ideal answer for an expectation, e.g. 'Red'"
+            label={`Concept ${expIndex + 1}`}
+            placeholder="Add a short ideal answer for the question. Make sure to list necessary main ideas as separate key concepts."
             variant="outlined"
             fullWidth
             InputLabelProps={{
@@ -194,29 +194,32 @@ const ExpectationCard = (props: {
             }
           >
             {isShowingAdvancedFeatures ? <ArrowDropDown /> : <ArrowRight />}
-            <Typography variant="body2">
+            <Typography
+              variant="body2"
+              data-cy={`advanced-concept-options-${expIndex}`}
+            >
               {isShowingAdvancedFeatures
-                ? "Hide Advanced Features"
-                : "Show Advanced Features"}
+                ? "Hide Advanced Concept Options"
+                : "Show Advanced Concept Options"}
             </Typography>
           </div>
           {/* IMPORTANT: We cannot conditionally render JSONEditor() since it uses a ref to populate data. */}
           <div style={isShowingAdvancedFeatures ? {} : { display: "none" }}>
             {JSONEditor()}
+            <Button
+              data-cy={`view-expectation-${expIndex}-data-button`}
+              style={{ marginLeft: 15, marginTop: 10 }}
+              endIcon={<Launch />}
+              onClick={() => {
+                navigate(
+                  `../../sessions/data?lessonId=${lessonId}&expectation=${expId}`
+                );
+              }}
+            >
+              View Expectation Data
+            </Button>
           </div>
         </Collapse>
-        <Button
-          data-cy={`view-expectation-${expIndex}-data-button`}
-          style={{ marginLeft: 15, marginTop: 10 }}
-          endIcon={<Launch />}
-          onClick={() => {
-            navigate(
-              `../../sessions/data?lessonId=${lessonId}&expectation=${expId}`
-            );
-          }}
-        >
-          View Expectation Data
-        </Button>
       </CardContent>
     </Card>
   );
@@ -278,11 +281,11 @@ function ExpectationsList(props: {
     updateExpectations([
       ...expectations,
       {
-        expectation: "Add a short ideal answer for an expectation, e.g. 'Red'",
+        expectation: "",
         expectationId: uuid().toString(),
         hints: [
           {
-            text: "Add a hint to help for the expectation, e.g. 'One of them starts with R'",
+            text: "",
           },
         ],
         features: {},
@@ -296,9 +299,10 @@ function ExpectationsList(props: {
   };
 
   return (
-    <Paper elevation={0} style={{ textAlign: "left" }}>
-      <Typography variant="h6" style={{ paddingBottom: 15 }}>
-        Expectations
+    <Paper elevation={0} style={{ textAlign: "left", marginBottom: 20 }}>
+      {/*rewording "Expectations" as Key Concepts for the User */}
+      <Typography variant="h6" style={{ paddingTop: 5, paddingBottom: 15 }}>
+        Key Concepts
       </Typography>
       <DragDropContext onDragEnd={onDragEnd}>
         <Droppable droppableId="droppable">
@@ -359,8 +363,9 @@ function ExpectationsList(props: {
         onClick={handleAddExpectation}
         variant="outlined"
         color="primary"
+        style={{ marginTop: 15 }}
       >
-        Add Expectation
+        Add Concept
       </Button>
     </Paper>
   );

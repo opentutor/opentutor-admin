@@ -108,6 +108,7 @@ describe("lesson screen - training", () => {
           ex.expectedAccuracies[i]
         );
       }
+      cy.wait(1000);
       cy.get("[data-cy=train-data]").matchImageSnapshot(
         snapname(
           `train-success-displays-${
