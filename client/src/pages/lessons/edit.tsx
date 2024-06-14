@@ -9,19 +9,12 @@ import { useCookies } from "react-cookie";
 import { ToastContainer } from "react-toastify";
 import { v4 as uuid } from "uuid";
 import {
-  Box,
   Button,
   Divider,
-  FormControl,
   Grid,
-  InputLabel,
-  ListItemIcon,
-  ListItemText,
   Menu,
   MenuItem,
   Paper,
-  Select,
-  SelectChangeEvent,
   TextField,
   Typography,
 } from "@mui/material";
@@ -33,6 +26,7 @@ import { DEFAULT_CLASSIFIER_ARCHITECTURE } from "admin-constants";
 import SessionContext from "context/session";
 import NavBar from "components/nav-bar";
 import SideBar from "components/side-bar";
+import LessonHeader from "components/lesson-header";
 import ConclusionsList from "components/conclusions-list";
 import ExpectationsList from "components/expectations-list";
 import { ImageInputField, VideoInputField } from "components/media-input";
@@ -44,11 +38,7 @@ import "jsoneditor-react/es/editor.min.css";
 import "react-toastify/dist/ReactToastify.css";
 import { StringParam, useQueryParam } from "use-query-params";
 import LoadingIndicator from "components/loading-indicator";
-import {
-  InsertPhoto as InsertPhotoIcon,
-  GpsNotFixed as GPSNotFixedIcon,
-  ViewModule as ViewModuleIcon,
-} from "@mui/icons-material";
+import { InsertPhoto as InsertPhotoIcon } from "@mui/icons-material";
 import { Location } from "@reach/router";
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -327,26 +317,6 @@ const LessonEdit = (props: {
     return <div>You do not have permission to view this lesson.</div>;
   }
 
-  const handleLessonName = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setLesson(
-      {
-        ...(lessonUnderEdit.lesson || newLesson),
-        name: e.target.value || "",
-      },
-      true
-    );
-  };
-
-  const handleLessonType = (e: SelectChangeEvent<string>) => {
-    setLesson(
-      {
-        ...(lessonUnderEdit.lesson || newLesson),
-        learningFormat: (e.target.value as string) || "default",
-      },
-      true
-    );
-  };
-
   const handleLessonIntro = (e: React.ChangeEvent<HTMLInputElement>) => {
     setLesson(
       {
@@ -391,68 +361,12 @@ const LessonEdit = (props: {
           }}
         >
           <form noValidate autoComplete="off">
-            <Grid container data-cy="lesson-edit-grid" spacing={2}>
-              <Grid item xs={8}>
-                <TextField
-                  data-cy="lesson-name"
-                  label="Lesson Title"
-                  placeholder="Lesson Name"
-                  fullWidth
-                  multiline
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
-                  value={lessonUnderEdit.lesson?.name || ""}
-                  onChange={handleLessonName}
-                  variant="outlined"
-                />
-              </Grid>
-              <Grid item xs={4}>
-                <FormControl className={classes.selectForm} variant="outlined">
-                  <InputLabel shrink id="lesson-format-label">
-                    Lesson Type
-                  </InputLabel>
-                  <Select
-                    data-cy="lesson-format"
-                    labelId="lesson-format-label"
-                    label="Lesson Type"
-                    value={lessonUnderEdit.lesson?.learningFormat || "default"}
-                    onChange={handleLessonType}
-                    renderValue={(value) => {
-                      return (
-                        <Box sx={{ display: "flex", gap: 17 }}>
-                          {value == "default" ? (
-                            <GPSNotFixedIcon />
-                          ) : (
-                            <ViewModuleIcon />
-                          )}
-                          {value == "default"
-                            ? "Default Format"
-                            : "Survey Says Format"}
-                        </Box>
-                      );
-                    }}
-                  >
-                    <MenuItem value={"default"}>
-                      <ListItemIcon>
-                        <GPSNotFixedIcon />
-                      </ListItemIcon>
-                      <ListItemText primary="Default Format" />
-                    </MenuItem>
-                    <MenuItem value={"surveySays"}>
-                      <ListItemIcon>
-                        <ViewModuleIcon />
-                      </ListItemIcon>
-                      <ListItemText primary="Survey Says Format">
-                        Survey Says Format
-                      </ListItemText>
-                    </MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Divider variant="middle" className={classes.divider} />
-            </Grid>
-
+            <LessonHeader
+              lessonUnderEdit={lessonUnderEdit}
+              setLesson={setLesson}
+              classes={classes}
+              newLesson={newLesson}
+            />
             <Paper elevation={0} style={{ textAlign: "left" }}>
               <Typography
                 variant="h6"
