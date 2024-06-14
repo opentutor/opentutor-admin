@@ -29,28 +29,22 @@ import {
 import { makeStyles } from "@mui/styles";
 import { Theme } from "@mui/material/styles";
 import { fetchLesson, userCanEdit, fetchLessons } from "api";
-import {
-  COMPOSITE_CLASSIFIER_ARCHITECTURE,
-  DEFAULT_CLASSIFIER_ARCHITECTURE,
-  OPENAI_CLASSIFIER_ARCHITECTURE,
-} from "admin-constants";
+import { DEFAULT_CLASSIFIER_ARCHITECTURE } from "admin-constants";
 import SessionContext from "context/session";
 import NavBar from "components/nav-bar";
 import SideBar from "components/side-bar";
 import ConclusionsList from "components/conclusions-list";
 import ExpectationsList from "components/expectations-list";
-
+import { ImageInputField, VideoInputField } from "components/media-input";
+import { AdvancedFeatures } from "components/advanced-features";
 import { Lesson, LessonExpectation, MediaType } from "types";
 import withLocation from "wrap-with-location";
-
 import "styles/layout.css";
 import "jsoneditor-react/es/editor.min.css";
 import "react-toastify/dist/ReactToastify.css";
 import { StringParam, useQueryParam } from "use-query-params";
 import LoadingIndicator from "components/loading-indicator";
 import {
-  ArrowRight,
-  ArrowDropDown,
   InsertPhoto as InsertPhotoIcon,
   GpsNotFixed as GPSNotFixedIcon,
   ViewModule as ViewModuleIcon,
@@ -198,9 +192,6 @@ const LessonEdit = (props: {
   );
   const [error, setError] = React.useState("");
 
-  const [isShowingAdvancedFeatures, setIsShowingAdvancedFeatures] =
-    React.useState(false);
-
   const [mounted, setMounted] = React.useState(false);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [selectedIndex, setSelectedIndex] = React.useState(0);
@@ -328,30 +319,6 @@ const LessonEdit = (props: {
     setLessonUnderEdit({ lesson, dirty });
   }
 
-  interface Prop {
-    name: string;
-    value: string;
-  }
-
-  function getProp(props: Array<Prop>, key: string): string {
-    return props.find((p) => p.name === key)?.value || "";
-  }
-
-  function copyAndSetProp(props: Array<Prop>, prop: Prop): Array<Prop> {
-    const pix = props.findIndex((p) => p.name === prop.name);
-    if (pix >= 0) {
-      return props.map((existing, i) => {
-        if (i === pix) {
-          return prop;
-        } else {
-          return existing;
-        }
-      });
-    } else {
-      return [...props, prop];
-    }
-  }
-
   if (!lessonUnderEdit.lesson) {
     return <LoadingIndicator />;
   }
@@ -397,219 +364,6 @@ const LessonEdit = (props: {
         question: e.target.value || "",
       },
       true
-    );
-  };
-
-  const handleVideoStart = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setLesson(
-      {
-        ...(lessonUnderEdit.lesson || newLesson),
-        media: {
-          url: lessonUnderEdit.lesson?.media?.url || "",
-          type: MediaType.VIDEO,
-          props: copyAndSetProp(
-            (lessonUnderEdit.lesson || newLesson).media?.props || [],
-            {
-              name: "start",
-              value: String(parseFloat(e.target.value) || 0) || "",
-            }
-          ),
-        },
-      },
-      true
-    );
-  };
-
-  const handleVideoEnd = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setLesson(
-      {
-        ...(lessonUnderEdit.lesson || newLesson),
-        media: {
-          url: lessonUnderEdit.lesson?.media?.url || "",
-          type: MediaType.VIDEO,
-          props: copyAndSetProp(
-            (lessonUnderEdit.lesson || newLesson).media?.props || [],
-            {
-              name: "end",
-              value:
-                String(parseFloat(e.target.value) || Number.MAX_SAFE_INTEGER) ||
-                "",
-            }
-          ),
-        },
-      },
-      true
-    );
-  };
-
-  const handleVideoURL = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setLesson(
-      {
-        ...(lessonUnderEdit.lesson || newLesson),
-        media: {
-          ...(lessonUnderEdit.lesson || newLesson).media,
-          type: MediaType.VIDEO,
-          url: (e.target.value as string) || "",
-        },
-      },
-      true
-    );
-  };
-
-  const handleImageURL = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setLesson(
-      {
-        ...(lessonUnderEdit.lesson || newLesson),
-        media: {
-          ...(lessonUnderEdit.lesson || newLesson).media,
-          type: MediaType.IMAGE,
-          url: (e.target.value as string) || "",
-        },
-      },
-      true
-    );
-  };
-
-  const handleLessonId = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setLesson(
-      {
-        ...(lessonUnderEdit.lesson || newLesson),
-        lessonId: e.target.value || "",
-      },
-      true
-    );
-  };
-
-  const handleDialogCategory = (e: SelectChangeEvent<string>) => {
-    setLesson(
-      {
-        ...(lessonUnderEdit.lesson || newLesson),
-        dialogCategory: (e.target.value as string) || "",
-      },
-      true
-    );
-  };
-
-  const handleClassifierArch = (e: SelectChangeEvent<string>) => {
-    setLesson(
-      {
-        ...(lessonUnderEdit.lesson || newLesson),
-        arch: (e.target.value as string) || DEFAULT_CLASSIFIER_ARCHITECTURE,
-      },
-      true
-    );
-  };
-
-  const AdvancedFeatures = () => {
-    return (
-      <>
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            padding: 5,
-            cursor: "pointer",
-          }}
-          onClick={() =>
-            setIsShowingAdvancedFeatures(!isShowingAdvancedFeatures)
-          }
-        >
-          {isShowingAdvancedFeatures ? <ArrowDropDown /> : <ArrowRight />}
-          <Typography variant="body2" data-cy="advanced-features">
-            {isShowingAdvancedFeatures
-              ? "Hide Advanced Features"
-              : "Show Advanced Features"}
-          </Typography>
-        </div>
-        <div style={isShowingAdvancedFeatures ? {} : { display: "none" }}>
-          <Grid
-            container
-            spacing={2}
-            style={{ marginTop: 3, marginBottom: 20 }}
-          >
-            <Grid item xs={8}>
-              <TextField
-                data-cy="lesson-id"
-                label="Lesson ID"
-                placeholder="Unique alias to the lesson"
-                fullWidth
-                multiline
-                error={error !== ""}
-                helperText={error}
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                value={lessonUnderEdit.lesson?.lessonId || ""}
-                onChange={handleLessonId}
-                variant="outlined"
-              />
-            </Grid>
-            <Grid item xs={4}>
-              <TextField
-                fullWidth
-                multiline
-                data-cy="lesson-creator"
-                label="Created By"
-                placeholder="Guest"
-                variant="outlined"
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                value={lessonUnderEdit.lesson?.createdByName || "Guest"}
-                disabled={true}
-              />
-            </Grid>
-
-            <Grid item xs={6}>
-              <FormControl className={classes.selectForm} variant="outlined">
-                <InputLabel
-                  shrink
-                  id="dialog-category-label"
-                  key="Confirmation Code"
-                >
-                  Dialog Category
-                </InputLabel>
-                <Select
-                  labelId="dialog-category-label"
-                  value={lessonUnderEdit.lesson?.dialogCategory || "NOT SET"}
-                  label="Dialog Category"
-                  onChange={handleDialogCategory}
-                >
-                  <MenuItem value={"default"}>Default</MenuItem>
-                  <MenuItem value={"sensitive"}>Sensitive</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item xs={6}>
-              <FormControl className={classes.selectForm} variant="outlined">
-                <InputLabel shrink id="classifier-arch-label">
-                  Classifier Architecture
-                </InputLabel>
-                <Select
-                  data-cy="classifier-arch"
-                  labelId="classifier-arch-label"
-                  label="Classifier Architecture"
-                  value={
-                    lessonUnderEdit.lesson?.arch ||
-                    DEFAULT_CLASSIFIER_ARCHITECTURE
-                  }
-                  onChange={handleClassifierArch}
-                >
-                  <MenuItem value={DEFAULT_CLASSIFIER_ARCHITECTURE}>
-                    LR2
-                  </MenuItem>
-                  <MenuItem value={OPENAI_CLASSIFIER_ARCHITECTURE}>
-                    OpenAI
-                  </MenuItem>
-                  <MenuItem value={COMPOSITE_CLASSIFIER_ARCHITECTURE}>
-                    COMPOSITE
-                  </MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-          </Grid>
-        </div>{" "}
-      </>
     );
   };
 
@@ -794,127 +548,24 @@ const LessonEdit = (props: {
               </Grid>
               {lessonUnderEdit.lesson.media &&
               lessonUnderEdit.lesson.media.type === MediaType.IMAGE ? (
-                <Grid item xs={12}>
-                  <div className={classes.image}>
-                    <TextField
-                      data-cy="image"
-                      label="Image"
-                      placeholder="Image URL"
-                      required
-                      multiline
-                      maxRows={4}
-                      fullWidth
-                      InputLabelProps={{
-                        shrink: true,
-                      }}
-                      value={lessonUnderEdit.lesson.media.url || ""}
-                      onChange={handleImageURL}
-                      variant="outlined"
-                    />
-                    <img
-                      className={classes.thumbnail}
-                      data-cy="image-thumbnail"
-                      src={lessonUnderEdit.lesson.media.url}
-                      onClick={() => {
-                        window.open(
-                          lessonUnderEdit.lesson?.media?.url || "",
-                          "_blank"
-                        );
-                      }}
-                    />
-                  </div>
-                </Grid>
+                <ImageInputField
+                  lessonUnderEdit={lessonUnderEdit}
+                  setLesson={setLesson}
+                  classes={classes}
+                  newLesson={newLesson}
+                />
               ) : (
                 <></>
               )}
               {lessonUnderEdit.lesson.media &&
               lessonUnderEdit.lesson.media.type === MediaType.VIDEO ? (
-                <Grid container spacing={2}>
-                  <Grid item xs={12}>
-                    <TextField
-                      data-cy="video-url"
-                      label="Video"
-                      placeholder="YouTube Video URL"
-                      required
-                      multiline
-                      maxRows={4}
-                      fullWidth
-                      InputLabelProps={{
-                        shrink: true,
-                      }}
-                      value={lessonUnderEdit.lesson.media.url || ""}
-                      onChange={handleVideoURL}
-                      variant="outlined"
-                    />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Grid
-                      container
-                      // TODO: With MUI v5 We can dimply do: rowSpacing={2}
-                      direction={"row"}
-                      spacing={2}
-                    >
-                      <Grid item xs={6}>
-                        <TextField
-                          data-cy="video-start"
-                          label="Video Start Time"
-                          placeholder="0.0"
-                          type="number"
-                          required
-                          multiline
-                          maxRows={1}
-                          // style={{ width: "50%" }}
-                          InputLabelProps={{
-                            shrink: true,
-                          }}
-                          fullWidth
-                          value={
-                            lessonUnderEdit.lesson.media &&
-                            lessonUnderEdit.lesson.media.props
-                              ? parseFloat(
-                                  getProp(
-                                    lessonUnderEdit.lesson.media.props,
-                                    "start"
-                                  )
-                                ) || 0
-                              : 0
-                          }
-                          onChange={handleVideoStart}
-                          variant="outlined"
-                        />
-                      </Grid>
-                      <Grid item xs={6}>
-                        <TextField
-                          data-cy="video-end"
-                          label="Video End Time"
-                          placeholder="180.0"
-                          type="number"
-                          required
-                          multiline
-                          fullWidth
-                          maxRows={1}
-                          // style={{ width: "50%" }}
-                          InputLabelProps={{
-                            shrink: true,
-                          }}
-                          value={
-                            lessonUnderEdit.lesson.media &&
-                            lessonUnderEdit.lesson.media.props
-                              ? parseFloat(
-                                  getProp(
-                                    lessonUnderEdit.lesson.media.props,
-                                    "end"
-                                  )
-                                ) || Number.MAX_SAFE_INTEGER
-                              : Number.MAX_SAFE_INTEGER
-                          }
-                          onChange={handleVideoEnd}
-                          variant="outlined"
-                        />
-                      </Grid>
-                    </Grid>
-                  </Grid>
-                </Grid>
+                <VideoInputField
+                  lessonUnderEdit={lessonUnderEdit}
+                  setLesson={setLesson}
+                  classes={classes}
+                  search={props.search}
+                  newLesson={newLesson}
+                />
               ) : (
                 <></>
               )}
@@ -950,7 +601,13 @@ const LessonEdit = (props: {
               }
             />
           </form>
-          <AdvancedFeatures />
+          <AdvancedFeatures
+            lessonUnderEdit={lessonUnderEdit}
+            setLesson={setLesson}
+            classes={classes}
+            error={error}
+            newLesson={newLesson}
+          />
           <Divider
             variant="middle"
             className={classes.divider}
