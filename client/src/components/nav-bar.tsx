@@ -31,6 +31,7 @@ import {
   Assessment as AssessmentIcon,
   Group as GroupIcon,
   Settings as SettingsIcon,
+  Biotech as BiotechIcon,
 } from "@mui/icons-material";
 import { userIsElevated } from "api";
 import SessionContext from "context/session";
@@ -69,6 +70,12 @@ function NavMenu(): JSX.Element {
           <AssessmentIcon />
         </ListItemIcon>
         <ListItemText primary="Grading" />
+      </ListItem>
+      <ListItem button component={Link} to={"/cogeneration"}>
+        <ListItemIcon>
+          <BiotechIcon />
+        </ListItemIcon>
+        <ListItemText primary="Testbed" />
       </ListItem>
       {userIsElevated(context.user) ? (
         <ListItem button component={Link} to={"/users"}>
