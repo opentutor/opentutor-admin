@@ -9,11 +9,150 @@ import { useCookies } from "react-cookie";
 import SessionContext from "context/session";
 import NavBar from "components/nav-bar";
 import LoadingIndicator from "components/loading-indicator";
+import {
+  Button,
+  Divider,
+  Grid,
+  Menu,
+  MenuItem,
+  Paper,
+  TextField,
+  Typography,
+} from "@mui/material";
+import CogenerationFields from "components/cogeneration-fields";
+import { makeStyles } from "@mui/styles";
+import { Theme } from "@mui/material/styles";
+import "styles/layout.css";
+import "jsoneditor-react/es/editor.min.css";
+import "react-toastify/dist/ReactToastify.css";
+
+const useStyles = makeStyles((theme: Theme) => ({
+  appBar: {
+    zIndex: 2,
+  },
+  drawer: {
+    paddingTop: "10%",
+    flexShrink: 0,
+    zIndex: 1,
+    position: "sticky",
+  },
+  cardRoot: {
+    width: "100%",
+  },
+  expand: {
+    transform: "rotate(0deg)",
+    marginLeft: "auto",
+    transition: theme.transitions.create("transform", {
+      duration: theme.transitions.duration.shortest,
+    }),
+  },
+  expandOpen: {
+    transform: "rotate(180deg)",
+  },
+  list: {
+    background: "#F5F5F5",
+    borderRadius: 10,
+  },
+  listDragging: {
+    background: "lightblue",
+    borderRadius: 10,
+  },
+  button: {
+    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(2),
+  },
+  heading: {
+    fontSize: theme.typography.pxToRem(15),
+    flexBasis: "33.33%",
+    flexShrink: 0,
+  },
+  secondaryHeading: {
+    fontSize: theme.typography.pxToRem(15),
+    color: theme.palette.text.secondary,
+  },
+  container: {
+    maxHeight: 440,
+  },
+  input: {
+    "&:invalid": {
+      border: "red solid 2px",
+    },
+  },
+  image: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  thumbnail: {
+    boxSizing: "border-box",
+    height: 56,
+    padding: 5,
+  },
+  video: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  inputForm: {},
+  selectForm: {
+    width: "100%",
+  },
+  divider: {
+    marginTop: 25,
+    marginBottom: 25,
+  },
+  actionFooter: {
+    marginTop: 10,
+    marginBottom: 10,
+    display: "flex",
+    gap: 10,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+}));
+
+const CogenerationContent = () => {
+  const classes = useStyles();
+  return (
+    <Grid container sx={{ display: "flex" }}>
+      <Grid
+        item
+        xs={12}
+        style={{
+          marginTop: 30,
+          marginBottom: 10,
+          paddingLeft: 40,
+          paddingRight: 40,
+        }}
+      >
+        <form noValidate autoComplete="off">
+          <CogenerationFields classes={classes} />
+          <Grid
+            item
+            style={{
+              marginTop: 20,
+            }}
+          >
+            <Button
+              data-cy="generate-output"
+              className={classes.button}
+              onClick={() => null}
+              variant="contained"
+              color="primary"
+              size="medium"
+            >
+              Generate Prompts & Output
+            </Button>
+          </Grid>
+        </form>
+      </Grid>
+    </Grid>
+  );
+};
 
 function CogenerationPage(): JSX.Element {
   const context = useContext(SessionContext);
   const [cookies] = useCookies(["accessToken"]);
-
   if (typeof window !== "undefined" && !cookies.accessToken) {
     return <div>Please login to view testbed.</div>;
   }
@@ -25,6 +164,7 @@ function CogenerationPage(): JSX.Element {
       <div className="navbar-container">
         <NavBar title="Cogeneration Testbed UI" />
       </div>
+      <CogenerationContent />
     </div>
   );
 }

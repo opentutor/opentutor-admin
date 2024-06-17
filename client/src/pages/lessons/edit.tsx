@@ -553,7 +553,6 @@ function EditPage(props: {
       <div className="navbar-container">
         <NavBar title={lessonId ? "Edit Lesson" : "Create Lesson"} />
       </div>
-
       <LessonEdit search={props.search} location={props.location} />
     </div>
   );
