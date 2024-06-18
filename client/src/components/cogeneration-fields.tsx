@@ -16,7 +16,7 @@ import {
   TextField,
   Divider,
 } from "@mui/material";
-import Select, { SelectChangeEvent } from '@mui/material/Select';
+import Select, { SelectChangeEvent } from "@mui/material/Select";
 import { MultipleChoiceBaseline } from "./recipe-fields";
 import { RecipeType } from "types";
 
@@ -29,13 +29,13 @@ interface FieldClasses {
 export function CogenerationFields(props: {
   classes: FieldClasses;
   genRecipe: string;
-  setGenRecipe: React.Dispatch<React.SetStateAction<string>>; 
+  setGenRecipe: React.Dispatch<React.SetStateAction<string>>;
 }): JSX.Element {
   const { classes, genRecipe, setGenRecipe } = props;
-  
+
   const handleRecipeChange = (event: SelectChangeEvent) => {
     setGenRecipe(event.target.value as string);
-  }
+  };
 
   return (
     <>
@@ -66,30 +66,27 @@ export function CogenerationFields(props: {
             </FormControl>
           </Grid>
           <Grid item xs={12}>
-          <TextField
-            required
-            data-cy="universal-context"
-            label="Universal Context"
-            placeholder="Insert stuff here testing"
-            fullWidth
-            multiline
-            InputLabelProps={{
-              shrink: true,
-            }}
-            variant="outlined"
-          />
+            <TextField
+              required
+              data-cy="universal-context"
+              label="Universal Context"
+              placeholder="Insert stuff here testing"
+              fullWidth
+              multiline
+              InputLabelProps={{
+                shrink: true,
+              }}
+              variant="outlined"
+            />
           </Grid>
           <Divider variant="middle" className={classes.divider} />
-            {
-              genRecipe === RecipeType.MCQ ? (
-                <>
-                  <MultipleChoiceBaseline classes={classes} />
-                </>
-              ) : (
-                <></>
-              )
-            }
-            
+          {genRecipe === RecipeType.MCQ ? (
+            <>
+              <MultipleChoiceBaseline classes={classes} />
+            </>
+          ) : (
+            <></>
+          )}
         </Grid>
       </Paper>
     </>

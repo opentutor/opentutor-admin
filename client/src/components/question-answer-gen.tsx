@@ -29,10 +29,11 @@ export function QuestionAnswerGen(props: {
   classes: QuestionAnswerClasses;
 }): JSX.Element {
   const { classes } = props;
-  const [questionStrategy, setQuestionStrategy] = React.useState("verification");
+  const [questionStrategy, setQuestionStrategy] =
+    React.useState("verification");
   const handleQuestionStrategy = (event: SelectChangeEvent) => {
     setQuestionStrategy(event.target.value as string);
-  }
+  };
   return (
     <>
       <Paper elevation={0} style={{ textAlign: "left" }}>
@@ -48,23 +49,21 @@ export function QuestionAnswerGen(props: {
           </Grid>
           <Grid item style={{ marginLeft: 10 }}>
             <FormControl size="small" sx={{ mb: 1, minWidth: 200 }}>
-              <InputLabel shrink >
-                QA Strategy
-              </InputLabel>
+              <InputLabel shrink>QA Strategy</InputLabel>
               <Select
-                  data-cy="question-strategy"
-                  labelId="question-strategy-label"
-                  label="QA Strategy"
-                  value={questionStrategy}
-                  onChange={handleQuestionStrategy}
-                >
-                  <MenuItem value={"verification"}>
-                    <ListItemText primary="Verification" />
-                  </MenuItem>
-                  <MenuItem value={"definition"}>
-                    <ListItemText primary="Definition" />
-                  </MenuItem>
-                </Select>
+                data-cy="question-strategy"
+                labelId="question-strategy-label"
+                label="QA Strategy"
+                value={questionStrategy}
+                onChange={handleQuestionStrategy}
+              >
+                <MenuItem value={"verification"}>
+                  <ListItemText primary="Verification" />
+                </MenuItem>
+                <MenuItem value={"definition"}>
+                  <ListItemText primary="Definition" />
+                </MenuItem>
+              </Select>
             </FormControl>
           </Grid>
           <Grid item style={{ marginLeft: 20 }}>

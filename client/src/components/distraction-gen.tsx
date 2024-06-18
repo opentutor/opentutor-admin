@@ -32,7 +32,7 @@ export function DistractionGen(props: {
   const [distractorStrategy, setDistractorStrategy] = React.useState("random");
   const handleDistractorStrategy = (event: SelectChangeEvent) => {
     setDistractorStrategy(event.target.value as string);
-  }
+  };
   return (
     <>
       <Paper elevation={0} style={{ textAlign: "left" }}>
@@ -46,31 +46,29 @@ export function DistractionGen(props: {
               Distractor Generation
             </Typography>
           </Grid>
-          <Grid item style={{ marginLeft: 10}}>
-            <FormControl size="small" sx={{ mb: 1, minWidth: 200}} >
-              <InputLabel shrink >
-                Distractor Strategy
-              </InputLabel>
+          <Grid item style={{ marginLeft: 10 }}>
+            <FormControl size="small" sx={{ mb: 1, minWidth: 200 }}>
+              <InputLabel shrink>Distractor Strategy</InputLabel>
               <Select
-                  data-cy="distractor-strategy"
-                  labelId="distractor-strategy-label"
-                  label="Distractor Strategy"
-                  value={distractorStrategy}
-                  onChange={handleDistractorStrategy}
-                >
-                  <MenuItem value={"random"}>
-                    <ListItemText primary="Random" />
-                  </MenuItem>
-                  <MenuItem value={"opposites"}>
-                    <ListItemText primary="Opposites" />
-                  </MenuItem>
-                  <MenuItem value={"falseAssumption"}>
-                    <ListItemText primary="False Assumption" />
-                  </MenuItem>
-                  <MenuItem value={"baselineAssumption"}>
-                    <ListItemText primary="Baseline Assumption" />
-                  </MenuItem>
-                </Select>
+                data-cy="distractor-strategy"
+                labelId="distractor-strategy-label"
+                label="Distractor Strategy"
+                value={distractorStrategy}
+                onChange={handleDistractorStrategy}
+              >
+                <MenuItem value={"random"}>
+                  <ListItemText primary="Random" />
+                </MenuItem>
+                <MenuItem value={"opposites"}>
+                  <ListItemText primary="Opposites" />
+                </MenuItem>
+                <MenuItem value={"falseAssumption"}>
+                  <ListItemText primary="False Assumption" />
+                </MenuItem>
+                <MenuItem value={"baselineAssumption"}>
+                  <ListItemText primary="Baseline Assumption" />
+                </MenuItem>
+              </Select>
             </FormControl>
           </Grid>
           <Grid item style={{ marginLeft: 20 }}>

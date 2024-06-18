@@ -9,17 +9,13 @@ import { useCookies } from "react-cookie";
 import SessionContext from "context/session";
 import NavBar from "components/nav-bar";
 import LoadingIndicator from "components/loading-indicator";
-import {
-  Button,
-  Grid,
-} from "@mui/material";
+import { Grid } from "@mui/material";
 import CogenerationFields from "components/cogeneration-fields";
 import { makeStyles } from "@mui/styles";
 import { Theme } from "@mui/material/styles";
 import "styles/layout.css";
 import "jsoneditor-react/es/editor.min.css";
 import "react-toastify/dist/ReactToastify.css";
-
 
 const useStyles = makeStyles((theme: Theme) => ({
   appBar: {
@@ -122,7 +118,11 @@ const CogenerationContent = () => {
         }}
       >
         <form noValidate autoComplete="off">
-          <CogenerationFields classes={classes} genRecipe={genRecipe} setGenRecipe={setGenRecipe}/>
+          <CogenerationFields
+            classes={classes}
+            genRecipe={genRecipe}
+            setGenRecipe={setGenRecipe}
+          />
         </form>
       </Grid>
     </Grid>
