@@ -7,29 +7,36 @@ The full terms of this copyright and license should always be found in the root 
 import React from "react";
 import {
   Grid,
-  Divider,
-  TextField,
   FormControl,
   Typography,
   InputLabel,
-  Select,
   MenuItem,
   ListItemText,
   Paper,
+  TextField,
+  Divider,
 } from "@mui/material";
+import Select, { SelectChangeEvent } from '@mui/material/Select';
+import { MultipleChoiceBaseline } from "./recipe-fields";
+import { RecipeType } from "types";
 
 interface FieldClasses {
   selectForm: string;
   divider: string;
   button: string;
 }
-import QuestionAnswerGen from "./question-answer-gen";
-import DistractionGen from "./distraction-gen";
+
 export function CogenerationFields(props: {
   classes: FieldClasses;
+  genRecipe: string;
+  setGenRecipe: React.Dispatch<React.SetStateAction<string>>; 
 }): JSX.Element {
-  const { classes } = props;
-  const [genRecipe, setGenRecipe] = React.useState("multipleChoice");
+  const { classes, genRecipe, setGenRecipe } = props;
+  
+  const handleRecipeChange = (event: SelectChangeEvent) => {
+    setGenRecipe(event.target.value as string);
+  }
+
   return (
     <>
       <Paper elevation={0} style={{ textAlign: "left" }}>
@@ -47,37 +54,42 @@ export function CogenerationFields(props: {
                 labelId="generator-recipe-label"
                 label="Generator Recipe"
                 value={genRecipe}
+                onChange={handleRecipeChange}
               >
                 <MenuItem value={"multipleChoice"}>
                   <ListItemText primary="MCQ Baseline" />
+                </MenuItem>
+                <MenuItem value={"testRecipe"}>
+                  <ListItemText primary="Test Recipe" />
                 </MenuItem>
               </Select>
             </FormControl>
           </Grid>
           <Grid item xs={12}>
-            <TextField
-              required
-              data-cy="universal-context"
-              label="Universal Context"
-              placeholder="Insert stuff here testing"
-              fullWidth
-              multiline
-              InputLabelProps={{
-                shrink: true,
-              }}
-              variant="outlined"
-            />
+          <TextField
+            required
+            data-cy="universal-context"
+            label="Universal Context"
+            placeholder="Insert stuff here testing"
+            fullWidth
+            multiline
+            InputLabelProps={{
+              shrink: true,
+            }}
+            variant="outlined"
+          />
           </Grid>
-
           <Divider variant="middle" className={classes.divider} />
-
-          <Grid item xs={12}>
-            <QuestionAnswerGen classes={classes} />
-          </Grid>
-
-          <Grid item xs={12}>
-            <DistractionGen classes={classes} />
-          </Grid>
+            {
+              genRecipe === RecipeType.MCQ ? (
+                <>
+                  <MultipleChoiceBaseline classes={classes} />
+                </>
+              ) : (
+                <></>
+              )
+            }
+            
         </Grid>
       </Paper>
     </>

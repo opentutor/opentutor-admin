@@ -261,3 +261,7 @@ export interface OfflineLessonData {
   image?: string;
   video?: OfflineVideoData;
 }
+
+export enum RecipeType {
+  MCQ = "multipleChoice",
+}

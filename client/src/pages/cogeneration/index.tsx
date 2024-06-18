@@ -11,13 +11,7 @@ import NavBar from "components/nav-bar";
 import LoadingIndicator from "components/loading-indicator";
 import {
   Button,
-  Divider,
   Grid,
-  Menu,
-  MenuItem,
-  Paper,
-  TextField,
-  Typography,
 } from "@mui/material";
 import CogenerationFields from "components/cogeneration-fields";
 import { makeStyles } from "@mui/styles";
@@ -25,6 +19,7 @@ import { Theme } from "@mui/material/styles";
 import "styles/layout.css";
 import "jsoneditor-react/es/editor.min.css";
 import "react-toastify/dist/ReactToastify.css";
+
 
 const useStyles = makeStyles((theme: Theme) => ({
   appBar: {
@@ -113,6 +108,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 const CogenerationContent = () => {
   const classes = useStyles();
+  const [genRecipe, setGenRecipe] = React.useState("multipleChoice");
   return (
     <Grid container sx={{ display: "flex" }}>
       <Grid
@@ -126,24 +122,7 @@ const CogenerationContent = () => {
         }}
       >
         <form noValidate autoComplete="off">
-          <CogenerationFields classes={classes} />
-          <Grid
-            item
-            style={{
-              marginTop: 20,
-            }}
-          >
-            <Button
-              data-cy="generate-output"
-              className={classes.button}
-              onClick={() => null}
-              variant="contained"
-              color="primary"
-              size="medium"
-            >
-              Generate Prompts & Output
-            </Button>
-          </Grid>
+          <CogenerationFields classes={classes} genRecipe={genRecipe} setGenRecipe={setGenRecipe}/>
         </form>
       </Grid>
     </Grid>
