@@ -20,14 +20,19 @@ export function MultipleChoiceBaseline(props: {
   classes: RecipeClasses;
 }): JSX.Element {
   const { classes } = props;
+  const [questionChosen, setQuestionChosen] = React.useState("");
   return (
     <>
       <Grid item xs={12}>
-        <QuestionAnswerGen classes={classes} />
+        <QuestionAnswerGen
+          classes={classes}
+          questionChosen={questionChosen}
+          setQuestionChosen={setQuestionChosen}
+        />
       </Grid>
 
       <Grid item xs={12}>
-        <DistractionGen classes={classes} />
+        <DistractionGen classes={classes} questionChosen={questionChosen} />
       </Grid>
     </>
   );

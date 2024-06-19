@@ -5,6 +5,7 @@ Permission to use, copy, modify, and distribute this software and its documentat
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
 import React from "react";
+import clsx from "clsx";
 import {
   Grid,
   Divider,
@@ -18,21 +19,111 @@ import {
   MenuItem,
   Select,
   SelectChangeEvent,
+  Card,
+  CardActions,
+  CardContent,
+  IconButton,
 } from "@mui/material";
+import { ClearOutlined } from "@mui/icons-material";
 
-interface DistractionClasses {
+interface DistractorClasses {
   selectForm: string;
   divider: string;
   button: string;
+  expand: string;
+  expandOpen: string;
 }
+
+const Distractor = (props: {
+  classes: DistractorClasses;
+  distractorIndex: number;
+  distractor: string;
+  handleDistractorChange: (val: string) => void;
+  handleRemoveDistractor: () => void;
+  canDelete: boolean;
+  questionChosen: string;
+}) => {
+  const {
+    classes,
+    distractorIndex,
+    distractor,
+    handleDistractorChange,
+    handleRemoveDistractor,
+    canDelete,
+    questionChosen,
+  } = props;
+
+  return (
+    <Card
+      data-cy={`Distractor-${distractorIndex}`}
+      style={{ width: "100%", marginTop: 15, marginBottom: 15, marginLeft: 15 }}
+    >
+      <CardContent>
+        <div style={{ display: "flex", flexDirection: "row" }}>
+          <TextField
+            margin="normal"
+            data-cy="edit-distractor"
+            label={`Distractor ${distractorIndex + 1}`}
+            multiline
+            maxRows={4}
+            fullWidth
+            placeholder="Add/edit the desired distractor"
+            InputLabelProps={{
+              shrink: true,
+            }}
+            value={distractor || ""}
+            onChange={(e) => {
+              handleDistractorChange(e.target.value);
+            }}
+            variant="outlined"
+          />
+          <CardActions>
+            {canDelete ? (
+              <IconButton
+                data-cy="delete"
+                aria-label="remove question"
+                size="small"
+                onClick={handleRemoveDistractor}
+              >
+                <ClearOutlined />
+              </IconButton>
+            ) : null}
+          </CardActions>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
 export function DistractionGen(props: {
-  classes: DistractionClasses;
+  classes: DistractorClasses;
 }): JSX.Element {
   const { classes } = props;
   const [distractorStrategy, setDistractorStrategy] = React.useState("random");
   const handleDistractorStrategy = (event: SelectChangeEvent) => {
     setDistractorStrategy(event.target.value as string);
   };
+  const [distractors, setDistractors] = React.useState([""]);
+  const [showDistractors, setShowDistractors] = React.useState(false);
+
+  const handleDistractorChange = (val: string, idx: number) => {
+    setDistractors((oldDistractors) => {
+      const newDistractors = [...oldDistractors];
+      newDistractors[idx] = val;
+      return newDistractors;
+    });
+  };
+
+  const handleRemoveDistractor = (index: number) => {
+    setDistractors((oldDistractors) =>
+      oldDistractors.filter((_, idx) => idx !== index)
+    );
+  };
+
+  const handleGenerateDistractors = () => {
+    setDistractors(["distractor1", "distractor2", "distractor3"]);
+    setShowDistractors(true);
+  };
+
   return (
     <>
       <Paper elevation={0} style={{ textAlign: "left" }}>
@@ -75,7 +166,7 @@ export function DistractionGen(props: {
             <Button
               data-cy="generate-distractor"
               className={classes.button}
-              onClick={() => null}
+              onClick={handleGenerateDistractors}
               variant="contained"
               color="primary"
               size="small"
@@ -111,6 +202,22 @@ export function DistractionGen(props: {
               variant="filled"
             />
           </Grid>
+          {showDistractors &&
+            distractors.map((row, i) => (
+              <Distractor
+                key={row}
+                classes={classes}
+                distractorIndex={i}
+                distractor={row}
+                handleDistractorChange={(val: string) => {
+                  handleDistractorChange(val, i);
+                }}
+                handleRemoveDistractor={() => {
+                  handleRemoveDistractor(i);
+                }}
+                canDelete={distractors.length > 1}
+              />
+            ))}
           <Divider variant="middle" className={classes.divider} />
         </Grid>
       </Paper>

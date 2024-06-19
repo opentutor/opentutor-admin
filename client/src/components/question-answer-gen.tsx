@@ -5,6 +5,7 @@ Permission to use, copy, modify, and distribute this software and its documentat
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
 import React from "react";
+import clsx from "clsx";
 import {
   Grid,
   Divider,
@@ -18,21 +19,182 @@ import {
   ListItemText,
   Paper,
   Button,
+  Card,
+  CardActions,
+  CardContent,
+  IconButton,
+  Collapse,
+  Radio,
 } from "@mui/material";
+import { ClearOutlined, ExpandMore } from "@mui/icons-material";
+import { Question } from "types";
 
 interface QuestionAnswerClasses {
   selectForm: string;
   divider: string;
   button: string;
+  expand: string;
+  expandOpen: string;
 }
+
+const QuestionAnswerPair = (props: {
+  classes: QuestionAnswerClasses;
+  questionIndex: number;
+  question: string;
+  answer: string;
+  handleQuestionChange: (val: string) => void;
+  handleRemoveQuestion: () => void;
+  handleAnswerChange: (val: string) => void;
+  canDelete: boolean;
+  questionChosen: string;
+  setQuestionChosen: React.Dispatch<React.SetStateAction<string>>;
+}) => {
+  const {
+    classes,
+    questionIndex,
+    question,
+    answer,
+    handleQuestionChange,
+    handleRemoveQuestion,
+    handleAnswerChange,
+    canDelete,
+    questionChosen,
+    setQuestionChosen,
+  } = props;
+  const [expanded, setExpanded] = React.useState(true);
+  const handleRadioChange = (event: SelectChangeEvent) => {
+    setQuestionChosen(event.target.value as string);
+  };
+
+  return (
+    <Card
+      data-cy={`Question-${questionIndex}`}
+      style={{ width: "100%", marginTop: 15, marginBottom: 15, marginLeft: 15 }}
+    >
+      <CardContent>
+        <div style={{ display: "flex", flexDirection: "row" }}>
+          <TextField
+            margin="normal"
+            data-cy="edit-question"
+            label={`Question ${questionIndex + 1}`}
+            multiline
+            maxRows={4}
+            fullWidth
+            placeholder="Add/edit the desired question"
+            InputLabelProps={{
+              shrink: true,
+            }}
+            value={question || ""}
+            onChange={(e) => {
+              handleQuestionChange(e.target.value);
+            }}
+            variant="outlined"
+          />
+          <CardActions>
+            {canDelete ? (
+              <IconButton
+                data-cy="delete"
+                aria-label="remove question"
+                size="small"
+                onClick={handleRemoveQuestion}
+              >
+                <ClearOutlined />
+              </IconButton>
+            ) : null}
+            <Radio
+              checked={questionChosen === question}
+              onChange={handleRadioChange}
+              value={question}
+              name="radio-button"
+            />
+            <IconButton
+              data-cy="expand"
+              aria-label="expand question"
+              size="small"
+              aria-expanded={expanded}
+              className={clsx(classes.expand, {
+                [classes.expandOpen]: expanded,
+              })}
+              onClick={() => setExpanded(!expanded)}
+            >
+              <ExpandMore />
+            </IconButton>
+          </CardActions>
+        </div>
+        <Collapse
+          in={expanded}
+          timeout="auto"
+          unmountOnExit
+          style={{ paddingTop: 10, paddingRight: 10 }}
+        >
+          <TextField
+            margin="normal"
+            data-cy="edit-answer"
+            label={`Answer`}
+            multiline
+            maxRows={4}
+            fullWidth
+            placeholder="Add/edit your desired answer."
+            InputLabelProps={{
+              shrink: true,
+            }}
+            value={answer || ""}
+            onChange={(e) => {
+              handleAnswerChange(e.target.value);
+            }}
+            variant="outlined"
+          />
+        </Collapse>
+      </CardContent>
+    </Card>
+  );
+};
+
 export function QuestionAnswerGen(props: {
   classes: QuestionAnswerClasses;
+  questionChosen: string;
+  setQuestionChosen: React.Dispatch<React.SetStateAction<string>>;
 }): JSX.Element {
-  const { classes } = props;
+  const { classes, questionChosen, setQuestionChosen } = props;
+  const [questions, setQuestions] = React.useState([
+    ["", ""],
+    ["", ""],
+    ["", ""],
+  ]);
+  const [showQuestions, setShowQuestions] = React.useState(false);
   const [questionStrategy, setQuestionStrategy] =
     React.useState("verification");
   const handleQuestionStrategy = (event: SelectChangeEvent) => {
     setQuestionStrategy(event.target.value as string);
+  };
+  const handleQuestionChange = (val: string, idx: number) => {
+    setQuestions((oldQuestions) => {
+      const newQuestions = [...oldQuestions];
+      newQuestions[idx][0] = val;
+      return newQuestions;
+    });
+  };
+
+  const handleAnswerChange = (val: string, idx: number) => {
+    setQuestions((oldQuestions) => {
+      const newQuestions = [...oldQuestions];
+      newQuestions[idx][1] = val;
+      return newQuestions;
+    });
+  };
+  const handleRemoveQuestion = (index: number) => {
+    setQuestions((oldQuestions) =>
+      oldQuestions.filter((_, idx) => idx !== index)
+    );
+  };
+
+  const handleGenerateQuestions = () => {
+    setQuestions([
+      ["question1", "answer1"],
+      ["question2", "answer2"],
+      ["question3", "answer3"],
+    ]);
+    setShowQuestions(true);
   };
   return (
     <>
@@ -70,7 +232,7 @@ export function QuestionAnswerGen(props: {
             <Button
               data-cy="generate-question-answer"
               className={classes.button}
-              onClick={() => null}
+              onClick={handleGenerateQuestions}
               variant="contained"
               color="primary"
               size="small"
@@ -119,6 +281,28 @@ export function QuestionAnswerGen(props: {
               variant="filled"
             />
           </Grid>
+          {showQuestions &&
+            questions.map((row, i) => (
+              <QuestionAnswerPair
+                key={row[0]}
+                classes={classes}
+                questionIndex={i}
+                question={row[0]}
+                answer={row[1]}
+                handleQuestionChange={(val: string) => {
+                  handleQuestionChange(val, i);
+                }}
+                handleRemoveQuestion={() => {
+                  handleRemoveQuestion(i);
+                }}
+                handleAnswerChange={(val: string) => {
+                  handleAnswerChange(val, i);
+                }}
+                canDelete={questions.length > 1}
+                questionChosen={questionChosen}
+                setQuestionChosen={setQuestionChosen}
+              />
+            ))}
           <Divider variant="middle" className={classes.divider} />
         </Grid>
       </Paper>
