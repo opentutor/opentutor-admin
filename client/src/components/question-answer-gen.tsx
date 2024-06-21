@@ -28,7 +28,6 @@ import {
 } from "@mui/material";
 import { ClearOutlined, ExpandMore } from "@mui/icons-material";
 
-
 interface QuestionAnswerClasses {
   selectForm: string;
   divider: string;

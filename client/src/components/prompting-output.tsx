@@ -5,13 +5,7 @@ Permission to use, copy, modify, and distribute this software and its documentat
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
 import React from "react";
-import {
-  Grid,
-  TextField,
-  Typography,
-  Paper,
-  Button,
-} from "@mui/material";
+import { Grid, TextField, Typography, Paper, Button } from "@mui/material";
 
 interface OutputClasses {
   button: string;
