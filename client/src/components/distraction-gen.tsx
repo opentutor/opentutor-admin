@@ -204,7 +204,6 @@ export function DistractionGen(props: {
             distractors.map((row, i) => (
               <Distractor
                 key={row}
-                classes={classes}
                 distractorIndex={i}
                 distractor={row}
                 handleDistractorChange={(val: string) => {
