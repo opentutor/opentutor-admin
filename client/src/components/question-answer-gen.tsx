@@ -27,7 +27,7 @@ import {
   Radio,
 } from "@mui/material";
 import { ClearOutlined, ExpandMore } from "@mui/icons-material";
-import { Question } from "types";
+
 
 interface QuestionAnswerClasses {
   selectForm: string;
@@ -88,7 +88,7 @@ const QuestionAnswerPair = (props: {
             onChange={(e) => {
               handleQuestionChange(e.target.value);
             }}
-            variant="outlined"
+            disabled={questionChosen != question && questionChosen != ""}
           />
           <CardActions>
             {canDelete ? (
@@ -142,7 +142,7 @@ const QuestionAnswerPair = (props: {
             onChange={(e) => {
               handleAnswerChange(e.target.value);
             }}
-            variant="outlined"
+            disabled={questionChosen != question && questionChosen != ""}
           />
         </Collapse>
       </CardContent>
@@ -154,8 +154,10 @@ export function QuestionAnswerGen(props: {
   classes: QuestionAnswerClasses;
   questionChosen: string;
   setQuestionChosen: React.Dispatch<React.SetStateAction<string>>;
+  universalContext: string;
 }): JSX.Element {
-  const { classes, questionChosen, setQuestionChosen } = props;
+  const { classes, questionChosen, setQuestionChosen, universalContext } =
+    props;
   const [questions, setQuestions] = React.useState([
     ["", ""],
     ["", ""],
@@ -183,9 +185,16 @@ export function QuestionAnswerGen(props: {
     });
   };
   const handleRemoveQuestion = (index: number) => {
-    setQuestions((oldQuestions) =>
-      oldQuestions.filter((_, idx) => idx !== index)
-    );
+    setQuestions((oldQuestions) => {
+      const newQuestions = oldQuestions.filter((_, idx) => idx !== index);
+      if (questionChosen === oldQuestions[index][0]) {
+        const newIndex = index > 0 ? index - 1 : 0;
+        setQuestionChosen(
+          newQuestions.length > 0 ? newQuestions[newIndex][0] : ""
+        );
+      }
+      return newQuestions;
+    });
   };
 
   const handleGenerateQuestions = () => {
@@ -236,6 +245,7 @@ export function QuestionAnswerGen(props: {
               variant="contained"
               color="primary"
               size="small"
+              disabled={universalContext === ""}
             >
               Generate QA Pairs
             </Button>
@@ -246,7 +256,7 @@ export function QuestionAnswerGen(props: {
             <TextField
               data-cy="question-input"
               label="User Question Input"
-              placeholder="Insert stuff here testing"
+              placeholder="Insert additional input to generate question"
               fullWidth
               multiline
               InputLabelProps={{
@@ -259,7 +269,7 @@ export function QuestionAnswerGen(props: {
             <TextField
               data-cy="answer-input"
               label="User Answer Input"
-              placeholder="Insert stuff here testing"
+              placeholder="Insert additional input to generate answer"
               fullWidth
               multiline
               InputLabelProps={{
@@ -272,7 +282,7 @@ export function QuestionAnswerGen(props: {
             <TextField
               data-cy="question-context"
               label="Question Context"
-              placeholder="Insert stuff here testing"
+              placeholder="Insert additional context for QA"
               fullWidth
               multiline
               InputLabelProps={{

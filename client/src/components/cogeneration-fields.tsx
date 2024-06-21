@@ -24,6 +24,8 @@ interface FieldClasses {
   selectForm: string;
   divider: string;
   button: string;
+  expand: string;
+  expandOpen: string;
 }
 
 export function CogenerationFields(props: {
@@ -35,6 +37,11 @@ export function CogenerationFields(props: {
 
   const handleRecipeChange = (event: SelectChangeEvent) => {
     setGenRecipe(event.target.value as string);
+  };
+
+  const [universalContext, setUniversalContext] = React.useState("");
+  const handleContextChange = (val: string) => {
+    setUniversalContext(val);
   };
 
   return (
@@ -70,19 +77,25 @@ export function CogenerationFields(props: {
               required
               data-cy="universal-context"
               label="Universal Context"
-              placeholder="Insert stuff here testing"
+              placeholder="Insert context to start generating MCQ"
               fullWidth
               multiline
               InputLabelProps={{
                 shrink: true,
               }}
               variant="outlined"
+              onChange={(e) => {
+                handleContextChange(e.target.value);
+              }}
             />
           </Grid>
           <Divider variant="middle" className={classes.divider} />
           {genRecipe === RecipeType.MCQ ? (
             <>
-              <MultipleChoiceBaseline classes={classes} />
+              <MultipleChoiceBaseline
+                classes={classes}
+                universalContext={universalContext}
+              />
             </>
           ) : (
             <></>

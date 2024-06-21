@@ -5,7 +5,6 @@ Permission to use, copy, modify, and distribute this software and its documentat
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
 import React from "react";
-import clsx from "clsx";
 import {
   Grid,
   Divider,
@@ -35,22 +34,18 @@ interface DistractorClasses {
 }
 
 const Distractor = (props: {
-  classes: DistractorClasses;
   distractorIndex: number;
   distractor: string;
   handleDistractorChange: (val: string) => void;
   handleRemoveDistractor: () => void;
   canDelete: boolean;
-  questionChosen: string;
 }) => {
   const {
-    classes,
     distractorIndex,
     distractor,
     handleDistractorChange,
     handleRemoveDistractor,
     canDelete,
-    questionChosen,
   } = props;
 
   return (
@@ -96,8 +91,10 @@ const Distractor = (props: {
 };
 export function DistractionGen(props: {
   classes: DistractorClasses;
+  questionChosen: string;
+  universalContext: string;
 }): JSX.Element {
-  const { classes } = props;
+  const { classes, questionChosen, universalContext } = props;
   const [distractorStrategy, setDistractorStrategy] = React.useState("random");
   const handleDistractorStrategy = (event: SelectChangeEvent) => {
     setDistractorStrategy(event.target.value as string);
@@ -170,6 +167,7 @@ export function DistractionGen(props: {
               variant="contained"
               color="primary"
               size="small"
+              disabled={questionChosen === "" || universalContext === ""}
             >
               Generate Distractors
             </Button>
@@ -180,7 +178,7 @@ export function DistractionGen(props: {
             <TextField
               data-cy="distractor-input"
               label="User Distractor Input"
-              placeholder="Insert stuff here testing"
+              placeholder="Insert additional input to generate distractors"
               fullWidth
               multiline
               InputLabelProps={{
@@ -193,7 +191,7 @@ export function DistractionGen(props: {
             <TextField
               data-cy="distractor-context"
               label="Distractor Context"
-              placeholder="Insert stuff here testing"
+              placeholder="Insert additional context to generate distractors"
               fullWidth
               multiline
               InputLabelProps={{

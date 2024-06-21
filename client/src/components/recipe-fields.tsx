@@ -11,6 +11,8 @@ interface RecipeClasses {
   selectForm: string;
   divider: string;
   button: string;
+  expand: string;
+  expandOpen: string;
 }
 
 import QuestionAnswerGen from "./question-answer-gen";
@@ -18,8 +20,9 @@ import DistractionGen from "./distraction-gen";
 
 export function MultipleChoiceBaseline(props: {
   classes: RecipeClasses;
+  universalContext: string;
 }): JSX.Element {
-  const { classes } = props;
+  const { classes, universalContext } = props;
   const [questionChosen, setQuestionChosen] = React.useState("");
   return (
     <>
@@ -28,11 +31,16 @@ export function MultipleChoiceBaseline(props: {
           classes={classes}
           questionChosen={questionChosen}
           setQuestionChosen={setQuestionChosen}
+          universalContext={universalContext}
         />
       </Grid>
 
       <Grid item xs={12}>
-        <DistractionGen classes={classes} questionChosen={questionChosen} />
+        <DistractionGen
+          classes={classes}
+          questionChosen={questionChosen}
+          universalContext={universalContext}
+        />
       </Grid>
     </>
   );
