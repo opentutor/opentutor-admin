@@ -51,8 +51,8 @@ describe("Navigation bar", () => {
         .get("[data-cy=menu-button]")
         .trigger("mouseover")
         .click();
-      cy.get("[data-cy=drawer] a").eq(2).contains("Users");
-      cy.get("[data-cy=drawer] a").eq(2).trigger("mouseover").click();
+      cy.get("[data-cy=drawer] a").eq(3).contains("Users");
+      cy.get("[data-cy=drawer] a").eq(3).trigger("mouseover").click();
       cy.location("pathname").should("contain", "/users");
     });
   });
@@ -68,7 +68,7 @@ describe("Navigation bar", () => {
         .click();
       cy.get("[data-cy=drawer] a").eq(0).contains("Lessons");
       cy.get("[data-cy=drawer] a").eq(1).contains("Grading");
-      cy.get("[data-cy=drawer] a").should("have.length", 2);
+      cy.get("[data-cy=drawer] a").should("have.length", 3);
     });
 
     it("shows /users if user is an admin", () => {
@@ -81,7 +81,7 @@ describe("Navigation bar", () => {
         .get("[data-cy=menu-button]")
         .trigger("mouseover")
         .click();
-      cy.get("[data-cy=drawer] a").eq(2).contains("Users");
+      cy.get("[data-cy=drawer] a").eq(3).contains("Users");
     });
 
     it("shows /users if user is a content manager", () => {
@@ -94,7 +94,7 @@ describe("Navigation bar", () => {
         .get("[data-cy=menu-button]")
         .trigger("mouseover")
         .click();
-      cy.get("[data-cy=drawer] a").eq(2).contains("Users");
+      cy.get("[data-cy=drawer] a").eq(3).contains("Users");
     });
   });
 
@@ -138,7 +138,8 @@ describe("Navigation bar", () => {
     cy.get("[data-cy=drawer] a");
     cy.get("[data-cy=drawer] a").eq(0).contains("Lessons");
     cy.get("[data-cy=drawer] a").eq(1).contains("Grading");
-    cy.get("[data-cy=drawer] a").eq(2).contains("Users");
+    cy.get("[data-cy=drawer] a").eq(2).contains("Testbed");
+    cy.get("[data-cy=drawer] a").eq(3).contains("Users");
   });
 
   it("shows back button on session page instead of menu button", () => {
