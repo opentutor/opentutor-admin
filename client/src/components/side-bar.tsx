@@ -289,8 +289,8 @@ export function SideBar(props: {
                   variant="contained"
                   startIcon={<IosShareIcon />}
                   color="info"
-                  size="medium"
                   disabled={!lessonId || !isLessonValid()}
+                  size="medium"
                   sx={{
                     minWidth: 0,
                     minHeight: 40,
@@ -421,32 +421,26 @@ export function SideBar(props: {
                   variant="contained"
                   startIcon={<Download />}
                   color="primary"
-                  size="large"
+                  size="medium"
+                  sx={{
+                    minWidth: 0,
+                    minHeight: 40,
+                    ...(drawerOpen
+                      ? { width: 200 }
+                      : {
+                          "& .MuiButton-startIcon": { margin: "0px" },
+                        }),
+                  }}
                   onClick={download}
                   disabled={isDownloading}
                 >
-                  Download
+                  {drawerOpen ? "Download" : ""}
                 </Button>
               ) : null}
             </ListItem>
           </List>
         </div>
       </Drawer>
-      <div className={classes.actionFooter}>
-        {isDownloadable ? (
-          <Button
-            data-cy="download-button"
-            variant="contained"
-            startIcon={<Download />}
-            color="primary"
-            size="large"
-            onClick={download}
-            disabled={isDownloading}
-          >
-            Download
-          </Button>
-        ) : null}
-      </div>
       <Dialog open={Boolean(trainingMessage)} onClose={dismissTrainingMessage}>
         <DialogTitle>{trainingMessage}</DialogTitle>
       </Dialog>
