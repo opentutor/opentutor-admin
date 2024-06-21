@@ -21,9 +21,13 @@ import DistractionGen from "./distraction-gen";
 export function MultipleChoiceBaseline(props: {
   classes: RecipeClasses;
   universalContext: string;
+  questionChosen: string;
+  setQuestionChosen: React.Dispatch<React.SetStateAction<string>>;
+  setQuestions: React.Dispatch<React.SetStateAction<string[][]>>;
+  questions: string[][];
 }): JSX.Element {
-  const { classes, universalContext } = props;
-  const [questionChosen, setQuestionChosen] = React.useState("");
+  const { classes, universalContext, questionChosen, setQuestionChosen, questions, setQuestions } = props;
+
   return (
     <>
       <Grid item xs={12}>
@@ -32,6 +36,8 @@ export function MultipleChoiceBaseline(props: {
           questionChosen={questionChosen}
           setQuestionChosen={setQuestionChosen}
           universalContext={universalContext}
+          questions={questions}
+          setQuestions={setQuestions}
         />
       </Grid>
 

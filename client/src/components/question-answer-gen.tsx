@@ -154,14 +154,12 @@ export function QuestionAnswerGen(props: {
   questionChosen: string;
   setQuestionChosen: React.Dispatch<React.SetStateAction<string>>;
   universalContext: string;
+  setQuestions: React.Dispatch<React.SetStateAction<string[][]>>;
+  questions: string[][];
 }): JSX.Element {
-  const { classes, questionChosen, setQuestionChosen, universalContext } =
+  const { classes, questionChosen, setQuestionChosen, universalContext, questions, setQuestions } =
     props;
-  const [questions, setQuestions] = React.useState([
-    ["", ""],
-    ["", ""],
-    ["", ""],
-  ]);
+ 
   const [showQuestions, setShowQuestions] = React.useState(false);
   const [questionStrategy, setQuestionStrategy] =
     React.useState("verification");

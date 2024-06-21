@@ -19,6 +19,7 @@ import {
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import { MultipleChoiceBaseline } from "./recipe-fields";
 import { RecipeType } from "types";
+import PromptingOutput from "./prompting-output";
 
 interface FieldClasses {
   selectForm: string;
@@ -32,6 +33,7 @@ export function CogenerationFields(props: {
   classes: FieldClasses;
   genRecipe: string;
   setGenRecipe: React.Dispatch<React.SetStateAction<string>>;
+  
 }): JSX.Element {
   const { classes, genRecipe, setGenRecipe } = props;
 
@@ -43,7 +45,12 @@ export function CogenerationFields(props: {
   const handleContextChange = (val: string) => {
     setUniversalContext(val);
   };
-
+  const [questionChosen, setQuestionChosen] = React.useState("");
+  const [questions, setQuestions] = React.useState([
+    ["", ""],
+    ["", ""],
+    ["", ""],
+  ]);
   return (
     <>
       <Paper elevation={0} style={{ textAlign: "left" }}>
@@ -77,7 +84,7 @@ export function CogenerationFields(props: {
               required
               data-cy="universal-context"
               label="Universal Context"
-              placeholder="Insert context to start generating MCQ"
+              placeholder="Context to start generating MCQ"
               fullWidth
               multiline
               InputLabelProps={{
@@ -95,6 +102,10 @@ export function CogenerationFields(props: {
               <MultipleChoiceBaseline
                 classes={classes}
                 universalContext={universalContext}
+                questionChosen={questionChosen}
+                setQuestionChosen={setQuestionChosen}
+                questions={questions}
+                setQuestions={setQuestions}
               />
             </>
           ) : (
@@ -102,6 +113,7 @@ export function CogenerationFields(props: {
           )}
         </Grid>
       </Paper>
+      <PromptingOutput classes={classes} questionChosen={questionChosen} questions={questions}/>
     </>
   );
 }

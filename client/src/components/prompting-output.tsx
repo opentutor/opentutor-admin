@@ -6,26 +6,42 @@ The full terms of this copyright and license should always be found in the root 
 */
 import React from "react";
 import { Grid, TextField, Typography, Paper, Button } from "@mui/material";
-
+import {ReceiptLong as ReceiptLongIcon} from '@mui/icons-material'
 interface OutputClasses {
   button: string;
 }
 export function PromptingOutput(props: {
   classes: OutputClasses;
+  questionChosen: string;
+  questions: string[][];
 }): JSX.Element {
-  const { classes } = props;
-
+  const { classes, questionChosen, questions} = props;
+  const initialQuestions = [
+    ["", ""],
+    ["", ""],
+    ["", ""],
+  ];
+  const arraysEqual = (a: string[][], b: string[][]) => {
+    if (a.length !== b.length) return false;
+    for (let i = 0; i < a.length; i++) {
+      if (a[i].length !== b[i].length) return false;
+      for (let j = 0; j < a[i].length; j++) {
+        if (a[i][j] !== b[i][j]) return false;
+      }
+    }
+    return true;
+  };
   return (
     <>
       <Grid item xs={12}>
         <Paper elevation={0} style={{ textAlign: "left" }}>
-          <Typography variant="h6" style={{ paddingTop: 10, marginBottom: 10 }}>
+          <Typography variant="h6" style={{ marginTop:10, marginBottom: 10 }}>
             Output
           </Typography>
           <TextField
             data-cy="prompting-output"
             label="JSON Output"
-            placeholder={
+            value={
               '{\n\t"lesson_name": "Pioneering the Future",\n\t"learning_objective": "Learning something new.",\n\t...\n}'
             }
             fullWidth
@@ -42,10 +58,12 @@ export function PromptingOutput(props: {
           <Button
             data-cy="generate-question-answer"
             className={classes.button}
+            startIcon={<ReceiptLongIcon />}
             variant="contained"
-            color="primary"
+            color="info"
             size="small"
             style={{ marginTop: 10 }}
+            disabled={arraysEqual(questions, initialQuestions)}
           >
             Call & Response Log
           </Button>

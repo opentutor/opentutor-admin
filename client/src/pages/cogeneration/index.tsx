@@ -16,7 +16,6 @@ import { Theme } from "@mui/material/styles";
 import "styles/layout.css";
 import "jsoneditor-react/es/editor.min.css";
 import "react-toastify/dist/ReactToastify.css";
-import PromptingOutput from "components/prompting-output";
 
 const useStyles = makeStyles((theme: Theme) => ({
   appBar: {
@@ -125,7 +124,6 @@ const CogenerationContent = () => {
             setGenRecipe={setGenRecipe}
           />
         </form>
-        <PromptingOutput classes={classes} />
       </Grid>
     </Grid>
   );
