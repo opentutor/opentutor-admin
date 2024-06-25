@@ -66,7 +66,6 @@ const QuestionAnswerPair = (props: {
     setQuestionChosen(event.target.value as string);
   };
 
-  
   return (
     <Card
       data-cy={`Question-${questionIndex}`}
@@ -160,12 +159,21 @@ export function QuestionAnswerGen(props: {
   questions: string[][];
   distractors: string[];
 }): JSX.Element {
-  const { classes, questionChosen, setQuestionChosen, distractors, universalContext, questions, setQuestions } =
-    props;
- 
+  const {
+    classes,
+    questionChosen,
+    setQuestionChosen,
+    distractors,
+    universalContext,
+    questions,
+    setQuestions,
+  } = props;
+
   const [showQuestions, setShowQuestions] = React.useState(false);
   const [open, setOpen] = React.useState(false);
-  const [questionToDelete, setQuestionToDelete] = React.useState<number | null>(null);
+  const [questionToDelete, setQuestionToDelete] = React.useState<number | null>(
+    null
+  );
   const handleOpen = () => {
     setOpen(true);
   };
@@ -180,7 +188,6 @@ export function QuestionAnswerGen(props: {
   const handleQuestionStrategy = (event: SelectChangeEvent) => {
     setQuestionStrategy(event.target.value as string);
   };
-
 
   const handleQuestionChange = (val: string, idx: number) => {
     setQuestions((oldQuestions) => {
@@ -200,11 +207,12 @@ export function QuestionAnswerGen(props: {
 
   const handleRemoveQuestion = (index: number | null) => {
     if (index !== null) {
-      setQuestions((oldQuestions) => oldQuestions.filter((_, idx) => idx !== index));
+      setQuestions((oldQuestions) =>
+        oldQuestions.filter((_, idx) => idx !== index)
+      );
     }
     setQuestionToDelete(null);
   };
-
 
   const handleGenerateQuestions = () => {
     setQuestions([
@@ -303,38 +311,36 @@ export function QuestionAnswerGen(props: {
           {showQuestions &&
             questions.map((row, i) => (
               <>
-              <QuestionAnswerPair
-                key={row[0]}
-                classes={classes}
-                questionIndex={i}
-                question={row[0]}
-                answer={row[1]}
-                handleQuestionChange={(val: string) => {
-                  handleQuestionChange(val, i);
-                }}
-                handleRemoveQuestion={() => {
-                  setQuestionToDelete(i);
-                  if((questionChosen===row[0]) && (distractors[0] != "")){
-                    handleOpen()
-                  }
-                  else{
-                    handleRemoveQuestion(i);
-                  }
-                }}
-                handleAnswerChange={(val: string) => {
-                  handleAnswerChange(val, i);
-                }}
-                canDelete={questions.length > 1}
-                questionChosen={questionChosen}
-                setQuestionChosen={setQuestionChosen}
-              />
-              
+                <QuestionAnswerPair
+                  key={row[0]}
+                  classes={classes}
+                  questionIndex={i}
+                  question={row[0]}
+                  answer={row[1]}
+                  handleQuestionChange={(val: string) => {
+                    handleQuestionChange(val, i);
+                  }}
+                  handleRemoveQuestion={() => {
+                    setQuestionToDelete(i);
+                    if (questionChosen === row[0] && distractors[0] != "") {
+                      handleOpen();
+                    } else {
+                      handleRemoveQuestion(i);
+                    }
+                  }}
+                  handleAnswerChange={(val: string) => {
+                    handleAnswerChange(val, i);
+                  }}
+                  canDelete={questions.length > 1}
+                  questionChosen={questionChosen}
+                  setQuestionChosen={setQuestionChosen}
+                />
               </>
             ))}
           <Divider variant="middle" className={classes.divider} />
         </Grid>
       </Paper>
-      <DeleteDialog 
+      <DeleteDialog
         open={open}
         handleClose={handleClose}
         handleConfirm={handleRemoveQuestion}

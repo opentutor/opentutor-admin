@@ -1,32 +1,26 @@
+/*
+This software is Copyright ©️ 2020 The University of Southern California. All Rights Reserved. 
+Permission to use, copy, modify, and distribute this software and its documentation for educational, research and non-profit purposes, without fee, and without a written agreement is hereby granted, provided that the above copyright notice and subject to the full license file found in the root of this software deliverable. Permission to make commercial use of this software may be obtained by contacting:  USC Stevens Center for Innovation University of Southern California 1150 S. Olive Street, Suite 2300, Los Angeles, CA 90115, USA Email: accounting@stevens.usc.edu
 
+The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
+*/
 
 import React from "react";
 
 import {
-  Avatar,
   Button,
   Dialog,
   DialogActions,
-  DialogContent,
-  DialogContentText,
   DialogTitle,
   IconButton,
-  InputLabel,
   List,
   ListItem,
-  ListItemAvatar,
   ListItemButton,
   ListItemText,
   TextField,
-  Typography,
 } from "@mui/material";
-import {
-  Close as CloseIcon,
-} from "@mui/icons-material";
+import { Close as CloseIcon } from "@mui/icons-material";
 
-
-
-const emails = ['username@gmail.com', 'user02@gmail.com'];
 export interface SimpleDialogProps {
   open: boolean;
   selectedValue: string;
@@ -34,13 +28,27 @@ export interface SimpleDialogProps {
   setSelectedValue: React.Dispatch<React.SetStateAction<string>>;
 }
 
-function CallResponseLog(props: SimpleDialogProps) {
-  
+function CallResponseLog(props: SimpleDialogProps): JSX.Element {
   const [logPairs, setLogPairs] = React.useState([
-    {title: '1st Q&A Generation', type: "Q&A", call: 'Hello', response: 'Hi there!' },
-    {title: '2nd Q&A Generation', type: "Q&A", call: 'Hello', response: 'Hi there!' },
-    {title: '1st Distractor Generation', type: "Distractor", call: 'How are you?', response: 'I am fine, thank you!' },
-  ])
+    {
+      title: "1st Q&A Generation",
+      type: "Q&A",
+      call: "Hello",
+      response: "Hi there!",
+    },
+    {
+      title: "2nd Q&A Generation",
+      type: "Q&A",
+      call: "Hello",
+      response: "Hi there!",
+    },
+    {
+      title: "1st Distractor Generation",
+      type: "Distractor",
+      call: "How are you?",
+      response: "I am fine, thank you!",
+    },
+  ]);
   const { onClose, selectedValue, open, setSelectedValue } = props;
 
   const handleClose = () => {
@@ -51,40 +59,45 @@ function CallResponseLog(props: SimpleDialogProps) {
     onClose(value);
   };
 
-  const selectedPair = logPairs.find(pair => pair.title === selectedValue) || {title: 'error', type: 'error404', call: '', response: '' };
+  const selectedPair = logPairs.find(
+    (pair) => pair.title === selectedValue
+  ) || { title: "error", type: "error404", call: "", response: "" };
   return (
     <Dialog onClose={handleClose} open={open} fullWidth>
-      <DialogTitle>{selectedValue==="" ? "Select call & response pair" : selectedPair.title}</DialogTitle>
+      <DialogTitle>
+        {selectedValue === ""
+          ? "Select call & response pair"
+          : selectedPair.title}
+      </DialogTitle>
       <IconButton
         aria-label="close"
         onClick={handleClose}
         sx={{
-          position: 'absolute',
+          position: "absolute",
           right: 8,
           top: 8,
           color: (theme) => theme.palette.grey[500],
         }}
       >
         <CloseIcon />
-      </IconButton>      
-      {selectedValue=="" ? (
+      </IconButton>
+      {selectedValue == "" ? (
         <>
-
-        <List sx={{ pt: 0 }}>
-          {logPairs.map((pair, index) => (
-            <ListItem disableGutters key={index}>
-              <ListItemButton onClick={() => setSelectedValue(pair.title)}>
-                <ListItemText primary={pair.title} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-       </List>
-       </>
+          <List sx={{ pt: 0 }}>
+            {logPairs.map((pair, index) => (
+              <ListItem disableGutters key={index}>
+                <ListItemButton onClick={() => setSelectedValue(pair.title)}>
+                  <ListItemText primary={pair.title} />
+                </ListItemButton>
+              </ListItem>
+            ))}
+          </List>
+        </>
       ) : (
         <>
           <TextField
             data-cy="call-output"
-            label='Call'
+            label="Call"
             value={selectedPair.call}
             multiline
             InputLabelProps={{
@@ -99,7 +112,7 @@ function CallResponseLog(props: SimpleDialogProps) {
           />
           <TextField
             data-cy="response-output"
-            label='Response'
+            label="Response"
             value={selectedPair.response}
             multiline
             InputLabelProps={{
@@ -115,11 +128,8 @@ function CallResponseLog(props: SimpleDialogProps) {
           <DialogActions>
             <Button onClick={() => setSelectedValue("")}>Back</Button>
           </DialogActions>
-          </>
-
+        </>
       )}
-      
-     
     </Dialog>
   );
 }

@@ -33,7 +33,6 @@ export function CogenerationFields(props: {
   classes: FieldClasses;
   genRecipe: string;
   setGenRecipe: React.Dispatch<React.SetStateAction<string>>;
-  
 }): JSX.Element {
   const { classes, genRecipe, setGenRecipe } = props;
 
@@ -113,7 +112,7 @@ export function CogenerationFields(props: {
           )}
         </Grid>
       </Paper>
-      <PromptingOutput classes={classes} questions={questions}/>
+      <PromptingOutput classes={classes} questions={questions} />
     </>
   );
 }

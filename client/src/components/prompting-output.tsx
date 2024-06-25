@@ -6,21 +6,21 @@ The full terms of this copyright and license should always be found in the root 
 */
 import React from "react";
 import { Grid, TextField, Typography, Paper, Button } from "@mui/material";
-import {ReceiptLong as ReceiptLongIcon} from '@mui/icons-material'
+import { ReceiptLong as ReceiptLongIcon } from "@mui/icons-material";
 import CallResponseLog from "./call-response-log";
 
 interface OutputClasses {
   button: string;
 }
 
-const emails = ['username@gmail.com', 'user02@gmail.com'];
+const emails = ["username@gmail.com", "user02@gmail.com"];
 
 export function PromptingOutput(props: {
   classes: OutputClasses;
 
   questions: string[][];
 }): JSX.Element {
-  const { classes, questions} = props;
+  const { classes, questions } = props;
   const initialQuestions = [
     ["", ""],
     ["", ""],
@@ -44,7 +44,6 @@ export function PromptingOutput(props: {
     setOpen(true);
   };
 
-
   const handleClose = (value: string) => {
     setOpen(false);
     setTimeout(() => {
@@ -56,7 +55,7 @@ export function PromptingOutput(props: {
     <>
       <Grid item xs={12}>
         <Paper elevation={0} style={{ textAlign: "left" }}>
-          <Typography variant="h6" style={{ marginTop:10, marginBottom: 10 }}>
+          <Typography variant="h6" style={{ marginTop: 10, marginBottom: 10 }}>
             Output
           </Typography>
           <TextField

@@ -26,7 +26,14 @@ export function MultipleChoiceBaseline(props: {
   setQuestions: React.Dispatch<React.SetStateAction<string[][]>>;
   questions: string[][];
 }): JSX.Element {
-  const { classes, universalContext, questionChosen, setQuestionChosen, questions, setQuestions } = props;
+  const {
+    classes,
+    universalContext,
+    questionChosen,
+    setQuestionChosen,
+    questions,
+    setQuestions,
+  } = props;
   const [distractors, setDistractors] = React.useState([""]);
   const [showDistractors, setShowDistractors] = React.useState(false);
 

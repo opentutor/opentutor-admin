@@ -98,14 +98,21 @@ export function DistractionGen(props: {
   onDistractorChange: (val: string, idx: number) => void;
   onRemoveDistractor: (index: number) => void;
   onGenerateDistractors: () => void;
-  
 }): JSX.Element {
-  const { classes, questionChosen, universalContext, distractors, showDistractors, onDistractorChange, onRemoveDistractor, onGenerateDistractors } = props;
+  const {
+    classes,
+    questionChosen,
+    universalContext,
+    distractors,
+    showDistractors,
+    onDistractorChange,
+    onRemoveDistractor,
+    onGenerateDistractors,
+  } = props;
   const [distractorStrategy, setDistractorStrategy] = React.useState("random");
   const handleDistractorStrategy = (event: SelectChangeEvent) => {
     setDistractorStrategy(event.target.value as string);
   };
-  
 
   return (
     <>
