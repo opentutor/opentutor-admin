@@ -45,7 +45,7 @@ export function DeleteDialog(props:{
                 handleConfirm(index);
               }
               handleClose();}} 
-            autoFocus
+              autoFocus
           >
             Delete Question
           </Button>

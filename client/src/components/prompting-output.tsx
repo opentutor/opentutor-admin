@@ -7,9 +7,14 @@ The full terms of this copyright and license should always be found in the root 
 import React from "react";
 import { Grid, TextField, Typography, Paper, Button } from "@mui/material";
 import {ReceiptLong as ReceiptLongIcon} from '@mui/icons-material'
+import CallResponseLog from "./call-response-log";
+
 interface OutputClasses {
   button: string;
 }
+
+const emails = ['username@gmail.com', 'user02@gmail.com'];
+
 export function PromptingOutput(props: {
   classes: OutputClasses;
 
@@ -31,6 +36,22 @@ export function PromptingOutput(props: {
     }
     return true;
   };
+
+  const [open, setOpen] = React.useState(false);
+  const [selectedValue, setSelectedValue] = React.useState("");
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+
+  const handleClose = (value: string) => {
+    setOpen(false);
+    setTimeout(() => {
+      setSelectedValue("");
+    }, 1000);
+  };
+
   return (
     <>
       <Grid item xs={12}>
@@ -63,12 +84,19 @@ export function PromptingOutput(props: {
             color="info"
             size="small"
             style={{ marginTop: 10 }}
-            disabled={arraysEqual(questions, initialQuestions)}
+            onClick={handleClickOpen}
+            /*disabled={arraysEqual(questions, initialQuestions)}*/
           >
             Call & Response Log
           </Button>
         </Paper>
       </Grid>
+      <CallResponseLog
+        selectedValue={selectedValue}
+        open={open}
+        onClose={handleClose}
+        setSelectedValue={setSelectedValue}
+      />
     </>
   );
 }
