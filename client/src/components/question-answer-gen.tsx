@@ -27,6 +27,7 @@ import {
   Radio,
 } from "@mui/material";
 import { ClearOutlined, ExpandMore } from "@mui/icons-material";
+import DeleteDialog from "./delete-dialog";
 
 interface QuestionAnswerClasses {
   selectForm: string;
@@ -42,7 +43,7 @@ const QuestionAnswerPair = (props: {
   question: string;
   answer: string;
   handleQuestionChange: (val: string) => void;
-  handleRemoveQuestion: () => void;
+  handleRemoveQuestion: (index: number) => void;
   handleAnswerChange: (val: string) => void;
   canDelete: boolean;
   questionChosen: string;
@@ -65,6 +66,7 @@ const QuestionAnswerPair = (props: {
     setQuestionChosen(event.target.value as string);
   };
 
+  
   return (
     <Card
       data-cy={`Question-${questionIndex}`}
@@ -95,7 +97,7 @@ const QuestionAnswerPair = (props: {
                 data-cy="delete"
                 aria-label="remove question"
                 size="small"
-                onClick={handleRemoveQuestion}
+                onClick={() => handleRemoveQuestion(questionIndex)}
               >
                 <ClearOutlined />
               </IconButton>
@@ -156,16 +158,30 @@ export function QuestionAnswerGen(props: {
   universalContext: string;
   setQuestions: React.Dispatch<React.SetStateAction<string[][]>>;
   questions: string[][];
+  distractors: string[];
 }): JSX.Element {
-  const { classes, questionChosen, setQuestionChosen, universalContext, questions, setQuestions } =
+  const { classes, questionChosen, setQuestionChosen, distractors, universalContext, questions, setQuestions } =
     props;
  
   const [showQuestions, setShowQuestions] = React.useState(false);
+  const [open, setOpen] = React.useState(false);
+  const [questionToDelete, setQuestionToDelete] = React.useState<number | null>(null);
+  const handleOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setQuestionToDelete(null);
+    setOpen(false);
+  };
+
   const [questionStrategy, setQuestionStrategy] =
     React.useState("verification");
   const handleQuestionStrategy = (event: SelectChangeEvent) => {
     setQuestionStrategy(event.target.value as string);
   };
+
+
   const handleQuestionChange = (val: string, idx: number) => {
     setQuestions((oldQuestions) => {
       const newQuestions = [...oldQuestions];
@@ -181,18 +197,14 @@ export function QuestionAnswerGen(props: {
       return newQuestions;
     });
   };
-  const handleRemoveQuestion = (index: number) => {
-    setQuestions((oldQuestions) => {
-      const newQuestions = oldQuestions.filter((_, idx) => idx !== index);
-      if (questionChosen === oldQuestions[index][0]) {
-        const newIndex = index > 0 ? index - 1 : 0;
-        setQuestionChosen(
-          newQuestions.length > 0 ? newQuestions[newIndex][0] : ""
-        );
-      }
-      return newQuestions;
-    });
+
+  const handleRemoveQuestion = (index: number | null) => {
+    if (index !== null) {
+      setQuestions((oldQuestions) => oldQuestions.filter((_, idx) => idx !== index));
+    }
+    setQuestionToDelete(null);
   };
+
 
   const handleGenerateQuestions = () => {
     setQuestions([
@@ -290,6 +302,7 @@ export function QuestionAnswerGen(props: {
           </Grid>
           {showQuestions &&
             questions.map((row, i) => (
+              <>
               <QuestionAnswerPair
                 key={row[0]}
                 classes={classes}
@@ -300,7 +313,13 @@ export function QuestionAnswerGen(props: {
                   handleQuestionChange(val, i);
                 }}
                 handleRemoveQuestion={() => {
-                  handleRemoveQuestion(i);
+                  setQuestionToDelete(i);
+                  if((questionChosen===row[0]) && (distractors[0] != "")){
+                    handleOpen()
+                  }
+                  else{
+                    handleRemoveQuestion(i);
+                  }
                 }}
                 handleAnswerChange={(val: string) => {
                   handleAnswerChange(val, i);
@@ -309,10 +328,18 @@ export function QuestionAnswerGen(props: {
                 questionChosen={questionChosen}
                 setQuestionChosen={setQuestionChosen}
               />
+              
+              </>
             ))}
           <Divider variant="middle" className={classes.divider} />
         </Grid>
       </Paper>
+      <DeleteDialog 
+        open={open}
+        handleClose={handleClose}
+        handleConfirm={handleRemoveQuestion}
+        index={questionToDelete}
+      />
     </>
   );
 }

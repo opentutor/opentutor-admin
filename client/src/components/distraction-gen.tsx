@@ -93,33 +93,19 @@ export function DistractionGen(props: {
   classes: DistractorClasses;
   questionChosen: string;
   universalContext: string;
+  distractors: string[];
+  showDistractors: boolean;
+  onDistractorChange: (val: string, idx: number) => void;
+  onRemoveDistractor: (index: number) => void;
+  onGenerateDistractors: () => void;
+  
 }): JSX.Element {
-  const { classes, questionChosen, universalContext } = props;
+  const { classes, questionChosen, universalContext, distractors, showDistractors, onDistractorChange, onRemoveDistractor, onGenerateDistractors } = props;
   const [distractorStrategy, setDistractorStrategy] = React.useState("random");
   const handleDistractorStrategy = (event: SelectChangeEvent) => {
     setDistractorStrategy(event.target.value as string);
   };
-  const [distractors, setDistractors] = React.useState([""]);
-  const [showDistractors, setShowDistractors] = React.useState(false);
-
-  const handleDistractorChange = (val: string, idx: number) => {
-    setDistractors((oldDistractors) => {
-      const newDistractors = [...oldDistractors];
-      newDistractors[idx] = val;
-      return newDistractors;
-    });
-  };
-
-  const handleRemoveDistractor = (index: number) => {
-    setDistractors((oldDistractors) =>
-      oldDistractors.filter((_, idx) => idx !== index)
-    );
-  };
-
-  const handleGenerateDistractors = () => {
-    setDistractors(["distractor1", "distractor2", "distractor3"]);
-    setShowDistractors(true);
-  };
+  
 
   return (
     <>
@@ -163,7 +149,7 @@ export function DistractionGen(props: {
             <Button
               data-cy="generate-distractor"
               className={classes.button}
-              onClick={handleGenerateDistractors}
+              onClick={onGenerateDistractors}
               variant="contained"
               color="primary"
               size="small"
@@ -204,14 +190,13 @@ export function DistractionGen(props: {
             distractors.map((row, i) => (
               <Distractor
                 key={row}
-
                 distractorIndex={i}
                 distractor={row}
                 handleDistractorChange={(val: string) => {
-                  handleDistractorChange(val, i);
+                  onDistractorChange(val, i);
                 }}
                 handleRemoveDistractor={() => {
-                  handleRemoveDistractor(i);
+                  onRemoveDistractor(i);
                 }}
                 canDelete={distractors.length > 1}
               />

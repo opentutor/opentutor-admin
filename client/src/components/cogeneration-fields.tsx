@@ -113,7 +113,7 @@ export function CogenerationFields(props: {
           )}
         </Grid>
       </Paper>
-      <PromptingOutput classes={classes} questionChosen={questionChosen} questions={questions}/>
+      <PromptingOutput classes={classes} questions={questions}/>
     </>
   );
 }

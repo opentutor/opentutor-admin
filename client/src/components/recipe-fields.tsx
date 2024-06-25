@@ -27,7 +27,27 @@ export function MultipleChoiceBaseline(props: {
   questions: string[][];
 }): JSX.Element {
   const { classes, universalContext, questionChosen, setQuestionChosen, questions, setQuestions } = props;
+  const [distractors, setDistractors] = React.useState([""]);
+  const [showDistractors, setShowDistractors] = React.useState(false);
 
+  const handleDistractorChange = (val: string, idx: number) => {
+    setDistractors((oldDistractors) => {
+      const newDistractors = [...oldDistractors];
+      newDistractors[idx] = val;
+      return newDistractors;
+    });
+  };
+
+  const handleRemoveDistractor = (index: number) => {
+    setDistractors((oldDistractors) =>
+      oldDistractors.filter((_, idx) => idx !== index)
+    );
+  };
+
+  const handleGenerateDistractors = () => {
+    setDistractors(["distractor1", "distractor2", "distractor3"]);
+    setShowDistractors(true);
+  };
   return (
     <>
       <Grid item xs={12}>
@@ -38,6 +58,7 @@ export function MultipleChoiceBaseline(props: {
           universalContext={universalContext}
           questions={questions}
           setQuestions={setQuestions}
+          distractors={distractors}
         />
       </Grid>
 
@@ -46,6 +67,11 @@ export function MultipleChoiceBaseline(props: {
           classes={classes}
           questionChosen={questionChosen}
           universalContext={universalContext}
+          distractors={distractors}
+          showDistractors={showDistractors}
+          onDistractorChange={handleDistractorChange}
+          onRemoveDistractor={handleRemoveDistractor}
+          onGenerateDistractors={handleGenerateDistractors}
         />
       </Grid>
     </>

@@ -12,10 +12,10 @@ interface OutputClasses {
 }
 export function PromptingOutput(props: {
   classes: OutputClasses;
-  questionChosen: string;
+
   questions: string[][];
 }): JSX.Element {
-  const { classes, questionChosen, questions} = props;
+  const { classes, questions} = props;
   const initialQuestions = [
     ["", ""],
     ["", ""],
