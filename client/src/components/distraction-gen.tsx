@@ -91,7 +91,7 @@ const Distractor = (props: {
 };
 export function DistractionGen(props: {
   classes: DistractorClasses;
-  questionChosen: string;
+  questionChosen: number | null;
   universalContext: string;
   distractors: string[];
   showDistractors: boolean;
@@ -160,7 +160,7 @@ export function DistractionGen(props: {
               variant="contained"
               color="primary"
               size="small"
-              disabled={questionChosen === "" || universalContext === ""}
+              disabled={questionChosen === null || universalContext === ""}
             >
               Generate Distractors
             </Button>
@@ -196,7 +196,7 @@ export function DistractionGen(props: {
           {showDistractors &&
             distractors.map((row, i) => (
               <Distractor
-                key={row}
+                key={i}
                 distractorIndex={i}
                 distractor={row}
                 handleDistractorChange={(val: string) => {

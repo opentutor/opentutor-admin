@@ -84,7 +84,7 @@ export function PromptingOutput(props: {
             size="small"
             style={{ marginTop: 10 }}
             onClick={handleClickOpen}
-            /*disabled={arraysEqual(questions, initialQuestions)}*/
+            disabled={arraysEqual(questions, initialQuestions)}
           >
             Call & Response Log
           </Button>

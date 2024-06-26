@@ -46,8 +46,8 @@ const QuestionAnswerPair = (props: {
   handleRemoveQuestion: (index: number) => void;
   handleAnswerChange: (val: string) => void;
   canDelete: boolean;
-  questionChosen: string;
-  setQuestionChosen: React.Dispatch<React.SetStateAction<string>>;
+  questionChosen: number | null;
+  setQuestionChosen: React.Dispatch<React.SetStateAction<number | null>>
 }) => {
   const {
     classes,
@@ -63,7 +63,13 @@ const QuestionAnswerPair = (props: {
   } = props;
   const [expanded, setExpanded] = React.useState(true);
   const handleRadioChange = (event: SelectChangeEvent) => {
-    setQuestionChosen(event.target.value as string);
+    const selectedValue = parseInt(event.target.value, 10);
+  
+    if (!isNaN(selectedValue)) {
+      setQuestionChosen(selectedValue);
+    } else {
+      console.error('Invalid value type received for questionChosen:', event.target.value);
+    }
   };
 
   return (
@@ -88,7 +94,7 @@ const QuestionAnswerPair = (props: {
             onChange={(e) => {
               handleQuestionChange(e.target.value);
             }}
-            disabled={questionChosen != question && questionChosen != ""}
+            disabled={questionChosen != questionIndex && questionChosen != null}
           />
           <CardActions>
             {canDelete ? (
@@ -102,9 +108,9 @@ const QuestionAnswerPair = (props: {
               </IconButton>
             ) : null}
             <Radio
-              checked={questionChosen === question}
+              checked={questionChosen === questionIndex}
               onChange={handleRadioChange}
-              value={question}
+              value={questionIndex.toString()}
               name="radio-button"
             />
             <IconButton
@@ -142,7 +148,7 @@ const QuestionAnswerPair = (props: {
             onChange={(e) => {
               handleAnswerChange(e.target.value);
             }}
-            disabled={questionChosen != question && questionChosen != ""}
+            disabled={questionChosen != questionIndex && questionChosen != null}
           />
         </Collapse>
       </CardContent>
@@ -152,8 +158,8 @@ const QuestionAnswerPair = (props: {
 
 export function QuestionAnswerGen(props: {
   classes: QuestionAnswerClasses;
-  questionChosen: string;
-  setQuestionChosen: React.Dispatch<React.SetStateAction<string>>;
+  questionChosen: number | null;
+  setQuestionChosen: React.Dispatch<React.SetStateAction<number | null>>;
   universalContext: string;
   setQuestions: React.Dispatch<React.SetStateAction<string[][]>>;
   questions: string[][];
@@ -207,9 +213,21 @@ export function QuestionAnswerGen(props: {
 
   const handleRemoveQuestion = (index: number | null) => {
     if (index !== null) {
-      setQuestions((oldQuestions) =>
-        oldQuestions.filter((_, idx) => idx !== index)
-      );
+      setQuestions((oldQuestions) => {
+        const newQuestions = oldQuestions.filter((_, idx) => idx !== index);
+  
+        // Adjusted logic for setting questionChosen
+        if (questionChosen === index) {
+          if (newQuestions.length > 0) {
+            const newIndex = index === 0 ? 0 : index - 1;
+            setQuestionChosen(newIndex);
+          } else {
+            setQuestionChosen(null); // Assuming questionChosen is number | null
+          }
+        }
+  
+        return newQuestions;
+      });
     }
     setQuestionToDelete(null);
   };
@@ -312,7 +330,7 @@ export function QuestionAnswerGen(props: {
             questions.map((row, i) => (
               <>
                 <QuestionAnswerPair
-                  key={row[0]}
+                  key={i}
                   classes={classes}
                   questionIndex={i}
                   question={row[0]}
@@ -322,7 +340,7 @@ export function QuestionAnswerGen(props: {
                   }}
                   handleRemoveQuestion={() => {
                     setQuestionToDelete(i);
-                    if (questionChosen === row[0] && distractors[0] != "") {
+                    if (questionChosen === i && distractors[0] != "") {
                       handleOpen();
                     } else {
                       handleRemoveQuestion(i);

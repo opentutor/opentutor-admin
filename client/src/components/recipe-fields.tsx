@@ -21,8 +21,8 @@ import DistractionGen from "./distraction-gen";
 export function MultipleChoiceBaseline(props: {
   classes: RecipeClasses;
   universalContext: string;
-  questionChosen: string;
-  setQuestionChosen: React.Dispatch<React.SetStateAction<string>>;
+  questionChosen: number| null;
+  setQuestionChosen: React.Dispatch<React.SetStateAction<number| null>>;
   setQuestions: React.Dispatch<React.SetStateAction<string[][]>>;
   questions: string[][];
 }): JSX.Element {

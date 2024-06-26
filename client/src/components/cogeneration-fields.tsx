@@ -44,7 +44,7 @@ export function CogenerationFields(props: {
   const handleContextChange = (val: string) => {
     setUniversalContext(val);
   };
-  const [questionChosen, setQuestionChosen] = React.useState("");
+  const [questionChosen, setQuestionChosen] = React.useState<number | null>(null);
   const [questions, setQuestions] = React.useState([
     ["", ""],
     ["", ""],
