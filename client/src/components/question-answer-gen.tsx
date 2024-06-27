@@ -282,7 +282,7 @@ export function QuestionAnswerGen(props: {
               size="small"
               disabled={universalContext === ""}
             >
-              Generate QA Pairs
+              Generate QA Pairs 
             </Button>
           </Grid>
         </Grid>

@@ -6,9 +6,9 @@ The full terms of this copyright and license should always be found in the root 
 */
 import React from "react";
 import { Grid, TextField, Typography, Paper, Button } from "@mui/material";
-import { ReceiptLong as ReceiptLongIcon } from "@mui/icons-material";
+import { ReceiptLong as ReceiptLongIcon, RateReview as RateReviewIcon } from "@mui/icons-material";
 import CallResponseLog from "./call-response-log";
-
+import ViewPrompts from "./view-prompts";
 interface OutputClasses {
   button: string;
 }
@@ -37,15 +37,27 @@ export function PromptingOutput(props: {
     return true;
   };
 
-  const [open, setOpen] = React.useState(false);
+  const [openLog, setOpenLog] = React.useState(false);
   const [selectedValue, setSelectedValue] = React.useState("");
 
-  const handleClickOpen = () => {
-    setOpen(true);
+  const [openPrompts, setOpenPrompts] = React.useState(false);
+  const [selectedPrompt, setSelectedPrompt] = React.useState("");
+  const handleClickOpenLog = () => {
+    setOpenLog(true);
+  };
+  const handleClickOpenPrompts = () => {
+    setOpenPrompts(true);
   };
 
-  const handleClose = (value: string) => {
-    setOpen(false);
+  const handleClosePrompts = (value: string) => {
+    setOpenPrompts(false);
+    setTimeout(() => {
+      setSelectedPrompt("");
+    }, 1000);
+  };
+
+  const handleCloseLog = (value: string) => {
+    setOpenLog(false);
     setTimeout(() => {
       setSelectedValue("");
     }, 1000);
@@ -82,19 +94,40 @@ export function PromptingOutput(props: {
             variant="contained"
             color="info"
             size="small"
-            style={{ marginTop: 10 }}
-            onClick={handleClickOpen}
+            style={{ marginTop: 10, marginRight: 10 }}
+            onClick={handleClickOpenLog}
             disabled={arraysEqual(questions, initialQuestions)}
           >
             Call & Response Log
           </Button>
+          <Button
+            data-cy="view-prompts"
+            className={classes.button}
+            startIcon={<RateReviewIcon />}
+            variant="outlined"
+            color="info"
+            size="small"
+            style={{ marginTop: 10 }}
+            onClick={handleClickOpenPrompts}
+            disabled={arraysEqual(questions, initialQuestions)}
+          >
+            View Prompts
+          </Button>
+          
+          
         </Paper>
       </Grid>
       <CallResponseLog
         selectedValue={selectedValue}
-        open={open}
-        onClose={handleClose}
+        open={openLog}
+        onClose={handleCloseLog}
         setSelectedValue={setSelectedValue}
+      />
+      <ViewPrompts 
+        selectedPrompt={selectedPrompt}
+        open={openPrompts}
+        onClose={handleClosePrompts}
+        setSelectedPrompt={setSelectedPrompt}
       />
     </>
   );
