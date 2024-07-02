@@ -1,4 +1,10 @@
 /*
+This software is Copyright ©️ 2024 The University of Southern California. All Rights Reserved. 
+Permission to use, copy, modify, and distribute this software and its documentation for educational, research and non-profit purposes, without fee, and without a written agreement is hereby granted, provided that the above copyright notice and subject to the full license file found in the root of this software deliverable. Permission to make commercial use of this software may be obtained by contacting:  USC Stevens Center for Innovation University of Southern California 1150 S. Olive Street, Suite 2300, Los Angeles, CA 90115, USA Email: accounting@stevens.usc.edu
+
+The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
+*/
+/*
 This software is Copyright ©️ 2020 The University of Southern California. All Rights Reserved. 
 Permission to use, copy, modify, and distribute this software and its documentation for educational, research and non-profit purposes, without fee, and without a written agreement is hereby granted, provided that the above copyright notice and subject to the full license file found in the root of this software deliverable. Permission to make commercial use of this software may be obtained by contacting:  USC Stevens Center for Innovation University of Southern California 1150 S. Olive Street, Suite 2300, Los Angeles, CA 90115, USA Email: accounting@stevens.usc.edu
 
@@ -27,28 +33,15 @@ export interface SimpleDialogProps {
   onClose: (value: string) => void;
   setSelectedValue: React.Dispatch<React.SetStateAction<string>>;
 }
-
+interface LogPair {
+  title: string;
+  type: string;
+  call: string;
+  response: string;
+}
 function CallResponseLog(props: SimpleDialogProps): JSX.Element {
-  const [logPairs, setLogPairs] = React.useState([
-    {
-      title: "1st Q&A Generation",
-      type: "Q&A",
-      call: "Hello",
-      response: "Hi there!",
-    },
-    {
-      title: "2nd Q&A Generation",
-      type: "Q&A",
-      call: "Hello",
-      response: "Hi there!",
-    },
-    {
-      title: "1st Distractor Generation",
-      type: "Distractor",
-      call: "How are you?",
-      response: "I am fine, thank you!",
-    },
-  ]);
+  const [logPairs, setLogPairs] = React.useState<LogPair[]>([]);
+
   const { onClose, selectedValue, open, setSelectedValue } = props;
 
   const handleClose = () => {

@@ -1,10 +1,16 @@
 /*
+This software is Copyright ©️ 2024 The University of Southern California. All Rights Reserved. 
+Permission to use, copy, modify, and distribute this software and its documentation for educational, research and non-profit purposes, without fee, and without a written agreement is hereby granted, provided that the above copyright notice and subject to the full license file found in the root of this software deliverable. Permission to make commercial use of this software may be obtained by contacting:  USC Stevens Center for Innovation University of Southern California 1150 S. Olive Street, Suite 2300, Los Angeles, CA 90115, USA Email: accounting@stevens.usc.edu
+
+The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
+*/
+/*
 This software is Copyright ©️ 2020 The University of Southern California. All Rights Reserved. 
 Permission to use, copy, modify, and distribute this software and its documentation for educational, research and non-profit purposes, without fee, and without a written agreement is hereby granted, provided that the above copyright notice and subject to the full license file found in the root of this software deliverable. Permission to make commercial use of this software may be obtained by contacting:  USC Stevens Center for Innovation University of Southern California 1150 S. Olive Street, Suite 2300, Los Angeles, CA 90115, USA Email: accounting@stevens.usc.edu
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import React from "react";
+import React, { useContext } from "react";
 import {
   Grid,
   Divider,
@@ -24,6 +30,8 @@ import {
   IconButton,
 } from "@mui/material";
 import { ClearOutlined } from "@mui/icons-material";
+import { DistractorStrategy } from "constants/cogenerationDummyData";
+import CogenerationContext from "context/cogeneration";
 
 interface DistractorClasses {
   selectForm: string;
@@ -91,27 +99,17 @@ const Distractor = (props: {
 };
 export function DistractionGen(props: {
   classes: DistractorClasses;
-  questionChosen: number | null;
-  universalContext: string;
-  distractors: string[];
-  showDistractors: boolean;
-  onDistractorChange: (val: string, idx: number) => void;
-  onRemoveDistractor: (index: number) => void;
-  onGenerateDistractors: () => void;
 }): JSX.Element {
-  const {
-    classes,
-    questionChosen,
-    universalContext,
-    distractors,
-    showDistractors,
-    onDistractorChange,
-    onRemoveDistractor,
-    onGenerateDistractors,
-  } = props;
-  const [distractorStrategy, setDistractorStrategy] = React.useState("random");
+  const { classes } = props;
+  const context = useContext(CogenerationContext);
+  if (!context) {
+    throw new Error("SomeComponent must be used within a CogenerationProvider");
+  }
+
+  const [distractorStrategy, setDistractorStrategy] =
+    React.useState<DistractorStrategy>("random");
   const handleDistractorStrategy = (event: SelectChangeEvent) => {
-    setDistractorStrategy(event.target.value as string);
+    setDistractorStrategy(event.target.value as DistractorStrategy);
   };
 
   return (
@@ -156,11 +154,16 @@ export function DistractionGen(props: {
             <Button
               data-cy="generate-distractor"
               className={classes.button}
-              onClick={onGenerateDistractors}
+              onClick={() =>
+                context.handleGenerateDistractors(distractorStrategy)
+              }
               variant="contained"
               color="primary"
               size="small"
-              disabled={questionChosen === null || universalContext === ""}
+              disabled={
+                context.generationData.questionChosen === null ||
+                context.generationData.universalContext === ""
+              }
             >
               Generate Distractors
             </Button>
@@ -193,19 +196,19 @@ export function DistractionGen(props: {
               variant="filled"
             />
           </Grid>
-          {showDistractors &&
-            distractors.map((row, i) => (
+          {context.generationData.showDistractors &&
+            context.generationData.distractors.map((row, i) => (
               <Distractor
                 key={i}
                 distractorIndex={i}
                 distractor={row}
                 handleDistractorChange={(val: string) => {
-                  onDistractorChange(val, i);
+                  context.handleDistractorChange(val, i);
                 }}
                 handleRemoveDistractor={() => {
-                  onRemoveDistractor(i);
+                  context.handleRemoveDistractor(i);
                 }}
-                canDelete={distractors.length > 1}
+                canDelete={context.generationData.distractors.length > 1}
               />
             ))}
           <Divider variant="middle" className={classes.divider} />

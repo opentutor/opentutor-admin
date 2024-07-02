@@ -1,4 +1,10 @@
 /*
+This software is Copyright ©️ 2024 The University of Southern California. All Rights Reserved. 
+Permission to use, copy, modify, and distribute this software and its documentation for educational, research and non-profit purposes, without fee, and without a written agreement is hereby granted, provided that the above copyright notice and subject to the full license file found in the root of this software deliverable. Permission to make commercial use of this software may be obtained by contacting:  USC Stevens Center for Innovation University of Southern California 1150 S. Olive Street, Suite 2300, Los Angeles, CA 90115, USA Email: accounting@stevens.usc.edu
+
+The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
+*/
+/*
 This software is Copyright ©️ 2020 The University of Southern California. All Rights Reserved. 
 Permission to use, copy, modify, and distribute this software and its documentation for educational, research and non-profit purposes, without fee, and without a written agreement is hereby granted, provided that the above copyright notice and subject to the full license file found in the root of this software deliverable. Permission to make commercial use of this software may be obtained by contacting:  USC Stevens Center for Innovation University of Southern California 1150 S. Olive Street, Suite 2300, Los Angeles, CA 90115, USA Email: accounting@stevens.usc.edu
 
@@ -33,8 +39,10 @@ function ViewPrompts(props: SimpleDialogProps): JSX.Element {
     {
       title: "1st Q&A Generation",
       type: "Q&A",
-      prompt: 'You are to look at this data and come up with a question and an answer, and a optional learning objective related to this data.\nHere is the data: {data}',
-      systemPrompt: 'You are a system assisting a human in coming up with {n_questions} questions, and answers pairs (therefore the question list must be equal to the corrects list) with optional learning objectives for given data.\nYour response must be in JSON.\nFormat your response like this:\n{\n\t"question": [\n\t\t"question_1",\n\t\t"question_2",\n\t\t"question_3"\n\t\t...\n\t]\n}\nPlease only response in JSON. Validate that your response is in JSON. Do not include any JSON markdown, only JSON data.',
+      prompt:
+        "You are to look at this data and come up with a question and an answer, and a optional learning objective related to this data.\nHere is the data: {data}",
+      systemPrompt:
+        'You are a system assisting a human in coming up with {n_questions} questions, and answers pairs (therefore the question list must be equal to the corrects list) with optional learning objectives for given data.\nYour response must be in JSON.\nFormat your response like this:\n{\n\t"question": [\n\t\t"question_1",\n\t\t"question_2",\n\t\t"question_3"\n\t\t...\n\t]\n}\nPlease only response in JSON. Validate that your response is in JSON. Do not include any JSON markdown, only JSON data.',
     },
     {
       title: "1st Distractor Generation",
@@ -49,7 +57,7 @@ function ViewPrompts(props: SimpleDialogProps): JSX.Element {
       systemPrompt: "I am fine, thank you!",
     },
   ]);
-  const { onClose, selectedPrompt, open, setSelectedPrompt} = props;
+  const { onClose, selectedPrompt, open, setSelectedPrompt } = props;
 
   const handleClose = () => {
     onClose(selectedPrompt);
@@ -61,7 +69,7 @@ function ViewPrompts(props: SimpleDialogProps): JSX.Element {
 
   const selectedPair = promptPairs.find(
     (pair) => pair.title === selectedPrompt
-  ) || { title: "error", type: "error404",prompt : "", systemPrompt: "" };
+  ) || { title: "error", type: "error404", prompt: "", systemPrompt: "" };
   return (
     <Dialog onClose={handleClose} open={open} fullWidth>
       <DialogTitle>
