@@ -25,7 +25,7 @@ import { fetchLesson, userCanEdit, fetchLessons } from "api";
 import { DEFAULT_CLASSIFIER_ARCHITECTURE } from "admin-constants";
 import SessionContext from "context/session";
 import NavBar from "components/nav-bar";
-import SideBar from "components/side-bar";
+import SideBar from "components/edit-side-bar";
 import LessonHeader from "components/lesson-header";
 import ConclusionsList from "components/conclusions-list";
 import ExpectationsList from "components/expectations-list";
@@ -358,6 +358,7 @@ const LessonEdit = (props: {
             marginBottom: 10,
             paddingLeft: 40,
             paddingRight: 40,
+            height: "100vh",
           }}
         >
           <form noValidate autoComplete="off">

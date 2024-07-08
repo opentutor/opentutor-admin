@@ -51,11 +51,11 @@ export function CogenerationFields(props: {
   );
   return (
     <>
-      <Paper elevation={0} style={{ textAlign: "left" }}>
+      <Paper elevation={0} style={{ textAlign: "left", }}>
         <Typography variant="h5" style={{ paddingTop: 5, paddingBottom: 15 }}>
           Generator Content
         </Typography>
-        <Grid container spacing={2}>
+        <Grid container spacing={2} style={{ marginBottom: 20 }}>
           <Grid item xs={12}>
             <FormControl className={classes.selectForm} variant="outlined">
               <InputLabel shrink id="lesson-format-label">
@@ -103,8 +103,9 @@ export function CogenerationFields(props: {
             <></>
           )}
         </Grid>
+        <PromptingOutput classes={classes} />
       </Paper>
-      <PromptingOutput classes={classes} />
+      
     </>
   );
 }
