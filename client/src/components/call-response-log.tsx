@@ -5,7 +5,7 @@ Permission to use, copy, modify, and distribute this software and its documentat
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
 
-import React from "react";
+import React, { useContext } from "react";
 
 import {
   Button,
@@ -27,6 +27,8 @@ export interface SimpleDialogProps {
   onClose: (value: string) => void;
   setSelectedValue: React.Dispatch<React.SetStateAction<string>>;
 }
+import CogenerationContext from "context/cogeneration";
+
 interface LogPair {
   title: string;
   type: string;
@@ -34,8 +36,10 @@ interface LogPair {
   response: string;
 }
 function CallResponseLog(props: SimpleDialogProps): JSX.Element {
-  const [logPairs, setLogPairs] = React.useState<LogPair[]>([]);
-
+  const context = useContext(CogenerationContext);
+  if (!context) {
+    throw new Error("SomeComponent must be used within a CogenerationProvider");
+  }
   const { onClose, selectedValue, open, setSelectedValue } = props;
 
   const handleClose = () => {
@@ -46,7 +50,7 @@ function CallResponseLog(props: SimpleDialogProps): JSX.Element {
     onClose(value);
   };
 
-  const selectedPair = logPairs.find(
+  const selectedPair = context.generationData.logPairs.find(
     (pair) => pair.title === selectedValue
   ) || { title: "error", type: "error404", call: "", response: "" };
   return (
@@ -71,7 +75,7 @@ function CallResponseLog(props: SimpleDialogProps): JSX.Element {
       {selectedValue == "" ? (
         <>
           <List sx={{ pt: 0 }}>
-            {logPairs.map((pair, index) => (
+            {context.generationData.logPairs.map((pair, index) => (
               <ListItem disableGutters key={index}>
                 <ListItemButton onClick={() => setSelectedValue(pair.title)}>
                   <ListItemText primary={pair.title} />

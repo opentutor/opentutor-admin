@@ -5,7 +5,7 @@ Permission to use, copy, modify, and distribute this software and its documentat
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
 
-import React from "react";
+import React, { useContext } from "react";
 
 import {
   Button,
@@ -20,7 +20,7 @@ import {
   TextField,
 } from "@mui/material";
 import { Close as CloseIcon } from "@mui/icons-material";
-
+import CogenerationContext from "context/cogeneration";
 export interface SimpleDialogProps {
   open: boolean;
   selectedPrompt: string;
@@ -28,29 +28,11 @@ export interface SimpleDialogProps {
   setSelectedPrompt: React.Dispatch<React.SetStateAction<string>>;
 }
 
-function ViewPrompts(props: SimpleDialogProps): JSX.Element {
-  const [promptPairs, setPromptPairs] = React.useState([
-    {
-      title: "1st Q&A Generation",
-      type: "Q&A",
-      prompt:
-        "You are to look at this data and come up with a question and an answer, and a optional learning objective related to this data.\nHere is the data: {data}",
-      systemPrompt:
-        'You are a system assisting a human in coming up with {n_questions} questions, and answers pairs (therefore the question list must be equal to the corrects list) with optional learning objectives for given data.\nYour response must be in JSON.\nFormat your response like this:\n{\n\t"question": [\n\t\t"question_1",\n\t\t"question_2",\n\t\t"question_3"\n\t\t...\n\t]\n}\nPlease only response in JSON. Validate that your response is in JSON. Do not include any JSON markdown, only JSON data.',
-    },
-    {
-      title: "1st Distractor Generation",
-      type: "Distrator",
-      prompt: "Hello",
-      systemPrompt: "Hi there!",
-    },
-    {
-      title: "1st Distractor Generation",
-      type: "Distractor",
-      prompt: "How are you?",
-      systemPrompt: "I am fine, thank you!",
-    },
-  ]);
+function ViewPrompts(props: SimpleDialogProps): JSX.Element {  
+  const context = useContext(CogenerationContext);
+  if (!context) {
+    throw new Error("SomeComponent must be used within a CogenerationProvider");
+  }
   const { onClose, selectedPrompt, open, setSelectedPrompt } = props;
 
   const handleClose = () => {
@@ -61,7 +43,7 @@ function ViewPrompts(props: SimpleDialogProps): JSX.Element {
     onClose(value);
   };
 
-  const selectedPair = promptPairs.find(
+  const selectedPair = context.generationData.prompts.find(
     (pair) => pair.title === selectedPrompt
   ) || { title: "error", type: "error404", prompt: "", systemPrompt: "" };
   return (
@@ -86,7 +68,7 @@ function ViewPrompts(props: SimpleDialogProps): JSX.Element {
       {selectedPrompt == "" ? (
         <>
           <List sx={{ pt: 0 }}>
-            {promptPairs.map((pair, index) => (
+            {context.generationData.prompts.map((pair, index) => (
               <ListItem disableGutters key={index}>
                 <ListItemButton onClick={() => setSelectedPrompt(pair.title)}>
                   <ListItemText primary={pair.title} />
