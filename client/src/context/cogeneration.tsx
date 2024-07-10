@@ -77,7 +77,6 @@ const CogenerationProvider = (props: {
   });
 
   const handleContextChange = useCallback((val: string) => {
-    console.log("Updating universalContext to:", val);
     setGenerationData((prev) => ({ ...prev, universalContext: val }));
   }, []);
 

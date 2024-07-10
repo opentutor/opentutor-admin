@@ -12,21 +12,43 @@ import {
 } from "../support/functions";
 import { lesson, videoLesson } from "../fixtures/lesson";
 
-describe("edit lesson screen", () => {
+describe("cogeneration testbed screen", () => {
   describe("permissions", () => {
-    it("cannot view lesson page if not logged in", () => {
+    it("cannot view cogeneration testbed page if not logged in", () => {
       cySetup(cy);
       cyMockModelStatus(cy);
       cy.visit("/cogeneration");
+      cy.contains("Please login to view testbed.");
     });
-
-    it("cannot view lesson page if user does not have permission to edit", () => {
+    it("can view cogeneration testbed page if logged in", () => {
       cySetup(cy);
       cyMockModelStatus(cy);
-      cyMockDefault(cy, {
-        gqlQueries: [mockGQL("FetchLesson", { me: { lesson } })],
-      });
+      cyMockDefault(cy);
       cy.visit("/cogeneration");
+      cy.get("[data-cy=generator-recipe]").click();
+
+      cy.get('li[data-value="testRecipe"]')
+      .should('exist')
+      .should('contain.text', 'Test Recipe');
+
+      cy.get('li[data-value="multipleChoice"]')
+        .should('exist')
+        .should('contain.text', 'MCQ Baseline'); 
+      cy.get('li[data-value="multipleChoice"]').click();
+      cy.get('li[data-value="multipleChoice"]').should('not.be.visible');
     });
   });
+  });
+  describe("new cogeneration", () => {
+    it("cogenerates a question and corresponding distractors", () => {
+      cySetup(cy);
+      cyMockModelStatus(cy);
+      cyMockDefault(cy);
+      cy.visit("/cogeneration");
+      cy.get("[data-cy=generator-recipe]").click();
+      cy.get('li[data-value="multipleChoice"]').click();
+      cy.get('li[data-value="multipleChoice"]').should('not.be.visible');
+
+      
+    });
 });

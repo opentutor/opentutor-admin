@@ -16,12 +16,17 @@ import {
   Paper,
   TextField,
   Divider,
+  Menu,
+  Button,
+  IconButton,
 } from "@mui/material";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
+import TextFieldsIcon from '@mui/icons-material/TextFields';
 import { MultipleChoiceBaseline } from "./recipe-fields";
 import { RecipeType } from "types";
 import PromptingOutput from "./prompting-output";
 import CogenerationContext from "context/cogeneration";
+import { ClearOutlined } from "@mui/icons-material";
 
 interface FieldClasses {
   selectForm: string;
@@ -30,7 +35,10 @@ interface FieldClasses {
   expand: string;
   expandOpen: string;
 }
-
+interface ContextField {
+  context: string;
+  type: string;
+}
 export function CogenerationFields(props: {
   classes: FieldClasses;
   genRecipe: string;
@@ -44,11 +52,51 @@ export function CogenerationFields(props: {
   const handleRecipeChange = (event: SelectChangeEvent) => {
     setGenRecipe(event.target.value as string);
   };
-
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+  const [additionalContext, setAdditionalContext] = React.useState<ContextField[]>([]);
+  const handleClickListItem = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const options = ["Add Text", "Add URL"];
   console.log(
     "Current universalContext:",
     context.generationData.universalContext
   );
+  const handleClose = () => {
+    2;
+    setAnchorEl(null);
+  };
+  const handleAdditionalContextChange = (val: string, index: number) => {
+    setAdditionalContext((prev)=>
+    {
+      const newContext = [...prev];
+      newContext[index].context = val;
+      return newContext;
+    })
+  };
+
+  const handleRemoveContext = (index: number) => {
+    setAdditionalContext((prev) => {
+      const newContext = [...prev];
+      newContext.splice(index, 1);
+      return newContext;
+    });
+  };
+  const handleMenuItemClick = (
+    event: React.MouseEvent<HTMLElement>,
+    index: number
+  ) => {
+    setAdditionalContext((prev) => {
+      const newContext = [...prev, {
+        context: "",
+        type: ((options[index] == "Add Text") ? "Text" : "URL"),
+      }]
+      return newContext;
+    })
+    setAnchorEl(null);
+  };
+
   return (
     <>
       <Paper elevation={0} style={{ textAlign: "left", }}>
@@ -77,7 +125,7 @@ export function CogenerationFields(props: {
               </Select>
             </FormControl>
           </Grid>
-          <Grid item xs={12}>
+          <Grid item xs={10}>
             <TextField
               required
               data-cy="universal-context"
@@ -94,6 +142,78 @@ export function CogenerationFields(props: {
               }}
             />
           </Grid>
+          <Grid item xs={2} style={{ display: "flex" }}>
+            <Button
+              variant="text"
+              data-cy="add-context"
+              startIcon={<TextFieldsIcon />}
+              size="medium"
+              color="primary"
+              aria-expanded={open ? "true" : undefined}
+              onClick={handleClickListItem}
+              style={{
+                paddingLeft: 20,
+                paddingRight: 20,
+                marginLeft: 20,
+              }}
+            >
+              ADD CONTEXT
+            </Button>
+            <Menu
+              anchorEl={anchorEl}
+              open={open}
+              onClose={handleClose}
+              MenuListProps={{
+                "aria-labelledby": "add-context-button",
+                role: "listbox",
+                sx: { width: anchorEl && anchorEl.offsetWidth }
+              }}
+            >
+              {options.map((option, index) => (
+                <MenuItem
+                  key={option}
+                  data-cy={
+                    option === "Add Text"
+                      ? "add-text"
+                      : "add-url"
+                  }
+                  onClick={(event) => handleMenuItemClick(event, index)}
+                >
+                  {option}
+                </MenuItem>
+              ))}
+            </Menu>
+          </Grid>
+          {additionalContext.map((field, index) => (
+            <>
+            <Grid xs={11} key={index} item>
+              <TextField
+                data-cy={`additional-context-${index}`}
+                label={`Context ${field.type}`}
+                placeholder="Context to start generating MCQ"
+                fullWidth
+                multiline
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                variant="outlined"
+                onChange={(e) => {
+                  handleAdditionalContextChange(e.target.value, index);
+                }}
+              />
+            </Grid>
+            <Grid item xs={1} container alignItems="center" >
+              <IconButton
+                data-cy="delete"
+                aria-label="remove question"
+                size="small"
+                onClick={() => handleRemoveContext(index)}
+              >
+                <ClearOutlined />
+              </IconButton>
+            </Grid>
+            </>
+          ))}
           <Divider variant="middle" className={classes.divider} />
           {genRecipe === RecipeType.MCQ ? (
             <>
