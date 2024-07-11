@@ -115,6 +115,7 @@ const QuestionAnswerPair = (props: {
               </IconButton>
             ) : null}
             <Radio
+              data-cy={`radio-${questionIndex + 1}`}
               checked={context.generationData.questionChosen === questionIndex}
               onChange={handleRadioChange}
               value={questionIndex.toString()}
@@ -188,10 +189,6 @@ export function QuestionAnswerGen(props: {
     setOpen(false);
   };
 
-  console.log(
-    "According to QuestionAnswer Button universalContext:",
-    context.generationData.universalContext
-  );
   return (
     <>
       <Paper elevation={0} style={{ textAlign: "left" }}>

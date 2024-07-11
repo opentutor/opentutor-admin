@@ -33,7 +33,7 @@ export function PromptingOutput(props: {
             data-cy="prompting-output"
             label="JSON Output"
             value={
-              '{\n\t"lesson_name": "Pioneering the Future",\n\t"learning_objective": "Learning something new.",\n\t...\n}'
+              context.generationData.jsonOutput
             }
             fullWidth
             multiline
