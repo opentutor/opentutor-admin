@@ -21,7 +21,7 @@ import {
   IconButton,
 } from "@mui/material";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
-import TextFieldsIcon from '@mui/icons-material/TextFields';
+import TextFieldsIcon from "@mui/icons-material/TextFields";
 import { MultipleChoiceBaseline } from "./recipe-fields";
 import { RecipeType } from "types";
 import PromptingOutput from "./prompting-output";
@@ -54,7 +54,9 @@ export function CogenerationFields(props: {
   };
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
-  const [additionalContext, setAdditionalContext] = React.useState<ContextField[]>([]);
+  const [additionalContext, setAdditionalContext] = React.useState<
+    ContextField[]
+  >([]);
   const handleClickListItem = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -68,12 +70,11 @@ export function CogenerationFields(props: {
     setAnchorEl(null);
   };
   const handleAdditionalContextChange = (val: string, index: number) => {
-    setAdditionalContext((prev)=>
-    {
+    setAdditionalContext((prev) => {
       const newContext = [...prev];
       newContext[index].context = val;
       return newContext;
-    })
+    });
   };
 
   const handleRemoveContext = (index: number) => {
@@ -88,18 +89,21 @@ export function CogenerationFields(props: {
     index: number
   ) => {
     setAdditionalContext((prev) => {
-      const newContext = [...prev, {
-        context: "",
-        type: ((options[index] == "Add Text") ? "Text" : "URL"),
-      }]
+      const newContext = [
+        ...prev,
+        {
+          context: "",
+          type: options[index] == "Add Text" ? "Text" : "URL",
+        },
+      ];
       return newContext;
-    })
+    });
     setAnchorEl(null);
   };
 
   return (
     <>
-      <Paper elevation={0} style={{ textAlign: "left", }}>
+      <Paper elevation={0} style={{ textAlign: "left" }}>
         <Typography variant="h5" style={{ paddingTop: 5, paddingBottom: 15 }}>
           Generator Content
         </Typography>
@@ -166,17 +170,13 @@ export function CogenerationFields(props: {
               MenuListProps={{
                 "aria-labelledby": "add-context-button",
                 role: "listbox",
-                sx: { width: anchorEl && anchorEl.offsetWidth }
+                sx: { width: anchorEl && anchorEl.offsetWidth },
               }}
             >
               {options.map((option, index) => (
                 <MenuItem
                   key={option}
-                  data-cy={
-                    option === "Add Text"
-                      ? "add-text"
-                      : "add-url"
-                  }
+                  data-cy={option === "Add Text" ? "add-text" : "add-url"}
                   onClick={(event) => handleMenuItemClick(event, index)}
                 >
                   {option}
@@ -186,32 +186,32 @@ export function CogenerationFields(props: {
           </Grid>
           {additionalContext.map((field, index) => (
             <>
-            <Grid xs={11} key={index} item>
-              <TextField
-                data-cy={`additional-context-${index}`}
-                label={`Context ${field.type}`}
-                placeholder="Context to start generating MCQ"
-                fullWidth
-                multiline
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                variant="outlined"
-                onChange={(e) => {
-                  handleAdditionalContextChange(e.target.value, index);
-                }}
-              />
-            </Grid>
-            <Grid item xs={1} container alignItems="center" >
-              <IconButton
-                data-cy="delete"
-                aria-label="remove question"
-                size="small"
-                onClick={() => handleRemoveContext(index)}
-              >
-                <ClearOutlined />
-              </IconButton>
-            </Grid>
+              <Grid xs={11} key={index} item>
+                <TextField
+                  data-cy={`additional-context-${index}`}
+                  label={`Context ${field.type}`}
+                  placeholder="Context to start generating MCQ"
+                  fullWidth
+                  multiline
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  variant="outlined"
+                  onChange={(e) => {
+                    handleAdditionalContextChange(e.target.value, index);
+                  }}
+                />
+              </Grid>
+              <Grid item xs={1} container alignItems="center">
+                <IconButton
+                  data-cy="delete"
+                  aria-label="remove question"
+                  size="small"
+                  onClick={() => handleRemoveContext(index)}
+                >
+                  <ClearOutlined />
+                </IconButton>
+              </Grid>
             </>
           ))}
           <Divider variant="middle" className={classes.divider} />
@@ -223,9 +223,8 @@ export function CogenerationFields(props: {
             <></>
           )}
         </Grid>
-        <PromptingOutput classes={classes} />
+        <PromptingOutput />
       </Paper>
-      
     </>
   );
 }

@@ -6,7 +6,6 @@ The full terms of this copyright and license should always be found in the root 
 */
 
 import React, { useContext } from "react";
-
 import {
   Button,
   Dialog,
@@ -29,12 +28,6 @@ export interface SimpleDialogProps {
 }
 import CogenerationContext from "context/cogeneration";
 
-interface LogPair {
-  title: string;
-  type: string;
-  call: string;
-  response: string;
-}
 function CallResponseLog(props: SimpleDialogProps): JSX.Element {
   const context = useContext(CogenerationContext);
   if (!context) {
@@ -44,10 +37,6 @@ function CallResponseLog(props: SimpleDialogProps): JSX.Element {
 
   const handleClose = () => {
     onClose(selectedValue);
-  };
-
-  const handleListItemClick = (value: string) => {
-    onClose(value);
   };
 
   const selectedPair = context.generationData.logPairs.find(

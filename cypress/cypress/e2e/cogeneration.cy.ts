@@ -26,43 +26,44 @@ describe("cogeneration testbed screen", () => {
       cy.get("[data-cy=generator-recipe]").click();
 
       cy.get('li[data-value="testRecipe"]')
-      .should('exist')
-      .should('contain.text', 'Test Recipe');
+        .should("exist")
+        .should("contain.text", "Test Recipe");
 
       cy.get('li[data-value="multipleChoice"]')
-        .should('exist')
-        .should('contain.text', 'MCQ Baseline'); 
+        .should("exist")
+        .should("contain.text", "MCQ Baseline");
       cy.get('li[data-value="multipleChoice"]').click();
-      cy.get('li[data-value="multipleChoice"]').should('not.be.visible');
+      cy.get('li[data-value="multipleChoice"]').should("not.be.visible");
     });
   });
-  });
-  describe("new cogeneration", () => {
-    it("cogenerates a question and corresponding distractors", () => {
-      cySetup(cy);
-      cyMockModelStatus(cy);
-      cyMockDefault(cy);
-      cy.visit("/cogeneration");
-      cy.get("[data-cy=generator-recipe]").click();
-      cy.get('li[data-value="multipleChoice"]').click();
-      cy.get('li[data-value="multipleChoice"]').should('not.be.visible');
+});
+describe("new cogeneration", () => {
+  it("cogenerates a question and corresponding distractors", () => {
+    cySetup(cy);
+    cyMockModelStatus(cy);
+    cyMockDefault(cy);
+    cy.visit("/cogeneration");
+    cy.get("[data-cy=generator-recipe]").click();
+    cy.get('li[data-value="multipleChoice"]').click();
+    cy.get('li[data-value="multipleChoice"]').should("not.be.visible");
 
-      cy.get("[data-cy=universal-context]").within(($input) => {
-        cy.get("textarea").fill("A large language model (LLM) is a language model notable for its ability to achieve general-purpose language understanding and generation. LLMs acquire these abilities by learning statistical relationships from text documents during a computationally intensive self-supervised and semi-supervised training process.[1] LLMs can be used for text generation, a form of generative AI, by taking an input text and repeatedly predicting the next token or word.[2]");
-      });
-
-      cy.get("[data-cy=question-strategy]").click();
-      cy.get('li[data-value="verification"]').click();
-      cy.get('li[data-value="verification"]').should('not.be.visible');
-
-      cy.get("[data-cy=generate-question-answer]").click();
-      cy.get("[data-cy=radio-1]").click();
-
-      cy.get("[data-cy=distractor-strategy]").click();
-      cy.get('li[data-value="opposites"]').click();
-      cy.get('li[data-value="opposites"]').should('not.be.visible');
-
-      cy.get("[data-cy=generate-distractor]").click();
-
+    cy.get("[data-cy=universal-context]").within(($input) => {
+      cy.get("textarea").fill(
+        "A large language model (LLM) is a language model notable for its ability to achieve general-purpose language understanding and generation. LLMs acquire these abilities by learning statistical relationships from text documents during a computationally intensive self-supervised and semi-supervised training process.[1] LLMs can be used for text generation, a form of generative AI, by taking an input text and repeatedly predicting the next token or word.[2]"
+      );
     });
+
+    cy.get("[data-cy=question-strategy]").click();
+    cy.get('li[data-value="verification"]').click();
+    cy.get('li[data-value="verification"]').should("not.be.visible");
+
+    cy.get("[data-cy=generate-question-answer]").click();
+    cy.get("[data-cy=radio-1]").click();
+
+    cy.get("[data-cy=distractor-strategy]").click();
+    cy.get('li[data-value="opposites"]').click();
+    cy.get('li[data-value="opposites"]').should("not.be.visible");
+
+    cy.get("[data-cy=generate-distractor]").click();
+  });
 });

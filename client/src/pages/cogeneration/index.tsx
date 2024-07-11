@@ -18,7 +18,6 @@ import "jsoneditor-react/es/editor.min.css";
 import "react-toastify/dist/ReactToastify.css";
 import { CogenerationProvider } from "context/cogeneration";
 import CogenerationSideBar from "components/cogeneration-side-bar";
-import { ClassNames } from "@emotion/react";
 
 const useStyles = makeStyles((theme: Theme) => ({
   appBar: {
@@ -109,8 +108,8 @@ const CogenerationContent = () => {
   const classes = useStyles();
   const [genRecipe, setGenRecipe] = React.useState("multipleChoice");
   return (
-    <Grid container sx={{ display: "flex"}}>
-      <Box sx={{ display: "flex"}}>
+    <Grid container sx={{ display: "flex" }}>
+      <Box sx={{ display: "flex" }}>
         <CogenerationSideBar classes={classes} />
         <Grid
           item
@@ -120,7 +119,6 @@ const CogenerationContent = () => {
             marginBottom: 10,
             paddingLeft: 40,
             paddingRight: 40,
-            
           }}
         >
           <form noValidate autoComplete="off">

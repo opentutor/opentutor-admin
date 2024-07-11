@@ -28,7 +28,7 @@ export interface SimpleDialogProps {
   setSelectedPrompt: React.Dispatch<React.SetStateAction<string>>;
 }
 
-function ViewPrompts(props: SimpleDialogProps): JSX.Element {  
+function ViewPrompts(props: SimpleDialogProps): JSX.Element {
   const context = useContext(CogenerationContext);
   if (!context) {
     throw new Error("SomeComponent must be used within a CogenerationProvider");
@@ -37,10 +37,6 @@ function ViewPrompts(props: SimpleDialogProps): JSX.Element {
 
   const handleClose = () => {
     onClose(selectedPrompt);
-  };
-
-  const handleListItemClick = (value: string) => {
-    onClose(value);
   };
 
   const selectedPair = context.generationData.prompts.find(

@@ -8,19 +8,12 @@ import React, { useContext } from "react";
 import { Grid, TextField, Typography, Paper } from "@mui/material";
 
 import CogenerationContext from "context/cogeneration";
-interface OutputClasses {
-  button: string;
-}
 
-export function PromptingOutput(props: {
-  classes: OutputClasses;
-}): JSX.Element {
-  const { classes } = props;
+export function PromptingOutput(): JSX.Element {
   const context = useContext(CogenerationContext);
   if (!context) {
     throw new Error("SomeComponent must be used within a CogenerationProvider");
   }
-  
 
   return (
     <>
@@ -32,9 +25,7 @@ export function PromptingOutput(props: {
           <TextField
             data-cy="prompting-output"
             label="JSON Output"
-            value={
-              context.generationData.jsonOutput
-            }
+            value={context.generationData.jsonOutput}
             fullWidth
             multiline
             InputLabelProps={{
@@ -48,7 +39,6 @@ export function PromptingOutput(props: {
           />
         </Paper>
       </Grid>
-     
     </>
   );
 }
