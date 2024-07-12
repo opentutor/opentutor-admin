@@ -7,8 +7,12 @@ The full terms of this copyright and license should always be found in the root 
 import React, { createContext, useState, useCallback } from "react";
 import {
   DistractorStrategy,
+  distractorPrompt,
+  distractorSystemPrompt,
   generatedDistractors,
   generatedQuestions,
+  questionPrompt,
+  questionSystemPrompt,
 } from "constants/cogenerationDummyData";
 import { SelectChangeEvent } from "@mui/material";
 
@@ -116,10 +120,8 @@ const CogenerationProvider = (props: {
           {
             title: `Distractor Generation #${count}`,
             type: "distractor",
-            prompt:
-              "I will provide you with a question and a list of correct answers.\nYou must use this data to generate 'distractors' - incorrect answers that could be plausibly mistaken for correct answers by a human.\nYou must also generate topics relevant topics to each question answer pair,\nYou must also generate what is misundertood for each distractor in order,\nyou must also generate relevant topics for each question and answer pair,\nYou msut also generate related topics for each distractor in order,\nYou must misconceptions (justifcation of why the user would get the answer wrong, should be very short and concise like 5 words max) for each distractor in order\nAt last, you must generate feedback to the each distractor for the question and answer pair, the feedback must not include the correct answer.\nHere is the question: {question}\nHere is the list of answers: {answers}",
-            systemPrompt:
-              "You are a system assisting a human in coming up with {n_questions} questions, and answers pairs (therefore the question list must be equal to the corrects list) with optional learning objectives for given data.\nYour response must be in JSON.\nFormat your response like this:\n{\n\t'question': [\n\t\t'question_1',\n\t\t'question_2',\n\t\t'question_3'\n\t\t...\n\t]\n}\nPlease only response in JSON. Validate that your response is in JSON. Do not include any JSON markdown, only JSON data.",
+            prompt: distractorPrompt,
+            systemPrompt: distractorSystemPrompt,
           },
         ];
 
@@ -205,10 +207,8 @@ const CogenerationProvider = (props: {
         {
           title: `Q&A Generation #${count}`,
           type: "question",
-          prompt:
-            "You are to look at this data and come up with a question and an answer, and a optional learning objective related to this data.\nHere is the data: {data}",
-          systemPrompt:
-            'You are a system assisting a human in coming up with {n_questions} questions, and answers pairs (therefore the question list must be equal to the corrects list) with optional learning objectives for given data.\nYour response must be in JSON.\nFormat your response like this:\n{\n\t"question": [\n\t\t"question_1",\n\t\t"question_2",\n\t\t"question_3"\n\t\t...\n\t]\n}\nPlease only response in JSON. Validate that your response is in JSON. Do not include any JSON markdown, only JSON data.',
+          prompt: questionPrompt,
+          systemPrompt: questionSystemPrompt,
         },
       ];
 

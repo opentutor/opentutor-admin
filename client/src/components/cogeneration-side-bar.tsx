@@ -81,16 +81,6 @@ export function CogenerationSideBar(props: {
     ["", ""],
     ["", ""],
   ];
-  const arraysEqual = (a: string[][], b: string[][]) => {
-    if (a.length !== b.length) return false;
-    for (let i = 0; i < a.length; i++) {
-      if (a[i].length !== b[i].length) return false;
-      for (let j = 0; j < a[i].length; j++) {
-        if (a[i][j] !== b[i][j]) return false;
-      }
-    }
-    return true;
-  };
 
   const [openLog, setOpenLog] = React.useState(false);
   const [selectedValue, setSelectedValue] = React.useState("");
@@ -188,10 +178,8 @@ export function CogenerationSideBar(props: {
                       }),
                 }}
                 onClick={handleClickOpenLog}
-                disabled={arraysEqual(
-                  context.generationData.questionAnswerPairs,
-                  initialQuestions
-                )}
+                disabled={
+                  context.generationData.questionAnswerPairs[0][0] === initialQuestions[0][0]}
               >
                 {drawerOpen ? "API Log" : ""}
               </Button>
@@ -213,10 +201,7 @@ export function CogenerationSideBar(props: {
                       }),
                 }}
                 onClick={handleClickOpenPrompts}
-                disabled={arraysEqual(
-                  context.generationData.questionAnswerPairs,
-                  initialQuestions
-                )}
+                disabled={context.generationData.questionAnswerPairs[0][0] === initialQuestions[0][0]}
               >
                 {drawerOpen ? " View Prompts" : ""}
               </Button>
