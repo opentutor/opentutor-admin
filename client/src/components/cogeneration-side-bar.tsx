@@ -179,7 +179,9 @@ export function CogenerationSideBar(props: {
                 }}
                 onClick={handleClickOpenLog}
                 disabled={
-                  context.generationData.questionAnswerPairs[0][0] === initialQuestions[0][0]}
+                  context.generationData.questionAnswerPairs[0][0] ===
+                  initialQuestions[0][0]
+                }
               >
                 {drawerOpen ? "API Log" : ""}
               </Button>
@@ -201,7 +203,10 @@ export function CogenerationSideBar(props: {
                       }),
                 }}
                 onClick={handleClickOpenPrompts}
-                disabled={context.generationData.questionAnswerPairs[0][0] === initialQuestions[0][0]}
+                disabled={
+                  context.generationData.questionAnswerPairs[0][0] ===
+                  initialQuestions[0][0]
+                }
               >
                 {drawerOpen ? " View Prompts" : ""}
               </Button>
