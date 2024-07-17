@@ -264,4 +264,5 @@ export interface OfflineLessonData {
 
 export enum RecipeType {
   MCQ = "multipleChoice",
+  Lesson = "lesson",
 }

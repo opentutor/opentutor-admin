@@ -22,18 +22,21 @@ import {
 } from "@mui/material";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import TextFieldsIcon from "@mui/icons-material/TextFields";
-import { MultipleChoiceBaseline } from "./recipe-fields";
+import { MultipleChoiceBaseline, LessonBaseline } from "./recipe-fields";
 import { RecipeType } from "types";
 import PromptingOutput from "./prompting-output";
 import CogenerationContext from "context/cogeneration";
 import { ClearOutlined } from "@mui/icons-material";
 
 interface FieldClasses {
-  selectForm: string;
-  divider: string;
-  button: string;
   expand: string;
   expandOpen: string;
+  list: string;
+  listDragging: string;
+  button: string;
+  cardRoot: string;
+  divider: string;
+  selectForm: string; 
 }
 interface ContextField {
   context: string;
@@ -123,8 +126,8 @@ export function CogenerationFields(props: {
                 <MenuItem value={"multipleChoice"}>
                   <ListItemText primary="MCQ Baseline" />
                 </MenuItem>
-                <MenuItem value={"testRecipe"}>
-                  <ListItemText primary="Test Recipe" />
+                <MenuItem value={"lesson"}>
+                  <ListItemText primary="Lesson Baseline" />
                 </MenuItem>
               </Select>
             </FormControl>
@@ -134,7 +137,7 @@ export function CogenerationFields(props: {
               required
               data-cy="universal-context"
               label="Universal Context"
-              placeholder="Context to start generating MCQ"
+              placeholder="Context to start generating"
               fullWidth
               multiline
               InputLabelProps={{
@@ -218,6 +221,10 @@ export function CogenerationFields(props: {
           {genRecipe === RecipeType.MCQ ? (
             <>
               <MultipleChoiceBaseline classes={classes} />
+            </>
+          ) : genRecipe === RecipeType.Lesson ? (
+            <>
+              <LessonBaseline classes={classes} />
             </>
           ) : (
             <></>

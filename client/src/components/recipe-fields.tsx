@@ -13,10 +13,16 @@ interface RecipeClasses {
   button: string;
   expand: string;
   expandOpen: string;
+  list: string;
+  listDragging: string;
+  cardRoot: string;
 }
+
+
 
 import QuestionAnswerGen from "./question-answer-gen";
 import DistractionGen from "./distraction-gen";
+import {LessonInput, LessonOutput } from "./lesson-fields";
 
 export function MultipleChoiceBaseline(props: {
   classes: RecipeClasses;
@@ -34,4 +40,22 @@ export function MultipleChoiceBaseline(props: {
       </Grid>
     </>
   );
+}
+
+export function LessonBaseline(props: {
+  classes: RecipeClasses;
+}): JSX.Element {
+  const {classes} = props;
+
+  return (
+    <>
+      <Grid item xs={12}>
+        <LessonInput classes={classes} />
+      </Grid>
+
+      <Grid item xs={12}>
+        <LessonOutput classes={classes} />
+      </Grid>
+    </>
+  )
 }

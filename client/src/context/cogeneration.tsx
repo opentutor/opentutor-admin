@@ -29,6 +29,11 @@ interface PromptPair {
   systemPrompt: string;
 }
 
+interface ConceptPair {
+  concept: string;
+  hints: string[];
+}
+
 interface GenState {
   universalContext: string;
   jsonOutput: string;
@@ -40,6 +45,12 @@ interface GenState {
   showQuestions: boolean;
   showDistractors: boolean;
   distractors: string[];
+  lessonTitle: string;
+  lessonIntro: string;
+  lessonObjective: string;
+  essentialQuestion: string;
+  conclusion: string;
+  concepts: ConceptPair[];
 }
 
 type CogenerationContextType = {
@@ -54,6 +65,13 @@ type CogenerationContextType = {
   handleAnswerChange: (val: string, idx: number) => void;
   handleQuestionStrategy: (event: SelectChangeEvent) => void;
   handleQuestionChosen: (val: number | null) => void;
+  handleTitleChange: (val: string) => void;
+  handleIntroChange: (val: string) => void;
+  handleObjectiveChange: (val: string) => void;
+  handleEssentialQuestionChange: (val: string) => void;
+  handleConclusionChange: (val: string) => void;
+  handleConceptChange:(val: string, idx: number) => void;
+  handleHintChange: (val: string, indexOfConcept: number, indexOfHint: number) => void;
 };
 
 const CogenerationContext = createContext<CogenerationContextType | undefined>(
@@ -78,6 +96,12 @@ const CogenerationProvider = (props: {
     showQuestions: false,
     showDistractors: false,
     distractors: [""],
+    lessonTitle: "",
+    lessonIntro: "", 
+    lessonObjective: "",
+    essentialQuestion: "",
+    conclusion: "",
+    concepts:[],
   });
 
   const handleContextChange = useCallback((val: string) => {
@@ -258,6 +282,59 @@ const CogenerationProvider = (props: {
     });
   }, []);
 
+  const handleTitleChange = useCallback((val: string) => {
+    setGenerationData((prev) => {
+      const newTitle = val;
+      return { ...prev, lessonTitle: newTitle};
+    });
+  }, []);
+
+  const handleIntroChange = useCallback((val: string) => {
+    setGenerationData((prev) => {
+      const newIntro = val;
+      return { ...prev, lessonIntro: newIntro};
+    });
+  }, []);
+
+  const handleObjectiveChange = useCallback((val: string) => {
+    setGenerationData((prev) => {
+      const newObjective = val;
+      return { ...prev, lessonObjective: newObjective};
+    });
+  }, []);
+  
+  const handleEssentialQuestionChange = useCallback((val: string) => {
+    setGenerationData((prev) => {
+      const newQuestion = val;
+      return { ...prev, essentialQuestion: newQuestion};
+    });
+  }, []);
+
+  const handleConclusionChange = useCallback((val: string) => {
+    setGenerationData((prev) => {
+      const newConclusion = val;
+      return { ...prev, conclusion: newConclusion};
+    });
+  }, []);
+  
+  
+  const handleConceptChange = useCallback((val: string, index: number) => {
+    setGenerationData((prev) => {
+      const newConceptList = prev.concepts;
+      newConceptList[index].concept = val;
+      return { ...prev, concepts: newConceptList};
+    });
+  }, []);
+
+  const handleHintChange = useCallback((val: string, indexOfConcept: number, indexOfHint: number) => {
+    setGenerationData((prev) => {
+      const newConceptList = prev.concepts;
+      newConceptList[indexOfConcept].hints[indexOfHint] = val;
+      return { ...prev, concepts: newConceptList};
+    });
+  }, []);
+  
+
   return (
     <CogenerationContext.Provider
       value={{
@@ -272,6 +349,13 @@ const CogenerationProvider = (props: {
         handleAnswerChange,
         handleQuestionStrategy,
         handleQuestionChosen,
+        handleTitleChange,
+        handleIntroChange,
+        handleObjectiveChange,
+        handleEssentialQuestionChange,
+        handleConclusionChange,
+        handleConceptChange,
+        handleHintChange,
       }}
     >
       {props.children}
