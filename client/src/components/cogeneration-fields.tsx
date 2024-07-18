@@ -44,16 +44,14 @@ interface ContextField {
 }
 export function CogenerationFields(props: {
   classes: FieldClasses;
-  genRecipe: string;
-  setGenRecipe: React.Dispatch<React.SetStateAction<string>>;
 }): JSX.Element {
-  const { classes, genRecipe, setGenRecipe } = props;
+  const { classes} = props;
   const context = useContext(CogenerationContext);
   if (!context) {
     throw new Error("SomeComponent must be used within a CogenerationProvider");
   }
   const handleRecipeChange = (event: SelectChangeEvent) => {
-    setGenRecipe(event.target.value as string);
+    context.handleRecipeChange(event.target.value as string);
   };
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -120,7 +118,7 @@ export function CogenerationFields(props: {
                 data-cy="generator-recipe"
                 labelId="generator-recipe-label"
                 label="Generator Recipe"
-                value={genRecipe}
+                value={context.generationData.genRecipe}
                 onChange={handleRecipeChange}
               >
                 <MenuItem value={"multipleChoice"}>
@@ -218,11 +216,11 @@ export function CogenerationFields(props: {
             </>
           ))}
           <Divider variant="middle" className={classes.divider} />
-          {genRecipe === RecipeType.MCQ ? (
+          {context.generationData.genRecipe === RecipeType.MCQ ? (
             <>
               <MultipleChoiceBaseline classes={classes} />
             </>
-          ) : genRecipe === RecipeType.Lesson ? (
+          ) : context.generationData.genRecipe === RecipeType.Lesson ? (
             <>
               <LessonBaseline classes={classes} />
             </>

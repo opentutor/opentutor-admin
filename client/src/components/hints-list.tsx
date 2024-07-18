@@ -127,7 +127,7 @@ export default function HintsList(props: {
       <Grid
         container
         spacing={0}
-        style={{ display: "flex", alignItems: "center", marginBottom: 5 }}
+        style={{ display: "flex", alignItems: "center", marginBottom: 5}}
       >
         <Grid item>
           <Typography variant="body1" style={{ padding: 5 }}>

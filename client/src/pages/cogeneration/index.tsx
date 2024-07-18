@@ -106,7 +106,6 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 const CogenerationContent = () => {
   const classes = useStyles();
-  const [genRecipe, setGenRecipe] = React.useState("multipleChoice");
   return (
     <Grid container sx={{ display: "flex" }}>
       <Box sx={{ display: "flex" }}>
@@ -124,8 +123,6 @@ const CogenerationContent = () => {
           <form noValidate autoComplete="off">
             <CogenerationFields
               classes={classes}
-              genRecipe={genRecipe}
-              setGenRecipe={setGenRecipe}
             />
           </form>
         </Grid>

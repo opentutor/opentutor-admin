@@ -78,17 +78,18 @@ export function ConceptHints (props: {
   }
   return (
     <>
-     <Paper elevation={0} style={{ textAlign: "left" }}>
+     <Paper elevation={0} style={{ textAlign: "left", width: "100%" }}>
       <Grid
         container
         spacing={0}
-        style={{ display: "flex", alignItems: "center", marginBottom: 5 }}
+        style={{ display: "flex", alignItems: "center", marginBottom: 5,  width: "100%" }}
       >
         <Grid item>
-          <Typography variant="body1" style={{ padding: 5 }}>
+          <Typography variant="h6" style={{ padding: 5 }}>
             Hints
           </Typography>
         </Grid>
+        <Grid item xs={12}>
             <List
               data-cy="hints"
               dense
@@ -125,6 +126,7 @@ export function ConceptHints (props: {
                     </ListItem>
                 ))}
             </List>
+          </Grid>
       </Grid>
       </Paper>
     </>
@@ -206,13 +208,13 @@ function ConceptHintOutput(props: {
     throw new Error("SomeComponent must be used within a CogenerationProvider");
   }
   return (
-    <Paper elevation={0} style={{ textAlign: "left", marginBottom: 20 }}>
-      <Typography variant="h6" style={{ paddingTop: 5, paddingBottom: 15 }}>
+    <Paper elevation={0} style={{ textAlign: "left", marginBottom: 20, width: "100%"}}>
+      <Typography variant="h6" style={{ paddingTop: 5}}>
         Key Concepts
       </Typography>
         <List data-cy="expectations">
           {context.generationData.concepts.map((concept, i) => (
-                <ListItem key={i}>
+                <ListItem key={i} style={{ width: '100%' }}>
                   <ExpectationCard
                     classes={classes}
                     concept={concept.concept}

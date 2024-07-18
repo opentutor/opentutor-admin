@@ -39,15 +39,63 @@ function ViewPrompts(props: SimpleDialogProps): JSX.Element {
     onClose(selectedPrompt);
   };
 
-  const selectedPair = context.generationData.prompts.find(
-    (pair) => pair.title === selectedPrompt
-  ) || { title: "error", type: "error404", prompt: "", systemPrompt: "" };
+  const getDefaultValues = (type: string) => {
+    if (type === "multipleChoice") {
+      return { prompt: "", systemPrompt: "" };
+    } else if (type === "lesson") {
+      return {
+        systemPrompt: "", humanPrompt: "", parseSystemPrompt: "", parseHumanPrompt: "",
+        parseSystem2: "", parseHuman2: "", tabooSystemPrompt: "", tabooHumanPrompt: "",
+        simulationSystemPrompt: "", simulationHumanPrompt: "", slotsSystemPrompt: "",
+        slotsHumanPrompt: "", genericSystemPrompt: "", genericHumanPrompt: "",
+        hintFilterSystemPrompt: "", hintFilterHumanPrompt: "", hintMockPrompt: "",
+        patchSystemPrompt: "", patchHumanPrompt: ""
+      };
+    }
+    return {};
+  };
+  
+  let selectedSet = { title: "error", type: "error404" };
+  
+  if (context.generationData.genRecipe === "multipleChoice") {
+    selectedSet = context.generationData.MCQPrompts.find(
+      (pair) => pair.title === selectedPrompt
+    ) || { title: "error", type: "error404", ...getDefaultValues("multipleChoice") };
+  } else {
+    selectedSet = context.generationData.lessonPrompts.find(
+      (pair) => pair.title === selectedPrompt
+    ) || { title: "error", type: "error404", ...getDefaultValues("lesson") };
+  }
+ 
+
+  const renderTextFieldsFromObject = (fieldsObject: Record<string, string>) => {
+    return Object.keys(fieldsObject).map((fieldKey) => (
+      <TextField
+        key={fieldKey}
+        data-cy={`${fieldKey}-output`}
+        label={fieldKey.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
+        value={fieldsObject[fieldKey]}
+        multiline
+        InputLabelProps={{
+          shrink: true,
+        }}
+        InputProps={{
+          readOnly: true,
+        }}
+        variant="outlined"
+        minRows={1}
+        maxRows={10}
+        sx={{ margin: 2 }}
+      />
+    ));
+  };
+
   return (
     <Dialog onClose={handleClose} open={open} fullWidth>
       <DialogTitle>
         {selectedPrompt === ""
           ? "Select set of prompts to view"
-          : selectedPair.title}
+          : selectedSet.title}
       </DialogTitle>
       <IconButton
         aria-label="close"
@@ -64,7 +112,14 @@ function ViewPrompts(props: SimpleDialogProps): JSX.Element {
       {selectedPrompt == "" ? (
         <>
           <List sx={{ pt: 0 }}>
-            {context.generationData.prompts.map((pair, index) => (
+            {context.generationData.lessonPrompts.map((pair, index) => (
+              <ListItem disableGutters key={index}>
+                <ListItemButton onClick={() => setSelectedPrompt(pair.title)}>
+                  <ListItemText primary={pair.title} />
+                </ListItemButton>
+              </ListItem>
+            ))}
+            {context.generationData.MCQPrompts.map((pair, index) => (
               <ListItem disableGutters key={index}>
                 <ListItemButton onClick={() => setSelectedPrompt(pair.title)}>
                   <ListItemText primary={pair.title} />
@@ -75,38 +130,8 @@ function ViewPrompts(props: SimpleDialogProps): JSX.Element {
         </>
       ) : (
         <>
-          <TextField
-            data-cy="prompt-output"
-            label="Prompt"
-            value={selectedPair.prompt}
-            multiline
-            InputLabelProps={{
-              shrink: true,
-            }}
-            InputProps={{
-              readOnly: true,
-            }}
-            variant="outlined"
-            minRows={1}
-            maxRows={10}
-            sx={{ margin: 2 }}
-          />
-          <TextField
-            data-cy="system-prompt-output"
-            label="System Prompt"
-            value={selectedPair.systemPrompt}
-            multiline
-            InputLabelProps={{
-              shrink: true,
-            }}
-            InputProps={{
-              readOnly: true,
-            }}
-            variant="outlined"
-            minRows={1}
-            maxRows={10}
-            sx={{ margin: 2 }}
-          />
+           {renderTextFieldsFromObject(selectedSet)}
+      
           <DialogActions>
             <Button onClick={() => setSelectedPrompt("")}>Back</Button>
           </DialogActions>

@@ -83,17 +83,49 @@ interface LogPair {
   call: string;
   response: string;
 }
-interface PromptPair {
+interface MCQPromptPair {
   title: string;
   type: string;
   prompt: string;
   systemPrompt: string;
 }
+
+interface LessonPromptSet {
+  title: string;
+  type: string;
+  systemPrompt: string;
+  humanPrompt: string;
+  parseSystemPrompt: string;
+  parseHumanPrompt: string;
+  parseSystem2: string;
+  parseHuman2: string;
+  tabooSystemPrompt: string;
+  tabooHumanPrompt: string;
+  simulationSystemPrompt: string;
+  simulationHumanPrompt: string;
+  slotsSystemPrompt: string;
+  slotsHumanPrompt: string;
+  genericSystemPrompt: string;
+  genericHumanPrompt: string;
+  hintFilterSystemPrompt: string;
+  hintFilterHumanPrompt: string;
+  hintMockPrompt: string;
+  patchSystemPrompt: string;
+  patchHumanPrompt: string;
+}
+
+interface ConceptPair {
+  concept: string;
+  hints: string[];
+}
+
 interface GenState {
+  genRecipe: string;
   universalContext: string;
   jsonOutput: string;
   logPairs: LogPair[];
-  prompts: PromptPair[];
+  MCQPrompts: MCQPromptPair[];
+  lessonPrompts: LessonPromptSet[];
   questionStrategy: string;
   questionAnswerPairs: string[][];
   questionChosen: number | null;
@@ -105,9 +137,12 @@ interface GenState {
   lessonObjective: string;
   essentialQuestion: string;
   conclusion: string;
+  concepts: ConceptPair[];
 }
+
 type CogenerationContextType = {
   generationData: GenState;
+  handleRecipeChange: (val: string) => void;
   handleContextChange: (val: string) => void;
   handleDistractorChange: (val: string, idx: number) => void;
   handleRemoveDistractor: (index: number) => void;
@@ -123,8 +158,10 @@ type CogenerationContextType = {
   handleObjectiveChange: (val: string) => void;
   handleEssentialQuestionChange: (val: string) => void;
   handleConclusionChange: (val: string) => void;
+  handleConceptChange:(val: string, idx: number) => void;
+  handleHintChange: (val: string, indexOfConcept: number, indexOfHint: number) => void;
+  handleGenerateLesson: () => void;
 };
-
 const generatedLesson: Array<{
   dataCy: string;
   label: string;
@@ -177,33 +214,29 @@ export function LessonInput(props: {
       <Paper elevation={0} style={{ textAlign: "left" }}>
         <Grid
           container
-          spacing={0}
-          style={{ display: "flex", alignItems: "center", marginBottom: 3 }}
+          spacing={3}
+          style={{ display: "flex", alignItems: "center", marginBottom: 5 }}
         >
-          <Grid item>
+          <Grid item style={{marginBottom: 10}}>
             <Typography variant="h6" style={{ padding: 5 }}>
               Lesson Generation
             </Typography>
           </Grid>
-          <Grid item style={{ marginLeft: 20 }}>
+          <Grid item style={{ marginLeft: 20, marginBottom: 10 }}>
             <Button
               data-cy="generate-lesson"
               className={classes.button}
-              onClick={() =>
-                context.handleGenerateQuestions(
-                  context.generationData.questionStrategy
-                )
-              }
+              onClick={context.handleGenerateLesson}
               variant="contained"
               color="primary"
               size="small"
               disabled={context.generationData.universalContext === ""}
             >
-              Generate QA Pairs
+              Generate Lesson
             </Button>
           </Grid>
         </Grid>
-        <Grid container spacing={2}>
+        <Grid container spacing={4}>
           {inputFields.map((input, i) => (
             <Grid key={i} item xs={12}>
                 <TextField
@@ -243,8 +276,8 @@ export function LessonOutput (props: {
       style={{ width: "100%", marginTop: 15, marginBottom: 15, marginLeft: 15 }}
     >
       <CardContent>
-        <Grid container>
-          <Typography variant="h6" style={{ padding: 5 }}>
+        <Grid container spacing={1}>
+          <Typography variant="h6" style={{ padding: 3 }}>
             Generated Lesson
           </Typography>
           {generatedLesson.map((lesson, i) => (  

@@ -25,9 +25,9 @@ describe("cogeneration testbed screen", () => {
       cy.visit("/cogeneration");
       cy.get("[data-cy=generator-recipe]").click();
 
-      cy.get('li[data-value="testRecipe"]')
+      cy.get('li[data-value="lesson"]')
         .should("exist")
-        .should("contain.text", "Test Recipe");
+        .should("contain.text", "Lesson Baseline");
 
       cy.get('li[data-value="multipleChoice"]')
         .should("exist")
