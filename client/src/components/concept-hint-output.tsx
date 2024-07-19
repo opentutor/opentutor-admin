@@ -4,19 +4,9 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import Ajv from "ajv";
 import clsx from "clsx";
-import React, { useContext }  from "react";
-import { v4 as uuid } from "uuid";
-import { navigate } from "gatsby";
+import React, { useContext } from "react";
 import {
-  DragDropContext,
-  Droppable,
-  Draggable,
-  DropResult,
-} from "react-beautiful-dnd";
-import {
-  Button,
   Card,
   CardActions,
   CardContent,
@@ -29,32 +19,10 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import HintsList from "components/hints-list";
-import { expectationFeatureSchema } from "schemas/validation";
-import { LessonExpectation, Hint, Features } from "types";
 import "styles/layout.css";
 import "jsoneditor-react/es/editor.min.css";
-import {
-  Add,
-  DragHandle,
-  ClearOutlined,
-  ExpandMore,
-  Launch,
-  ArrowRight,
-  ArrowDropDown,
-} from "@mui/icons-material";
-import exp from "constants";
+import { ExpandMore } from "@mui/icons-material";
 import CogenerationContext from "context/cogeneration";
-
-
-interface ExpectationClasses {
-  expand: string;
-  expandOpen: string;
-  list: string;
-  listDragging: string;
-  button: string;
-  cardRoot: string;
-}
 
 interface LessonInputClasses {
   selectForm: string;
@@ -67,43 +35,48 @@ interface LessonInputClasses {
   cardRoot: string;
 }
 
-export function ConceptHints (props: {
-  classes: LessonInputClasses;
-  conceptIndex: number;
-}): JSX.Element {
-  const { classes, conceptIndex } = props;
+export function ConceptHints(props: { conceptIndex: number }): JSX.Element {
+  const { conceptIndex } = props;
   const context = useContext(CogenerationContext);
   if (!context) {
     throw new Error("SomeComponent must be used within a CogenerationProvider");
   }
   return (
     <>
-     <Paper elevation={0} style={{ textAlign: "left", width: "100%" }}>
-      <Grid
-        container
-        spacing={0}
-        style={{ display: "flex", alignItems: "center", marginBottom: 5,  width: "100%" }}
-      >
-        <Grid item>
-          <Typography variant="h6" style={{ padding: 5 }}>
-            Hints
-          </Typography>
-        </Grid>
-        <Grid item xs={12}>
+      <Paper elevation={0} style={{ textAlign: "left", width: "100%" }}>
+        <Grid
+          container
+          spacing={0}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            marginBottom: 5,
+            width: "100%",
+          }}
+        >
+          <Grid item>
+            <Typography variant="h6" style={{ padding: 5 }}>
+              Hints
+            </Typography>
+          </Grid>
+          <Grid item xs={12}>
             <List
               data-cy="hints"
               dense
               disablePadding
               style={{ paddingTop: 10, paddingBottom: 10 }}
             >
-              {context.generationData.concepts[conceptIndex].hints.map((hint, i) => (
-                    <ListItem key={i}>
-                      <Card
-                        data-cy={`hint-${i}`}
-                        variant="outlined"
-                        style={{ width: "100%" }}
+              {context.generationData.concepts[conceptIndex].hints.map(
+                (hint, i) => (
+                  <ListItem key={i}>
+                    <Card
+                      data-cy={`hint-${i}`}
+                      variant="outlined"
+                      style={{ width: "100%" }}
+                    >
+                      <CardContent
+                        style={{ display: "flex", flexDirection: "row" }}
                       >
-                      <CardContent style={{ display: "flex", flexDirection: "row" }}>
                         <TextField
                           data-cy="edit-hint"
                           margin="normal"
@@ -117,32 +90,32 @@ export function ConceptHints (props: {
                           }}
                           value={hint || ""}
                           onChange={(e) => {
-                            context.handleHintChange(e.target.value, conceptIndex, i);
+                            context.handleHintChange(
+                              e.target.value,
+                              conceptIndex,
+                              i
+                            );
                           }}
                           variant="outlined"
                         />
                       </CardContent>
                     </Card>
-                    </ListItem>
-                ))}
+                  </ListItem>
+                )
+              )}
             </List>
           </Grid>
-      </Grid>
+        </Grid>
       </Paper>
     </>
-  )
+  );
 }
 const ExpectationCard = (props: {
   classes: LessonInputClasses;
   concept: string;
   conceptIndex: number;
-
 }) => {
-  const {
-    classes,
-    concept,
-    conceptIndex,
-  } = props;
+  const { classes, concept, conceptIndex } = props;
   const [expanded, setExpanded] = React.useState(true);
   const context = useContext(CogenerationContext);
   if (!context) {
@@ -189,10 +162,7 @@ const ExpectationCard = (props: {
           unmountOnExit
           style={{ paddingLeft: 15, paddingTop: 10 }}
         >
-          <ConceptHints
-            classes={classes}
-            conceptIndex={conceptIndex}
-          />
+          <ConceptHints conceptIndex={conceptIndex} />
         </Collapse>
       </CardContent>
     </Card>
@@ -200,28 +170,31 @@ const ExpectationCard = (props: {
 };
 
 function ConceptHintOutput(props: {
-  classes: LessonInputClasses,
+  classes: LessonInputClasses;
 }): JSX.Element {
-  const { classes} = props;
+  const { classes } = props;
   const context = useContext(CogenerationContext);
   if (!context) {
     throw new Error("SomeComponent must be used within a CogenerationProvider");
   }
   return (
-    <Paper elevation={0} style={{ textAlign: "left", marginBottom: 20, width: "100%"}}>
-      <Typography variant="h6" style={{ paddingTop: 5}}>
+    <Paper
+      elevation={0}
+      style={{ textAlign: "left", marginBottom: 20, width: "100%" }}
+    >
+      <Typography variant="h6" style={{ paddingTop: 5 }}>
         Key Concepts
       </Typography>
-        <List data-cy="expectations">
-          {context.generationData.concepts.map((concept, i) => (
-                <ListItem key={i} style={{ width: '100%' }}>
-                  <ExpectationCard
-                    classes={classes}
-                    concept={concept.concept}
-                    conceptIndex={i}
-                  />
-                </ListItem>
-            ))}
+      <List data-cy="expectations">
+        {context.generationData.concepts.map((concept, i) => (
+          <ListItem key={i} style={{ width: "100%" }}>
+            <ExpectationCard
+              classes={classes}
+              concept={concept.concept}
+              conceptIndex={i}
+            />
+          </ListItem>
+        ))}
       </List>
     </Paper>
   );

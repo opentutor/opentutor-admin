@@ -37,95 +37,11 @@ import {
   lessonHintFilterHumanPrompt,
   lessonHintMockPrompt,
   lessonPatchSystemPrompt,
-  lessonPatchHumanPrompt
+  lessonPatchHumanPrompt,
+  CogenerationContextType,
+  GenState,
 } from "constants/cogenerationDummyData";
 import { SelectChangeEvent } from "@mui/material";
-
-interface LogPair {
-  title: string;
-  type: string;
-  call: string;
-  response: string;
-}
-interface MCQPromptPair {
-  title: string;
-  type: string;
-  prompt: string;
-  systemPrompt: string;
-}
-
-interface LessonPromptSet {
-  title: string;
-  type: string;
-  systemPrompt: string;
-  humanPrompt: string;
-  parseSystemPrompt: string;
-  parseHumanPrompt: string;
-  parseSystem2: string;
-  parseHuman2: string;
-  tabooSystemPrompt: string;
-  tabooHumanPrompt: string;
-  simulationSystemPrompt: string;
-  simulationHumanPrompt: string;
-  slotsSystemPrompt: string;
-  slotsHumanPrompt: string;
-  genericSystemPrompt: string;
-  genericHumanPrompt: string;
-  hintFilterSystemPrompt: string;
-  hintFilterHumanPrompt: string;
-  hintMockPrompt: string;
-  patchSystemPrompt: string;
-  patchHumanPrompt: string;
-}
-
-interface ConceptPair {
-  concept: string;
-  hints: string[];
-}
-
-interface GenState {
-  genRecipe: string;
-  universalContext: string;
-  jsonOutput: string;
-  logPairs: LogPair[];
-  MCQPrompts: MCQPromptPair[];
-  lessonPrompts: LessonPromptSet[];
-  questionStrategy: string;
-  questionAnswerPairs: string[][];
-  questionChosen: number | null;
-  showQuestions: boolean;
-  showDistractors: boolean;
-  distractors: string[];
-  lessonTitle: string;
-  lessonIntro: string;
-  lessonObjective: string;
-  essentialQuestion: string;
-  conclusion: string;
-  concepts: ConceptPair[];
-}
-
-type CogenerationContextType = {
-  generationData: GenState;
-  handleRecipeChange: (val: string) => void;
-  handleContextChange: (val: string) => void;
-  handleDistractorChange: (val: string, idx: number) => void;
-  handleRemoveDistractor: (index: number) => void;
-  handleGenerateDistractors: (strategy: DistractorStrategy) => void;
-  handleQuestionChange: (val: string, idx: number) => void;
-  handleRemoveQuestion: (index: number | null) => void;
-  handleGenerateQuestions: (strategy: string) => void;
-  handleAnswerChange: (val: string, idx: number) => void;
-  handleQuestionStrategy: (event: SelectChangeEvent) => void;
-  handleQuestionChosen: (val: number | null) => void;
-  handleTitleChange: (val: string) => void;
-  handleIntroChange: (val: string) => void;
-  handleObjectiveChange: (val: string) => void;
-  handleEssentialQuestionChange: (val: string) => void;
-  handleConclusionChange: (val: string) => void;
-  handleConceptChange:(val: string, idx: number) => void;
-  handleHintChange: (val: string, indexOfConcept: number, indexOfHint: number) => void;
-  handleGenerateLesson: () => void;
-};
 
 const CogenerationContext = createContext<CogenerationContextType | undefined>(
   undefined
@@ -138,6 +54,7 @@ const CogenerationProvider = (props: {
     genRecipe: "multipleChoice",
     universalContext: "",
     jsonOutput: "",
+    enablePromptsLog: false,
     logPairs: [],
     MCQPrompts: [],
     lessonPrompts: [],
@@ -150,13 +67,14 @@ const CogenerationProvider = (props: {
     questionChosen: null,
     showQuestions: false,
     showDistractors: false,
+    showLesson: false,
     distractors: [""],
     lessonTitle: "",
-    lessonIntro: "", 
+    lessonIntro: "",
     lessonObjective: "",
     essentialQuestion: "",
     conclusion: "",
-    concepts:[],
+    concepts: [],
   });
 
   const handleRecipeChange = useCallback((val: string) => {
@@ -230,6 +148,7 @@ const CogenerationProvider = (props: {
           logPairs: newLogs,
           MCQprompts: newPrompts,
           jsonOutput: JSON.stringify(newJsonOutput, null, 2),
+          enablePromptsLog: true,
         };
       });
     },
@@ -317,6 +236,7 @@ const CogenerationProvider = (props: {
         logPairs: newLogs,
         MCQprompts: newPrompts,
         jsonOutput: JSON.stringify(newJsonOutput, null, 2),
+        enablePromptsLog: true,
       };
     });
   }, []);
@@ -344,109 +264,110 @@ const CogenerationProvider = (props: {
   const handleTitleChange = useCallback((val: string) => {
     setGenerationData((prev) => {
       const newTitle = val;
-      return { ...prev, lessonTitle: newTitle};
+      return { ...prev, lessonTitle: newTitle };
     });
   }, []);
 
   const handleIntroChange = useCallback((val: string) => {
     setGenerationData((prev) => {
       const newIntro = val;
-      return { ...prev, lessonIntro: newIntro};
+      return { ...prev, lessonIntro: newIntro };
     });
   }, []);
 
   const handleObjectiveChange = useCallback((val: string) => {
     setGenerationData((prev) => {
       const newObjective = val;
-      return { ...prev, lessonObjective: newObjective};
+      return { ...prev, lessonObjective: newObjective };
     });
   }, []);
-  
+
   const handleEssentialQuestionChange = useCallback((val: string) => {
     setGenerationData((prev) => {
       const newQuestion = val;
-      return { ...prev, essentialQuestion: newQuestion};
+      return { ...prev, essentialQuestion: newQuestion };
     });
   }, []);
 
   const handleConclusionChange = useCallback((val: string) => {
     setGenerationData((prev) => {
       const newConclusion = val;
-      return { ...prev, conclusion: newConclusion};
+      return { ...prev, conclusion: newConclusion };
     });
   }, []);
-  
-  
+
   const handleConceptChange = useCallback((val: string, index: number) => {
     setGenerationData((prev) => {
       const newConceptList = prev.concepts;
       newConceptList[index].concept = val;
-      return { ...prev, concepts: newConceptList};
+      return { ...prev, concepts: newConceptList };
     });
   }, []);
 
-  const handleHintChange = useCallback((val: string, indexOfConcept: number, indexOfHint: number) => {
-    setGenerationData((prev) => {
-      const newConceptList = prev.concepts;
-      newConceptList[indexOfConcept].hints[indexOfHint] = val;
-      return { ...prev, concepts: newConceptList};
-    });
-  }, []);
-  
-  const handleGenerateLesson = useCallback(
-    () => {
+  const handleHintChange = useCallback(
+    (val: string, indexOfConcept: number, indexOfHint: number) => {
       setGenerationData((prev) => {
-        const newLessonTitle = lessonTitle;
-        const newLessonIntro = lessonIntro;
-        const newLessonObjective= lessonObjective;
-        const newEssentialQuestion = lessonEssentialQuestion;
-        const newConclusion = lessonConclusion;
-        const newConceptList = lessonConcepts;
+        const newConceptList = prev.concepts;
+        newConceptList[indexOfConcept].hints[indexOfHint] = val;
+        return { ...prev, concepts: newConceptList };
+      });
+    },
+    []
+  );
 
-        const newLogs = [
-          ...prev.logPairs,
-          {
-            title: `Generate Lesson Call`,
-            type: "lesson",
-            call: "Call Details",
-            response: "Response Details",
-          },
-        ];
-        const newPrompts = [
-          ...prev.lessonPrompts,
-          {
-            title: `Lesson Generation`,
-            type: "lesson",
-            systemPrompt: lessonSystemPrompt,
-            humanPrompt: lessonHumanPrompt,
-            parseSystemPrompt: lessonParseSystemPrompt, 
-            parseHumanPrompt: lessonParseHumanPrompt,
-            parseSystem2: lessonParseSystem2Prompt,
-            parseHuman2: lessonParseHuman2Prompt,
-            tabooSystemPrompt: lessonTabooSystemPrompt,
-            tabooHumanPrompt: lessonTabooHumanPrompt,
-            simulationSystemPrompt: lessonSimulationSystemPrompt,
-            simulationHumanPrompt: lessonSimulationHumanPrompt,
-            slotsSystemPrompt: lessonSlotsSystemPrompt,
-            slotsHumanPrompt: lessonSlotsHumanPrompt,
-            genericSystemPrompt: lessonGenericSystemPrompt,
-            genericHumanPrompt: lessonGenericHumanPrompt,
-            hintFilterSystemPrompt: lessonHintFilterSystemPrompt,
-            hintFilterHumanPrompt: lessonHintFilterHumanPrompt,
-            hintMockPrompt: lessonHintMockPrompt,
-            patchSystemPrompt: lessonPatchSystemPrompt,
-            patchHumanPrompt: lessonPatchHumanPrompt
-          },
-        ];
+  const handleGenerateLesson = useCallback(() => {
+    setGenerationData((prev) => {
+      const newLessonTitle = lessonTitle;
+      const newLessonIntro = lessonIntro;
+      const newLessonObjective = lessonObjective;
+      const newEssentialQuestion = lessonEssentialQuestion;
+      const newConclusion = lessonConclusion;
+      const newConceptList = lessonConcepts;
 
-        const jsonOutput = prev.jsonOutput
-          ? JSON.parse(prev.jsonOutput)
-          : {
-            lesson_id: "", 
-            model: "", 
-            temp: "", 
-            lesson_name: "", 
-            learning_objective: "", 
+      const newLogs = [
+        ...prev.logPairs,
+        {
+          title: `Generate Lesson Call`,
+          type: "lesson",
+          call: "Call Details",
+          response: "Response Details",
+        },
+      ];
+      const newPrompts = [
+        ...prev.lessonPrompts,
+        {
+          title: `Lesson Generation`,
+          type: "lesson",
+          systemPrompt: lessonSystemPrompt,
+          humanPrompt: lessonHumanPrompt,
+          parseSystemPrompt: lessonParseSystemPrompt,
+          parseHumanPrompt: lessonParseHumanPrompt,
+          parseSystem2: lessonParseSystem2Prompt,
+          parseHuman2: lessonParseHuman2Prompt,
+          tabooSystemPrompt: lessonTabooSystemPrompt,
+          tabooHumanPrompt: lessonTabooHumanPrompt,
+          simulationSystemPrompt: lessonSimulationSystemPrompt,
+          simulationHumanPrompt: lessonSimulationHumanPrompt,
+          slotsSystemPrompt: lessonSlotsSystemPrompt,
+          slotsHumanPrompt: lessonSlotsHumanPrompt,
+          genericSystemPrompt: lessonGenericSystemPrompt,
+          genericHumanPrompt: lessonGenericHumanPrompt,
+          hintFilterSystemPrompt: lessonHintFilterSystemPrompt,
+          hintFilterHumanPrompt: lessonHintFilterHumanPrompt,
+          hintMockPrompt: lessonHintMockPrompt,
+          patchSystemPrompt: lessonPatchSystemPrompt,
+          patchHumanPrompt: lessonPatchHumanPrompt,
+        },
+      ];
+
+      const jsonOutput = prev.jsonOutput
+        ? JSON.parse(prev.jsonOutput)
+        : {
+            lesson_id: "",
+            model: "",
+            temp: "",
+            lesson_name: "",
+            learning_objective: "",
             introduction: "",
             essential_question: "",
             key_concepts: {
@@ -468,84 +389,84 @@ const CogenerationProvider = (props: {
                 concept: "",
                 hint_1: "",
                 hint_2: "",
-                hint_3: ""
+                hint_3: "",
               },
               concept_2: {
                 concept: "",
                 hint_1: "",
                 hint_2: "",
-                hint_3: ""
+                hint_3: "",
               },
               concept_3: {
                 concept: "",
                 hint_1: "",
                 hint_2: "",
-                hint_3: ""
-              }
+                hint_3: "",
+              },
             },
-            conclusion: ""
+            conclusion: "",
           };
-        const newJsonOutput = {
-          ...jsonOutput,
-          lesson_id: "3d728b3a-d320-41e5-9091-d40d097e997b",
-          model: "gpt-4",
-          temp: "0.3",
-          lesson_name: lessonTitle,
-          learning_objective: lessonObjective,
-          introduction: lessonIntro,
-          essential_question: lessonEssentialQuestion,
-          key_concepts:{
-            concept_1: {
-              concept: lessonConcepts[0].concept,
-              keywords: "team, sailors, crew, manpower, hands, staff",
-            },
-            concept_2: {
-              concept: lessonConcepts[1].concept,
-              keywords: "schedule, extension, deadline, date, time",
-            },
-            concept_3: {
-              concept: lessonConcepts[2].concept,
-              keywords: "reduce, adjust, change, shrink, eliminate",
-            }
+      const newJsonOutput = {
+        ...jsonOutput,
+        lesson_id: "3d728b3a-d320-41e5-9091-d40d097e997b",
+        model: "gpt-4",
+        temp: "0.3",
+        lesson_name: lessonTitle,
+        learning_objective: lessonObjective,
+        introduction: lessonIntro,
+        essential_question: lessonEssentialQuestion,
+        key_concepts: {
+          concept_1: {
+            concept: lessonConcepts[0].concept,
+            keywords: "team, sailors, crew, manpower, hands, staff",
           },
-          hints: {
-            concept_1: {
-              concept: lessonConcepts[0].concept,
-              hint_1: lessonConcepts[0].hints[0],
-              hint_2: lessonConcepts[0].hints[1],
-              hint_3: lessonConcepts[0].hints[2],
-            },
-            concept_2: {
-              concept: lessonConcepts[1].concept,
-              hint_1: lessonConcepts[1].hints[0],
-              hint_2: lessonConcepts[1].hints[1],
-              hint_3: lessonConcepts[1].hints[2],
-            },
-            concept_3: {
-              concept: lessonConcepts[2].concept,
-              hint_1: lessonConcepts[2].hints[0],
-              hint_2: lessonConcepts[2].hints[1],
-              hint_3: lessonConcepts[2].hints[2],
-            }
+          concept_2: {
+            concept: lessonConcepts[1].concept,
+            keywords: "schedule, extension, deadline, date, time",
           },
-          conclusion: lessonConclusion,
-        };
-        return {
-          ...prev,
-          lessonTitle: newLessonTitle,
-          lessonIntro: newLessonIntro,
-          lessonObjective: newLessonObjective,
-          essentialQuestion: newEssentialQuestion,
-          conclusion: newConclusion,
-          concepts: newConceptList,
-          logPairs: newLogs,
-          lessonPrompts: newPrompts,
-          jsonOutput: JSON.stringify(newJsonOutput, null, 2),
-        };
-      });
-    },
-    []
-  );
+          concept_3: {
+            concept: lessonConcepts[2].concept,
+            keywords: "reduce, adjust, change, shrink, eliminate",
+          },
+        },
+        hints: {
+          concept_1: {
+            concept: lessonConcepts[0].concept,
+            hint_1: lessonConcepts[0].hints[0],
+            hint_2: lessonConcepts[0].hints[1],
+            hint_3: lessonConcepts[0].hints[2],
+          },
+          concept_2: {
+            concept: lessonConcepts[1].concept,
+            hint_1: lessonConcepts[1].hints[0],
+            hint_2: lessonConcepts[1].hints[1],
+            hint_3: lessonConcepts[1].hints[2],
+          },
+          concept_3: {
+            concept: lessonConcepts[2].concept,
+            hint_1: lessonConcepts[2].hints[0],
+            hint_2: lessonConcepts[2].hints[1],
+            hint_3: lessonConcepts[2].hints[2],
+          },
+        },
+        conclusion: lessonConclusion,
+      };
+      return {
+        ...prev,
+        lessonTitle: newLessonTitle,
+        lessonIntro: newLessonIntro,
+        lessonObjective: newLessonObjective,
+        essentialQuestion: newEssentialQuestion,
+        conclusion: newConclusion,
+        concepts: newConceptList,
+        logPairs: newLogs,
+        lessonPrompts: newPrompts,
+        jsonOutput: JSON.stringify(newJsonOutput, null, 2),
+        showLesson: true,
+        enablePromptsLog: true,
+      };
+    });
+  }, []);
 
   return (
     <CogenerationContext.Provider

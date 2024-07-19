@@ -66,4 +66,22 @@ describe("new cogeneration", () => {
 
     cy.get("[data-cy=generate-distractor]").click();
   });
+
+  it("cogenerates a lesson", () => {
+    cySetup(cy);
+    cyMockModelStatus(cy);
+    cyMockDefault(cy);
+    cy.visit("/cogeneration");
+    cy.get("[data-cy=generator-recipe]").click();
+    cy.get('li[data-value="lesson"]').click();
+    cy.get('li[data-value="lesson"]').should("not.be.visible");
+
+    cy.get("[data-cy=universal-context]").within(($input) => {
+      cy.get("textarea").fill(
+        "Problem:  You  are  assigned  a  mission  that  appears impossible  to  complete.  There  is  too  little  time,  you don’t have enough people or materials, or the task scope is too big. Approach:  Most  impossible  missions  can  be analyzed using the Project Management Triangle. This is  a  simple  model  for  a  project  that  considers  three factors."
+      );
+    });
+
+    cy.get("[data-cy=generate-lesson]").click();
+  });
 });

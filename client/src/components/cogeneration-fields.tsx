@@ -36,7 +36,7 @@ interface FieldClasses {
   button: string;
   cardRoot: string;
   divider: string;
-  selectForm: string; 
+  selectForm: string;
 }
 interface ContextField {
   context: string;
@@ -45,7 +45,7 @@ interface ContextField {
 export function CogenerationFields(props: {
   classes: FieldClasses;
 }): JSX.Element {
-  const { classes} = props;
+  const { classes } = props;
   const context = useContext(CogenerationContext);
   if (!context) {
     throw new Error("SomeComponent must be used within a CogenerationProvider");

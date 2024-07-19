@@ -30,7 +30,6 @@ interface LessonUnderEdit {
 interface AdvancedFeaturesClasses {
   selectForm: string;
 }
-
 const LessonIdInput = (props: {
   lessonUnderEdit: LessonUnderEdit;
   error: string | "";

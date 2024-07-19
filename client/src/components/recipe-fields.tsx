@@ -4,7 +4,7 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import React from "react";
+import React, { useContext } from "react";
 import { Grid } from "@mui/material";
 
 interface RecipeClasses {
@@ -18,11 +18,10 @@ interface RecipeClasses {
   cardRoot: string;
 }
 
-
-
 import QuestionAnswerGen from "./question-answer-gen";
 import DistractionGen from "./distraction-gen";
-import {LessonInput, LessonOutput } from "./lesson-fields";
+import { LessonInput, LessonOutput } from "./lesson-fields";
+import CogenerationContext from "context/cogeneration";
 
 export function MultipleChoiceBaseline(props: {
   classes: RecipeClasses;
@@ -42,20 +41,23 @@ export function MultipleChoiceBaseline(props: {
   );
 }
 
-export function LessonBaseline(props: {
-  classes: RecipeClasses;
-}): JSX.Element {
-  const {classes} = props;
-
+export function LessonBaseline(props: { classes: RecipeClasses }): JSX.Element {
+  const { classes } = props;
+  const context = useContext(CogenerationContext);
+  if (!context) {
+    throw new Error("SomeComponent must be used within a CogenerationProvider");
+  }
   return (
     <>
       <Grid item xs={12}>
         <LessonInput classes={classes} />
       </Grid>
 
-      <Grid item xs={12}>
-        <LessonOutput classes={classes} />
-      </Grid>
+      {context.generationData.showLesson && (
+        <Grid item xs={12}>
+          <LessonOutput classes={classes} />
+        </Grid>
+      )}
     </>
-  )
+  );
 }

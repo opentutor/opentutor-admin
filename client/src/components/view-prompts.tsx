@@ -44,36 +44,54 @@ function ViewPrompts(props: SimpleDialogProps): JSX.Element {
       return { prompt: "", systemPrompt: "" };
     } else if (type === "lesson") {
       return {
-        systemPrompt: "", humanPrompt: "", parseSystemPrompt: "", parseHumanPrompt: "",
-        parseSystem2: "", parseHuman2: "", tabooSystemPrompt: "", tabooHumanPrompt: "",
-        simulationSystemPrompt: "", simulationHumanPrompt: "", slotsSystemPrompt: "",
-        slotsHumanPrompt: "", genericSystemPrompt: "", genericHumanPrompt: "",
-        hintFilterSystemPrompt: "", hintFilterHumanPrompt: "", hintMockPrompt: "",
-        patchSystemPrompt: "", patchHumanPrompt: ""
+        systemPrompt: "",
+        humanPrompt: "",
+        parseSystemPrompt: "",
+        parseHumanPrompt: "",
+        parseSystem2: "",
+        parseHuman2: "",
+        tabooSystemPrompt: "",
+        tabooHumanPrompt: "",
+        simulationSystemPrompt: "",
+        simulationHumanPrompt: "",
+        slotsSystemPrompt: "",
+        slotsHumanPrompt: "",
+        genericSystemPrompt: "",
+        genericHumanPrompt: "",
+        hintFilterSystemPrompt: "",
+        hintFilterHumanPrompt: "",
+        hintMockPrompt: "",
+        patchSystemPrompt: "",
+        patchHumanPrompt: "",
       };
     }
     return {};
   };
-  
+
   let selectedSet = { title: "error", type: "error404" };
-  
+
   if (context.generationData.genRecipe === "multipleChoice") {
     selectedSet = context.generationData.MCQPrompts.find(
       (pair) => pair.title === selectedPrompt
-    ) || { title: "error", type: "error404", ...getDefaultValues("multipleChoice") };
+    ) || {
+      title: "error",
+      type: "error404",
+      ...getDefaultValues("multipleChoice"),
+    };
   } else {
     selectedSet = context.generationData.lessonPrompts.find(
       (pair) => pair.title === selectedPrompt
     ) || { title: "error", type: "error404", ...getDefaultValues("lesson") };
   }
- 
 
   const renderTextFieldsFromObject = (fieldsObject: Record<string, string>) => {
     return Object.keys(fieldsObject).map((fieldKey) => (
       <TextField
         key={fieldKey}
         data-cy={`${fieldKey}-output`}
-        label={fieldKey.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
+        label={fieldKey
+          .replace(/([A-Z])/g, " $1")
+          .replace(/^./, (str) => str.toUpperCase())}
         value={fieldsObject[fieldKey]}
         multiline
         InputLabelProps={{
@@ -130,8 +148,8 @@ function ViewPrompts(props: SimpleDialogProps): JSX.Element {
         </>
       ) : (
         <>
-           {renderTextFieldsFromObject(selectedSet)}
-      
+          {renderTextFieldsFromObject(selectedSet)}
+
           <DialogActions>
             <Button onClick={() => setSelectedPrompt("")}>Back</Button>
           </DialogActions>
