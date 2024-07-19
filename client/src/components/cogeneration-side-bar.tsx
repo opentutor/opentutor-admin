@@ -76,7 +76,6 @@ export function CogenerationSideBar(props: {
     toast("Success!");
   }
 
-
   const [openLog, setOpenLog] = React.useState(false);
   const [selectedValue, setSelectedValue] = React.useState("");
 
