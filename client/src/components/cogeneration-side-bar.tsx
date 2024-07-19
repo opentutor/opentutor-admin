@@ -76,11 +76,6 @@ export function CogenerationSideBar(props: {
     toast("Success!");
   }
 
-  const initialQuestions = [
-    ["", ""],
-    ["", ""],
-    ["", ""],
-  ];
 
   const [openLog, setOpenLog] = React.useState(false);
   const [selectedValue, setSelectedValue] = React.useState("");

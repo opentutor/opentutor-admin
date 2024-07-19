@@ -18,9 +18,6 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-
-import { makeStyles } from "@mui/styles";
-import { Theme } from "@mui/material/styles";
 import { fetchLesson, userCanEdit, fetchLessons } from "api";
 import { DEFAULT_CLASSIFIER_ARCHITECTURE } from "admin-constants";
 import SessionContext from "context/session";
