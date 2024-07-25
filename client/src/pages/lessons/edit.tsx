@@ -22,7 +22,7 @@ import { fetchLesson, userCanEdit, fetchLessons } from "api";
 import { DEFAULT_CLASSIFIER_ARCHITECTURE } from "admin-constants";
 import SessionContext from "context/session";
 import NavBar from "components/nav-bar";
-import SideBar from "components/edit-side-bar";
+import SideBar from "components/side-bar";
 import LessonHeader from "components/lesson-header";
 import ConclusionsList from "components/conclusions-list";
 import ExpectationsList from "components/expectations-list";
