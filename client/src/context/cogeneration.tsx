@@ -170,11 +170,15 @@ const CogenerationProvider = (props: {
         const newQuestions = prev.questionAnswerPairs.filter(
           (_, idx) => idx !== index
         );
-  
+
         let newQuestionChosen = prev.questionChosen;
         if (prev.questionChosen === index) {
-          newQuestionChosen = newQuestions.length > 0 ? (index === 0 ? 0 : index - 1) : null;
-        } else if (prev.questionChosen !== null && prev.questionChosen > index) {
+          newQuestionChosen =
+            newQuestions.length > 0 ? (index === 0 ? 0 : index - 1) : null;
+        } else if (
+          prev.questionChosen !== null &&
+          prev.questionChosen > index
+        ) {
           newQuestionChosen = prev.questionChosen - 1;
         }
         return {
@@ -313,9 +317,7 @@ const CogenerationProvider = (props: {
   const handleRemoveConcept = useCallback((index: number | null) => {
     if (index !== null) {
       setGenerationData((prev) => {
-        const newConceptList = prev.concepts.filter(
-          (_, idx) => idx !== index
-        );
+        const newConceptList = prev.concepts.filter((_, idx) => idx !== index);
         return {
           ...prev,
           concepts: newConceptList,
@@ -481,7 +483,7 @@ const CogenerationProvider = (props: {
       const newConcepts = [...prev.concepts, newLessonConcept];
       return {
         ...prev,
-        concepts: newConcepts
+        concepts: newConcepts,
       };
     });
   }, []);

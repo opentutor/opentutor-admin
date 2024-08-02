@@ -21,11 +21,12 @@ import {
 } from "@mui/material";
 import { Close as CloseIcon } from "@mui/icons-material";
 import CogenerationContext from "context/cogeneration";
+import { DefaultPromptValues } from "constants/cogenerationDummyData";
 export interface SimpleDialogProps {
   open: boolean;
   selectedPrompt: string;
   onClose: (value: string) => void;
-  setSelectedPrompt: React.Dispatch<React.SetStateAction<string>>;
+  setSelectedPrompt: (prompt: string) => void;
 }
 
 function ViewPrompts(props: SimpleDialogProps): JSX.Element {
@@ -39,7 +40,7 @@ function ViewPrompts(props: SimpleDialogProps): JSX.Element {
     onClose(selectedPrompt);
   };
 
-  const getDefaultValues = (type: string) => {
+  const getDefaultValues = (type: string): DefaultPromptValues => {
     if (type === "multipleChoice") {
       return { prompt: "", systemPrompt: "" };
     } else if (type === "lesson") {
@@ -84,14 +85,18 @@ function ViewPrompts(props: SimpleDialogProps): JSX.Element {
     ) || { title: "error", type: "error404", ...getDefaultValues("lesson") };
   }
 
+  const formatLabel = (str: string): string => {
+    return str
+      .replace(/([A-Z])/g, " $1")
+      .replace(/^./, (char) => char.toUpperCase());
+  };
+
   const renderTextFieldsFromObject = (fieldsObject: Record<string, string>) => {
     return Object.keys(fieldsObject).map((fieldKey) => (
       <TextField
         key={fieldKey}
         data-cy={`${fieldKey}-output`}
-        label={fieldKey
-          .replace(/([A-Z])/g, " $1")
-          .replace(/^./, (str) => str.toUpperCase())}
+        label={formatLabel(fieldKey)}
         value={fieldsObject[fieldKey]}
         multiline
         InputLabelProps={{

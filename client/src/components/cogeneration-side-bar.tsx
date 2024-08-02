@@ -76,30 +76,60 @@ export function CogenerationSideBar(props: {
     toast("Success!");
   }
 
-  const [openLog, setOpenLog] = React.useState(false);
-  const [selectedValue, setSelectedValue] = React.useState("");
+  const [logProperties, setLogProperties] = React.useState({
+    openLog: false,
+    selectedLog: "",
+  });
+  const [promptProperties, setPromptProperties] = React.useState({
+    openPrompt: false,
+    selectedPrompt: "",
+  });
 
-  const [openPrompts, setOpenPrompts] = React.useState(false);
-  const [selectedPrompt, setSelectedPrompt] = React.useState("");
   const handleClickOpenLog = () => {
-    setOpenLog(true);
+    setLogProperties((prev) => {
+      return {
+        ...prev,
+        openLog: true,
+      };
+    });
   };
   const handleClickOpenPrompts = () => {
-    setOpenPrompts(true);
+    setPromptProperties((prev) => {
+      return {
+        ...prev,
+        openPrompt: true,
+      };
+    });
   };
 
+  const handleSelectedPrompt = (prompt: string) => {
+    setPromptProperties((prev) => {
+      return {
+        ...prev,
+        selectedPrompt: prompt,
+      };
+    });
+  };
+  const handleSelectedLog = (log: string) => {
+    setLogProperties((prev) => {
+      return {
+        ...prev,
+        selectedLog: log,
+      };
+    });
+  };
   const handleClosePrompts = () => {
-    setOpenPrompts(false);
-    setTimeout(() => {
-      setSelectedPrompt("");
-    }, 1000);
+    setPromptProperties({
+      openPrompt: false,
+      selectedPrompt: "",
+    });
   };
 
   const handleCloseLog = () => {
-    setOpenLog(false);
-    setTimeout(() => {
-      setSelectedValue("");
-    }, 1000);
+    setLogProperties({
+      openLog: false,
+      selectedLog: "",
+    });
   };
 
   return (
@@ -219,16 +249,16 @@ export function CogenerationSideBar(props: {
         </DialogActions>
       </Dialog>
       <CallResponseLog
-        selectedValue={selectedValue}
-        open={openLog}
+        selectedValue={logProperties.selectedLog}
+        open={logProperties.openLog}
         onClose={handleCloseLog}
-        setSelectedValue={setSelectedValue}
+        setSelectedValue={handleSelectedLog}
       />
       <ViewPrompts
-        selectedPrompt={selectedPrompt}
-        open={openPrompts}
+        selectedPrompt={promptProperties.selectedPrompt}
+        open={promptProperties.openPrompt}
         onClose={handleClosePrompts}
-        setSelectedPrompt={setSelectedPrompt}
+        setSelectedPrompt={handleSelectedPrompt}
       />
       <ToastContainer />
     </Grid>

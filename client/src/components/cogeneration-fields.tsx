@@ -27,6 +27,7 @@ import { RecipeType } from "types";
 import PromptingOutput from "./prompting-output";
 import CogenerationContext from "context/cogeneration";
 import { ClearOutlined } from "@mui/icons-material";
+import { contextOptions } from "constants/cogenerationDummyData";
 
 interface FieldClasses {
   expand: string;
@@ -61,11 +62,7 @@ export function CogenerationFields(props: {
   const handleClickListItem = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
-  const options = ["Add Text", "Add URL"];
-  console.log(
-    "Current universalContext:",
-    context.generationData.universalContext
-  );
+
   const handleClose = () => {
     2;
     setAnchorEl(null);
@@ -94,7 +91,7 @@ export function CogenerationFields(props: {
         ...prev,
         {
           context: "",
-          type: options[index] == "Add Text" ? "Text" : "URL",
+          type: contextOptions[index] == contextOptions[0] ? "Text" : "URL",
         },
       ];
       return newContext;
@@ -174,10 +171,12 @@ export function CogenerationFields(props: {
                 sx: { width: anchorEl && anchorEl.offsetWidth },
               }}
             >
-              {options.map((option, index) => (
+              {contextOptions.map((option, index) => (
                 <MenuItem
                   key={option}
-                  data-cy={option === "Add Text" ? "add-text" : "add-url"}
+                  data-cy={
+                    option === contextOptions[0] ? "add-text" : "add-url"
+                  }
                   onClick={(event) => handleMenuItemClick(event, index)}
                 >
                   {option}

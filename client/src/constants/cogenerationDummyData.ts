@@ -29,6 +29,30 @@ interface ConceptPair {
   concept: string;
   hints: string[];
 }
+export type DefaultPromptValues =
+  | { prompt: string; systemPrompt: string }
+  | {
+      systemPrompt: string;
+      humanPrompt: string;
+      parseSystemPrompt: string;
+      parseHumanPrompt: string;
+      parseSystem2: string;
+      parseHuman2: string;
+      tabooSystemPrompt: string;
+      tabooHumanPrompt: string;
+      simulationSystemPrompt: string;
+      simulationHumanPrompt: string;
+      slotsSystemPrompt: string;
+      slotsHumanPrompt: string;
+      genericSystemPrompt: string;
+      genericHumanPrompt: string;
+      hintFilterSystemPrompt: string;
+      hintFilterHumanPrompt: string;
+      hintMockPrompt: string;
+      patchSystemPrompt: string;
+      patchHumanPrompt: string;
+    }
+  | Record<string, never>;
 
 export const generatedDistractors: Record<DistractorStrategy, string[]> = {
   random: [
@@ -105,11 +129,10 @@ export const lessonConcepts: ConceptPair[] = [
     ],
   },
 ];
-export const newLessonConcept: ConceptPair = 
-  {
-    concept: "",
-    hints: ["","",""]
-  }
+export const newLessonConcept: ConceptPair = {
+  concept: "",
+  hints: ["", "", ""],
+};
 export const lessonSystemPrompt =
   "You are a tutor who is designing a lesson on the topic of {topic}. You have been given some content for your students to learn, and you want to design a lesson that will guide students in critically exploring the topic and ultimately being able to express their understanding of underlying key concepts. \n\nUsing this content and an identified lesson planning objective, you are building a lesson that can be formatted according to a provided JSON template.";
 
@@ -260,6 +283,7 @@ export type CogenerationContextType = {
   handleAddConcept: () => void;
   handleRemoveConcept: (index: number | null) => void;
 };
+export const contextOptions = ["Add Text", "Add URL"];
 
 export const inputFields = [
   {

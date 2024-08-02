@@ -24,7 +24,7 @@ export interface SimpleDialogProps {
   open: boolean;
   selectedValue: string;
   onClose: (value: string) => void;
-  setSelectedValue: React.Dispatch<React.SetStateAction<string>>;
+  setSelectedValue: (log: string) => void;
 }
 import CogenerationContext from "context/cogeneration";
 

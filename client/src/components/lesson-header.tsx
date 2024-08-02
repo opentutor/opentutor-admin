@@ -112,7 +112,7 @@ export function LessonHeader(props: {
               <ListItemIcon>
                 <GPSNotFixedIcon />
               </ListItemIcon>
-              <ListItemText primary="Default Format" />
+              <ListItemText primary="Learning Targets Format" />
             </MenuItem>
             <MenuItem value={"surveySays"}>
               <ListItemIcon>

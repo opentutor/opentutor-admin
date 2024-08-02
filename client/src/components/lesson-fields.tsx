@@ -72,7 +72,7 @@ export function LessonInput(props: {
             </Button>
           </Grid>
           <Grid item style={{ marginLeft: 20, marginBottom: 10 }}>
-          <IconButton
+            <IconButton
               data-cy="expand"
               aria-label="expand expectation"
               size="small"
@@ -81,8 +81,9 @@ export function LessonInput(props: {
                 [classes.expandOpen]: expanded,
               })}
               onClick={() => setExpanded(!expanded)}
-            ><ExpandMore />
-          </IconButton>
+            >
+              <ExpandMore />
+            </IconButton>
           </Grid>
         </Grid>
         <Collapse
@@ -91,26 +92,25 @@ export function LessonInput(props: {
           unmountOnExit
           style={{ paddingLeft: 15, paddingTop: 10 }}
         >
-        <Grid container spacing={4}>
-          
-          {inputFields.map((input, i) => (
-            <Grid key={i} item xs={12}>
-              <TextField
-                data-cy={input.dataCy}
-                label={input.label}
-                placeholder={input.placeholder}
-                fullWidth
-                multiline
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                variant="outlined"
-              />
-            </Grid>
-          ))}
-          
-        <Divider variant="middle" className={classes.divider} />
-        </Grid>
+          <Grid container spacing={4}>
+            {inputFields.map((input, i) => (
+              <Grid key={i} item xs={12}>
+                <TextField
+                  data-cy={input.dataCy}
+                  label={input.label}
+                  placeholder={input.placeholder}
+                  fullWidth
+                  multiline
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  variant="outlined"
+                />
+              </Grid>
+            ))}
+
+            <Divider variant="middle" className={classes.divider} />
+          </Grid>
         </Collapse>
       </Paper>
     </>
