@@ -1,5 +1,5 @@
 /*
-This software is Copyright ©️ 2020 The University of Southern California. All Rights Reserved. 
+This software is Copyright ©️ 2024 The University of Southern California. All Rights Reserved. 
 Permission to use, copy, modify, and distribute this software and its documentation for educational, research and non-profit purposes, without fee, and without a written agreement is hereby granted, provided that the above copyright notice and subject to the full license file found in the root of this software deliverable. Permission to make commercial use of this software may be obtained by contacting:  USC Stevens Center for Innovation University of Southern California 1150 S. Olive Street, Suite 2300, Los Angeles, CA 90115, USA Email: accounting@stevens.usc.edu
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
@@ -7,12 +7,97 @@ The full terms of this copyright and license should always be found in the root 
 import { Lesson, TrainState, TrainStatus } from "types";
 import { months } from "constants/lessonConstants";
 import { styled, CSSObject, Theme } from "@mui/material/styles";
+import { makeStyles } from "@mui/styles";
 import MuiDrawer from "@mui/material/Drawer";
 import { ButtonColor } from "constants/lessonConstants";
 interface LessonUnderEdit {
   lesson?: Lesson;
   dirty?: boolean;
 }
+export const useStyles = makeStyles((theme: Theme) => ({
+  appBar: {
+    zIndex: 2,
+  },
+  drawer: {
+    paddingTop: "10%",
+    flexShrink: 0,
+    zIndex: 1,
+    position: "sticky",
+  },
+  cardRoot: {
+    width: "100%",
+  },
+  expand: {
+    transform: "rotate(0deg)",
+    marginLeft: "auto",
+    transition: theme.transitions.create("transform", {
+      duration: theme.transitions.duration.shortest,
+    }),
+  },
+  expandOpen: {
+    transform: "rotate(180deg)",
+  },
+  list: {
+    background: "#F5F5F5",
+    borderRadius: 10,
+  },
+  listDragging: {
+    background: "lightblue",
+    borderRadius: 10,
+  },
+  button: {
+    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(2),
+  },
+  heading: {
+    fontSize: theme.typography.pxToRem(15),
+    flexBasis: "33.33%",
+    flexShrink: 0,
+  },
+  secondaryHeading: {
+    fontSize: theme.typography.pxToRem(15),
+    color: theme.palette.text.secondary,
+  },
+  container: {
+    maxHeight: 440,
+  },
+  input: {
+    "&:invalid": {
+      border: "red solid 2px",
+    },
+  },
+  image: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  thumbnail: {
+    boxSizing: "border-box",
+    height: 56,
+    padding: 5,
+  },
+  video: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  inputForm: {},
+  selectForm: {
+    width: "100%",
+  },
+  divider: {
+    marginTop: 25,
+    marginBottom: 25,
+  },
+  actionFooter: {
+    marginTop: 10,
+    marginBottom: 10,
+    display: "flex",
+    gap: 10,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+}));
 
 export const getTrainButtonColor = (trainStatus: TrainStatus): ButtonColor => {
   return trainStatus.state !== TrainState.SUCCESS &&
