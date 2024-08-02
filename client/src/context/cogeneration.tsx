@@ -40,6 +40,7 @@ import {
   lessonPatchHumanPrompt,
   CogenerationContextType,
   GenState,
+  newLessonConcept,
 } from "constants/cogenerationDummyData";
 import { SelectChangeEvent } from "@mui/material";
 
@@ -146,7 +147,7 @@ const CogenerationProvider = (props: {
           distractors: newDistractors,
           showDistractors: true,
           logPairs: newLogs,
-          MCQprompts: newPrompts,
+          MCQPrompts: newPrompts,
           jsonOutput: JSON.stringify(newJsonOutput, null, 2),
           enablePromptsLog: true,
         };
@@ -169,24 +170,18 @@ const CogenerationProvider = (props: {
         const newQuestions = prev.questionAnswerPairs.filter(
           (_, idx) => idx !== index
         );
+  
+        let newQuestionChosen = prev.questionChosen;
         if (prev.questionChosen === index) {
-          if (newQuestions.length > 0) {
-            const newIndex = index === 0 ? 0 : index - 1;
-            return {
-              ...prev,
-              questionChosen: newIndex,
-              questionAnswerPairs: newQuestions,
-            };
-          } else {
-            return {
-              ...prev,
-              questionChosen: null,
-              questionAnswerPairs: newQuestions,
-            };
-          }
-        } else {
-          return { ...prev, questionAnswerPairs: newQuestions };
+          newQuestionChosen = newQuestions.length > 0 ? (index === 0 ? 0 : index - 1) : null;
+        } else if (prev.questionChosen !== null && prev.questionChosen > index) {
+          newQuestionChosen = prev.questionChosen - 1;
         }
+        return {
+          ...prev,
+          questionChosen: newQuestionChosen,
+          questionAnswerPairs: newQuestions,
+        };
       });
     }
   }, []);
@@ -234,7 +229,7 @@ const CogenerationProvider = (props: {
         questionAnswerPairs: generatedQuestions,
         showQuestions: true,
         logPairs: newLogs,
-        MCQprompts: newPrompts,
+        MCQPrompts: newPrompts,
         jsonOutput: JSON.stringify(newJsonOutput, null, 2),
         enablePromptsLog: true,
       };
@@ -315,6 +310,19 @@ const CogenerationProvider = (props: {
     []
   );
 
+  const handleRemoveConcept = useCallback((index: number | null) => {
+    if (index !== null) {
+      setGenerationData((prev) => {
+        const newConceptList = prev.concepts.filter(
+          (_, idx) => idx !== index
+        );
+        return {
+          ...prev,
+          concepts: newConceptList,
+        };
+      });
+    }
+  }, []);
   const handleGenerateLesson = useCallback(() => {
     setGenerationData((prev) => {
       const newLessonTitle = lessonTitle;
@@ -468,6 +476,16 @@ const CogenerationProvider = (props: {
     });
   }, []);
 
+  const handleAddConcept = useCallback(() => {
+    setGenerationData((prev) => {
+      const newConcepts = [...prev.concepts, newLessonConcept];
+      return {
+        ...prev,
+        concepts: newConcepts
+      };
+    });
+  }, []);
+
   return (
     <CogenerationContext.Provider
       value={{
@@ -491,6 +509,8 @@ const CogenerationProvider = (props: {
         handleConceptChange,
         handleHintChange,
         handleGenerateLesson,
+        handleAddConcept,
+        handleRemoveConcept,
       }}
     >
       {props.children}

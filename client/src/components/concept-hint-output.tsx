@@ -7,6 +7,7 @@ The full terms of this copyright and license should always be found in the root 
 import clsx from "clsx";
 import React, { useContext } from "react";
 import {
+  Button,
   Card,
   CardActions,
   CardContent,
@@ -21,7 +22,7 @@ import {
 } from "@mui/material";
 import "styles/layout.css";
 import "jsoneditor-react/es/editor.min.css";
-import { ExpandMore } from "@mui/icons-material";
+import { Add, ClearOutlined, ExpandMore } from "@mui/icons-material";
 import CogenerationContext from "context/cogeneration";
 
 interface LessonInputClasses {
@@ -142,6 +143,16 @@ const ExpectationCard = (props: {
             }}
           />
           <CardActions>
+            {context.generationData.concepts.length > 1 ? (
+              <IconButton
+                data-cy="delete"
+                aria-label="remove concept"
+                size="small"
+                onClick={() => context.handleRemoveConcept(conceptIndex)}
+              >
+                <ClearOutlined />
+              </IconButton>
+            ) : null}
             <IconButton
               data-cy="expand"
               aria-label="expand expectation"
@@ -196,6 +207,17 @@ function ConceptHintOutput(props: {
           </ListItem>
         ))}
       </List>
+      <Button
+        data-cy="add-concept"
+        startIcon={<Add />}
+        className={classes.button}
+        onClick={context.handleAddConcept}
+        variant="outlined"
+        color="primary"
+        style={{ marginTop: 15 }}
+      >
+        Add Concept
+      </Button>
     </Paper>
   );
 }

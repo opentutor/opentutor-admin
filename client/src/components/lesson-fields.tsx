@@ -5,6 +5,7 @@ Permission to use, copy, modify, and distribute this software and its documentat
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
 import React, { useContext } from "react";
+import clsx from "clsx";
 import { generatedLesson, inputFields } from "constants/cogenerationDummyData";
 import {
   Grid,
@@ -15,9 +16,12 @@ import {
   Button,
   Card,
   CardContent,
+  IconButton,
+  Collapse,
 } from "@mui/material";
 import CogenerationContext from "context/cogeneration";
 import ConceptHintOutput from "./concept-hint-output";
+import { ExpandMore } from "@mui/icons-material";
 
 interface LessonInputClasses {
   selectForm: string;
@@ -39,6 +43,7 @@ export function LessonInput(props: {
   if (!context) {
     throw new Error("SomeComponent must be used within a CogenerationProvider");
   }
+  const [expanded, setExpanded] = React.useState(true);
 
   return (
     <>
@@ -66,8 +71,28 @@ export function LessonInput(props: {
               Generate Lesson
             </Button>
           </Grid>
+          <Grid item style={{ marginLeft: 20, marginBottom: 10 }}>
+          <IconButton
+              data-cy="expand"
+              aria-label="expand expectation"
+              size="small"
+              aria-expanded={expanded}
+              className={clsx(classes.expand, {
+                [classes.expandOpen]: expanded,
+              })}
+              onClick={() => setExpanded(!expanded)}
+            ><ExpandMore />
+          </IconButton>
+          </Grid>
         </Grid>
+        <Collapse
+          in={expanded}
+          timeout="auto"
+          unmountOnExit
+          style={{ paddingLeft: 15, paddingTop: 10 }}
+        >
         <Grid container spacing={4}>
+          
           {inputFields.map((input, i) => (
             <Grid key={i} item xs={12}>
               <TextField
@@ -83,8 +108,10 @@ export function LessonInput(props: {
               />
             </Grid>
           ))}
-          <Divider variant="middle" className={classes.divider} />
+          
+        <Divider variant="middle" className={classes.divider} />
         </Grid>
+        </Collapse>
       </Paper>
     </>
   );

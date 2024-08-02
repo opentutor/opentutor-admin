@@ -105,7 +105,11 @@ export const lessonConcepts: ConceptPair[] = [
     ],
   },
 ];
-
+export const newLessonConcept: ConceptPair = 
+  {
+    concept: "",
+    hints: ["","",""]
+  }
 export const lessonSystemPrompt =
   "You are a tutor who is designing a lesson on the topic of {topic}. You have been given some content for your students to learn, and you want to design a lesson that will guide students in critically exploring the topic and ultimately being able to express their understanding of underlying key concepts. \n\nUsing this content and an identified lesson planning objective, you are building a lesson that can be formatted according to a provided JSON template.";
 
@@ -253,6 +257,8 @@ export type CogenerationContextType = {
     indexOfHint: number
   ) => void;
   handleGenerateLesson: () => void;
+  handleAddConcept: () => void;
+  handleRemoveConcept: (index: number | null) => void;
 };
 
 export const inputFields = [
