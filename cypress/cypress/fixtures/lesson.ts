@@ -4,6 +4,8 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
+import { Connection, Lesson } from "../support/types";
+
 export const lesson = {
   lessonId: "q1",
   name: "lesson",
@@ -63,7 +65,7 @@ export const videoLesson = {
   createdByName: "OpenTutor",
 };
 
-export const lessons = {
+export const lessons: Connection<Partial<Lesson>> = {
   edges: [
     {
       cursor: "cursor 1",
@@ -83,9 +85,51 @@ export const lessons = {
         updatedAt: "1/1/20000, 12:00:00 AM",
       },
     },
+    {
+      cursor: "cursor 3",
+      node: {
+        lessonId: "lesson3",
+        name: "lesson 3",
+        createdByName: "teacher 3",
+        updatedAt: "1/1/20000, 12:00:00 AM",
+      },
+    },
+    {
+      cursor: "cursor 4",
+      node: {
+        lessonId: "lesson4",
+        name: "lesson 4",
+        createdByName: "teacher 4",
+        updatedAt: "1/1/20000, 12:00:00 AM",
+      },
+    },
+    {
+      cursor: "cursor 5",
+      node: {
+        lessonId: "lesson5",
+        name: "lesson 5",
+        createdByName: "teacher 5",
+        updatedAt: "1/1/20000, 12:00:00 AM",
+      },
+    },
   ],
   pageInfo: {
     hasNextPage: false,
     endCursor: "cursor 2",
+    startCursor: "",
+    hasPreviousPage: false,
   },
 };
+
+export function getLessonsFiltered(
+  filter: Partial<Lesson>
+): Connection<Partial<Lesson>> {
+  return {
+    edges: lessons.edges.filter((lesson) => {
+      return Object.keys(filter).every((key) => {
+        return lesson.node[key] === filter[key];
+      });
+    }),
+    pageInfo: lessons.pageInfo,
+  };
+}

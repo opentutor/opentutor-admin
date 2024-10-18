@@ -14,6 +14,8 @@ type ContextType = {
   showGraded: boolean;
   showAbandoned: boolean;
   onlyCreator: boolean;
+  filterByLesson: string;
+  setFilterByLesson: (lesson: string) => void;
   toggleGraded: () => void;
   toggleCreator: () => void;
   toggleAbandoned: () => void;
@@ -24,6 +26,9 @@ const SessionContext = React.createContext<ContextType>({
   showGraded: false,
   showAbandoned: false,
   onlyCreator: false,
+  filterByLesson: "",
+  // eslint-disable-next-line
+  setFilterByLesson: () => {},
   // eslint-disable-next-line
   toggleGraded: () => {},
   // eslint-disable-next-line
@@ -43,6 +48,7 @@ function SessionProvider(props: { children?: React.ReactNode }): JSX.Element {
     cookies.accessToken || cookies.user ? true : false
   );
   const [showAbandoned, setShowAbandoned] = React.useState(false);
+  const [filterByLesson, setFilterByLesson] = React.useState("");
 
   React.useEffect(() => {
     if (!cookies.accessToken) {
@@ -76,6 +82,8 @@ function SessionProvider(props: { children?: React.ReactNode }): JSX.Element {
     <SessionContext.Provider
       value={{
         user,
+        filterByLesson,
+        setFilterByLesson,
         showGraded,
         toggleGraded,
         onlyCreator,

@@ -32,6 +32,7 @@ import {
   ArrowBackIosNew as BackIcon,
   ArrowForwardIos as ForwardIcon,
   IosShare as IosShareIcon,
+  Assessment as AssessmentIcon,
   ContentCopy as ContentCopyIcon,
 } from "@mui/icons-material";
 import { buttonTheme } from "styles/sidebarTheme";
@@ -173,6 +174,10 @@ export function SideBar(props: {
     handleSavePopUp(false);
   }
 
+  function handleGrade(): void {
+    navigate(`/sessions?lessonId=${lessonId}`);
+  }
+
   function saveChanges(): void {
     if (!lessonUnderEdit.lesson) {
       return;
@@ -217,55 +222,12 @@ export function SideBar(props: {
             </IconButton>
           </DrawerHeader>
           <List>
-            <ListItem>
-              <Button
-                data-cy="discard-button"
-                variant="contained"
-                startIcon={<ArrowBackIcon />}
-                size="medium"
-                color="primary"
-                sx={{
-                  minWidth: 0,
-                  minHeight: 40,
-                  ...(drawerOpen
-                    ? { width: 200 }
-                    : {
-                        "& .MuiButton-startIcon": { margin: "0px" },
-                      }),
-                }}
-                onClick={handleDiscard}
-              >
-                {drawerOpen ? "Back" : ""}
-              </Button>
-            </ListItem>
-            <ListItem sx={{ display: lessonUnderEdit.dirty ? "flex" : "none" }}>
-              <Button
-                data-cy="save-button"
-                variant="contained"
-                startIcon={<SaveIcon />}
-                color="primary"
-                size="medium"
-                sx={{
-                  minWidth: 0,
-                  minHeight: 40,
-                  ...(drawerOpen
-                    ? { width: 200 }
-                    : {
-                        "& .MuiButton-startIcon": { margin: "0px" },
-                      }),
-                }}
-                onClick={() => handleSavePopUp(true)}
-                disabled={!isLessonValid()}
-              >
-                {drawerOpen ? "Save" : ""}
-              </Button>
-            </ListItem>
             <ThemeProvider theme={buttonTheme}>
               <ListItem>
                 <Button
                   data-cy="launch-button"
                   variant="contained"
-                  endIcon={<LaunchIcon />}
+                  startIcon={<LaunchIcon />}
                   color="primary"
                   size="medium"
                   sx={{
@@ -285,12 +247,11 @@ export function SideBar(props: {
               </ListItem>
               <ListItem>
                 <Button
-                  data-cy="share-button"
+                  data-cy="grade-button"
                   variant="contained"
-                  startIcon={<IosShareIcon />}
-                  color="info"
-                  disabled={!lessonId || !isLessonValid()}
+                  startIcon={<AssessmentIcon />}
                   size="medium"
+                  color="primary"
                   sx={{
                     minWidth: 0,
                     minHeight: 40,
@@ -300,49 +261,11 @@ export function SideBar(props: {
                           "& .MuiButton-startIcon": { margin: "0px" },
                         }),
                   }}
-                  onClick={handleClickOpenShare}
+                  onClick={handleGrade}
+                  disabled={!lessonId}
                 >
-                  {drawerOpen ? "Share" : ""}
+                  Grade
                 </Button>
-                <Dialog
-                  onClose={handleCloseShare}
-                  open={shareOpen}
-                  maxWidth="md"
-                  fullWidth
-                >
-                  <DialogTitle>Share Lesson</DialogTitle>
-                  <DialogContent
-                    sx={{ display: "flex", flexDirection: "column" }}
-                  >
-                    <TextField
-                      label="Lesson URL"
-                      variant="filled"
-                      value={lessonLink}
-                      InputProps={{
-                        readOnly: true,
-                        endAdornment: (
-                          <IconButton
-                            edge="end"
-                            onClick={() => {
-                              navigator.clipboard.writeText(lessonLink);
-                              handleCloseShare();
-                              toast("Link Copied!");
-                            }}
-                          >
-                            {" "}
-                            <ContentCopyIcon />{" "}
-                          </IconButton>
-                        ),
-                      }}
-                      onFocus={(e) => {
-                        e.target.select();
-                      }}
-                    />
-                  </DialogContent>
-                  <DialogActions>
-                    <Button onClick={handleCloseShare}>Close</Button>
-                  </DialogActions>
-                </Dialog>
               </ListItem>
               <ListItem data-cy="train-data">
                 <Button
@@ -414,6 +337,110 @@ export function SideBar(props: {
                 </Grid>
               </ListItem>
             </ThemeProvider>
+            <ListItem>
+              <Button
+                data-cy="save-button"
+                variant="contained"
+                startIcon={<SaveIcon />}
+                color="primary"
+                size="medium"
+                sx={{
+                  minWidth: 0,
+                  minHeight: 40,
+                  ...(drawerOpen
+                    ? { width: 200 }
+                    : {
+                        "& .MuiButton-startIcon": { margin: "0px" },
+                      }),
+                }}
+                onClick={() => handleSavePopUp(true)}
+                disabled={!isLessonValid() || !lessonUnderEdit.dirty}
+              >
+                {drawerOpen ? "Save" : "Hello"}
+              </Button>
+            </ListItem>
+            <ListItem>
+              <Button
+                data-cy="discard-button"
+                variant="contained"
+                startIcon={<ArrowBackIcon />}
+                size="medium"
+                color="primary"
+                sx={{
+                  minWidth: 0,
+                  minHeight: 40,
+                  ...(drawerOpen
+                    ? { width: 200 }
+                    : {
+                        "& .MuiButton-startIcon": { margin: "0px" },
+                      }),
+                }}
+                onClick={handleDiscard}
+              >
+                {drawerOpen ? "Back" : ""}
+              </Button>
+            </ListItem>
+            <ListItem>
+              <Button
+                data-cy="share-button"
+                variant="contained"
+                startIcon={<IosShareIcon />}
+                color="info"
+                disabled={!lessonId || !isLessonValid()}
+                size="medium"
+                sx={{
+                  minWidth: 0,
+                  minHeight: 40,
+                  ...(drawerOpen
+                    ? { width: 200 }
+                    : {
+                        "& .MuiButton-startIcon": { margin: "0px" },
+                      }),
+                }}
+                onClick={handleClickOpenShare}
+              >
+                {drawerOpen ? "Share" : ""}
+              </Button>
+              <Dialog
+                onClose={handleCloseShare}
+                open={shareOpen}
+                maxWidth="md"
+                fullWidth
+              >
+                <DialogTitle>Share Lesson</DialogTitle>
+                <DialogContent
+                  sx={{ display: "flex", flexDirection: "column" }}
+                >
+                  <TextField
+                    label="Lesson URL"
+                    variant="filled"
+                    value={lessonLink}
+                    InputProps={{
+                      readOnly: true,
+                      endAdornment: (
+                        <IconButton
+                          edge="end"
+                          onClick={() => {
+                            navigator.clipboard.writeText(lessonLink);
+                            handleCloseShare();
+                            toast("Link Copied!");
+                          }}
+                        >
+                          {" "}
+                          <ContentCopyIcon />{" "}
+                        </IconButton>
+                      ),
+                    }}
+                    onFocus={(e) => {
+                      e.target.select();
+                    }}
+                  />
+                </DialogContent>
+                <DialogActions>
+                  <Button onClick={handleCloseShare}>Close</Button>
+                </DialogActions>
+              </Dialog>
+            </ListItem>
             <ListItem>
               {isDownloadable ? (
                 <Button

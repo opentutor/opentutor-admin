@@ -48,7 +48,16 @@ export function useWithSessions(
   useEffect(() => {
     setCursor(existingCursor || "");
     load();
-  }, [context.onlyCreator, context.showGraded, context.showAbandoned]);
+  }, [
+    context.onlyCreator,
+    context.showGraded,
+    context.showAbandoned,
+    context.filterByLesson,
+    rowsPerPage,
+    cursor,
+    sortBy,
+    sortAsc,
+  ]);
 
   useEffect(() => {
     load();
@@ -65,8 +74,8 @@ export function useWithSessions(
     if (!context.showAbandoned) {
       filter.sessionStatus = { $ne: "LAUNCHED" };
     }
-    if (lessonId) {
-      filter.lessonId = lessonId;
+    if (lessonId || context.filterByLesson) {
+      filter.lessonId = lessonId || context.filterByLesson;
     }
     fetchSessions(
       filter,

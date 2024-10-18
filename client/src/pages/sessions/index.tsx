@@ -5,7 +5,7 @@ Permission to use, copy, modify, and distribute this software and its documentat
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
 import { navigate, Link } from "gatsby";
-import React, { useContext } from "react";
+import React, { useContext, useMemo } from "react";
 import { useCookies } from "react-cookie";
 import {
   AppBar,
@@ -23,6 +23,8 @@ import {
   Tooltip,
   Box,
   Theme,
+  Autocomplete,
+  TextField,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import {
@@ -39,6 +41,7 @@ import withLocation from "wrap-with-location";
 import "styles/layout.css";
 import { useWithSessions } from "hooks/use-with-sessions";
 import LoadingIndicator from "components/loading-indicator";
+import { useWithLessons } from "hooks/use-with-lessons";
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -126,73 +129,128 @@ const columns: ColumnDef[] = [
 ];
 
 function TableFooter(props: {
+  lessonDict: Record<string, string>;
+  searchLessonId: string;
   classes: { appBar: string; paging: string };
   hasNext: boolean;
   hasPrev: boolean;
   onNext: () => void;
   onPrev: () => void;
 }): JSX.Element {
-  const { classes, hasNext, hasPrev, onNext, onPrev } = props;
+  const {
+    lessonDict,
+    classes,
+    hasNext,
+    hasPrev,
+    onNext,
+    onPrev,
+    searchLessonId,
+  } = props;
   const context = useContext(SessionContext);
   const {
     onlyCreator,
     showGraded,
     showAbandoned,
+    filterByLesson,
     toggleCreator,
     toggleGraded,
     toggleAbandoned,
+    setFilterByLesson,
   } = context;
 
   return (
     <AppBar position="sticky" color="default" className={classes.appBar}>
       <Toolbar>
-        <FormGroup>
-          <FormControlLabel
-            control={
-              <Switch
-                data-cy="toggle-creator"
-                checked={onlyCreator}
-                onChange={toggleCreator}
-                aria-label="switch"
+        {/* adjust to be in groups of 3 separated by space, FormGroups, Autocomplete, and then the paging */}
+        <Box display="flex" justifyContent="space-between" width="100%">
+          <div style={{ display: "flex", flexDirection: "row", flexGrow: 1 }}>
+            <FormGroup>
+              <FormControlLabel
+                control={
+                  <Switch
+                    data-cy="toggle-creator"
+                    checked={onlyCreator}
+                    onChange={toggleCreator}
+                    aria-label="switch"
+                  />
+                }
+                label={"Only Mine"}
               />
-            }
-            label={"Only Mine"}
-          />
-        </FormGroup>
-        <FormGroup>
-          <FormControlLabel
-            control={
-              <Switch
-                data-cy="toggle-graded"
-                checked={showGraded}
-                onChange={toggleGraded}
-                aria-label="switch"
+            </FormGroup>
+
+            <FormGroup>
+              <FormControlLabel
+                control={
+                  <Switch
+                    data-cy="toggle-graded"
+                    checked={showGraded}
+                    onChange={toggleGraded}
+                    aria-label="switch"
+                  />
+                }
+                label={"Show Graded"}
               />
-            }
-            label={"Show Graded"}
-          />
-        </FormGroup>
-        <FormGroup>
-          <FormControlLabel
-            control={
-              <Switch
-                data-cy="toggle-abandoned"
-                checked={showAbandoned}
-                onChange={toggleAbandoned}
-                aria-label="switch"
+            </FormGroup>
+
+            <FormGroup>
+              <FormControlLabel
+                control={
+                  <Switch
+                    data-cy="toggle-abandoned"
+                    checked={showAbandoned}
+                    onChange={toggleAbandoned}
+                    aria-label="switch"
+                  />
+                }
+                label={"Show Abandoned"}
               />
-            }
-            label={"Show Abandoned"}
+            </FormGroup>
+          </div>
+
+          <Autocomplete
+            data-cy="lesson-filter"
+            style={{
+              position: "absolute",
+              left: "50%",
+              transform: "translateX(-50%)",
+              top: 0,
+              minWidth: "200px",
+              width: "fit-content",
+            }}
+            defaultValue={filterByLesson || searchLessonId}
+            options={Object.keys(lessonDict)}
+            getOptionLabel={(option) => lessonDict[option]}
+            renderInput={(params) => <TextField {...params} label="Lesson" />}
+            onChange={(event, value) => {
+              if (value) {
+                setFilterByLesson(value);
+              }
+            }}
           />
-        </FormGroup>
-        <div className={classes.paging}>
-          <IconButton data-cy="prev-page" disabled={!hasPrev} onClick={onPrev}>
-            <KeyboardArrowLeftIcon />
-          </IconButton>
-          <IconButton data-cy="next-page" disabled={!hasNext} onClick={onNext}>
-            <KeyboardArrowRightIcon />
-          </IconButton>
-        </div>
+
+          <div
+            style={{
+              flexGrow: 1,
+              display: "flex",
+              justifyContent: "flex-end",
+            }}
+          >
+            <IconButton
+              data-cy="prev-page"
+              disabled={!hasPrev}
+              onClick={onPrev}
+            >
+              <KeyboardArrowLeftIcon />
+            </IconButton>
+            <IconButton
+              data-cy="next-page"
+              disabled={!hasNext}
+              onClick={onNext}
+            >
+              <KeyboardArrowRightIcon />
+            </IconButton>
+          </div>
+        </Box>
       </Toolbar>
     </AppBar>
   );
@@ -287,12 +345,22 @@ function SessionItem(props: {
 
 function SessionsTable(props: {
   search: { lessonId: string; cursor: string };
+  accessToken: string;
 }): JSX.Element {
   const classes = useStyles();
   const { sessions, sortBy, sortAsc, sort, nextPage, prevPage } =
     useWithSessions(props.search.lessonId, props.search.cursor);
+  const { data: lessons, isLoading: lessonsLoading } = useWithLessons(
+    props.accessToken
+  );
+  const lessonDict = useMemo(() => {
+    return lessons?.edges.reduce((acc, lesson) => {
+      acc[lesson.node.lessonId] = lesson.node.name;
+      return acc;
+    }, {} as Record<string, string>);
+  }, [lessons?.edges.length]);
 
-  if (!sessions) {
+  if (!sessions || lessonsLoading) {
     return (
       <div className={classes.root}>
         <LoadingIndicator />
@@ -329,6 +397,8 @@ function SessionsTable(props: {
         </TableContainer>
       </Paper>
       <TableFooter
+        searchLessonId={props.search.lessonId}
+        lessonDict={lessonDict || {}}
         classes={classes}
         hasNext={sessions.pageInfo.hasNextPage}
         hasPrev={sessions.pageInfo.hasPreviousPage}
@@ -355,7 +425,7 @@ function SessionsPage(props: {
   return (
     <div>
       <NavBar title="Grading" />
-      <SessionsTable search={props.search} />
+      <SessionsTable search={props.search} accessToken={cookies.accessToken} />
     </div>
   );
 }
