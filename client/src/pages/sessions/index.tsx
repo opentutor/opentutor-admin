@@ -161,9 +161,10 @@ function TableFooter(props: {
   return (
     <AppBar position="sticky" color="default" className={classes.appBar}>
       <Toolbar>
-        {/* adjust to be in groups of 3 separated by space, FormGroups, Autocomplete, and then the paging */}
         <Box display="flex" justifyContent="space-between" width="100%">
-          <div style={{ display: "flex", flexDirection: "row", flexGrow: 1 }}>
+          <div
+            style={{ display: "flex", flexDirection: "row", width: "33.33%" }}
+          >
             <FormGroup>
               <FormControlLabel
                 control={
@@ -207,32 +208,42 @@ function TableFooter(props: {
             </FormGroup>
           </div>
 
-          <Autocomplete
-            data-cy="lesson-filter"
+          <div
             style={{
-              position: "absolute",
-              left: "50%",
-              transform: "translateX(-50%)",
-              top: 0,
-              minWidth: "200px",
-              width: "fit-content",
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "center",
+              width: "33.33%",
             }}
-            defaultValue={filterByLesson || searchLessonId}
-            options={Object.keys(lessonDict)}
-            getOptionLabel={(option) => lessonDict[option]}
-            renderInput={(params) => <TextField {...params} label="Lesson" />}
-            onChange={(event, value) => {
-              if (value) {
-                setFilterByLesson(value);
-              }
-            }}
-          />
+          >
+            <Autocomplete
+              data-cy="lesson-filter"
+              style={{
+                position: "absolute",
+                left: "50%",
+                transform: "translateX(-50%)",
+                top: 0,
+                minWidth: "200px",
+                width: "fit-content",
+              }}
+              defaultValue={filterByLesson || searchLessonId}
+              options={Object.keys(lessonDict)}
+              getOptionLabel={(option) => lessonDict[option]}
+              renderInput={(params) => <TextField {...params} label="Lesson" />}
+              onChange={(event, value) => {
+                const lessonId = value ?? "";
+                console.log("lessonId", lessonId);
+                setFilterByLesson(lessonId);
+              }}
+            />
+          </div>
 
           <div
             style={{
               flexGrow: 1,
               display: "flex",
               justifyContent: "flex-end",
+              width: "33.33%",
             }}
           >
             <IconButton

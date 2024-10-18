@@ -46,6 +46,12 @@ export function useWithSessions(
   const rowsPerPage = search.limit;
 
   useEffect(() => {
+    if (lessonId) {
+      context.setFilterByLesson(lessonId);
+    }
+  }, [lessonId]);
+
+  useEffect(() => {
     setCursor(existingCursor || "");
     load();
   }, [
