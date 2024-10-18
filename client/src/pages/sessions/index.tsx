@@ -364,6 +364,7 @@ function SessionsTable(props: {
     sortBy,
     sortAsc,
     sort,
+    cursor,
     nextPage,
     prevPage,
     loading: sessionsLoading,
@@ -407,7 +408,7 @@ function SessionsTable(props: {
                   key={row.node.sessionId}
                   row={row}
                   i={i}
-                  cursor={sessions.pageInfo.startCursor}
+                  cursor={cursor}
                 />
               ))}
             </TableBody>

@@ -308,6 +308,35 @@ describe("sessions screen", () => {
     cy.get("[data-cy=toggle-graded]").should("not.be.checked");
     cy.get("[data-cy=toggle-graded]").trigger("mouseover").click();
   });
+
+  it("context cursor is set to next cursor when next page is clicked", () => {
+    cySetup(cy);
+    cyMockDefault(cy, {
+      gqlQueries: [
+        mockGQL("FetchSessions", { me: { sessions: sessions1 } }),
+        mockGQL("FetchSession", { me: { session: session } }),
+        mockGQL("FetchLessons", { me: { lessons } }),
+      ],
+      userRole: "admin",
+    });
+    cy.visit("/sessions");
+    cy.wait("@FetchSessions");
+    cy.get("[data-cy=next-page]").trigger("mouseover").click();
+    cy.wait("@FetchSessions");
+    cy.get("[data-cy=sessions]").children().should("have.length", 50);
+    // click grade, then done
+    cy.get("[data-cy=session-0]")
+      .find("[data-cy=grade-button]")
+      .trigger("mouseover")
+      .click();
+    cy.get("[data-cy=doneButton]").trigger("mouseover").click();
+    cy.wait("@FetchSessions").then((interception) => {
+      expect(interception.request.body.variables.cursor).to.contain(
+        "next__W3siJGRhdGUiO"
+      ); // partial cursor
+    });
+    cy.get("[data-cy=sessions]").children().should("have.length", 50);
+  });
 });
 
 describe("filtering", () => {

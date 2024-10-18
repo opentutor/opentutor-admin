@@ -21,14 +21,7 @@ export interface SearchParams {
 
 export function useWithSessions(
   lessonId?: string,
-  existingCursor?: string,
-  search: SearchParams = {
-    limit: 50,
-    cursor: "",
-    sortBy: "createdAt",
-    sortAscending: false,
-    filter: {},
-  }
+  existingCursor?: string
 ): {
   sessions: Connection<Session> | undefined;
   sortBy: string;
@@ -37,17 +30,18 @@ export function useWithSessions(
   nextPage: () => void;
   prevPage: () => void;
   loading: boolean;
+  cursor: string;
 } {
   const context = useContext(SessionContext);
   const [cookies] = useCookies(["accessToken"]);
   const [sessions, setSessions] = useState<Connection<Session>>();
   const [cursor, setCursor] = useState(
-    search.cursor || existingCursor || context.startCursor
+    existingCursor || context.startCursor || ""
   );
-  const [sortBy, setSortBy] = useState(search.sortBy);
-  const [sortAsc, setSortAsc] = useState(search.sortAscending);
+  const [sortBy, setSortBy] = useState("createdAt");
+  const [sortAsc, setSortAsc] = useState(false);
   const [loading, setLoading] = useState(false);
-  const rowsPerPage = search.limit;
+  const rowsPerPage = 50;
 
   useEffect(() => {
     if (lessonId) {
@@ -57,7 +51,7 @@ export function useWithSessions(
 
   useEffect(() => {
     context.setStartCursor(cursor);
-  }, [search.cursor, cursor]);
+  }, [cursor]);
 
   useEffect(() => {
     load();
@@ -72,13 +66,10 @@ export function useWithSessions(
     sortAsc,
   ]);
 
-  // useEffect(() => {
-  //   load();
-  // }, [rowsPerPage, cursor, sortBy, sortAsc]);
-
   function load() {
     setLoading(true);
-    const filter = search.filter;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const filter: Record<string, any> = {};
     if (context.onlyCreator) {
       filter.lessonCreatedBy = context.user?.name;
     }
@@ -121,14 +112,18 @@ export function useWithSessions(
     if (!sessions) {
       return;
     }
-    setCursor("next__" + sessions.pageInfo.endCursor);
+    const newCursor = "next__" + sessions.pageInfo.endCursor;
+    context.setStartCursor(newCursor);
+    setCursor(newCursor);
   }
 
   function prevPage() {
     if (!sessions) {
       return;
     }
-    setCursor("prev__" + sessions.pageInfo.startCursor);
+    const newCursor = "prev__" + sessions.pageInfo.startCursor;
+    context.setStartCursor(newCursor);
+    setCursor(newCursor);
   }
 
   return {
@@ -138,6 +133,7 @@ export function useWithSessions(
     sort,
     nextPage,
     prevPage,
+    cursor,
     loading,
   };
 }
