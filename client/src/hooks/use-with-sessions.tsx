@@ -36,13 +36,17 @@ export function useWithSessions(
   sort: (id: string) => void;
   nextPage: () => void;
   prevPage: () => void;
+  loading: boolean;
 } {
   const context = useContext(SessionContext);
   const [cookies] = useCookies(["accessToken"]);
   const [sessions, setSessions] = useState<Connection<Session>>();
-  const [cursor, setCursor] = useState(search.cursor);
+  const [cursor, setCursor] = useState(
+    search.cursor || existingCursor || context.startCursor
+  );
   const [sortBy, setSortBy] = useState(search.sortBy);
   const [sortAsc, setSortAsc] = useState(search.sortAscending);
+  const [loading, setLoading] = useState(false);
   const rowsPerPage = search.limit;
 
   useEffect(() => {
@@ -52,7 +56,10 @@ export function useWithSessions(
   }, [lessonId]);
 
   useEffect(() => {
-    setCursor(existingCursor || "");
+    context.setStartCursor(cursor);
+  }, [search.cursor, cursor]);
+
+  useEffect(() => {
     load();
   }, [
     context.onlyCreator,
@@ -65,11 +72,12 @@ export function useWithSessions(
     sortAsc,
   ]);
 
-  useEffect(() => {
-    load();
-  }, [rowsPerPage, cursor, sortBy, sortAsc]);
+  // useEffect(() => {
+  //   load();
+  // }, [rowsPerPage, cursor, sortBy, sortAsc]);
 
   function load() {
+    setLoading(true);
     const filter = search.filter;
     if (context.onlyCreator) {
       filter.lessonCreatedBy = context.user?.name;
@@ -96,7 +104,8 @@ export function useWithSessions(
           setSessions(sessions);
         }
       })
-      .catch((err) => console.error(err));
+      .catch((err) => console.error(err))
+      .finally(() => setLoading(false));
   }
 
   function sort(id: string) {
@@ -129,5 +138,6 @@ export function useWithSessions(
     sort,
     nextPage,
     prevPage,
+    loading,
   };
 }

@@ -359,8 +359,15 @@ function SessionsTable(props: {
   accessToken: string;
 }): JSX.Element {
   const classes = useStyles();
-  const { sessions, sortBy, sortAsc, sort, nextPage, prevPage } =
-    useWithSessions(props.search.lessonId, props.search.cursor);
+  const {
+    sessions,
+    sortBy,
+    sortAsc,
+    sort,
+    nextPage,
+    prevPage,
+    loading: sessionsLoading,
+  } = useWithSessions(props.search.lessonId, props.search.cursor);
   const { data: lessons, isLoading: lessonsLoading } = useWithLessons(
     props.accessToken
   );
@@ -371,7 +378,7 @@ function SessionsTable(props: {
     }, {} as Record<string, string>);
   }, [lessons?.edges.length]);
 
-  if (!sessions || lessonsLoading) {
+  if (!sessions || lessonsLoading || sessionsLoading) {
     return (
       <div className={classes.root}>
         <LoadingIndicator />

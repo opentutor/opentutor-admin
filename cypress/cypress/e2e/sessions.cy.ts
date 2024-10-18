@@ -326,7 +326,6 @@ describe("filtering", () => {
     });
     cy.visit("/sessions");
     cy.wait("@FetchSessions");
-    cy.wait("@FetchSessions");
     cy.get("[data-cy=sessions]").children().should("have.length", 50);
     cyMockDefault(cy, {
       gqlQueries: [
