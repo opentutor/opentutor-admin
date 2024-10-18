@@ -45,7 +45,6 @@ export function useWithSessions(
   const rowsPerPage = 50;
 
   useEffect(() => {
-    console.log("first load with cursor", cursor);
     load(cursor);
     setFirstLoad(true);
   }, []);
@@ -64,7 +63,6 @@ export function useWithSessions(
     if (!firstLoad) {
       return;
     }
-    console.log("loading without cursor");
     load("");
     setCursor("");
   }, [
