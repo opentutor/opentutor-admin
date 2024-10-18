@@ -70,6 +70,7 @@ export function useWithSessions(
     context.showGraded,
     context.showAbandoned,
     context.filterByLesson,
+    context.filterByUsername,
   ]);
 
   function load(cursor: string) {
@@ -87,6 +88,9 @@ export function useWithSessions(
     }
     if (lessonId || context.filterByLesson) {
       filter.lessonId = lessonId || context.filterByLesson;
+    }
+    if (context.filterByUsername) {
+      filter.username = context.filterByUsername;
     }
     fetchSessions(
       filter,

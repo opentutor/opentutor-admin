@@ -130,6 +130,7 @@ const columns: ColumnDef[] = [
 
 function TableFooter(props: {
   lessonDict: Record<string, string>;
+  usernameList: string[];
   searchLessonId: string;
   classes: { appBar: string; paging: string };
   hasNext: boolean;
@@ -138,6 +139,7 @@ function TableFooter(props: {
   onPrev: () => void;
 }): JSX.Element {
   const {
+    usernameList,
     lessonDict,
     classes,
     hasNext,
@@ -152,6 +154,8 @@ function TableFooter(props: {
     showGraded,
     showAbandoned,
     filterByLesson,
+    filterByUsername,
+    setFilterByUsername,
     toggleCreator,
     toggleGraded,
     toggleAbandoned,
@@ -212,20 +216,15 @@ function TableFooter(props: {
             style={{
               display: "flex",
               flexDirection: "row",
-              justifyContent: "center",
+              justifyContent: "space-around",
               width: "33.33%",
             }}
           >
             <Autocomplete
-              data-cy="lesson-filter"
               style={{
-                position: "absolute",
-                left: "50%",
-                transform: "translateX(-50%)",
-                top: 0,
-                minWidth: "200px",
-                width: "fit-content",
+                width: "40%",
               }}
+              data-cy="lesson-filter"
               defaultValue={filterByLesson || searchLessonId}
               options={Object.keys(lessonDict)}
               getOptionLabel={(option) => lessonDict[option]}
@@ -234,6 +233,21 @@ function TableFooter(props: {
                 const lessonId = value ?? "";
                 console.log("lessonId", lessonId);
                 setFilterByLesson(lessonId);
+              }}
+            />
+            <Autocomplete
+              style={{
+                width: "40%",
+              }}
+              data-cy="username-filter"
+              defaultValue={filterByUsername}
+              options={usernameList}
+              getOptionLabel={(option) => option}
+              renderInput={(params) => <TextField {...params} label="User" />}
+              onChange={(event, value) => {
+                const username = value ?? "";
+                console.log("username", username);
+                setFilterByUsername(username);
               }}
             />
           </div>
@@ -378,7 +392,12 @@ function SessionsTable(props: {
       return acc;
     }, {} as Record<string, string>);
   }, [lessons?.edges.length]);
-
+  const _usernameList = useMemo(() => {
+    return sessions?.edges.map((edge) => edge.node.username);
+  }, [sessions?.edges.length]);
+  const usernameList = Array.from(new Set(_usernameList || []))
+    .filter((username) => username)
+    .sort();
   if (!sessions || lessonsLoading || sessionsLoading) {
     return (
       <div className={classes.root}>
@@ -416,6 +435,7 @@ function SessionsTable(props: {
         </TableContainer>
       </Paper>
       <TableFooter
+        usernameList={usernameList || []}
         searchLessonId={props.search.lessonId}
         lessonDict={lessonDict || {}}
         classes={classes}

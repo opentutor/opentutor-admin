@@ -15,9 +15,11 @@ type ContextType = {
   showAbandoned: boolean;
   onlyCreator: boolean;
   filterByLesson: string;
+  filterByUsername: string;
   startCursor: string;
   setStartCursor: (cursor: string) => void;
   setFilterByLesson: (lesson: string) => void;
+  setFilterByUsername: (username: string) => void;
   toggleGraded: () => void;
   toggleCreator: () => void;
   toggleAbandoned: () => void;
@@ -29,7 +31,10 @@ const SessionContext = React.createContext<ContextType>({
   showAbandoned: false,
   onlyCreator: false,
   filterByLesson: "",
+  filterByUsername: "",
   startCursor: "",
+  // eslint-disable-next-line
+  setFilterByUsername: () => {},
   // eslint-disable-next-line
   setStartCursor: () => {},
   // eslint-disable-next-line
@@ -55,7 +60,7 @@ function SessionProvider(props: { children?: React.ReactNode }): JSX.Element {
   const [showAbandoned, setShowAbandoned] = React.useState(false);
   const [filterByLesson, setFilterByLesson] = React.useState("");
   const [startCursor, setStartCursor] = React.useState("");
-
+  const [filterByUsername, setFilterByUsername] = React.useState("");
   React.useEffect(() => {
     if (!cookies.accessToken) {
       setUser(undefined);
@@ -89,7 +94,9 @@ function SessionProvider(props: { children?: React.ReactNode }): JSX.Element {
       value={{
         user,
         filterByLesson,
+        filterByUsername,
         setFilterByLesson,
+        setFilterByUsername,
         showGraded,
         toggleGraded,
         onlyCreator,
