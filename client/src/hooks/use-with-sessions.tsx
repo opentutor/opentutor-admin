@@ -41,7 +41,14 @@ export function useWithSessions(
   const [sortBy, setSortBy] = useState("createdAt");
   const [sortAsc, setSortAsc] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [firstLoad, setFirstLoad] = useState(false);
   const rowsPerPage = 50;
+
+  useEffect(() => {
+    console.log("first load with cursor", cursor);
+    load(cursor);
+    setFirstLoad(true);
+  }, []);
 
   useEffect(() => {
     if (lessonId) {
@@ -54,19 +61,20 @@ export function useWithSessions(
   }, [cursor]);
 
   useEffect(() => {
-    load();
+    if (!firstLoad) {
+      return;
+    }
+    console.log("loading without cursor");
+    load("");
+    setCursor("");
   }, [
     context.onlyCreator,
     context.showGraded,
     context.showAbandoned,
     context.filterByLesson,
-    rowsPerPage,
-    cursor,
-    sortBy,
-    sortAsc,
   ]);
 
-  function load() {
+  function load(cursor: string) {
     setLoading(true);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const filter: Record<string, any> = {};
@@ -106,15 +114,19 @@ export function useWithSessions(
       setSortBy(id);
     }
     setCursor("");
+    load("");
   }
 
   function nextPage() {
     if (!sessions) {
       return;
     }
-    const newCursor = "next__" + sessions.pageInfo.endCursor;
+    const newCursor = sessions.pageInfo.endCursor
+      ? "next__" + sessions.pageInfo.endCursor
+      : "";
     context.setStartCursor(newCursor);
     setCursor(newCursor);
+    load(newCursor);
   }
 
   function prevPage() {
@@ -124,6 +136,7 @@ export function useWithSessions(
     const newCursor = "prev__" + sessions.pageInfo.startCursor;
     context.setStartCursor(newCursor);
     setCursor(newCursor);
+    load(newCursor);
   }
 
   return {
