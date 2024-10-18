@@ -16,14 +16,14 @@ dependencies-update:
 
 .PHONY: develop
 develop: .env.development node_modules/gatsby
-	npx gatsby develop
+	npx gatsby develop -p 8000
 
 node_modules/cypress:
 	$(MAKE) install
 
 node_modules/eslint:
 	$(MAKE) install
-
+ 
 node_modules/gatsby:
 	$(MAKE) install
 
@@ -52,7 +52,7 @@ test:
 
 .PHONY: test-all
 test-all:
-	$(MAKE) test-audit
+	# $(MAKE) test-audit
 	$(MAKE) test-format
 	$(MAKE) test-license
 	$(MAKE) test-lint

@@ -27,13 +27,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: docker-compose build
-      - run: docker-compose up --abort-on-container-exit --exit-code-from e2e
+      - run: docker compose build
+      - run: docker compose up --abort-on-container-exit --exit-code-from e2e
       - name: If Cypress failed, retrieve image diffs
         run: make test-e2e-image-snapshots-copy && mkdir -p client/cypress/snapshots/snapshot_failed_diffs
         if: ${{ failure() }}
       - name: If Cypress failed, upload image-diff artifacts
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
           name: snapshot_failed_diffs

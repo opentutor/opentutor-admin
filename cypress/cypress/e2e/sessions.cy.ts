@@ -4,10 +4,16 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import { sessions, session } from "../fixtures/session";
+import { lesson, lessons } from "../fixtures/lesson";
+import { sessions, session, filterSessionsByLesson } from "../fixtures/session";
 import { sessions1 } from "../fixtures/sessions1";
 import { sessions2 } from "../fixtures/sessions2";
-import { cySetup, cyMockDefault, mockGQL } from "../support/functions";
+import {
+  cySetup,
+  cyMockDefault,
+  mockGQL,
+  cyMockModelStatus,
+} from "../support/functions";
 
 describe("sessions screen", () => {
   describe("permissions", () => {
@@ -301,5 +307,191 @@ describe("sessions screen", () => {
     cy.visit("/sessions");
     cy.get("[data-cy=toggle-graded]").should("not.be.checked");
     cy.get("[data-cy=toggle-graded]").trigger("mouseover").click();
+  });
+
+  it("context cursor is set to next cursor when next page is clicked", () => {
+    cySetup(cy);
+    cyMockDefault(cy, {
+      gqlQueries: [
+        mockGQL("FetchSessions", { me: { sessions: sessions1 } }),
+        mockGQL("FetchSession", { me: { session: session } }),
+        mockGQL("FetchLessons", { me: { lessons } }),
+      ],
+      userRole: "admin",
+    });
+    cy.visit("/sessions");
+    cy.wait("@FetchSessions");
+    cy.get("[data-cy=next-page]").trigger("mouseover").click();
+    cy.wait("@FetchSessions");
+    cy.get("[data-cy=sessions]").children().should("have.length", 50);
+    // click grade, then done
+    cy.get("[data-cy=session-0]")
+      .find("[data-cy=grade-button]")
+      .trigger("mouseover")
+      .click();
+    cy.get("[data-cy=doneButton]").trigger("mouseover").click();
+    cy.wait("@FetchSessions").then((interception) => {
+      expect(interception.request.body.variables.cursor).to.contain(
+        "next__W3siJGRhdGUiO"
+      ); // partial cursor
+    });
+    cy.get("[data-cy=sessions]").children().should("have.length", 50);
+  });
+});
+
+describe("filtering", () => {
+  it("can filter sessions by lesson", () => {
+    cySetup(cy);
+    cyMockDefault(cy, {
+      gqlQueries: [
+        mockGQL("FetchSessions", [
+          {
+            me: { sessions: sessions1 },
+          },
+        ]),
+        mockGQL("FetchLessons", [{ me: { lessons: lessons } }]),
+      ],
+      userRole: "admin",
+    });
+    cy.visit("/sessions");
+    cy.wait("@FetchSessions");
+    cy.get("[data-cy=sessions]").children().should("have.length", 50);
+    cyMockDefault(cy, {
+      gqlQueries: [
+        mockGQL("FetchSessions", [
+          {
+            me: {
+              sessions: filterSessionsByLesson(
+                sessions1,
+                "86c5e117-464b-4deb-b5f2-2b441bcf98ee"
+              ),
+            },
+          },
+        ]),
+      ],
+      userRole: "admin",
+    });
+    cy.get("[data-cy=lesson-filter]").trigger("mouseover").click();
+    cy.get("[data-cy=lesson-filter]").type("lesson 1");
+    cy.get("[data-cy=lesson-filter]").type("{uparrow}{enter}");
+    cy.wait("@FetchSessions").then((interception) => {
+      expect(interception.request.body.variables.filter).to.include("lesson1");
+      expect(interception.request.body.variables.filter).to.include("lessonId");
+    });
+    cy.get("[data-cy=sessions]").children().should("have.length", 1);
+    cy.get("[data-cy=session-0]")
+      .find("[data-cy=lesson]")
+      .contains("Lesson Name 1");
+  });
+
+  it("selecting grade from lessons page filters sessions page and fills in lesson filter", () => {
+    cySetup(cy);
+    cyMockDefault(cy, {
+      gqlQueries: [
+        mockGQL("FetchSessions", {
+          me: {
+            sessions: filterSessionsByLesson(
+              sessions1,
+              "86c5e117-464b-4deb-b5f2-2b441bcf98ee"
+            ),
+          },
+        }),
+        mockGQL("FetchLessons", { me: { lessons } }),
+      ],
+      userRole: "admin",
+    });
+    cy.visit("/lessons");
+    cy.get("[data-cy=lesson-0]")
+      .find("[data-cy=grade-button]")
+      .trigger("mouseover")
+      .click();
+    cy.get("[data-cy=sessions]").children().should("have.length", 1);
+    cy.get("[data-cy=session-0]")
+      .find("[data-cy=lesson]")
+      .contains("Lesson Name 1");
+    cy.get("[data-cy=lesson-filter]").within(() => {
+      cy.get("input").should("have.value", "lesson 1");
+    });
+  });
+
+  it("selecting grade from edit lesson page filters sessions page and fills in lesson filter", () => {
+    cySetup(cy);
+    cyMockModelStatus(cy);
+    cyMockDefault(cy, {
+      gqlQueries: [
+        mockGQL("FetchLesson", {
+          me: {
+            lesson: {
+              ...lesson,
+              lessonId: "lesson1",
+            },
+          },
+        }),
+        mockGQL("FetchSessions", {
+          me: {
+            sessions: filterSessionsByLesson(
+              sessions1,
+              "86c5e117-464b-4deb-b5f2-2b441bcf98ee"
+            ),
+          },
+        }),
+        mockGQL("FetchLessons", { me: { lessons } }),
+      ],
+      userRole: "admin",
+    });
+    cy.visit("/lessons/edit?lessonId=lesson1");
+    cy.get("[data-cy=grade-button]").should("be.enabled");
+    cy.get("[data-cy=grade-button]").trigger("mouseover").click();
+    cy.get("[data-cy=sessions]").children().should("have.length", 1);
+    cy.get("[data-cy=session-0]")
+      .find("[data-cy=lesson]")
+      .contains("Lesson Name 1");
+    cy.get("[data-cy=lesson-filter]").within(() => {
+      cy.get("input").should("have.value", "lesson 1");
+    });
+  });
+
+  it("can filter sessions by username", () => {
+    cySetup(cy);
+    cyMockDefault(cy, {
+      gqlQueries: [
+        mockGQL("FetchSessions", [
+          {
+            me: { sessions: sessions1 },
+          },
+        ]),
+        mockGQL("FetchLessons", [{ me: { lessons: lessons } }]),
+      ],
+      userRole: "admin",
+    });
+    cy.visit("/sessions");
+    cy.wait("@FetchSessions");
+    cy.get("[data-cy=sessions]").children().should("have.length", 50);
+    cyMockDefault(cy, {
+      gqlQueries: [
+        mockGQL("FetchSessions", [
+          {
+            me: {
+              sessions: filterSessionsByLesson(
+                sessions1,
+                "86c5e117-464b-4deb-b5f2-2b441bcf98ee"
+              ),
+            },
+          },
+        ]),
+      ],
+      userRole: "admin",
+    });
+    cy.get("[data-cy=username-filter]").trigger("mouseover").click();
+    cy.get("[data-cy=username-filter]").type("Author");
+    cy.get("[data-cy=username-filter]").type("{uparrow}{enter}");
+    cy.wait("@FetchSessions").then((interception) => {
+      expect(interception.request.body.variables.filter).to.include("Author");
+      expect(interception.request.body.variables.filter).to.include("username");
+    });
+    cy.get("[data-cy=sessions]").children().should("have.length", 1);
+    cy.get("[data-cy=session-0]")
+      .find("[data-cy=lesson]")
+      .contains("Lesson Name 1");
   });
 });

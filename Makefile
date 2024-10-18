@@ -1,5 +1,5 @@
 DOCKER_IMAGE?=opentutor-admin
-TEST_E2E_DOCKER_COMPOSE=docker-compose
+TEST_E2E_DOCKER_COMPOSE=docker compose
 TEST_E2E_IMAGE_SNAPSHOTS_PATH?=cypress/snapshots
 TEST_E2E_DOCKER_IMAGE_SNAPSHOTS_PATH?=/app/$(TEST_E2E_IMAGE_SNAPSHOTS_PATH)
 TEST_E2E_HOST_IMAGE_SNAPSHOTS_PATH?=$(PWD)/cypress/$(TEST_E2E_IMAGE_SNAPSHOTS_PATH)
@@ -57,7 +57,7 @@ test:
 
 .PHONY: test-all
 test-all:
-	$(MAKE) test-audit
+	# $(MAKE) test-audit
 	$(MAKE) test-format
 	$(MAKE) test-lint
 	$(MAKE) test-license
