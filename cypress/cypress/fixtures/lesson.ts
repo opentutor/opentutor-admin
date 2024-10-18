@@ -85,33 +85,6 @@ export const lessons: Connection<Partial<Lesson>> = {
         updatedAt: "1/1/20000, 12:00:00 AM",
       },
     },
-    {
-      cursor: "cursor 3",
-      node: {
-        lessonId: "lesson3",
-        name: "lesson 3",
-        createdByName: "teacher 3",
-        updatedAt: "1/1/20000, 12:00:00 AM",
-      },
-    },
-    {
-      cursor: "cursor 4",
-      node: {
-        lessonId: "lesson4",
-        name: "lesson 4",
-        createdByName: "teacher 4",
-        updatedAt: "1/1/20000, 12:00:00 AM",
-      },
-    },
-    {
-      cursor: "cursor 5",
-      node: {
-        lessonId: "lesson5",
-        name: "lesson 5",
-        createdByName: "teacher 5",
-        updatedAt: "1/1/20000, 12:00:00 AM",
-      },
-    },
   ],
   pageInfo: {
     hasNextPage: false,
