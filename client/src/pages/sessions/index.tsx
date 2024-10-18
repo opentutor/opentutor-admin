@@ -42,6 +42,7 @@ import "styles/layout.css";
 import { useWithSessions } from "hooks/use-with-sessions";
 import LoadingIndicator from "components/loading-indicator";
 import { useWithLessons } from "hooks/use-with-lessons";
+import { useWithUsers } from "hooks/use-with-users";
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -386,19 +387,19 @@ function SessionsTable(props: {
   const { data: lessons, isLoading: lessonsLoading } = useWithLessons(
     props.accessToken
   );
+  const { data: users, isLoading: usersLoading } = useWithUsers(
+    props.accessToken
+  );
   const lessonDict = useMemo(() => {
     return lessons?.edges.reduce((acc, lesson) => {
       acc[lesson.node.lessonId] = lesson.node.name;
       return acc;
     }, {} as Record<string, string>);
   }, [lessons?.edges.length]);
-  const _usernameList = useMemo(() => {
-    return sessions?.edges.map((edge) => edge.node.username);
-  }, [sessions?.edges.length]);
-  const usernameList = Array.from(new Set(_usernameList || []))
-    .filter((username) => username)
-    .sort();
-  if (!sessions || lessonsLoading || sessionsLoading) {
+  const usernameList = useMemo(() => {
+    return users?.edges.map((edge) => edge.node.name);
+  }, [users?.edges.length]);
+  if (!sessions || lessonsLoading || sessionsLoading || usersLoading) {
     return (
       <div className={classes.root}>
         <LoadingIndicator />

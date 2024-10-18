@@ -483,10 +483,10 @@ describe("filtering", () => {
       userRole: "admin",
     });
     cy.get("[data-cy=username-filter]").trigger("mouseover").click();
-    cy.get("[data-cy=username-filter]").type("blah");
+    cy.get("[data-cy=username-filter]").type("Author");
     cy.get("[data-cy=username-filter]").type("{uparrow}{enter}");
     cy.wait("@FetchSessions").then((interception) => {
-      expect(interception.request.body.variables.filter).to.include("blah");
+      expect(interception.request.body.variables.filter).to.include("Author");
       expect(interception.request.body.variables.filter).to.include("username");
     });
     cy.get("[data-cy=sessions]").children().should("have.length", 1);
