@@ -4,6 +4,8 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
+import { Connection, Lesson } from "../support/types";
+
 export const lesson = {
   lessonId: "q1",
   name: "lesson",
@@ -63,7 +65,7 @@ export const videoLesson = {
   createdByName: "OpenTutor",
 };
 
-export const lessons = {
+export const lessons: Connection<Partial<Lesson>> = {
   edges: [
     {
       cursor: "cursor 1",
@@ -87,5 +89,20 @@ export const lessons = {
   pageInfo: {
     hasNextPage: false,
     endCursor: "cursor 2",
+    startCursor: "",
+    hasPreviousPage: false,
   },
 };
+
+export function getLessonsFiltered(
+  filter: Partial<Lesson>
+): Connection<Partial<Lesson>> {
+  return {
+    edges: lessons.edges.filter((lesson) => {
+      return Object.keys(filter).every((key) => {
+        return lesson.node[key] === filter[key];
+      });
+    }),
+    pageInfo: lessons.pageInfo,
+  };
+}

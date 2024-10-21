@@ -14,6 +14,12 @@ type ContextType = {
   showGraded: boolean;
   showAbandoned: boolean;
   onlyCreator: boolean;
+  filterByLesson: string;
+  filterByUsername: string;
+  startCursor: string;
+  setStartCursor: (cursor: string) => void;
+  setFilterByLesson: (lesson: string) => void;
+  setFilterByUsername: (username: string) => void;
   toggleGraded: () => void;
   toggleCreator: () => void;
   toggleAbandoned: () => void;
@@ -24,6 +30,15 @@ const SessionContext = React.createContext<ContextType>({
   showGraded: false,
   showAbandoned: false,
   onlyCreator: false,
+  filterByLesson: "",
+  filterByUsername: "",
+  startCursor: "",
+  // eslint-disable-next-line
+  setFilterByUsername: () => {},
+  // eslint-disable-next-line
+  setStartCursor: () => {},
+  // eslint-disable-next-line
+  setFilterByLesson: () => {},
   // eslint-disable-next-line
   toggleGraded: () => {},
   // eslint-disable-next-line
@@ -43,7 +58,9 @@ function SessionProvider(props: { children?: React.ReactNode }): JSX.Element {
     cookies.accessToken || cookies.user ? true : false
   );
   const [showAbandoned, setShowAbandoned] = React.useState(false);
-
+  const [filterByLesson, setFilterByLesson] = React.useState("");
+  const [startCursor, setStartCursor] = React.useState("");
+  const [filterByUsername, setFilterByUsername] = React.useState("");
   React.useEffect(() => {
     if (!cookies.accessToken) {
       setUser(undefined);
@@ -76,12 +93,18 @@ function SessionProvider(props: { children?: React.ReactNode }): JSX.Element {
     <SessionContext.Provider
       value={{
         user,
+        filterByLesson,
+        filterByUsername,
+        setFilterByLesson,
+        setFilterByUsername,
         showGraded,
         toggleGraded,
         onlyCreator,
         toggleCreator,
         showAbandoned,
         toggleAbandoned,
+        startCursor,
+        setStartCursor,
       }}
     >
       {props.children}

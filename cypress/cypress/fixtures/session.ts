@@ -5,6 +5,10 @@ Permission to use, copy, modify, and distribute this software and its documentat
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
 
+import { Connection } from "../support/types";
+
+import { Session } from "../support/types";
+
 export const session = {
   username: "username1",
   sessionId: "session1",
@@ -94,3 +98,15 @@ export const sessions = {
     endCursor: "cursor 2 ",
   },
 };
+
+export function filterSessionsByLesson(
+  sessions: any,
+  lessonId: string
+): Connection<Session> {
+  return {
+    edges: sessions.edges.filter(
+      (session: any) => session.node.lesson.lessonId === lessonId
+    ),
+    pageInfo: sessions.pageInfo,
+  };
+}
