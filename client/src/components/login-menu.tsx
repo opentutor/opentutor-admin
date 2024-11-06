@@ -79,6 +79,7 @@ export function LoginMenu(): JSX.Element {
     const loginResponse = response as GoogleLoginResponse;
     loginGoogle(loginResponse.accessToken).then((token: UserAccessToken) => {
       setCookie("accessToken", token.accessToken, {
+        secure: true,
         sameSite: "none",
         path: "/",
       });
@@ -106,6 +107,7 @@ export function LoginMenu(): JSX.Element {
           color="primary"
           onClick={() =>
             setCookie("accessToken", process.env.ACCESS_TOKEN, {
+              secure: true,
               sameSite: "none",
               path: "/",
             })

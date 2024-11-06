@@ -69,6 +69,7 @@ function SessionProvider(props: { children?: React.ReactNode }): JSX.Element {
         .then((token: UserAccessToken) => {
           setUser(token.user);
           setCookie("accessToken", token.accessToken, {
+            secure: true,
             sameSite: "none",
             path: "/",
           });
