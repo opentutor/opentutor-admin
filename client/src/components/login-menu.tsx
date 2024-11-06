@@ -78,7 +78,7 @@ export function LoginMenu(): JSX.Element {
     }
     const loginResponse = response as GoogleLoginResponse;
     loginGoogle(loginResponse.accessToken).then((token: UserAccessToken) => {
-      setCookie("accessToken", token.accessToken, { path: "/" });
+      setCookie("accessToken", token.accessToken, { sameSite: 'none', path: "/" });
     });
   };
 
@@ -102,7 +102,7 @@ export function LoginMenu(): JSX.Element {
           variant="contained"
           color="primary"
           onClick={() =>
-            setCookie("accessToken", process.env.ACCESS_TOKEN, { path: "/" })
+            setCookie("accessToken", process.env.ACCESS_TOKEN, { sameSite: 'none', path: "/" })
           }
           className={classes.button}
         >
