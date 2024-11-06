@@ -68,7 +68,10 @@ function SessionProvider(props: { children?: React.ReactNode }): JSX.Element {
       login(cookies.accessToken)
         .then((token: UserAccessToken) => {
           setUser(token.user);
-          setCookie("accessToken", token.accessToken, { sameSite: 'none', path: "/" });
+          setCookie("accessToken", token.accessToken, {
+            sameSite: "none",
+            path: "/",
+          });
         })
         .catch((err) => {
           console.error(err);
