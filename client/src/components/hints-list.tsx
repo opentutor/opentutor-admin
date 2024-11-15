@@ -1,5 +1,5 @@
 /*
-This software is Copyright ©️ 2020 The University of Southern California. All Rights Reserved. 
+This software is Copyright ©️ 2024 The University of Southern California. All Rights Reserved. 
 Permission to use, copy, modify, and distribute this software and its documentation for educational, research and non-profit purposes, without fee, and without a written agreement is hereby granted, provided that the above copyright notice and subject to the full license file found in the root of this software deliverable. Permission to make commercial use of this software may be obtained by contacting:  USC Stevens Center for Innovation University of Southern California 1150 S. Olive Street, Suite 2300, Los Angeles, CA 90115, USA Email: accounting@stevens.usc.edu
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
@@ -22,6 +22,7 @@ import {
   Paper,
   TextField,
   Typography,
+  Grid,
 } from "@mui/material";
 import {
   Add as AddIcon,
@@ -55,7 +56,7 @@ const HintCard = (props: {
           data-cy="edit-hint"
           margin="normal"
           label={`Hint ${hintIdx + 1}`}
-          placeholder="Add a hint to help for the expectation, e.g. 'One of them starts with R'"
+          placeholder="Add a leading question or other hint for the concept's correct answer."
           multiline
           maxRows={4}
           fullWidth
@@ -110,7 +111,7 @@ export default function HintsList(props: {
 
   const handleAddHint = () => {
     const newItem = {
-      text: "Add a hint to help for the expectation, e.g. 'One of them starts with R'",
+      text: "",
     };
     hints.push(newItem);
     updateHints([...hints]);
@@ -123,9 +124,30 @@ export default function HintsList(props: {
 
   return (
     <Paper elevation={0} style={{ textAlign: "left" }}>
-      <Typography variant="body1" style={{ padding: 5 }}>
-        Hints
-      </Typography>
+      <Grid
+        container
+        spacing={0}
+        style={{ display: "flex", alignItems: "center", marginBottom: 5 }}
+      >
+        <Grid item>
+          <Typography variant="body1" style={{ padding: 5 }}>
+            Hints
+          </Typography>
+        </Grid>
+        <Grid item style={{ marginLeft: 10 }}>
+          <Button
+            data-cy="add-hint"
+            startIcon={<AddIcon />}
+            className={classes.button}
+            onClick={handleAddHint}
+            variant="outlined"
+            color="primary"
+            size="small"
+          >
+            Add Hint
+          </Button>
+        </Grid>
+      </Grid>
       <DragDropContext onDragEnd={onDragEnd}>
         <Droppable droppableId="droppable">
           {(provided, snapshot) => (
@@ -172,16 +194,6 @@ export default function HintsList(props: {
           )}
         </Droppable>
       </DragDropContext>
-      <Button
-        data-cy="add-hint"
-        startIcon={<AddIcon />}
-        className={classes.button}
-        onClick={handleAddHint}
-        variant="outlined"
-        color="primary"
-      >
-        Add Hint
-      </Button>
     </Paper>
   );
 }

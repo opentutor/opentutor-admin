@@ -1,5 +1,5 @@
 /*
-This software is Copyright ©️ 2020 The University of Southern California. All Rights Reserved. 
+This software is Copyright ©️ 2024 The University of Southern California. All Rights Reserved. 
 Permission to use, copy, modify, and distribute this software and its documentation for educational, research and non-profit purposes, without fee, and without a written agreement is hereby granted, provided that the above copyright notice and subject to the full license file found in the root of this software deliverable. Permission to make commercial use of this software may be obtained by contacting:  USC Stevens Center for Innovation University of Southern California 1150 S. Olive Street, Suite 2300, Los Angeles, CA 90115, USA Email: accounting@stevens.usc.edu
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
@@ -21,14 +21,7 @@ export interface SearchParams {
 
 export function useWithSessions(
   lessonId?: string,
-  existingCursor?: string,
-  search: SearchParams = {
-    limit: 50,
-    cursor: "",
-    sortBy: "createdAt",
-    sortAscending: false,
-    filter: {},
-  }
+  existingCursor?: string
 ): {
   sessions: Connection<Session> | undefined;
   sortBy: string;
@@ -36,26 +29,54 @@ export function useWithSessions(
   sort: (id: string) => void;
   nextPage: () => void;
   prevPage: () => void;
+  loading: boolean;
+  cursor: string;
 } {
   const context = useContext(SessionContext);
   const [cookies] = useCookies(["accessToken"]);
   const [sessions, setSessions] = useState<Connection<Session>>();
-  const [cursor, setCursor] = useState(search.cursor);
-  const [sortBy, setSortBy] = useState(search.sortBy);
-  const [sortAsc, setSortAsc] = useState(search.sortAscending);
-  const rowsPerPage = search.limit;
+  const [cursor, setCursor] = useState(
+    existingCursor || context.startCursor || ""
+  );
+  const [sortBy, setSortBy] = useState("createdAt");
+  const [sortAsc, setSortAsc] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [firstLoad, setFirstLoad] = useState(false);
+  const rowsPerPage = 50;
 
   useEffect(() => {
-    setCursor(existingCursor || "");
-    load();
-  }, [context.onlyCreator, context.showGraded, context.showAbandoned]);
+    load(cursor);
+    setFirstLoad(true);
+  }, []);
 
   useEffect(() => {
-    load();
-  }, [rowsPerPage, cursor, sortBy, sortAsc]);
+    if (lessonId) {
+      context.setFilterByLesson(lessonId);
+    }
+  }, [lessonId]);
 
-  function load() {
-    const filter = search.filter;
+  useEffect(() => {
+    context.setStartCursor(cursor);
+  }, [cursor]);
+
+  useEffect(() => {
+    if (!firstLoad) {
+      return;
+    }
+    load("");
+    setCursor("");
+  }, [
+    context.onlyCreator,
+    context.showGraded,
+    context.showAbandoned,
+    context.filterByLesson,
+    context.filterByUsername,
+  ]);
+
+  function load(cursor: string) {
+    setLoading(true);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const filter: Record<string, any> = {};
     if (context.onlyCreator) {
       filter.lessonCreatedBy = context.user?.name;
     }
@@ -65,8 +86,11 @@ export function useWithSessions(
     if (!context.showAbandoned) {
       filter.sessionStatus = { $ne: "LAUNCHED" };
     }
-    if (lessonId) {
-      filter.lessonId = lessonId;
+    if (lessonId || context.filterByLesson) {
+      filter.lessonId = lessonId || context.filterByLesson;
+    }
+    if (context.filterByUsername) {
+      filter.username = context.filterByUsername;
     }
     fetchSessions(
       filter,
@@ -81,7 +105,8 @@ export function useWithSessions(
           setSessions(sessions);
         }
       })
-      .catch((err) => console.error(err));
+      .catch((err) => console.error(err))
+      .finally(() => setLoading(false));
   }
 
   function sort(id: string) {
@@ -91,20 +116,29 @@ export function useWithSessions(
       setSortBy(id);
     }
     setCursor("");
+    load("");
   }
 
   function nextPage() {
     if (!sessions) {
       return;
     }
-    setCursor("next__" + sessions.pageInfo.endCursor);
+    const newCursor = sessions.pageInfo.endCursor
+      ? "next__" + sessions.pageInfo.endCursor
+      : "";
+    context.setStartCursor(newCursor);
+    setCursor(newCursor);
+    load(newCursor);
   }
 
   function prevPage() {
     if (!sessions) {
       return;
     }
-    setCursor("prev__" + sessions.pageInfo.startCursor);
+    const newCursor = "prev__" + sessions.pageInfo.startCursor;
+    context.setStartCursor(newCursor);
+    setCursor(newCursor);
+    load(newCursor);
   }
 
   return {
@@ -114,5 +148,7 @@ export function useWithSessions(
     sort,
     nextPage,
     prevPage,
+    cursor,
+    loading,
   };
 }

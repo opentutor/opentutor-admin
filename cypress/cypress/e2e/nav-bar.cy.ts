@@ -1,5 +1,5 @@
 /*
-This software is Copyright ©️ 2020 The University of Southern California. All Rights Reserved. 
+This software is Copyright ©️ 2024 The University of Southern California. All Rights Reserved. 
 Permission to use, copy, modify, and distribute this software and its documentation for educational, research and non-profit purposes, without fee, and without a written agreement is hereby granted, provided that the above copyright notice and subject to the full license file found in the root of this software deliverable. Permission to make commercial use of this software may be obtained by contacting:  USC Stevens Center for Innovation University of Southern California 1150 S. Olive Street, Suite 2300, Los Angeles, CA 90115, USA Email: accounting@stevens.usc.edu
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
@@ -51,8 +51,8 @@ describe("Navigation bar", () => {
         .get("[data-cy=menu-button]")
         .trigger("mouseover")
         .click();
-      cy.get("[data-cy=drawer] a").eq(2).contains("Users");
-      cy.get("[data-cy=drawer] a").eq(2).trigger("mouseover").click();
+      cy.get("[data-cy=drawer] a").eq(3).contains("Users");
+      cy.get("[data-cy=drawer] a").eq(3).trigger("mouseover").click();
       cy.location("pathname").should("contain", "/users");
     });
   });
@@ -68,7 +68,7 @@ describe("Navigation bar", () => {
         .click();
       cy.get("[data-cy=drawer] a").eq(0).contains("Lessons");
       cy.get("[data-cy=drawer] a").eq(1).contains("Grading");
-      cy.get("[data-cy=drawer] a").should("have.length", 2);
+      cy.get("[data-cy=drawer] a").should("have.length", 3);
     });
 
     it("shows /users if user is an admin", () => {
@@ -81,7 +81,7 @@ describe("Navigation bar", () => {
         .get("[data-cy=menu-button]")
         .trigger("mouseover")
         .click();
-      cy.get("[data-cy=drawer] a").eq(2).contains("Users");
+      cy.get("[data-cy=drawer] a").eq(3).contains("Users");
     });
 
     it("shows /users if user is a content manager", () => {
@@ -94,7 +94,7 @@ describe("Navigation bar", () => {
         .get("[data-cy=menu-button]")
         .trigger("mouseover")
         .click();
-      cy.get("[data-cy=drawer] a").eq(2).contains("Users");
+      cy.get("[data-cy=drawer] a").eq(3).contains("Users");
     });
   });
 
@@ -111,7 +111,9 @@ describe("Navigation bar", () => {
     cy.visit("/lessons");
     cy.get("[data-cy=nav-bar]").get("[data-cy=title]").contains("Lessons");
     cy.visit("/lessons/edit");
-    cy.get("[data-cy=nav-bar]").get("[data-cy=title]").contains("Edit Lesson");
+    cy.get("[data-cy=nav-bar]")
+      .get("[data-cy=title]")
+      .contains("Create Lesson");
     cy.visit("/sessions");
     cy.get("[data-cy=nav-bar]").get("[data-cy=title]").contains("Grading");
     cy.visit("/sessions/session");
@@ -136,7 +138,8 @@ describe("Navigation bar", () => {
     cy.get("[data-cy=drawer] a");
     cy.get("[data-cy=drawer] a").eq(0).contains("Lessons");
     cy.get("[data-cy=drawer] a").eq(1).contains("Grading");
-    cy.get("[data-cy=drawer] a").eq(2).contains("Users");
+    cy.get("[data-cy=drawer] a").eq(2).contains("Testbed");
+    cy.get("[data-cy=drawer] a").eq(3).contains("Users");
   });
 
   it("shows back button on session page instead of menu button", () => {

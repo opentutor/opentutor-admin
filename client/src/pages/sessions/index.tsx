@@ -1,11 +1,11 @@
 /*
-This software is Copyright ©️ 2020 The University of Southern California. All Rights Reserved. 
+This software is Copyright ©️ 2024 The University of Southern California. All Rights Reserved. 
 Permission to use, copy, modify, and distribute this software and its documentation for educational, research and non-profit purposes, without fee, and without a written agreement is hereby granted, provided that the above copyright notice and subject to the full license file found in the root of this software deliverable. Permission to make commercial use of this software may be obtained by contacting:  USC Stevens Center for Innovation University of Southern California 1150 S. Olive Street, Suite 2300, Los Angeles, CA 90115, USA Email: accounting@stevens.usc.edu
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
 import { navigate, Link } from "gatsby";
-import React, { useContext } from "react";
+import React, { useContext, useMemo } from "react";
 import { useCookies } from "react-cookie";
 import {
   AppBar,
@@ -23,6 +23,8 @@ import {
   Tooltip,
   Box,
   Theme,
+  Autocomplete,
+  TextField,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import {
@@ -39,6 +41,8 @@ import withLocation from "wrap-with-location";
 import "styles/layout.css";
 import { useWithSessions } from "hooks/use-with-sessions";
 import LoadingIndicator from "components/loading-indicator";
+import { useWithLessons } from "hooks/use-with-lessons";
+import { useWithUsers } from "hooks/use-with-users";
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -126,73 +130,153 @@ const columns: ColumnDef[] = [
 ];
 
 function TableFooter(props: {
+  lessonDict: Record<string, string>;
+  usernameList: string[];
+  searchLessonId: string;
   classes: { appBar: string; paging: string };
   hasNext: boolean;
   hasPrev: boolean;
   onNext: () => void;
   onPrev: () => void;
 }): JSX.Element {
-  const { classes, hasNext, hasPrev, onNext, onPrev } = props;
+  const {
+    usernameList,
+    lessonDict,
+    classes,
+    hasNext,
+    hasPrev,
+    onNext,
+    onPrev,
+    searchLessonId,
+  } = props;
   const context = useContext(SessionContext);
   const {
     onlyCreator,
     showGraded,
     showAbandoned,
+    filterByLesson,
+    filterByUsername,
+    setFilterByUsername,
     toggleCreator,
     toggleGraded,
     toggleAbandoned,
+    setFilterByLesson,
   } = context;
 
   return (
     <AppBar position="sticky" color="default" className={classes.appBar}>
       <Toolbar>
-        <FormGroup>
-          <FormControlLabel
-            control={
-              <Switch
-                data-cy="toggle-creator"
-                checked={onlyCreator}
-                onChange={toggleCreator}
-                aria-label="switch"
+        <Box display="flex" justifyContent="space-between" width="100%">
+          <div
+            style={{ display: "flex", flexDirection: "row", width: "33.33%" }}
+          >
+            <FormGroup>
+              <FormControlLabel
+                control={
+                  <Switch
+                    data-cy="toggle-creator"
+                    checked={onlyCreator}
+                    onChange={toggleCreator}
+                    aria-label="switch"
+                  />
+                }
+                label={"Only Mine"}
               />
-            }
-            label={"Only Mine"}
-          />
-        </FormGroup>
-        <FormGroup>
-          <FormControlLabel
-            control={
-              <Switch
-                data-cy="toggle-graded"
-                checked={showGraded}
-                onChange={toggleGraded}
-                aria-label="switch"
+            </FormGroup>
+
+            <FormGroup>
+              <FormControlLabel
+                control={
+                  <Switch
+                    data-cy="toggle-graded"
+                    checked={showGraded}
+                    onChange={toggleGraded}
+                    aria-label="switch"
+                  />
+                }
+                label={"Show Graded"}
               />
-            }
-            label={"Show Graded"}
-          />
-        </FormGroup>
-        <FormGroup>
-          <FormControlLabel
-            control={
-              <Switch
-                data-cy="toggle-abandoned"
-                checked={showAbandoned}
-                onChange={toggleAbandoned}
-                aria-label="switch"
+            </FormGroup>
+
+            <FormGroup>
+              <FormControlLabel
+                control={
+                  <Switch
+                    data-cy="toggle-abandoned"
+                    checked={showAbandoned}
+                    onChange={toggleAbandoned}
+                    aria-label="switch"
+                  />
+                }
+                label={"Show Abandoned"}
               />
-            }
-            label={"Show Abandoned"}
-          />
-        </FormGroup>
-        <div className={classes.paging}>
-          <IconButton data-cy="prev-page" disabled={!hasPrev} onClick={onPrev}>
-            <KeyboardArrowLeftIcon />
-          </IconButton>
-          <IconButton data-cy="next-page" disabled={!hasNext} onClick={onNext}>
-            <KeyboardArrowRightIcon />
-          </IconButton>
-        </div>
+            </FormGroup>
+          </div>
+
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-around",
+              width: "33.33%",
+            }}
+          >
+            <Autocomplete
+              style={{
+                width: "40%",
+              }}
+              data-cy="lesson-filter"
+              defaultValue={filterByLesson || searchLessonId}
+              options={Object.keys(lessonDict)}
+              getOptionLabel={(option) => lessonDict[option]}
+              renderInput={(params) => <TextField {...params} label="Lesson" />}
+              onChange={(event, value) => {
+                const lessonId = value ?? "";
+                console.log("lessonId", lessonId);
+                setFilterByLesson(lessonId);
+              }}
+            />
+            <Autocomplete
+              style={{
+                width: "40%",
+              }}
+              data-cy="username-filter"
+              defaultValue={filterByUsername}
+              options={usernameList}
+              getOptionLabel={(option) => option}
+              renderInput={(params) => <TextField {...params} label="User" />}
+              onChange={(event, value) => {
+                const username = value ?? "";
+                console.log("username", username);
+                setFilterByUsername(username);
+              }}
+            />
+          </div>
+
+          <div
+            style={{
+              flexGrow: 1,
+              display: "flex",
+              justifyContent: "flex-end",
+              width: "33.33%",
+            }}
+          >
+            <IconButton
+              data-cy="prev-page"
+              disabled={!hasPrev}
+              onClick={onPrev}
+            >
+              <KeyboardArrowLeftIcon />
+            </IconButton>
+            <IconButton
+              data-cy="next-page"
+              disabled={!hasNext}
+              onClick={onNext}
+            >
+              <KeyboardArrowRightIcon />
+            </IconButton>
+          </div>
+        </Box>
       </Toolbar>
     </AppBar>
   );
@@ -208,9 +292,11 @@ function SessionItem(props: {
   const styles = useStyles();
 
   function handleGrade(): void {
-    navigate(
-      `/sessions/session?sessionId=${row.node.sessionId}&cursor=${cursor}`
-    );
+    if (cursor)
+      navigate(
+        `/sessions/session?sessionId=${row.node.sessionId}&cursor=${cursor}`
+      );
+    else navigate(`/sessions/session?sessionId=${row.node.sessionId}`);
   }
 
   return (
@@ -285,12 +371,35 @@ function SessionItem(props: {
 
 function SessionsTable(props: {
   search: { lessonId: string; cursor: string };
+  accessToken: string;
 }): JSX.Element {
   const classes = useStyles();
-  const { sessions, sortBy, sortAsc, sort, nextPage, prevPage } =
-    useWithSessions(props.search.lessonId, props.search.cursor);
-
-  if (!sessions) {
+  const {
+    sessions,
+    sortBy,
+    sortAsc,
+    sort,
+    cursor,
+    nextPage,
+    prevPage,
+    loading: sessionsLoading,
+  } = useWithSessions(props.search.lessonId, props.search.cursor);
+  const { data: lessons, isLoading: lessonsLoading } = useWithLessons(
+    props.accessToken
+  );
+  const { data: users, isLoading: usersLoading } = useWithUsers(
+    props.accessToken
+  );
+  const lessonDict = useMemo(() => {
+    return lessons?.edges.reduce((acc, lesson) => {
+      acc[lesson.node.lessonId] = lesson.node.name;
+      return acc;
+    }, {} as Record<string, string>);
+  }, [lessons?.edges.length]);
+  const usernameList = useMemo(() => {
+    return users?.edges.map((edge) => edge.node.name);
+  }, [users?.edges.length]);
+  if (!sessions || lessonsLoading || sessionsLoading || usersLoading) {
     return (
       <div className={classes.root}>
         <LoadingIndicator />
@@ -319,7 +428,7 @@ function SessionsTable(props: {
                   key={row.node.sessionId}
                   row={row}
                   i={i}
-                  cursor={sessions.pageInfo.startCursor}
+                  cursor={cursor}
                 />
               ))}
             </TableBody>
@@ -327,6 +436,9 @@ function SessionsTable(props: {
         </TableContainer>
       </Paper>
       <TableFooter
+        usernameList={usernameList || []}
+        searchLessonId={props.search.lessonId}
+        lessonDict={lessonDict || {}}
         classes={classes}
         hasNext={sessions.pageInfo.hasNextPage}
         hasPrev={sessions.pageInfo.hasPreviousPage}
@@ -353,7 +465,7 @@ function SessionsPage(props: {
   return (
     <div>
       <NavBar title="Grading" />
-      <SessionsTable search={props.search} />
+      <SessionsTable search={props.search} accessToken={cookies.accessToken} />
     </div>
   );
 }

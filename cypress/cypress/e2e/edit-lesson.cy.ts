@@ -1,5 +1,5 @@
 /*
-This software is Copyright ©️ 2020 The University of Southern California. All Rights Reserved. 
+This software is Copyright ©️ 2024 The University of Southern California. All Rights Reserved. 
 Permission to use, copy, modify, and distribute this software and its documentation for educational, research and non-profit purposes, without fee, and without a written agreement is hereby granted, provided that the above copyright notice and subject to the full license file found in the root of this software deliverable. Permission to make commercial use of this software may be obtained by contacting:  USC Stevens Center for Innovation University of Southern California 1150 S. Olive Street, Suite 2300, Los Angeles, CA 90115, USA Email: accounting@stevens.usc.edu
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
@@ -130,57 +130,22 @@ describe("edit lesson screen", () => {
         gqlQueries: [mockGQL("FetchLesson", { me: { lesson } })],
       });
       cy.visit("/lessons/edit");
-      cy.get("[data-cy=lesson-name]").within(($input) => {
-        cy.get("textarea").should("have.value", "Display name for the lesson");
-      });
       cy.get("[data-cy=lesson-creator]").within(($input) => {
         cy.get("textarea").should("have.value", "Kayla");
       });
-      cy.get("[data-cy=intro]").within(($input) => {
-        cy.get("textarea").should(
-          "have.value",
-          "Introduction to the lesson,  e.g. 'This is a lesson about RGB colors'"
-        );
-      });
-      cy.get("[data-cy=question]").within(($input) => {
-        cy.get("textarea").should(
-          "have.value",
-          "Question the student needs to answer, e.g. 'What are the colors in RGB?'"
-        );
-      });
       cy.get("[data-cy=classifier-arch]").contains("LR2");
       cy.get("[data-cy=lesson-format]").contains("Default");
-      cy.get("[data-cy=media-type]").contains("None");
+      cy.get("[data-cy=video-url]").should("not.exist");
+      cy.get("[data-cy=image-url]").should("not.exist");
       cy.get("[data-cy=expectations]").children().should("have.length", 1);
-      cy.get("[data-cy=expectation-0]")
-        .find("[data-cy=edit-expectation]")
-        .within(($input) => {
-          cy.get("input").should(
-            "have.value",
-            "Add a short ideal answer for an expectation, e.g. 'Red'"
-          );
-        });
+      cy.get("[data-cy=expectation-0]").find("[data-cy=edit-expectation]");
       cy.get("[data-cy=expectation-0]")
         .find("[data-cy=hints]")
         .children()
         .should("have.length", 1);
-      cy.get("[data-cy=hint-0]")
-        .find("[data-cy=edit-hint]")
-        .within(($input) => {
-          cy.get("textarea").should(
-            "have.value",
-            "Add a hint to help for the expectation, e.g. 'One of them starts with R'"
-          );
-        });
+      cy.get("[data-cy=hint-0]").find("[data-cy=edit-hint]");
       cy.get("[data-cy=conclusions]").children().should("have.length", 1);
-      cy.get("[data-cy=conclusion-0]")
-        .find("[data-cy=edit-conclusion]")
-        .within(($input) => {
-          cy.get("textarea").should(
-            "have.value",
-            "Add a conclusion statement, e.g. 'In summary,  RGB colors are red, green, and blue'"
-          );
-        });
+      cy.get("[data-cy=conclusion-0]").find("[data-cy=edit-conclusion]");
     });
 
     it("edits a new lesson", () => {
@@ -311,7 +276,8 @@ describe("edit lesson screen", () => {
       cy.get("[data-cy=question]").within(($input) => {
         cy.get("textarea").should("have.value", "question");
       });
-      cy.get("[data-cy=media-type]").contains("None");
+      cy.get("[data-cy=video-url]").should("not.exist");
+      cy.get("[data-cy=image-url]").should("not.exist");
       cy.get("[data-cy=expectations]").children().should("have.length", 1);
       cy.get("[data-cy=expectation-0]")
         .find("[data-cy=edit-expectation]")
@@ -362,6 +328,7 @@ describe("edit lesson screen", () => {
         userRole: "admin",
       });
       cy.visit("/lessons/edit?lessonId=q1");
+      cy.get("[data-cy=advanced-features]").click();
       cy.get("[data-cy=lesson-id]").type("~");
       cy.get("[data-cy=lesson-id]")
         .find("p")
@@ -378,6 +345,7 @@ describe("edit lesson screen", () => {
         userRole: "admin",
       });
       cy.visit("/lessons/edit?lessonId=q1");
+      cy.get("[data-cy=advanced-features]").click();
       cy.get("[data-cy=lesson-id]").type("A");
       cy.get("[data-cy=lesson-id]")
         .find("p")
@@ -394,6 +362,7 @@ describe("edit lesson screen", () => {
         userRole: "admin",
       });
       cy.visit("/lessons/edit");
+      cy.get("[data-cy=advanced-features]").click();
       cy.get("[data-cy=lesson-id]").type("q1");
       cy.get("[data-cy=lesson-id]")
         .find("p")
@@ -409,6 +378,7 @@ describe("edit lesson screen", () => {
         userRole: "admin",
       });
       cy.visit("/lessons/edit");
+      cy.get("[data-cy=advanced-features]").click();
       cy.get("[data-cy=lesson-id]").type("q0");
       cy.get("[data-cy=lesson-name]").type("{backspace}");
       cy.get("[data-cy=save-button]").should("be.visible");
@@ -489,7 +459,7 @@ describe("edit lesson screen", () => {
       cy.get("textarea").should("have.value", "question");
     });
 
-    cy.get("[data-cy=media-type]").contains("Video");
+    cy.get("[data-cy=video-url]").should("be.visible");
     cy.get("[data-cy=video-url]").within(($input) => {
       cy.get("textarea").should("have.value", "https://youtube.come/?w=apple");
     });
@@ -536,13 +506,14 @@ describe("edit lesson screen", () => {
       userRole: "admin",
     });
     cy.visit("/lessons/edit?lessonId=q1");
-    cy.get("[data-cy=media-type]").contains("Video");
+    cy.get("[data-cy=video-url]").should("be.visible");
     cy.get("[data-cy=media-type]").click();
     cy.get("[data-cy=media-none]").click();
     cy.get("[data-cy=save-button]").click();
     cy.get("[data-cy=save-continue]").click();
 
-    cy.get("[data-cy=media-type]").contains("None");
+    cy.get("[data-cy=video-url]").should("not.exist");
+    cy.get("[data-cy=image-url]").should("not.exist");
   });
 
   it("can expand and collapse an expectation", () => {
@@ -601,6 +572,7 @@ describe("edit lesson screen", () => {
       userRole: "admin",
     });
     cy.visit("/lessons/edit?lessonId=q1");
+    cy.get("[data-cy=advanced-concept-options-0]").click();
     cy.get("[data-cy=view-expectation-0-data-button]")
       .trigger("mouseover")
       .click();

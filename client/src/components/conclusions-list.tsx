@@ -1,5 +1,5 @@
 /*
-This software is Copyright ©️ 2020 The University of Southern California. All Rights Reserved. 
+This software is Copyright ©️ 2024 The University of Southern California. All Rights Reserved. 
 Permission to use, copy, modify, and distribute this software and its documentation for educational, research and non-profit purposes, without fee, and without a written agreement is hereby granted, provided that the above copyright notice and subject to the full license file found in the root of this software deliverable. Permission to make commercial use of this software may be obtained by contacting:  USC Stevens Center for Innovation University of Southern California 1150 S. Olive Street, Suite 2300, Los Angeles, CA 90115, USA Email: accounting@stevens.usc.edu
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
@@ -57,11 +57,11 @@ const ConclusionCard = (props: {
         <TextField
           margin="normal"
           data-cy="edit-conclusion"
-          label={`Conclusion ${idx + 1}`}
+          label={`Message ${idx + 1}`}
           multiline
           maxRows={4}
           fullWidth
-          placeholder="Add a conclusion statement, e.g. 'In summary,  RGB colors are red, green, and blue'"
+          placeholder="Add a concluding statement/summary."
           InputLabelProps={{
             shrink: true,
           }}
@@ -125,8 +125,9 @@ function ConclusionsList(props: {
 
   return (
     <Paper elevation={0} style={{ textAlign: "left" }}>
-      <Typography variant="h6" style={{ padding: 15 }}>
-        Conclusions
+      {/*Renaming Conclusion as Closing Message in UI for ease of use */}
+      <Typography variant="h6" style={{ paddingTop: 5, paddingBottom: 15 }}>
+        Closing Messages
       </Typography>
       <DragDropContext onDragEnd={onDragEnd}>
         <Droppable droppableId="droppable">
@@ -178,8 +179,9 @@ function ConclusionsList(props: {
         onClick={handleAddConclusion}
         variant="outlined"
         color="primary"
+        style={{ marginTop: 15, marginBottom: 15 }}
       >
-        Add Conclusion
+        Add Message
       </Button>
     </Paper>
   );
