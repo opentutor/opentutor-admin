@@ -77,6 +77,7 @@ export type Features = Record<string, any>;
 export interface Lesson {
   lessonId: string;
   arch: string;
+  llmModelName?: string;
   name: string;
   intro: string;
   dialogCategory: string;

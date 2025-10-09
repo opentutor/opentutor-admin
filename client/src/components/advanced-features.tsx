@@ -18,7 +18,10 @@ import {
 import { Lesson } from "types";
 import {
   COMPOSITE_CLASSIFIER_ARCHITECTURE,
+  CUSTOM_4o_MINI_MODEL,
   DEFAULT_CLASSIFIER_ARCHITECTURE,
+  GPT_41_MINI,
+  GPT_4o_MINI,
   OPENAI_CLASSIFIER_ARCHITECTURE,
 } from "admin-constants";
 import { ArrowRight, ArrowDropDown } from "@mui/icons-material";
@@ -120,6 +123,46 @@ const DialogCategorySelect = (props: {
   );
 };
 
+const LLMModelNameSelect = (props: {
+  lessonUnderEdit: LessonUnderEdit;
+  classes: AdvancedFeaturesClasses;
+  setLesson: (lesson?: Lesson, dirty?: boolean) => void;
+  newLesson: Lesson;
+}) => {
+  const { lessonUnderEdit, classes, setLesson, newLesson } = props;
+
+  const handleLLMModelName = (e: SelectChangeEvent<string>) => {
+    setLesson(
+      {
+        ...(lessonUnderEdit.lesson || newLesson),
+        llmModelName: (e.target.value as string) || GPT_4o_MINI,
+      },
+      true
+    );
+  };
+
+  return (
+    <FormControl className={classes.selectForm} variant="outlined">
+      <InputLabel shrink id="llm-model-name-label">
+        LLM Model
+      </InputLabel>
+      <Select
+        data-cy="llm-model-name"
+        labelId="llm-model-name-label"
+        label="LLM Model"
+        value={lessonUnderEdit.lesson?.llmModelName || GPT_4o_MINI}
+        onChange={handleLLMModelName}
+      >
+        <MenuItem value={GPT_4o_MINI}>gpt-4o-mini</MenuItem>
+        <MenuItem value={GPT_41_MINI}>gpt-41-mini</MenuItem>
+        <MenuItem value={CUSTOM_4o_MINI_MODEL}>
+          gpt-4o-mini-2024-CUSTOM
+        </MenuItem>
+      </Select>
+    </FormControl>
+  );
+};
+
 const ClassifierArchSelect = (props: {
   lessonUnderEdit: LessonUnderEdit;
   classes: AdvancedFeaturesClasses;
@@ -209,6 +252,14 @@ export function AdvancedFeatures(props: {
           </Grid>
           <Grid item xs={6}>
             <ClassifierArchSelect
+              lessonUnderEdit={lessonUnderEdit}
+              setLesson={setLesson}
+              classes={classes}
+              newLesson={newLesson}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <LLMModelNameSelect
               lessonUnderEdit={lessonUnderEdit}
               setLesson={setLesson}
               classes={classes}

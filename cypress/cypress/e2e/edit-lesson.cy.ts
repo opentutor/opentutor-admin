@@ -133,6 +133,7 @@ describe("edit lesson screen", () => {
       cy.get("[data-cy=lesson-creator]").within(($input) => {
         cy.get("textarea").should("have.value", "Kayla");
       });
+      cy.get("[data-cy=llm-model-name]").contains("gpt-41-mini");
       cy.get("[data-cy=classifier-arch]").contains("LR2");
       cy.get("[data-cy=lesson-format]").contains("Default");
       cy.get("[data-cy=video-url]").should("not.exist");
