@@ -20,6 +20,7 @@ import {
   COMPOSITE_CLASSIFIER_ARCHITECTURE,
   CUSTOM_4o_MINI_MODEL,
   DEFAULT_CLASSIFIER_ARCHITECTURE,
+  GPT_41_MINI,
   GPT_4o_MINI,
   OPENAI_CLASSIFIER_ARCHITECTURE,
 } from "admin-constants";
@@ -152,9 +153,10 @@ const LLMModelNameSelect = (props: {
         value={lessonUnderEdit.lesson?.llmModelName || GPT_4o_MINI}
         onChange={handleLLMModelName}
       >
-        <MenuItem value={GPT_4o_MINI}>gpt-4o-Mini</MenuItem>
+        <MenuItem value={GPT_4o_MINI}>gpt-4o-mini</MenuItem>
+        <MenuItem value={GPT_41_MINI}>gpt-41-mini</MenuItem>
         <MenuItem value={CUSTOM_4o_MINI_MODEL}>
-          gpt-4o-mini-2024-07-18:usc-ict-ls::A16PW4Pl
+          gpt-4o-mini-2024-CUSTOM
         </MenuItem>
       </Select>
     </FormControl>
