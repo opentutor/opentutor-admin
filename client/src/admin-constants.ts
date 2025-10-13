@@ -10,6 +10,6 @@ export const COMPOSITE_CLASSIFIER_ARCHITECTURE =
   "opentutor_classifier.composite";
 
 export const GPT_4o_MINI = "gpt-4o-mini";
-export const GPT_41_MINI = "gpt-41-mini";
+export const GPT_41_MINI = "gpt-4.1-mini";
 export const CUSTOM_4o_MINI_MODEL =
   "gpt-4o-mini-2024-07-18:usc-ict-ls::A16PW4Pl";

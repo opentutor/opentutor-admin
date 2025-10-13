@@ -154,7 +154,7 @@ const LLMModelNameSelect = (props: {
         onChange={handleLLMModelName}
       >
         <MenuItem value={GPT_4o_MINI}>gpt-4o-mini</MenuItem>
-        <MenuItem value={GPT_41_MINI}>gpt-41-mini</MenuItem>
+        <MenuItem value={GPT_41_MINI}>gpt-4.1-mini</MenuItem>
         <MenuItem value={CUSTOM_4o_MINI_MODEL}>
           gpt-4o-mini-2024-CUSTOM
         </MenuItem>
