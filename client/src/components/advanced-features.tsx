@@ -22,6 +22,7 @@ import {
   DEFAULT_CLASSIFIER_ARCHITECTURE,
   GPT_41_MINI,
   GPT_4o_MINI,
+  GPT_5_MINI,
   OPENAI_CLASSIFIER_ARCHITECTURE,
 } from "admin-constants";
 import { ArrowRight, ArrowDropDown } from "@mui/icons-material";
@@ -155,6 +156,7 @@ const LLMModelNameSelect = (props: {
       >
         <MenuItem value={GPT_4o_MINI}>gpt-4o-mini</MenuItem>
         <MenuItem value={GPT_41_MINI}>gpt-4.1-mini</MenuItem>
+        <MenuItem value={GPT_5_MINI}>gpt-5-mini</MenuItem>
         <MenuItem value={CUSTOM_4o_MINI_MODEL}>
           gpt-4o-mini-2024-CUSTOM
         </MenuItem>
