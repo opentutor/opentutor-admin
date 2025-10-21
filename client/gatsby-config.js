@@ -15,16 +15,22 @@ module.exports = {
       resolve: "gatsby-plugin-offline",
     },
     {
-      resolve: "gatsby-plugin-sitemap",
-    },
-    {
-      resolve: "gatsby-plugin-typescript",
-    },
-    {
-      resolve: "@iostindex/gatsby-plugin-material-ui",
+      resolve: "gatsby-plugin-material-ui",
     },
     {
       resolve: "gatsby-plugin-use-query-params",
+    },
+    {
+      resolve: "gatsby-plugin-eslint",
+      options: {
+        test: /\.js$|\.jsx$|\.ts$|\.tsx$/,
+        exclude: /(node_modules|.cache|public|static)/,
+        stages: ["develop"],
+        options: {
+          emitWarning: true,
+          failOnError: false,
+        },
+      },
     },
   ],
 };

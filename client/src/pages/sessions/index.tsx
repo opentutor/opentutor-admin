@@ -26,7 +26,7 @@ import {
   Autocomplete,
   TextField,
 } from "@mui/material";
-import { makeStyles } from "tss-react/mui";
+import { makeStyles } from "@mui/styles";
 import {
   KeyboardArrowLeft as KeyboardArrowLeftIcon,
   KeyboardArrowRight as KeyboardArrowRightIcon,
@@ -44,7 +44,7 @@ import LoadingIndicator from "components/loading-indicator";
 import { useWithLessons } from "hooks/use-with-lessons";
 import { useWithUsers } from "hooks/use-with-users";
 
-const useStyles = makeStyles({ name: "SessionsPage" })((theme: Theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   root: {
     display: "flex",
     flexFlow: "column",
@@ -289,7 +289,7 @@ function SessionItem(props: {
 }): JSX.Element {
   const { row, i, cursor } = props;
   const context = useContext(SessionContext);
-  const { classes: styles } = useStyles();
+  const styles = useStyles();
 
   function handleGrade(): void {
     if (cursor)
@@ -373,7 +373,7 @@ function SessionsTable(props: {
   search: { lessonId: string; cursor: string };
   accessToken: string;
 }): JSX.Element {
-  const { classes } = useStyles();
+  const classes = useStyles();
   const {
     sessions,
     sortBy,

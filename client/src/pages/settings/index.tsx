@@ -19,7 +19,7 @@ import {
   Theme,
   Typography,
 } from "@mui/material";
-import { makeStyles } from "tss-react/mui";
+import { makeStyles } from "@mui/styles";
 import NavBar from "components/nav-bar";
 import SessionContext from "context/session";
 import "styles/layout.css";
@@ -30,7 +30,7 @@ import LoadingIndicator from "components/loading-indicator";
 import { fetchAppConfig, fetchLessons, updateAppConfig } from "api";
 import { Delete } from "@mui/icons-material";
 
-const useStyles = makeStyles({ name: "SettingsPage" })((theme: Theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   root: {
     display: "flex",
     flexFlow: "column",
@@ -66,7 +66,7 @@ const useStyles = makeStyles({ name: "SettingsPage" })((theme: Theme) => ({
 
 // eslint-disable-next-line  @typescript-eslint/no-unused-vars
 function SettingsPage(props: { path: string }): JSX.Element {
-  const { classes: styles } = useStyles();
+  const styles = useStyles();
   const context = useContext(SessionContext);
   const [cookies] = useCookies(["accessToken"]);
   const { isTraining, trainStatus, startDefaultTraining } = useWithTraining();

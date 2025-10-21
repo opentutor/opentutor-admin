@@ -19,7 +19,7 @@ import CogenerationSideBar from "components/cogeneration-side-bar";
 import { useStyles } from "helpers/lessonsHelpers";
 
 const CogenerationContent = () => {
-  const { classes } = useStyles();
+  const classes = useStyles();
   return (
     <Grid container sx={{ display: "flex" }}>
       <Box sx={{ display: "flex" }}>

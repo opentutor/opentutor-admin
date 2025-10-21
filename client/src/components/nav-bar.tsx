@@ -5,7 +5,7 @@ Permission to use, copy, modify, and distribute this software and its documentat
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
 import { Link, navigate } from "gatsby";
-import React, { CSSProperties, useContext } from "react";
+import React, { useContext } from "react";
 import { useCookies } from "react-cookie";
 import {
   AppBar,
@@ -22,7 +22,7 @@ import {
   Typography,
   Theme,
 } from "@mui/material";
-import { makeStyles } from "tss-react/mui";
+import { makeStyles } from "@mui/styles";
 import {
   AccountCircle,
   Close as CloseIcon,
@@ -37,10 +37,8 @@ import { userIsElevated } from "api";
 import SessionContext from "context/session";
 import { UserRole } from "types";
 
-const useStyles = makeStyles({ name: "NavBar" })((theme: Theme) => ({
-  toolbar: {
-    ...(theme.mixins.toolbar as CSSProperties),
-  },
+const useStyles = makeStyles((theme: Theme) => ({
+  toolbar: theme.mixins.toolbar,
   root: {
     flexGrow: 1,
   },
@@ -156,7 +154,7 @@ export function NavBar(props: {
   title: string;
   disableMenu?: boolean;
 }): JSX.Element {
-  const { classes } = useStyles();
+  const classes = useStyles();
   const context = useContext(SessionContext);
   const [isDrawerOpen, setIsDrawerOpen] = React.useState(false);
 

@@ -27,7 +27,7 @@ import {
   Tooltip,
   Theme,
 } from "@mui/material";
-import { makeStyles } from "tss-react/mui";
+import { makeStyles } from "@mui/styles";
 import {
   Add as AddIcon,
   Assessment as AssessmentIcon,
@@ -46,7 +46,7 @@ import "styles/layout.css";
 import "react-toastify/dist/ReactToastify.css";
 import LoadingIndicator from "components/loading-indicator";
 
-const useStyles = makeStyles({ name: "LessonsPage" })((theme: Theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   root: {
     display: "flex",
     flexFlow: "column",
@@ -166,7 +166,7 @@ const LessonItem = (props: {
   const deleteMenuOpen = Boolean(anchorEl);
   const context = useContext(SessionContext);
   const [cookies] = useCookies(["accessToken"]);
-  const { classes: styles } = useStyles();
+  const styles = useStyles();
 
   function launchLesson(id: string) {
     const host = process.env.TUTOR_ENDPOINT || window.location.origin;
@@ -293,7 +293,7 @@ const LessonItem = (props: {
 };
 
 const LessonsTable = () => {
-  const { classes } = useStyles();
+  const classes = useStyles();
   const context = useContext(SessionContext);
   const [cookies] = useCookies(["accessToken"]);
   const [lessons, setLessons] = React.useState<Connection<Lesson>>();

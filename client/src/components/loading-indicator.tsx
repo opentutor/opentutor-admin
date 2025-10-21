@@ -6,9 +6,9 @@ The full terms of this copyright and license should always be found in the root 
 */
 import React from "react";
 import { CircularProgress } from "@mui/material";
-import { makeStyles } from "tss-react/mui";
+import { makeStyles } from "@mui/styles";
 
-const useStyles = makeStyles({ name: "LoadingIndicator" })(() => ({
+const useStyles = makeStyles(() => ({
   progressRoot: {
     position: "fixed",
     top: "50%",
@@ -18,7 +18,7 @@ const useStyles = makeStyles({ name: "LoadingIndicator" })(() => ({
 }));
 
 export default function LoadingIndicator(): JSX.Element {
-  const { classes } = useStyles();
+  const classes = useStyles();
   return (
     <div className={classes.progressRoot}>
       <CircularProgress
