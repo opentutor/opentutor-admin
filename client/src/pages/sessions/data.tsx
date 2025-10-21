@@ -694,7 +694,10 @@ function Data(props: { search: LessonExpectationSearch }): JSX.Element {
   if (context.isClient && !cookies.accessToken) {
     return <div>Please login to view settings.</div>;
   }
-  if (!lessonId || !expectation) {
+
+  // Only check query params after client hydration to avoid SSR mismatch
+  // Also check for null/undefined explicitly to allow expectation=0
+  if (context.isClient && (lessonId == null || expectation == null)) {
     return (
       <div data-cy="malformed-link">
         {
@@ -703,7 +706,9 @@ function Data(props: { search: LessonExpectationSearch }): JSX.Element {
       </div>
     );
   }
-  if (!context.user) {
+
+  // Show loading until client hydration completes
+  if (!context.user || !context.isClient) {
     return <LoadingIndicator />;
   }
   if (context.user.userRole !== UserRole.ADMIN) {
