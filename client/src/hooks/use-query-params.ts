@@ -18,7 +18,8 @@ export function useQueryParam(
   const location = useLocation();
 
   const params = new URLSearchParams(location.search);
-  const value = params.get(key);
+  // Only read query params on the client side to avoid SSR hydration mismatch
+  const value = typeof window !== "undefined" ? params.get(key) : null;
 
   const setValue = useCallback(
     (newValue: string | null | undefined) => {
