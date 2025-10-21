@@ -46,7 +46,8 @@ const CogenerationContent = () => {
 function CogenerationPage(): JSX.Element {
   const context = useContext(SessionContext);
   const [cookies] = useCookies(["accessToken"]);
-  if (typeof window !== "undefined" && !cookies.accessToken) {
+  // Only check cookies after client hydration to avoid SSR mismatch
+  if (context.isClient && !cookies.accessToken) {
     return <div>Please login to view testbed.</div>;
   }
   if (!context.user) {

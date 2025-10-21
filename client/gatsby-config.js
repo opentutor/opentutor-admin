@@ -1,5 +1,8 @@
 module.exports = {
   pathPrefix: `/admin`,
+  flags: {
+    DEV_SSR: true,
+  },
   siteMetadata: {
     title: `Open Tutor Grading`,
     description: ``,

@@ -457,7 +457,8 @@ function EditPage(props: {
   const [cookies] = useCookies(["accessToken"]);
   const [lessonId] = useQueryParam("lessonId");
 
-  if (typeof window !== "undefined" && !cookies.accessToken) {
+  // Only check cookies after client hydration to avoid SSR mismatch
+  if (context.isClient && !cookies.accessToken) {
     return <div>Please login to view lesson.</div>;
   }
   if (!context.user) {

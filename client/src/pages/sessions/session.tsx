@@ -268,7 +268,8 @@ const SessionPage = (props: {
 }) => {
   const context = useContext(SessionContext);
   const [cookies] = useCookies(["accessToken"]);
-  if (typeof window !== "undefined" && !cookies.accessToken) {
+  // Only check cookies after client hydration to avoid SSR mismatch
+  if (context.isClient && !cookies.accessToken) {
     return <div>Please login to view session.</div>;
   }
   if (!context.user) {

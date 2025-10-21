@@ -690,7 +690,8 @@ function Data(props: { search: LessonExpectationSearch }): JSX.Element {
   const [cookies] = useCookies(["accessToken"]);
   const { classes: styles } = useStyles();
 
-  if (typeof window !== "undefined" && !cookies.accessToken) {
+  // Only check cookies after client hydration to avoid SSR mismatch
+  if (context.isClient && !cookies.accessToken) {
     return <div>Please login to view settings.</div>;
   }
   if (!lessonId || !expectation) {

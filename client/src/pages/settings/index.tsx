@@ -128,7 +128,8 @@ function SettingsPage(props: { path: string }): JSX.Element {
     setConfig({ ...config, ...c });
   }
 
-  if (typeof window !== "undefined" && !cookies.accessToken) {
+  // Only check cookies after client hydration to avoid SSR mismatch
+  if (context.isClient && !cookies.accessToken) {
     return <div>Please login to view settings.</div>;
   }
   if (!context.user) {

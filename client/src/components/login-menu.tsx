@@ -86,7 +86,8 @@ export function LoginMenu(): JSX.Element {
     });
   };
 
-  if (cookies.accessToken) {
+  // Only check cookies after client hydration to avoid SSR mismatch
+  if (context.isClient && cookies.accessToken) {
     return (
       <div className={classes.root}>
         <LoadingIndicator />
