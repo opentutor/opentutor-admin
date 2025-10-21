@@ -28,7 +28,7 @@ import {
   Theme,
   Toolbar,
 } from "@mui/material";
-import { makeStyles } from "@mui/styles";
+import { makeStyles } from "tss-react/mui";
 import {
   KeyboardArrowLeft as KeyboardArrowLeftIcon,
   KeyboardArrowRight as KeyboardArrowRightIcon,
@@ -42,7 +42,7 @@ import "styles/layout.css";
 import "react-toastify/dist/ReactToastify.css";
 import LoadingIndicator from "components/loading-indicator";
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles({ name: "UsersPage" })((theme: Theme) => ({
   root: {
     display: "flex",
     flexFlow: "column",
@@ -121,7 +121,7 @@ function UserItem(props: {
   const { row, i } = props;
   const [cookies] = useCookies(["accessToken"]);
   const context = useContext(SessionContext);
-  const styles = useStyles();
+  const { classes: styles } = useStyles();
 
   async function handleRoleChange(user: string, permission: string) {
     try {
@@ -179,7 +179,7 @@ function UserItem(props: {
 }
 
 function UsersTable(): JSX.Element {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const [cookies] = useCookies(["accessToken"]);
   const [users, setUsers] = React.useState<Connection<User>>();
   const [cursor, setCursor] = React.useState("");
