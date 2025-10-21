@@ -33,7 +33,7 @@ import withLocation from "wrap-with-location";
 import "styles/layout.css";
 import "jsoneditor-react/es/editor.min.css";
 import "react-toastify/dist/ReactToastify.css";
-import { StringParam, useQueryParam } from "use-query-params";
+import { useQueryParam } from "hooks/use-query-params";
 import LoadingIndicator from "components/loading-indicator";
 import { InsertPhoto as InsertPhotoIcon } from "@mui/icons-material";
 import { Location } from "@reach/router";
@@ -85,8 +85,8 @@ const LessonEdit = (props: {
   search: LessonEditSearch;
   location: Location;
 }) => {
-  const [lessonId, setLessonId] = useQueryParam("lessonId", StringParam);
-  const [copyLesson] = useQueryParam("copyLesson", StringParam);
+  const [lessonId, setLessonId] = useQueryParam("lessonId");
+  const [copyLesson] = useQueryParam("copyLesson");
 
   const { classes } = useStyles();
   const [cookies] = useCookies(["accessToken"]);
@@ -455,7 +455,7 @@ function EditPage(props: {
 }): JSX.Element {
   const context = useContext(SessionContext);
   const [cookies] = useCookies(["accessToken"]);
-  const [lessonId] = useQueryParam("lessonId", StringParam);
+  const [lessonId] = useQueryParam("lessonId");
 
   if (typeof window !== "undefined" && !cookies.accessToken) {
     return <div>Please login to view lesson.</div>;

@@ -23,8 +23,5 @@ module.exports = {
     {
       resolve: "@iostindex/gatsby-plugin-material-ui",
     },
-    {
-      resolve: "gatsby-plugin-use-query-params",
-    },
   ],
 };

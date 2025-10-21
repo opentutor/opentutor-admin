@@ -4,24 +4,41 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import React from "react";
+import { useCallback } from "react";
 import { useLocation } from "@reach/router";
 import { navigate } from "gatsby";
 
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-const withLocation = (ComponentToWrap) => (props) => {
+/**
+ * Custom hook to replace use-query-params library
+ * Provides functionality to read and update URL query parameters
+ */
+export function useQueryParam(
+  key: string
+): [string | null | undefined, (value: string | null | undefined) => void] {
   const location = useLocation();
-  const search = location.search
-    ? Object.fromEntries(new URLSearchParams(location.search))
-    : {};
-  return (
-    <ComponentToWrap
-      {...props}
-      location={location}
-      navigate={navigate}
-      search={search}
-    />
-  );
-};
 
-export default withLocation;
+  const params = new URLSearchParams(location.search);
+  const value = params.get(key);
+
+  const setValue = useCallback(
+    (newValue: string | null | undefined) => {
+      const newParams = new URLSearchParams(location.search);
+
+      if (newValue === null || newValue === undefined) {
+        newParams.delete(key);
+      } else {
+        newParams.set(key, newValue);
+      }
+
+      const newSearch = newParams.toString();
+      const newUrl = newSearch
+        ? `${location.pathname}?${newSearch}`
+        : location.pathname;
+
+      navigate(newUrl, { replace: true });
+    },
+    [key, location.pathname, location.search, navigate]
+  );
+
+  return [value, setValue];
+}
