@@ -15,7 +15,6 @@ interface LessonUnderEdit {
   dirty?: boolean;
 }
 
-// TODO: check what uses this
 export const useStyles = makeStyles({ name: "LessonsHelpers" })(
   (theme: Theme) => ({
     appBar: {
