@@ -3,7 +3,7 @@ module.exports = {
   siteMetadata: {
     title: `Open Tutor Grading`,
     description: ``,
-    siteUrl:"https://admin.opentutor.info"
+    siteUrl: "https://admin.opentutor.info",
   },
   plugins: [
     {
@@ -23,6 +23,6 @@ module.exports = {
     },
     {
       resolve: "gatsby-plugin-sitemap",
-    }
+    },
   ],
 };
