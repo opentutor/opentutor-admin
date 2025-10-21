@@ -11,9 +11,9 @@ import {
   GoogleLogin,
   GoogleLoginResponse,
   GoogleLoginResponseOffline,
-} from "react-google-login";
+} from "@leecheuk/react-google-login";
 import { Button, Theme, Typography } from "@mui/material";
-import { makeStyles } from "@mui/styles";
+import { makeStyles } from "tss-react/mui";
 import NavBar from "components/nav-bar";
 import SessionContext from "context/session";
 import { loginGoogle, fetchAppConfig } from "api";
@@ -21,7 +21,7 @@ import { AppConfig, UserAccessToken } from "types";
 import "styles/layout.css";
 import LoadingIndicator from "components/loading-indicator";
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles({ name: "LoginMenu" })((theme: Theme) => ({
   root: {
     height: "100%",
     display: "flex",
@@ -44,7 +44,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 export function LoginMenu(): JSX.Element {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const [cookies, setCookie] = useCookies(["accessToken"]);
   const context = useContext(SessionContext);
   const [googleClientId, setClientId] = React.useState<string>("");

@@ -88,7 +88,7 @@ const LessonEdit = (props: {
   const [lessonId, setLessonId] = useQueryParam("lessonId", StringParam);
   const [copyLesson] = useQueryParam("copyLesson", StringParam);
 
-  const classes = useStyles();
+  const { classes } = useStyles();
   const [cookies] = useCookies(["accessToken"]);
   const context = useContext(SessionContext);
   const [lessonUnderEdit, setLessonUnderEdit] = React.useState<LessonUnderEdit>(
