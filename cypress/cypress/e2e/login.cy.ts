@@ -67,7 +67,7 @@ describe("Login", () => {
     cy.contains("Please login to view lessons.");
   });
 
-  it("cannot view lesson page if not logged in", () => {
+  it("cannot view lesson edit page if not logged in", () => {
     cySetup(cy);
     cy.visit("/lessons/edit?lessonId=q1");
     cy.contains("Please login to view lesson.");

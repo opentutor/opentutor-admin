@@ -19,7 +19,7 @@ import {
   Theme,
   Typography,
 } from "@mui/material";
-import { makeStyles } from "@mui/styles";
+import { makeStyles } from "tss-react/mui";
 import NavBar from "components/nav-bar";
 import SessionContext from "context/session";
 import "styles/layout.css";
@@ -30,7 +30,7 @@ import LoadingIndicator from "components/loading-indicator";
 import { fetchAppConfig, fetchLessons, updateAppConfig } from "api";
 import { Delete } from "@mui/icons-material";
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles({ name: "SettingsPage" })((theme: Theme) => ({
   root: {
     display: "flex",
     flexFlow: "column",
@@ -66,7 +66,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 // eslint-disable-next-line  @typescript-eslint/no-unused-vars
 function SettingsPage(props: { path: string }): JSX.Element {
-  const styles = useStyles();
+  const { classes: styles } = useStyles();
   const context = useContext(SessionContext);
   const [cookies] = useCookies(["accessToken"]);
   const { isTraining, trainStatus, startDefaultTraining } = useWithTraining();
@@ -128,7 +128,8 @@ function SettingsPage(props: { path: string }): JSX.Element {
     setConfig({ ...config, ...c });
   }
 
-  if (typeof window !== "undefined" && !cookies.accessToken) {
+  // Only check cookies after client hydration to avoid SSR mismatch
+  if (context.isClient && !cookies.accessToken) {
     return <div>Please login to view settings.</div>;
   }
   if (!context.user) {

@@ -7,97 +7,100 @@ The full terms of this copyright and license should always be found in the root 
 import { Lesson, TrainState, TrainStatus } from "types";
 import { months } from "constants/lessonConstants";
 import { styled, CSSObject, Theme } from "@mui/material/styles";
-import { makeStyles } from "@mui/styles";
+import { makeStyles } from "tss-react/mui";
 import MuiDrawer from "@mui/material/Drawer";
 import { ButtonColor } from "constants/lessonConstants";
 interface LessonUnderEdit {
   lesson?: Lesson;
   dirty?: boolean;
 }
-export const useStyles = makeStyles((theme: Theme) => ({
-  appBar: {
-    zIndex: 2,
-  },
-  drawer: {
-    paddingTop: "10%",
-    flexShrink: 0,
-    zIndex: 1,
-    position: "sticky",
-  },
-  cardRoot: {
-    width: "100%",
-  },
-  expand: {
-    transform: "rotate(0deg)",
-    marginLeft: "auto",
-    transition: theme.transitions.create("transform", {
-      duration: theme.transitions.duration.shortest,
-    }),
-  },
-  expandOpen: {
-    transform: "rotate(180deg)",
-  },
-  list: {
-    background: "#F5F5F5",
-    borderRadius: 10,
-  },
-  listDragging: {
-    background: "lightblue",
-    borderRadius: 10,
-  },
-  button: {
-    marginTop: theme.spacing(2),
-    marginBottom: theme.spacing(2),
-  },
-  heading: {
-    fontSize: theme.typography.pxToRem(15),
-    flexBasis: "33.33%",
-    flexShrink: 0,
-  },
-  secondaryHeading: {
-    fontSize: theme.typography.pxToRem(15),
-    color: theme.palette.text.secondary,
-  },
-  container: {
-    maxHeight: 440,
-  },
-  input: {
-    "&:invalid": {
-      border: "red solid 2px",
+
+export const useStyles = makeStyles({ name: "LessonsHelpers" })(
+  (theme: Theme) => ({
+    appBar: {
+      zIndex: 2,
     },
-  },
-  image: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  thumbnail: {
-    boxSizing: "border-box",
-    height: 56,
-    padding: 5,
-  },
-  video: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  inputForm: {},
-  selectForm: {
-    width: "100%",
-  },
-  divider: {
-    marginTop: 25,
-    marginBottom: 25,
-  },
-  actionFooter: {
-    marginTop: 10,
-    marginBottom: 10,
-    display: "flex",
-    gap: 10,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-}));
+    drawer: {
+      paddingTop: "10%",
+      flexShrink: 0,
+      zIndex: 1,
+      position: "sticky",
+    },
+    cardRoot: {
+      width: "100%",
+    },
+    expand: {
+      transform: "rotate(0deg)",
+      marginLeft: "auto",
+      transition: theme.transitions.create("transform", {
+        duration: theme.transitions.duration.shortest,
+      }),
+    },
+    expandOpen: {
+      transform: "rotate(180deg)",
+    },
+    list: {
+      background: "#F5F5F5",
+      borderRadius: 10,
+    },
+    listDragging: {
+      background: "lightblue",
+      borderRadius: 10,
+    },
+    button: {
+      marginTop: theme.spacing(2),
+      marginBottom: theme.spacing(2),
+    },
+    heading: {
+      fontSize: theme.typography.pxToRem(15),
+      flexBasis: "33.33%",
+      flexShrink: 0,
+    },
+    secondaryHeading: {
+      fontSize: theme.typography.pxToRem(15),
+      color: theme.palette.text.secondary,
+    },
+    container: {
+      maxHeight: 440,
+    },
+    input: {
+      "&:invalid": {
+        border: "red solid 2px",
+      },
+    },
+    image: {
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    thumbnail: {
+      boxSizing: "border-box",
+      height: 56,
+      padding: 5,
+    },
+    video: {
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    inputForm: {},
+    selectForm: {
+      width: "100%",
+    },
+    divider: {
+      marginTop: 25,
+      marginBottom: 25,
+    },
+    actionFooter: {
+      marginTop: 10,
+      marginBottom: 10,
+      display: "flex",
+      gap: 10,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+  })
+);
 
 export const getTrainButtonColor = (trainStatus: TrainStatus): ButtonColor => {
   return trainStatus.state !== TrainState.SUCCESS &&
