@@ -11,6 +11,7 @@ import { User, UserAccessToken } from "types";
 
 type ContextType = {
   user: User | undefined;
+  isClient: boolean;
   showGraded: boolean;
   showAbandoned: boolean;
   onlyCreator: boolean;
@@ -27,6 +28,7 @@ type ContextType = {
 
 const SessionContext = React.createContext<ContextType>({
   user: undefined,
+  isClient: false,
   showGraded: false,
   showAbandoned: false,
   onlyCreator: false,
@@ -52,34 +54,47 @@ function SessionProvider(props: { children?: React.ReactNode }): JSX.Element {
     "accessToken",
     "user",
   ]);
+  const [isClient, setIsClient] = React.useState(false);
   const [user, setUser] = React.useState<User>();
   const [showGraded, setShowGraded] = React.useState(false);
-  const [onlyCreator, setOnlyCreator] = React.useState(
-    cookies.accessToken || cookies.user ? true : false
-  );
+  const [onlyCreator, setOnlyCreator] = React.useState(false);
   const [showAbandoned, setShowAbandoned] = React.useState(false);
   const [filterByLesson, setFilterByLesson] = React.useState("");
   const [startCursor, setStartCursor] = React.useState("");
   const [filterByUsername, setFilterByUsername] = React.useState("");
+
   React.useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  React.useEffect(() => {
+    // Only read cookies after client hydration to avoid SSR mismatch
+    if (!isClient) {
+      return;
+    }
+
     if (!cookies.accessToken) {
       setUser(undefined);
-    } else if (!user) {
-      login(cookies.accessToken)
-        .then((token: UserAccessToken) => {
-          setUser(token.user);
-          setCookie("accessToken", token.accessToken, {
-            secure: true,
-            sameSite: "none",
-            path: "/",
+      setOnlyCreator(false);
+    } else {
+      setOnlyCreator(true);
+      if (!user) {
+        login(cookies.accessToken)
+          .then((token: UserAccessToken) => {
+            setUser(token.user);
+            setCookie("accessToken", token.accessToken, {
+              secure: true,
+              sameSite: "none",
+              path: "/",
+            });
+          })
+          .catch((err) => {
+            console.error(err);
+            removeCookie("accessToken", { path: "/" });
           });
-        })
-        .catch((err) => {
-          console.error(err);
-          removeCookie("accessToken", { path: "/" });
-        });
+      }
     }
-  }, [cookies]);
+  }, [isClient, cookies]);
 
   function toggleGraded(): void {
     setShowGraded(!showGraded);
@@ -97,6 +112,7 @@ function SessionProvider(props: { children?: React.ReactNode }): JSX.Element {
     <SessionContext.Provider
       value={{
         user,
+        isClient,
         filterByLesson,
         filterByUsername,
         setFilterByLesson,

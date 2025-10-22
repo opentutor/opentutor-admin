@@ -6,21 +6,17 @@ The full terms of this copyright and license should always be found in the root 
 */
 import React from "react";
 import { CircularProgress } from "@mui/material";
-import { makeStyles } from "@mui/styles";
-
-const useStyles = makeStyles(() => ({
-  progressRoot: {
-    position: "fixed",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-  },
-}));
 
 export default function LoadingIndicator(): JSX.Element {
-  const classes = useStyles();
   return (
-    <div className={classes.progressRoot}>
+    <div
+      style={{
+        position: "fixed",
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
+      }}
+    >
       <CircularProgress
         data-cy="loading-indicator"
         style={{ height: 100, width: 100 }}

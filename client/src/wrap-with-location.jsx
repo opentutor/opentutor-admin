@@ -5,19 +5,21 @@ Permission to use, copy, modify, and distribute this software and its documentat
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
 import React from "react";
-import { useLocation, useNavigate } from "@reach/router";
-import queryString from "query-string";
+import { useLocation } from "@reach/router";
+import { navigate } from "gatsby";
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 const withLocation = (ComponentToWrap) => (props) => {
   const location = useLocation();
-  const navigate = useNavigate();
+  const search = location.search
+    ? Object.fromEntries(new URLSearchParams(location.search))
+    : {};
   return (
     <ComponentToWrap
       {...props}
       location={location}
       navigate={navigate}
-      search={location.search ? queryString.parse(location.search) : {}}
+      search={search}
     />
   );
 };

@@ -33,7 +33,7 @@ import withLocation from "wrap-with-location";
 import "styles/layout.css";
 import "jsoneditor-react/es/editor.min.css";
 import "react-toastify/dist/ReactToastify.css";
-import { StringParam, useQueryParam } from "use-query-params";
+import { useQueryParam } from "hooks/use-query-params";
 import LoadingIndicator from "components/loading-indicator";
 import { InsertPhoto as InsertPhotoIcon } from "@mui/icons-material";
 import { Location } from "@reach/router";
@@ -85,10 +85,10 @@ const LessonEdit = (props: {
   search: LessonEditSearch;
   location: Location;
 }) => {
-  const [lessonId, setLessonId] = useQueryParam("lessonId", StringParam);
-  const [copyLesson] = useQueryParam("copyLesson", StringParam);
+  const [lessonId, setLessonId] = useQueryParam("lessonId");
+  const [copyLesson] = useQueryParam("copyLesson");
 
-  const classes = useStyles();
+  const { classes } = useStyles();
   const [cookies] = useCookies(["accessToken"]);
   const context = useContext(SessionContext);
   const [lessonUnderEdit, setLessonUnderEdit] = React.useState<LessonUnderEdit>(
@@ -455,9 +455,10 @@ function EditPage(props: {
 }): JSX.Element {
   const context = useContext(SessionContext);
   const [cookies] = useCookies(["accessToken"]);
-  const [lessonId] = useQueryParam("lessonId", StringParam);
+  const [lessonId] = useQueryParam("lessonId");
 
-  if (typeof window !== "undefined" && !cookies.accessToken) {
+  // Only check cookies after client hydration to avoid SSR mismatch
+  if (context.isClient && !cookies.accessToken) {
     return <div>Please login to view lesson.</div>;
   }
   if (!context.user) {

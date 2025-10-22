@@ -8,7 +8,7 @@ import { withPrefix } from "gatsby";
 import React, { useContext } from "react";
 import { useCookies } from "react-cookie";
 import clsx from "clsx";
-import { makeStyles } from "@mui/styles";
+import { makeStyles } from "tss-react/mui";
 import {
   Container,
   Table,
@@ -138,7 +138,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
     (property: keyof SessionData) => (event: React.MouseEvent<unknown>) => {
       onRequestSort(event, property);
     };
-  const classes = useStyles();
+  const { classes } = useStyles();
 
   return (
     <TableHead>
@@ -185,26 +185,28 @@ function EnhancedTableHead(props: EnhancedTableProps) {
   );
 }
 
-const useToolbarStyles = makeStyles((theme: Theme) => ({
-  root: {
-    paddingLeft: theme.spacing(2),
-    paddingRight: theme.spacing(1),
-  },
-  highlight:
-    theme.palette.mode === "light"
-      ? {
-          color: theme.palette.secondary.main,
-          backgroundColor: lighten(theme.palette.secondary.light, 0.85),
-        }
-      : {
-          color: theme.palette.text.secondary,
-          backgroundColor: theme.palette.secondary.dark,
-        },
-  title: {
-    flex: "1 1 100%",
-    fontWeight: "bold",
-  },
-}));
+const useToolbarStyles = makeStyles({ name: "ToolbarStyles" })(
+  (theme: Theme) => ({
+    root: {
+      paddingLeft: theme.spacing(2),
+      paddingRight: theme.spacing(1),
+    },
+    highlight:
+      theme.palette.mode === "light"
+        ? {
+            color: theme.palette.secondary.main,
+            backgroundColor: lighten(theme.palette.secondary.light, 0.85),
+          }
+        : {
+            color: theme.palette.text.secondary,
+            backgroundColor: theme.palette.secondary.dark,
+          },
+    title: {
+      flex: "1 1 100%",
+      fontWeight: "bold",
+    },
+  })
+);
 
 interface EnhancedTableToolbarProps {
   numSelected: number;
@@ -217,7 +219,7 @@ interface EnhancedTableToolbarProps {
 }
 
 const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
-  const classes = useToolbarStyles();
+  const { classes } = useToolbarStyles();
   const { numSelected, expectation, rows } = props;
   const [openFilterView, setOpenFilterView] = useState(false);
   const fileDownloadAnchor = useRef<HTMLAnchorElement>(null);
@@ -395,7 +397,7 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
   );
 };
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles({ name: "SessionsData" })((theme: Theme) => ({
   root: {
     width: "100%",
   },
@@ -432,7 +434,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 function EnhancedTable(props: { lessonId: string; expectation: string }) {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const [selected, setSelected] = React.useState<string[]>([]);
   const [dense, setDense] = React.useState(false);
   const useSessionData = useWithSessionData(props.lessonId, props.expectation);
@@ -686,12 +688,16 @@ function Data(props: { search: LessonExpectationSearch }): JSX.Element {
   const { lessonId, expectation } = props.search;
   const context = useContext(SessionContext);
   const [cookies] = useCookies(["accessToken"]);
-  const styles = useStyles();
+  const { classes: styles } = useStyles();
 
-  if (typeof window !== "undefined" && !cookies.accessToken) {
+  // Only check cookies after client hydration to avoid SSR mismatch
+  if (context.isClient && !cookies.accessToken) {
     return <div>Please login to view settings.</div>;
   }
-  if (!lessonId || !expectation) {
+
+  // Only check query params after client hydration to avoid SSR mismatch
+  // Also check for null/undefined explicitly to allow expectation=0
+  if (context.isClient && (lessonId == null || expectation == null)) {
     return (
       <div data-cy="malformed-link">
         {
@@ -700,7 +706,9 @@ function Data(props: { search: LessonExpectationSearch }): JSX.Element {
       </div>
     );
   }
-  if (!context.user) {
+
+  // Show loading until client hydration completes
+  if (!context.user || !context.isClient) {
     return <LoadingIndicator />;
   }
   if (context.user.userRole !== UserRole.ADMIN) {

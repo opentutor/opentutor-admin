@@ -7,7 +7,7 @@ The full terms of this copyright and license should always be found in the root 
 import { navigate } from "gatsby";
 import React, { useContext } from "react";
 import { useCookies } from "react-cookie";
-import { makeStyles } from "@mui/styles";
+import { makeStyles } from "tss-react/mui";
 import {
   Paper,
   Table,
@@ -32,20 +32,20 @@ import NavBar from "components/nav-bar";
 import "styles/layout.css";
 import LoadingIndicator from "components/loading-indicator";
 
-const useStyles = makeStyles({
+const useStyles = makeStyles({ name: "SessionTable" })(() => ({
   root: {
     width: "100%",
   },
   container: {
     maxHeight: 440,
   },
-});
+}));
 
 const SessionTable = (props: {
   search: { sessionId: string; cursor: string };
 }) => {
   const { sessionId } = props.search;
-  const classes = useStyles();
+  const { classes } = useStyles();
   const [cookies] = useCookies(["accessToken"]);
   const context = useContext(SessionContext);
   const [session, setSession] = React.useState<Session>();
@@ -268,7 +268,8 @@ const SessionPage = (props: {
 }) => {
   const context = useContext(SessionContext);
   const [cookies] = useCookies(["accessToken"]);
-  if (typeof window !== "undefined" && !cookies.accessToken) {
+  // Only check cookies after client hydration to avoid SSR mismatch
+  if (context.isClient && !cookies.accessToken) {
     return <div>Please login to view session.</div>;
   }
   if (!context.user) {
