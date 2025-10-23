@@ -20,9 +20,11 @@ import {
   COMPOSITE_CLASSIFIER_ARCHITECTURE,
   CUSTOM_4o_MINI_MODEL,
   DEFAULT_CLASSIFIER_ARCHITECTURE,
+  FEB_2025_LATEST_MODEL,
   GPT_41_MINI,
   GPT_4o_MINI,
   GPT_5_MINI,
+  GSYN_25_FIN_FEB_2025_MODEL,
   OPENAI_CLASSIFIER_ARCHITECTURE,
 } from "admin-constants";
 import { ArrowRight, ArrowDropDown } from "@mui/icons-material";
@@ -160,6 +162,8 @@ const LLMModelNameSelect = (props: {
         <MenuItem value={CUSTOM_4o_MINI_MODEL}>
           gpt-4o-mini-2024-CUSTOM
         </MenuItem>
+        <MenuItem value={GSYN_25_FIN_FEB_2025_MODEL}>gsyn25finfeb2025</MenuItem>
+        <MenuItem value={FEB_2025_LATEST_MODEL}>feb2025latest</MenuItem>
       </Select>
     </FormControl>
   );
