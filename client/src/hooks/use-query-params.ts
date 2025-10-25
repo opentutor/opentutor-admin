@@ -32,9 +32,16 @@ export function useQueryParam(
       }
 
       const newSearch = newParams.toString();
-      const newUrl = newSearch
-        ? `${location.pathname}?${newSearch}`
+      // Remove pathPrefix from pathname to avoid double-prefixing
+      // Gatsby's navigate() will add the prefix automatically
+      const pathPrefix = "/admin";
+      const pathnameWithoutPrefix = location.pathname.startsWith(pathPrefix)
+        ? location.pathname.slice(pathPrefix.length)
         : location.pathname;
+
+      const newUrl = newSearch
+        ? `${pathnameWithoutPrefix}?${newSearch}`
+        : pathnameWithoutPrefix;
 
       navigate(newUrl, { replace: true });
     },
