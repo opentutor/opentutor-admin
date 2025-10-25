@@ -196,7 +196,6 @@ export function SideBar(props: {
 
         if (lessonId !== lesson?.lessonId) {
           setLessonId(lesson.lessonId);
-          navigate("/lessons");
         }
         toast("Success!");
       })
