@@ -4,7 +4,7 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import React from "react";
+import React, { ChangeEvent } from "react";
 import {
   Grid,
   TextField,
@@ -14,6 +14,7 @@ import {
   Select,
   MenuItem,
   SelectChangeEvent,
+  Checkbox,
 } from "@mui/material";
 import { Lesson } from "types";
 import {
@@ -122,6 +123,39 @@ const DialogCategorySelect = (props: {
         <MenuItem value={"default"}>Default</MenuItem>
         <MenuItem value={"sensitive"}>Sensitive</MenuItem>
       </Select>
+    </FormControl>
+  );
+};
+
+const UsePump = (props: {
+  lessonUnderEdit: LessonUnderEdit;
+  classes: AdvancedFeaturesClasses;
+  setLesson: (lesson?: Lesson, dirty?: boolean) => void;
+  newLesson: Lesson;
+}) => {
+  const { lessonUnderEdit, classes, setLesson, newLesson } = props;
+
+  const handleUsePump = (e: ChangeEvent<HTMLInputElement>) => {
+    setLesson({
+      ...(lessonUnderEdit.lesson || newLesson),
+      usePump: e.target.checked,
+    });
+  };
+
+  return (
+    <FormControl className={classes.selectForm} variant="outlined">
+      <InputLabel shrink id="use-pump-label">
+        Use Pump
+      </InputLabel>
+      <Checkbox
+        data-cy="use-pump-checkbox"
+        onChange={handleUsePump}
+        checked={
+          lessonUnderEdit.lesson?.usePump !== undefined
+            ? lessonUnderEdit.lesson.usePump
+            : true
+        }
+      />
     </FormControl>
   );
 };
@@ -266,6 +300,14 @@ export function AdvancedFeatures(props: {
           </Grid>
           <Grid item xs={6}>
             <LLMModelNameSelect
+              lessonUnderEdit={lessonUnderEdit}
+              setLesson={setLesson}
+              classes={classes}
+              newLesson={newLesson}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <UsePump
               lessonUnderEdit={lessonUnderEdit}
               setLesson={setLesson}
               classes={classes}

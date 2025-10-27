@@ -78,6 +78,7 @@ export interface Lesson {
   lessonId: string;
   arch: string;
   llmModelName?: string;
+  usePump?: boolean;
   name: string;
   intro: string;
   dialogCategory: string;
