@@ -43,6 +43,7 @@ const newLesson: Lesson = {
   lessonId: uuid(),
   arch: DEFAULT_CLASSIFIER_ARCHITECTURE,
   llmModelName: GPT_41_MINI,
+  usePump: true,
   name: "",
   intro: "",
   dialogCategory: "default",

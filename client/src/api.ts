@@ -488,6 +488,7 @@ export async function fetchLesson(
             lessonId
             intro
             llmModelName
+            usePump
             dialogCategory
             arch
             name
@@ -541,6 +542,7 @@ export async function updateLesson(
           updateLesson(lessonId: $lessonId, lesson: $lesson){
             lessonId
             llmModelName
+            usePump
             arch
             intro
             dialogCategory
@@ -578,6 +580,7 @@ export async function updateLesson(
         lesson: {
           lessonId: lesson.lessonId,
           llmModelName: lesson.llmModelName,
+          usePump: lesson.usePump,
           arch: lesson.arch,
           name: lesson.name,
           intro: lesson.intro,
