@@ -18,7 +18,7 @@
     "@mui/material": "^5.11.7",
     "@mui/system": "^5.11.7",
     "@types/gatsbyjs__reach-router": "^2.0.5",
-    "axios": "^1.6.0",
+    "axios": "^1.13.0",
     "gatsby": "^5.5.0",
     "gatsby-plugin-offline": "^6.15.0",
     "gatsby-plugin-sitemap": "^6.15.0",

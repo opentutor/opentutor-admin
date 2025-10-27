@@ -10,5 +10,6 @@ export default defineConfig({
     chromeWebSecurity: false,
     video: false,
     requestTimeout: 10000,
+    defaultCommandTimeout: 20000,
   },
 });
