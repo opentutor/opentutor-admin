@@ -136,10 +136,13 @@ const UsePump = (props: {
   const { lessonUnderEdit, classes, setLesson, newLesson } = props;
 
   const handleUsePump = (e: ChangeEvent<HTMLInputElement>) => {
-    setLesson({
-      ...(lessonUnderEdit.lesson || newLesson),
-      usePump: e.target.checked,
-    }, true);
+    setLesson(
+      {
+        ...(lessonUnderEdit.lesson || newLesson),
+        usePump: e.target.checked,
+      },
+      true
+    );
   };
 
   return (
