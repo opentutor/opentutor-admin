@@ -139,7 +139,7 @@ const UsePump = (props: {
     setLesson({
       ...(lessonUnderEdit.lesson || newLesson),
       usePump: e.target.checked,
-    });
+    }, true);
   };
 
   return (
