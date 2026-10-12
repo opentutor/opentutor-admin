@@ -24,7 +24,10 @@ import {
   FEB_2025_LATEST_MODEL,
   GPT_41_MINI,
   GPT_4o_MINI,
+  GPT_54_MINI,
+  GPT_56_LUNA,
   GPT_5_MINI,
+  GPT_6_LUNA,
   GSYN_25_FIN_FEB_2025_MODEL,
   OPENAI_CLASSIFIER_ARCHITECTURE,
 } from "admin-constants";
@@ -175,7 +178,7 @@ const LLMModelNameSelect = (props: {
     setLesson(
       {
         ...(lessonUnderEdit.lesson || newLesson),
-        llmModelName: (e.target.value as string) || GPT_4o_MINI,
+        llmModelName: (e.target.value as string) || GPT_6_LUNA,
       },
       true
     );
@@ -190,12 +193,15 @@ const LLMModelNameSelect = (props: {
         data-cy="llm-model-name"
         labelId="llm-model-name-label"
         label="LLM Model"
-        value={lessonUnderEdit.lesson?.llmModelName || GPT_4o_MINI}
+        value={lessonUnderEdit.lesson?.llmModelName || GPT_6_LUNA}
         onChange={handleLLMModelName}
       >
         <MenuItem value={GPT_4o_MINI}>gpt-4o-mini</MenuItem>
         <MenuItem value={GPT_41_MINI}>gpt-4.1-mini</MenuItem>
         <MenuItem value={GPT_5_MINI}>gpt-5-mini</MenuItem>
+        <MenuItem value={GPT_54_MINI}>gpt-5.4-mini</MenuItem>
+        <MenuItem value={GPT_56_LUNA}>gpt-5.6.luna</MenuItem>
+        <MenuItem value={GPT_6_LUNA}>gpt-6-luna</MenuItem>
         <MenuItem value={CUSTOM_4o_MINI_MODEL}>
           gpt-4o-mini-2024-CUSTOM
         </MenuItem>
