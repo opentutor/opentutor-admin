@@ -9,6 +9,9 @@ export const OPENAI_CLASSIFIER_ARCHITECTURE = "opentutor_classifier.openai";
 export const COMPOSITE_CLASSIFIER_ARCHITECTURE =
   "opentutor_classifier.composite";
 
+export const GPT_6_LUNA = "gpt-6-luna";
+export const GPT_56_LUNA = "gpt-5.6-luna";
+export const GPT_54_MINI = "gpt-5.4-mini";
 export const GPT_4o_MINI = "gpt-4o-mini";
 export const GPT_41_MINI = "gpt-4.1-mini";
 export const GPT_5_MINI = "gpt-5-mini";
