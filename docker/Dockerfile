@@ -1,13 +1,4 @@
 FROM node:18.13 as builder
-RUN apt-get update && \
-    apt-get install -y \
-        libgif-dev \
-        libglu1 \
-        libjpeg-dev \
-        libpng-dev \
-        libtiff-dev \
-        libxi-dev && \
-    rm -rf /var/lib/apt/lists/*
 WORKDIR /build
 COPY client ./client
 RUN cd client && \
