@@ -8,7 +8,7 @@ import { Connection, Lesson } from "../support/types";
 
 export const lesson = {
   lessonId: "q1",
-  llmModelName: "gpt-4o-mini",
+  llmModelName: "gpt-6-luna",
   name: "lesson",
   intro: "introduction",
   question: "question",
