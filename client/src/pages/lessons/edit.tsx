@@ -19,7 +19,7 @@ import {
   Typography,
 } from "@mui/material";
 import { fetchLesson, userCanEdit, fetchLessons } from "api";
-import { DEFAULT_CLASSIFIER_ARCHITECTURE, GPT_41_MINI } from "admin-constants";
+import { DEFAULT_CLASSIFIER_ARCHITECTURE, GPT_6_LUNA } from "admin-constants";
 import SessionContext from "context/session";
 import NavBar from "components/nav-bar";
 import SideBar from "components/side-bar";
@@ -42,7 +42,7 @@ import { useStyles } from "helpers/lessonsHelpers";
 const newLesson: Lesson = {
   lessonId: uuid(),
   arch: DEFAULT_CLASSIFIER_ARCHITECTURE,
-  llmModelName: GPT_41_MINI,
+  llmModelName: GPT_6_LUNA,
   usePump: true,
   name: "",
   intro: "",
